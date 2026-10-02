@@ -58,7 +58,9 @@ Rückgabecodes:
 - 2: Aufruf, Fall oder Knowledge Pack ungültig.
 - 3: Datei nicht lesbar.
 
-Die Anwendung akzeptiert ausschließlich SYNTHETIC-Packs. Sie ist ein
+`evaluate`, `snapshot` und `replay` akzeptieren ausschließlich SYNTHETIC-Packs.
+`validate` darf dagegen deklarierte Validation Levels strukturell prüfen, ohne
+dadurch eine Ausführung oder fachliche Freigabe zu erlauben. Das CLI ist ein
 Engineering-/Demonstrationswerkzeug; Weboberfläche, produktive Speicherung,
 Authentifizierung und Freigabeprozesse stehen weiterhin aus. Verwende
 ausschließlich synthetische Fälle. JSON-Ausgaben enthalten Eingabe-/Tracewerte;
