@@ -37,6 +37,7 @@ knowledge/
   demo-a/                 truth-valued AND/OR/UNKNOWN synthetic pack
   demo-b/                 numeric/range/temporal-version synthetic pack
   demo-c/                 evidence dependency and review synthetic pack
+  demo-d/                 derived numeric expression synthetic pack
 
 docs/
   project/
@@ -55,6 +56,7 @@ The current core can:
 - validate manifests, fields, sources, rule references and validity intervals,
 - evaluate typed truth and numeric case values,
 - evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
+- derive numeric values through declarative range lookup, sum and max expressions,
 - preserve UNKNOWN instead of coercing it,
 - gate criteria on structured evidence availability and escalate conflicts,
 - configure safe unknown outcomes as INCOMPLETE or HUMAN_REVIEW,
