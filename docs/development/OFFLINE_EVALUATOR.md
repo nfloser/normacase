@@ -8,6 +8,26 @@ kann beim ersten Build Paketquellen benötigen; die Auswertung selbst ist offlin
 
 Aus dem Repository-Verzeichnis:
 
+Ein Knowledge Pack kann unabhängig von einem Fall strukturell geprüft werden:
+
+```bash
+dotnet run --project src/NormaCase.Cli -- validate --pack knowledge/demo-a/pack.json
+```
+
+`validate` benötigt weder Fall, Prüfdatum noch Plattformbezeichner. Es verwendet
+denselben strikten, größenbegrenzten Knowledge-Import wie die Auswertung und prüft
+unter anderem Format, Referenzen, Quellenmetadaten, Regeln, Outputs und deklarative
+Workflows. Die Prüfung darf auch Packs mit `PUBLIC_REFERENCE`,
+`DOMAIN_REVIEWED` oder `PRODUCTION_APPROVED` strukturell einlesen; daraus folgt
+**keine** fachliche Freigabe oder Bestätigung der Quellen. Diese Packs dürfen über
+`evaluate`, `snapshot` und `replay` im aktuellen Demonstrations-CLI weiterhin
+nicht ausgeführt werden.
+
+Bei semantischen Fehlern gibt `validate` stabile technische Fehlercodes aus,
+nicht die importierten Validator-Meldungen, Dateipfade oder Knowledge-Inhalte.
+
+Für synthetische Auswertungen:
+
 ```bash
 dotnet run --project src/NormaCase.Cli -- --help
 dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-a/pack.json --case examples/cases/demo-a-supported.json --platform-version development
@@ -34,7 +54,7 @@ Das Fallformat enthält `formatVersion: 1`, ein explizites `assessmentDate`,
 Datumswerte im technischen JSON stehen in ISO-Form.
 
 Rückgabecodes:
-- 0: Die Auswertung wurde ausgeführt; auch INCOMPLETE/HUMAN_REVIEW sind gültige Ergebnisse.
+- 0: Die Strukturprüfung bzw. Auswertung wurde ausgeführt; auch INCOMPLETE/HUMAN_REVIEW sind gültige Ergebnisse.
 - 2: Aufruf, Fall oder Knowledge Pack ungültig.
 - 3: Datei nicht lesbar.
 
