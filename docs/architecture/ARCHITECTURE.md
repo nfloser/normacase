@@ -35,6 +35,14 @@ Knowledge Packs are data, not executable extensions. They may define schemas, de
 
 The platform interprets a bounded declarative rule model.
 
+## Assessment result layers
+
+`AssessmentOutcome` remains a small platform disposition for supported, unsupported, incomplete, human-review and not-applicable states. It is not extended with medical or benefit-specific result vocabulary.
+
+Knowledge-defined domain outputs form a separate bounded layer. They are independently evaluated, versioned, source-traceable categorical values. Their ids and choices live in Knowledge Packs rather than platform enums. UNKNOWN is preserved per output.
+
+This split allows structurally different domains to expose several results without turning the platform core into one domain's result model.
+
 ## Versioning
 
 Evaluation receives the assessment date and Knowledge Release explicitly. Temporal rule selection is deterministic and testable.
