@@ -10,8 +10,9 @@ Current repository examples:
 - `knowledge/demo-a/pack.json`: truth values, nested AND/OR and UNKNOWN semantics.
 - `knowledge/demo-b/pack.json`: numeric thresholds, inclusive ranges and temporal rule versions.
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
+- `knowledge/demo-d/pack.json`: declarative numeric transformations and aggregation.
 
-All three packs are `SYNTHETIC`.
+All four packs are `SYNTHETIC`.
 
 ## Manifest
 
@@ -63,6 +64,37 @@ Content hashes use `sha256:<64 hexadecimal characters>`. Invalid hashes and sour
 Synthetic packs do not invent external provenance. Format v1 therefore keeps version and source location optional for `SYNTHETIC` packs. For `PUBLIC_REFERENCE`, `DOMAIN_REVIEWED` and `PRODUCTION_APPROVED`, every source must additionally provide a version, source location, retrieval date and content hash. This ensures a governed rule cannot load with only a human-readable title or anonymous URL-less citation.
 
 A missing source reference fails pack validation and the pack is not partially loaded.
+
+## Derived numeric calculations
+
+A pack may define ordered `calculations` that produce derived numeric fields before rule evaluation. Derived fields are internal evaluation values: callers cannot submit or override them as case facts.
+
+Supported calculation kinds are:
+- `range_lookup`: map one numeric input through non-overlapping ranges,
+- `sum`: add one or more numeric inputs,
+- `max`: select the greatest of one or more numeric inputs.
+
+Calculations run in declaration order. An input may reference a raw numeric field or an **earlier** calculation output. Forward references are rejected, which also prevents cyclic calculation graphs.
+
+Missing or UNKNOWN input propagates to an UNKNOWN derived value. UNKNOWN is never treated as zero and never skipped by `sum` or `max`.
+
+### Range lookup
+
+A range declares minimum/maximum bounds, inclusion flags and its numeric result. Lookup ranges may not overlap or make a boundary match twice.
+
+When `requireFullCoverage` is true, the calculation also declares `coverageMinimum` and `coverageMaximum`. The ranges must include those endpoints and contain no internal interval or boundary gap across that declared span. Values outside the declared span still produce UNKNOWN rather than being guessed or clamped.
+
+Half-open boundaries are supported, allowing deterministic continuous partitions such as `[0, 10)`, `[10, 20)`, `[20, 100]`.
+
+### Calculation trace
+
+Each assessment records calculations in execution order with:
+- calculation id and kind,
+- every input id and typed value,
+- derived typed result,
+- the selected range for `range_lookup`, when one matched.
+
+This makes the value path visible before the normal rule Decision Trace and prevents hidden preprocessing logic.
 
 ## Conditions
 
