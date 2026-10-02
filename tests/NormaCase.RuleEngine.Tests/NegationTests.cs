@@ -123,6 +123,21 @@ public sealed class NegationTests
         Assert.Contains(exception.Errors, error => error.Code == code);
     }
 
+    [Theory]
+    [InlineData("9.999999999999999999999999999", ConditionResult.Matched)]
+    [InlineData("10", ConditionResult.NotMatched)]
+    [InlineData("10.00000000000000000000000001", ConditionResult.NotMatched)]
+    [InlineData("UNKNOWN", ConditionResult.Unknown)]
+    public void Negated_numeric_threshold_preserves_exact_boundaries(string number, ConditionResult expected)
+    {
+        var value = number == "UNKNOWN" ? CaseValue.Unknown :
+            CaseValue.FromNumber(decimal.Parse(number, System.Globalization.CultureInfo.InvariantCulture));
+        var result = Evaluate(Not("""{"kind":"number_gte","field":"synthetic_number","threshold":10}"""),
+            new() { ["synthetic_number"] = value });
+        Assert.Equal(expected, result.RuleTrace!.Condition.Result);
+        Assert.Equal(value, Assert.Single(result.RuleTrace.Condition.Children).Actual);
+    }
+
     [Fact]
     public void An_invalid_child_is_validated_recursively()
     {
@@ -143,6 +158,7 @@ public sealed class NegationTests
         var node = JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "demo-a-pack.json")))!;
         node["manifest"]!["releaseId"] = "synthetic-negation-tests-1";
         foreach (var field in node["fields"]!.AsArray()) field!["required"] = false;
+        node["fields"]!.AsArray().Add(JsonNode.Parse("""{"id":"synthetic_number","type":"number","required":false}"""));
         node["evidenceRequirements"] = JsonNode.Parse("""[{"id":"synthetic-check"}]""");
         node["rules"]![0]!["condition"] = JsonNode.Parse(condition);
         return node.ToJsonString();

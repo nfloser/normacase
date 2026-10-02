@@ -23,7 +23,7 @@ public sealed class NegationReplayTests
         pack["rules"]![0]!["condition"] = not;
         pack["outputs"]![0]!["condition"] = not.DeepClone();
         var input = JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", "demo-e-mixed.json")))!;
-        // This synthetic entry rule tests global_ready; other output facts remain as supplied.
+        // This synthetic entry rule tests gate_primary; other output facts remain as supplied.
         input["facts"]!["global_ready"] = truth == "UNKNOWN"
             ? JsonNode.Parse("""{"kind":"UNKNOWN"}""")
             : JsonNode.Parse("{\"kind\":\"TRUTH\",\"truth\":\"" + truth + "\"}");
