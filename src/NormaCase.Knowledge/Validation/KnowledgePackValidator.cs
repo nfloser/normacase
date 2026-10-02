@@ -12,7 +12,8 @@ public sealed class KnowledgePackValidator
             "any",
             "field_equals",
             "number_gte",
-            "number_in_range"
+            "number_in_range",
+            "requires_evidence"
         };
 
     private static readonly HashSet<string> AllowedFieldTypes =
@@ -69,7 +70,8 @@ public sealed class KnowledgePackValidator
             Require(source.DocumentType, $"sources.{source.Id}.documentType", errors);
         }
 
-        var rules = ValidateRules(pack, fields, sources, errors);
+        var evidence = ValidateUniqueIds(pack.EvidenceRequirements, item => item.Id, "evidence_requirement", errors);
+        var rules = ValidateRules(pack, fields, sources, evidence, errors);
 
         if (!string.IsNullOrWhiteSpace(pack.Manifest.EntryRuleId)
             && !rules.Any(rule => string.Equals(
@@ -152,6 +154,7 @@ public sealed class KnowledgePackValidator
         KnowledgePack pack,
         IReadOnlyDictionary<string, FieldDefinition> fields,
         IReadOnlyDictionary<string, SourceDefinition> sources,
+        IReadOnlyDictionary<string, EvidenceRequirementDefinition> evidence,
         ICollection<KnowledgeValidationError> errors)
     {
         var rules = new List<RuleDefinition>();
@@ -214,7 +217,13 @@ public sealed class KnowledgePackValidator
                     $"{path}.onNoMatch"));
             }
 
-            ValidateCondition(rule.Condition, fields, errors, $"{path}.condition");
+            if (rule.OnUnknown is not null
+                && rule.OnUnknown is not (AssessmentOutcome.Incomplete or AssessmentOutcome.HumanReview))
+            {
+                errors.Add(new("unsafe_on_unknown", "onUnknown must be INCOMPLETE or HUMAN_REVIEW.", $"{path}.onUnknown"));
+            }
+
+            ValidateCondition(rule.Condition, fields, evidence, errors, $"{path}.condition");
         }
 
         return rules;
@@ -223,6 +232,7 @@ public sealed class KnowledgePackValidator
     private static void ValidateCondition(
         ConditionDefinition condition,
         IReadOnlyDictionary<string, FieldDefinition> fields,
+        IReadOnlyDictionary<string, EvidenceRequirementDefinition> evidence,
         ICollection<KnowledgeValidationError> errors,
         string path)
     {
@@ -233,6 +243,32 @@ public sealed class KnowledgePackValidator
                 $"Unknown condition kind '{condition.Kind}'.",
                 $"{path}.kind"));
             return;
+        }
+
+        if (condition.Kind == "requires_evidence")
+        {
+            if (string.IsNullOrWhiteSpace(condition.EvidenceRequirementId)
+                || !evidence.ContainsKey(condition.EvidenceRequirementId))
+            {
+                errors.Add(new("missing_evidence_requirement", "Condition references undeclared evidence.", $"{path}.evidenceRequirementId"));
+            }
+
+            if (condition.Conditions.Count != 1)
+            {
+                errors.Add(new("invalid_evidence_dependency", "requires_evidence must contain exactly one condition.", $"{path}.conditions"));
+            }
+
+            foreach (var child in condition.Conditions)
+            {
+                ValidateCondition(child, fields, evidence, errors, $"{path}.conditions");
+            }
+
+            return;
+        }
+
+        if (condition.EvidenceRequirementId is not null)
+        {
+            errors.Add(new("unexpected_evidence_reference", "Only requires_evidence can reference evidence.", $"{path}.evidenceRequirementId"));
         }
 
         if (condition.Kind is "all" or "any")
@@ -251,6 +287,7 @@ public sealed class KnowledgePackValidator
                 ValidateCondition(
                     condition.Conditions[index],
                     fields,
+                    evidence,
                     errors,
                     $"{path}.conditions[{index}]");
             }

@@ -1,5 +1,6 @@
 using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
+using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Model;
 using NormaCase.Knowledge.Validation;
 
@@ -17,13 +18,16 @@ public sealed class RuleEvaluator
     public AssessmentResult Evaluate(
         KnowledgePack pack,
         IReadOnlyDictionary<string, CaseValue> facts,
-        DateOnly assessmentDate)
+        DateOnly assessmentDate,
+        IReadOnlyDictionary<string, EvidenceStatus>? evidence = null)
     {
         ArgumentNullException.ThrowIfNull(pack);
         ArgumentNullException.ThrowIfNull(facts);
 
         _validator.ValidateOrThrow(pack);
         ValidateCaseFields(pack, facts);
+        evidence ??= new Dictionary<string, EvidenceStatus>(StringComparer.Ordinal);
+        ValidateEvidence(pack, evidence);
 
         var missingRequiredFields = pack.Fields
             .Where(field => field.Required)
@@ -44,18 +48,20 @@ public sealed class RuleEvaluator
                 null);
         }
 
-        var condition = EvaluateCondition(rule.Condition, facts);
+        var condition = EvaluateCondition(rule.Condition, facts, evidence);
         var ruleOutcome = condition.Result switch
         {
             ConditionResult.Matched => rule.OnMatch!.Value,
             ConditionResult.NotMatched => rule.OnNoMatch!.Value,
-            ConditionResult.Unknown => AssessmentOutcome.Incomplete,
+            ConditionResult.Unknown => rule.OnUnknown ?? AssessmentOutcome.Incomplete,
             _ => AssessmentOutcome.Incomplete
         };
 
         var finalOutcome = missingRequiredFields.Length > 0
             ? AssessmentOutcome.Incomplete
-            : ruleOutcome;
+            : HasConflictingEvidence(condition)
+                ? AssessmentOutcome.HumanReview
+                : ruleOutcome;
 
         var trace = new RuleTrace(
             rule.Id,
@@ -98,15 +104,17 @@ public sealed class RuleEvaluator
 
     private static ConditionTrace EvaluateCondition(
         ConditionDefinition condition,
-        IReadOnlyDictionary<string, CaseValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence)
     {
         return condition.Kind switch
         {
             "field_equals" => EvaluateFieldEquals(condition, facts),
             "number_gte" => EvaluateNumberGte(condition, facts),
             "number_in_range" => EvaluateNumberInRange(condition, facts),
-            "all" => EvaluateAll(condition, facts),
-            "any" => EvaluateAny(condition, facts),
+            "all" => EvaluateAll(condition, facts, evidence),
+            "any" => EvaluateAny(condition, facts, evidence),
+            "requires_evidence" => EvaluateEvidenceDependency(condition, facts, evidence),
             _ => throw new InvalidOperationException(
                 $"Knowledge validation should reject unknown condition kind '{condition.Kind}'.")
         };
@@ -180,10 +188,11 @@ public sealed class RuleEvaluator
 
     private static ConditionTrace EvaluateAll(
         ConditionDefinition condition,
-        IReadOnlyDictionary<string, CaseValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence)
     {
         var children = condition.Conditions
-            .Select(child => EvaluateCondition(child, facts))
+            .Select(child => EvaluateCondition(child, facts, evidence))
             .ToArray();
 
         var result = children.Any(child => child.Result == ConditionResult.NotMatched)
@@ -197,10 +206,11 @@ public sealed class RuleEvaluator
 
     private static ConditionTrace EvaluateAny(
         ConditionDefinition condition,
-        IReadOnlyDictionary<string, CaseValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence)
     {
         var children = condition.Conditions
-            .Select(child => EvaluateCondition(child, facts))
+            .Select(child => EvaluateCondition(child, facts, evidence))
             .ToArray();
 
         var result = children.Any(child => child.Result == ConditionResult.Matched)
@@ -210,6 +220,35 @@ public sealed class RuleEvaluator
                 : ConditionResult.NotMatched;
 
         return GroupTrace(condition.Kind, result, children);
+    }
+
+    private static ConditionTrace EvaluateEvidenceDependency(
+        ConditionDefinition condition,
+        IReadOnlyDictionary<string, CaseValue> facts,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence)
+    {
+        var status = evidence.TryGetValue(condition.EvidenceRequirementId!, out var supplied)
+            ? supplied
+            : EvidenceStatus.Missing;
+        var child = EvaluateCondition(condition.Conditions[0], facts, evidence);
+        var result = status == EvidenceStatus.Present ? child.Result : ConditionResult.Unknown;
+        return new(condition.Kind, result, null, null, null, null, null, [child],
+            condition.EvidenceRequirementId, status);
+    }
+
+    private static bool HasConflictingEvidence(ConditionTrace trace)
+        => trace.EvidenceStatus == EvidenceStatus.Conflicting
+            || trace.Children.Any(HasConflictingEvidence);
+
+    private static void ValidateEvidence(
+        KnowledgePack pack,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence)
+    {
+        var declared = pack.EvidenceRequirements.Select(item => item.Id).ToHashSet(StringComparer.Ordinal);
+        if (evidence.Any(item => !declared.Contains(item.Key) || !Enum.IsDefined(item.Value)))
+        {
+            throw new ArgumentException("Evidence contains an undeclared requirement or invalid status.", nameof(evidence));
+        }
     }
 
     private static ConditionTrace LeafTrace(

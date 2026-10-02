@@ -9,8 +9,9 @@ Knowledge Packs are declarative data consumed by the platform. They do not execu
 Current repository examples:
 - `knowledge/demo-a/pack.json`: truth values, nested AND/OR and UNKNOWN semantics.
 - `knowledge/demo-b/pack.json`: numeric thresholds, inclusive ranges and temporal rule versions.
+- `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
 
-Both packs are `SYNTHETIC`.
+All three packs are `SYNTHETIC`.
 
 ## Manifest
 
@@ -93,3 +94,34 @@ An evaluation result records:
 - final outcome.
 
 This is the current base for Source -> Rule -> Test traceability.
+
+## Evidence dependencies
+
+Declare stable requirement IDs in the pack's `evidenceRequirements` list.
+A `requires_evidence` condition references one `evidenceRequirementId` and contains
+exactly one child condition in `conditions`. Gates can nest, but cannot refer to
+other rules or execute code. Undeclared references and duplicate requirement IDs
+are rejected.
+
+The caller passes structured availability separately from case facts:
+`Missing` (also the default for omitted requirements), `Present`, or `Conflicting`.
+These statuses do not prove authenticity or interpret document contents; upstream
+evidence review remains responsible for that assertion. No documents are stored
+by this slice.
+
+A present gate returns its child's result. A missing or conflicting gate returns
+UNKNOWN, retaining the child and the evidence ID/status in the trace. All children
+are evaluated so the trace is complete. Standard AND/OR semantics still apply:
+an alternative supported by independent evidence can match without an unavailable
+alternative; a definite false AND child can determine no-match despite another
+unknown child. Missing evidence itself is never converted to a false condition.
+
+Rules may set `onUnknown` only to `INCOMPLETE` or `HUMAN_REVIEW`. Omission
+defaults to `INCOMPLETE`. Missing globally required case fields always forces
+`INCOMPLETE`. Otherwise any conflicting evidence in the evaluated trace forces
+`HUMAN_REVIEW`, even when AND/OR would mask the unknown result. The trace condition
+result and final outcome are recorded separately.
+
+Demo C requires a confirmed synthetic request and verification evidence for either
+a numeric threshold or an alternative confirmation. Missing verification escalates
+to human review. Demo A/B need no evidence and retain their existing behavior.

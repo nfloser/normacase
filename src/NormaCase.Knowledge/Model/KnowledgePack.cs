@@ -6,6 +6,7 @@ public sealed class KnowledgePack
 {
     public KnowledgeManifest Manifest { get; init; } = new();
     public List<FieldDefinition> Fields { get; init; } = [];
+    public List<EvidenceRequirementDefinition> EvidenceRequirements { get; init; } = [];
     public List<SourceDefinition> Sources { get; init; } = [];
     public List<RuleDefinition> Rules { get; init; } = [];
 }
@@ -23,6 +24,11 @@ public sealed class FieldDefinition
     public string Id { get; init; } = string.Empty;
     public string Type { get; init; } = string.Empty;
     public bool Required { get; init; }
+}
+
+public sealed class EvidenceRequirementDefinition
+{
+    public string Id { get; init; } = string.Empty;
 }
 
 public sealed class SourceDefinition
@@ -43,12 +49,14 @@ public sealed class RuleDefinition
     public ConditionDefinition Condition { get; init; } = new();
     public AssessmentOutcome? OnMatch { get; init; }
     public AssessmentOutcome? OnNoMatch { get; init; }
+    public AssessmentOutcome? OnUnknown { get; init; }
 }
 
 public sealed class ConditionDefinition
 {
     public string Kind { get; init; } = string.Empty;
     public string? Field { get; init; }
+    public string? EvidenceRequirementId { get; init; }
     public TruthValue? Expected { get; init; }
     public decimal? Threshold { get; init; }
     public decimal? Minimum { get; init; }
