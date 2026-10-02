@@ -1,0 +1,55 @@
+{
+  "manifest": {
+    "packId": "synthetic.demo-c",
+    "releaseId": "demo-c-2026.1",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-C-EVIDENCE"
+  },
+  "fields": [
+    {
+      "id": "criterion_ready",
+      "type": "truth",
+      "required": true
+    }
+  ],
+  "evidenceRequirements": [
+    {
+      "id": "evidence_primary",
+      "description": "Synthetic primary supporting evidence",
+      "missingOutcome": "HUMAN_REVIEW"
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-C-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic Demo C evidence rule source",
+      "documentType": "SYNTHETIC"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-C-EVIDENCE",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "validUntil": null,
+      "sourceId": "SYNTH-DEMO-C-001",
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "field_equals",
+            "field": "criterion_ready",
+            "expected": "YES"
+          },
+          {
+            "kind": "evidence_present",
+            "evidenceId": "evidence_primary"
+          }
+        ]
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED"
+    }
+  ]
+}
