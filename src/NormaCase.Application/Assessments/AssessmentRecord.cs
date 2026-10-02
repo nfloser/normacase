@@ -20,8 +20,13 @@ public sealed record AssessmentRecord
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(result);
 
-        if (recordedAtUtc.Offset != TimeSpan.Zero)
-            throw new ArgumentException("Recording timestamp must be UTC.", nameof(recordedAtUtc));
+        if (recordedAtUtc == default
+            || recordedAtUtc.Offset != TimeSpan.Zero)
+        {
+            throw new ArgumentException(
+                "Recording timestamp must be an explicit UTC value.",
+                nameof(recordedAtUtc));
+        }
         if (input.AssessmentDate != result.AssessmentDate)
             throw new ArgumentException("Input and result assessment dates must match.", nameof(result));
         if (string.IsNullOrWhiteSpace(result.KnowledgeRelease))
