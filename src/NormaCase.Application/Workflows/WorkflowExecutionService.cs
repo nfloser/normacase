@@ -19,7 +19,9 @@ public sealed class WorkflowExecutionService
         if (workflowVersion <= 0)
             throw new ArgumentOutOfRangeException(nameof(workflowVersion));
 
-        _validator.ValidateOrThrow(pack);
+        var errors = _validator.Validate(pack);
+        if (errors.Count > 0)
+            throw new KnowledgeValidationException(errors);
 
         var workflow = pack.Workflows.SingleOrDefault(
             candidate => string.Equals(
