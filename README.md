@@ -94,7 +94,7 @@ Use `--json` for the versioned lossless assessment document. See
 [the German offline guide](docs/development/OFFLINE_EVALUATOR.md) for supported,
 incomplete and human-review examples, file formats, exit codes and limitations.
 The adapter needs no runtime network service. It accepts SYNTHETIC packs only;
-the production web UI, authorization and persistence are not implemented yet.
+production authorization and persistence are not implemented yet.
 
 ## Local synthetic HTTP adapter
 
@@ -106,4 +106,21 @@ The ASP.NET Core development host listens on loopback port 5080 and provides
 `GET /api/packs` and `POST /api/assessments/{packId}`. It uses the same engine and
 lossless assessment contract as the CLI. See [the German API guide](docs/development/LOCAL_API.md)
 for curl examples, limits and security boundaries. Synthetic knowledge only;
-production authentication, persistence and the user interface remain open work.
+production authentication and persistence remain open work.
+
+## German synthetic workbench
+
+The browser UI uses the same local engine and assessment contract. Build its bundled
+assets and start the API with Node.js 24 and the .NET 10 SDK:
+
+```bash
+npm --prefix frontend ci
+npm --prefix frontend run build
+dotnet run --project src/NormaCase.Api
+```
+
+Open http://localhost:5080. The workbench provides externally labelled German
+synthetic examples, explicit dates, evidence states, source revisions, independent
+domain outputs and exact JSON export. See [the German workbench guide](docs/development/WORKBENCH.md).
+`frontend/` is the canonical browser project; its production build writes the API's
+bundled web assets. No runtime CDN, external font or analytics service is used.

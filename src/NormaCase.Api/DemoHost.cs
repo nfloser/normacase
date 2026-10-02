@@ -66,9 +66,6 @@ public static class DemoHost
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
-        app.UseDefaultFiles();
-        app.UseStaticFiles();
-
         app.MapGet("/api/packs", () => packs.Values.OrderBy(pack => pack.Manifest.PackId, StringComparer.Ordinal)
             .Select(pack =>
             {
