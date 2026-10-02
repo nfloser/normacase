@@ -26,6 +26,17 @@ public sealed class KnowledgePackValidator
             "field",
             errors);
 
+        foreach (var field in pack.Fields)
+        {
+            if (!string.Equals(field.Type, "truth", StringComparison.Ordinal))
+            {
+                errors.Add(new(
+                    "unsupported_field_type",
+                    $"Field '{field.Id}' uses unsupported type '{field.Type}'.",
+                    $"fields.{field.Id}.type"));
+            }
+        }
+
         var sources = ValidateUniqueIds(
             pack.Sources,
             source => source.Id,
