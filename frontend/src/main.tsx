@@ -17,9 +17,14 @@ function App() {
   const [example,setExample]=useState('');
   const [result,setResult]=useState<Result|null>(null);
   const [raw,setRaw]=useState('');
+  const [snapshot,setSnapshot]=useState('');
+  const [replayed,setReplayed]=useState<Result|null>(null);
+  const [replayRaw,setReplayRaw]=useState('');
+  const [replayError,setReplayError]=useState('');
   const [error,setError]=useState('');
   const [busy,setBusy]=useState(false);
   const pending=useRef<AbortController|null>(null);
+  const snapshotFile=useRef<HTMLInputElement|null>(null);
   const pack=packs.find(item=>item.packId===selected);
   useEffect(()=>{
     const controller=new AbortController();
@@ -28,7 +33,7 @@ function App() {
       .catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});
     return()=>{controller.abort();pending.current?.abort();};
   },[]);
-  function clear() { pending.current?.abort();setBusy(false);setResult(null);setRaw('');setError(''); }
+  function clear() { pending.current?.abort();setBusy(false);setResult(null);setRaw('');setSnapshot('');setReplayed(null);setReplayRaw('');setReplayError('');setError(''); }
   function changePack(id:string) {clear();setSelected(id);setValues({});setEvidence({});setExample('');setDate('');}
   async function loadExample() {
     clear();if(!example)return;
@@ -48,17 +53,44 @@ function App() {
     catch(exception){setError(exception instanceof Error && exception.message==='missing_date'?de.dateError:de.numberError);return;}
     const controller=new AbortController();pending.current=controller;setBusy(true);
     try {
-      const response=await fetch('/api/assessments/'+encodeURIComponent(pack.packId),{method:'POST',headers:{'Content-Type':'application/json'},body,signal:controller.signal});
+      const response=await fetch('/api/snapshots/'+encodeURIComponent(pack.packId),{method:'POST',headers:{'Content-Type':'application/json'},body,signal:controller.signal});
       const text=await response.text();
+      if(controller.signal.aborted)return;
       if(!response.ok){setError((JSON.parse(text) as {message?:string}).message??de.inputError);return;}
-      if(!controller.signal.aborted){setRaw(text);setResult(parse(text) as Result);}
+      const captured=JSON.parse(text) as {snapshotJson:string;assessmentJson:string};
+      if(typeof captured.snapshotJson!=='string'||typeof captured.assessmentJson!=='string')throw new Error();
+      if(!controller.signal.aborted){setSnapshot(captured.snapshotJson);setRaw(captured.assessmentJson);setResult(parse(captured.assessmentJson) as Result);}
     } catch {if(!controller.signal.aborted)setError(de.networkError);}
     finally {if(!controller.signal.aborted)setBusy(false);}
   }
-  function download() {
-    const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));
-    const link=document.createElement('a');link.href=url;link.download='normacase-assessment.json';link.click();
+  function saveFile(content:string,name:string) {
+    const url=URL.createObjectURL(new Blob([content],{type:'application/json'}));
+    const link=document.createElement('a');link.href=url;link.download=name;link.click();
     setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  function download() {saveFile(raw,'normacase-assessment.json');}
+  async function verifySnapshot(event:React.ChangeEvent<HTMLInputElement>) {
+    const file=event.currentTarget.files?.[0];
+    event.currentTarget.value='';
+    if(!file)return;
+    clear();
+    if(file.size>1024*1024){setReplayError(de.snapshotTooLarge);return;}
+    const controller=new AbortController();pending.current=controller;setBusy(true);
+    try {
+      const bytes=await file.arrayBuffer();
+      if(controller.signal.aborted)return;
+      let body:string;
+      try {body=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}
+      catch {setReplayError(de.snapshotEncodingError);return;}
+      const response=await fetch('/api/snapshots/replay',{method:'POST',headers:{'Content-Type':'application/json'},body,signal:controller.signal});
+      const text=await response.text();
+      if(controller.signal.aborted)return;
+      if(!response.ok){setReplayError((JSON.parse(text) as {message?:string}).message??de.inputError);return;}
+      const verified=JSON.parse(text) as {assessmentJson:string};
+      if(typeof verified.assessmentJson!=='string')throw new Error();
+      setReplayRaw(verified.assessmentJson);setReplayed(parse(verified.assessmentJson) as Result);
+    } catch {if(!controller.signal.aborted)setReplayError(de.networkError);}
+    finally {if(!controller.signal.aborted)setBusy(false);}
   }
   const status=result?.assessment.outcome??'';
   const title=pack?.presentation?.title??selected;
@@ -96,8 +128,25 @@ function App() {
         {!!result.assessment.missingRequiredFields.length&&<div className="missing"><h4>{de.missingFields}</h4><ul>{result.assessment.missingRequiredFields.map(id=><li key={id}>{pack?.presentation?.fields[id]??de.fieldReference}</li>)}</ul></div>}
         {!!result.assessment.domainOutputs?.length&&<div className="domain-outputs"><h4>{de.domainOutputs}</h4><dl>{result.assessment.domainOutputs.map(output=><React.Fragment key={output.outputId}><dt>{pack?.presentation?.outputs?.[output.outputId]?.label??de.outputReference}</dt><dd>{output.value.kind==='UNKNOWN'?de.unknown:(pack?.presentation?.outputs?.[output.outputId]?.choices[output.value.choice??'']??de.unknown)}<small>{output.source.title} · {output.source.version??'—'}</small></dd></React.Fragment>)}</dl></div>}
         {result.assessment.ruleTrace?<div className="source"><h4>{de.source}</h4><p>{result.assessment.ruleTrace.source.title}</p><span>{result.assessment.ruleTrace.source.authority}</span><dl><dt>{de.sourceRevision}</dt><dd>{result.assessment.ruleTrace.source.version??'—'}</dd><dt>{de.rule}</dt><dd>{result.assessment.ruleTrace.ruleId}</dd><dt>{de.sourceLocation}</dt><dd>{result.assessment.ruleTrace.source.sourceLocation??'—'}</dd></dl></div>:<p>{de.noSource}</p>}
-        <details><summary>{de.trace}</summary><pre>{raw}</pre></details><button className="secondary export" onClick={download}>{de.export}</button>
+        <details><summary>{de.trace}</summary><pre>{raw}</pre></details><button className="secondary export" onClick={download}>{de.export}</button><button className="secondary export" onClick={()=>saveFile(snapshot,'normacase-snapshot.json')} disabled={!snapshot}>{de.snapshotExport}</button>
       </>}
-    </section></div><footer>{de.foot}</footer></main></>;
+    </section></div>
+    <section className="card snapshot-tools" aria-live="polite">
+      <h2>{de.snapshotHeading}</h2><p>{de.snapshotHelp}</p>
+      <div className="field"><span>{de.snapshotSelect}</span>
+        <input ref={snapshotFile} aria-label={de.snapshotSelect} type="file" hidden accept=".json,application/json" onChange={verifySnapshot} disabled={busy}/>
+        <button type="button" className="secondary file-button" onClick={()=>snapshotFile.current?.click()} disabled={busy}>{de.snapshotChooseFile}</button>
+      </div>
+      {busy&&<p>{de.checking}</p>}
+      {replayError&&<div className="error" role="alert"><strong>{de.errorHeading}</strong><p>{replayError}</p></div>}
+      {replayed&&<><h3>{de.replayVerified}</h3><p>{de.replayReadOnly}</p>
+        <dl><dt>{de.result}</dt><dd>{outcomes[replayed.assessment.outcome]??de.unknown}</dd>
+        <dt>{de.date}</dt><dd>{replayed.assessment.assessmentDate.split('-').reverse().join('.')}</dd>
+        <dt>{de.release}</dt><dd>{replayed.assessment.knowledgeRelease}</dd>
+        <dt>{de.platform}</dt><dd>{replayed.platformVersion}</dd></dl>
+        <details><summary>{de.replayTrace}</summary><pre>{replayRaw}</pre></details>
+        <button className="secondary export" onClick={()=>saveFile(replayRaw,'normacase-replayed-assessment.json')}>{de.replayExport}</button>
+      </>}
+    </section><footer>{de.foot}</footer></main></>;
 }
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

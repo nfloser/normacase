@@ -49,6 +49,19 @@ Sensitive snapshots stay under operator control and are not logged. Future produ
 storage/import must add authorization, trusted provenance and tamper-evident or
 signed storage where required.
 
+### Local browser snapshot import
+The synthetic workbench sends a selected JSON file only to its same-origin loopback
+API. Import may contain malformed UTF-8, excessive content, substituted knowledge or
+an internally consistent but unauthenticated assessment.
+
+Baseline: bound file size in the UI and received byte count in the server, use strict
+snapshot/knowledge parsing and full deterministic replay, require synthetic embedded
+knowledge and the actual API platform identity. Keep results read-only and separate
+from active pack presentation metadata. Abort and clear stale requests/results when
+inputs change. Do not persist files or log their contents. Existing loopback, Origin,
+CSP and no-store restrictions also cover capture and replay. These safeguards do not
+provide productive authorization or authentic provenance.
+
 ### Sensitive logging
 Medical or identity data could leak through logs and CI.
 

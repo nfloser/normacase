@@ -75,3 +75,79 @@ test('independent outputs keep UNKNOWN and the external pending state distinct',
  await expect(page.locator('.domain-outputs')).toContainText('Extern ausstehend');
  await expect(page.locator('.domain-outputs')).toContainText('Unbekannt');
 });
+
+test('snapshot download and uploaded replay retain exact original JSON',async({page})=>{
+ await page.goto('/');
+ await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-b');
+ await page.getByLabel('Prüfdatum',{exact:true}).fill('2026-10-02');
+ await page.getByRole('combobox',{name:'Synthetischer Wert – Eingabestatus'}).selectOption('VALUE');
+ await page.getByRole('combobox',{name:'Bereichswert – Eingabestatus'}).selectOption('VALUE');
+ await page.getByRole('textbox',{name:/Synthetischer Wert/}).fill('123456789,1234567890123456789');
+ await page.getByRole('textbox',{name:/Bereichswert/}).fill('30');
+ await page.getByRole('button',{name:'Jetzt prüfen'}).click();
+ await expect(page.getByRole('heading',{name:'Voraussetzungen erfüllt',exact:true})).toBeVisible();
+ const downloading=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Prüfsnapshot herunterladen',exact:true}).click();
+ const download=await downloading;
+ expect(download.suggestedFilename()).toBe('normacase-snapshot.json');
+ const original=await readFile(await download.path(),'utf8');
+ expect(original).toContain('123456789.1234567890123456789');
+ await expect(page.getByRole('button',{name:'Datei auswählen',exact:true})).toBeVisible();
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'snapshot.json',mimeType:'application/json',buffer:Buffer.from(original)});
+ await expect(page.getByRole('heading',{name:'Offline-Wiederholung bestätigt',exact:true})).toBeVisible();
+ const verified=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Bestätigtes Ergebnis herunterladen',exact:true}).click();
+ const result=await verified;
+ expect(await readFile(await result.path(),'utf8')).toContain('123456789.1234567890123456789');
+ await page.screenshot({path:'test-results/workbench-snapshot-replay.png',fullPage:true});
+ const altered=JSON.parse(original);altered.contentSha256='0'.repeat(64);
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'altered.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(altered))});
+ await expect(page.getByRole('heading',{name:'Offline-Wiederholung bestätigt',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('alert')).toContainText('ungültig');
+});
+
+test('input changes abort an uploaded snapshot and cannot restore stale confirmation',async({page})=>{
+ await page.goto('/');
+ await expect(page.getByRole('combobox',{name:'Prüfbereich'})).toHaveValue('synthetic.demo-a');
+ const input=await readFile('../examples/cases/demo-a-supported.json','utf8');
+ const response=await page.request.post('/api/snapshots/synthetic.demo-a',{headers:{'Content-Type':'application/json'},data:input});
+ expect(response.ok()).toBe(true);
+ const captured=await response.json();
+ let release,started,completed;
+ const gate=new Promise(resolve=>{release=resolve;});
+ const observed=new Promise(resolve=>{started=resolve;});
+ const finished=new Promise(resolve=>{completed=resolve;});
+ await page.route('**/api/snapshots/replay',async route=>{
+   started();await gate;
+   try {await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({assessmentJson:captured.assessmentJson})});}
+   catch { /* The browser may already have cancelled the request. */ }
+   finally {completed();}
+ });
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'snapshot.json',mimeType:'application/json',buffer:Buffer.from(captured.snapshotJson)});
+ await observed;
+ const aborted=page.waitForEvent('requestfailed',request=>request.url().endsWith('/api/snapshots/replay'));
+ await page.getByLabel('Prüfdatum',{exact:true}).fill('2026-10-03');
+ release();
+ await Promise.all([aborted,finished]);
+ await expect(page.getByRole('heading',{name:'Offline-Wiederholung bestätigt',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Bestätigtes Ergebnis herunterladen',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+test('oversized snapshot files are rejected before sending a request',async({page})=>{
+ await page.goto('/');
+ let sent=0;
+ page.on('request',request=>{if(request.url().endsWith('/api/snapshots/replay'))sent++;});
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'large.json',mimeType:'application/json',buffer:Buffer.alloc(1024*1024+1,32)});
+ await expect(page.getByRole('alert')).toContainText('1 MiB');
+ expect(sent).toBe(0);
+});
+
+test('invalid UTF-8 snapshot files are rejected before sending a request',async({page})=>{
+ await page.goto('/');
+ let sent=0;
+ page.on('request',request=>{if(request.url().endsWith('/api/snapshots/replay'))sent++;});
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from([0xff,0xfe,0xff])});
+ await expect(page.getByRole('alert')).toContainText('kein gültiges UTF-8');
+ expect(sent).toBe(0);
+});

@@ -55,5 +55,16 @@
   "domainOutputs": "Einzelne Fachausgaben",
   "outputReference": "Fachausgabe",
   "numberStatus": "Eingabestatus",
-  "numberValue": "Wert eingeben"
+  "numberValue": "Wert eingeben",
+  "snapshotExport": "Prüfsnapshot herunterladen",
+  "snapshotHeading": "Gespeicherte Prüfung offline überprüfen",
+  "snapshotHelp": "Wähle einen synthetischen Prüfsnapshot bis 1 MiB. Die Prüfung verwendet das eingebettete Wissenspaket und den ursprünglichen Prüfzeitpunkt. Die Datei wird nicht gespeichert.",
+  "snapshotSelect": "Prüfsnapshot auswählen",
+  "snapshotTooLarge": "Die Datei überschreitet die zulässige Größe von 1 MiB.",
+  "replayVerified": "Offline-Wiederholung bestätigt",
+  "replayReadOnly": "Die ursprüngliche Prüfung wurde vollständig bestätigt. Das Ergebnis wird schreibgeschützt angezeigt. Die Prüfsumme bestätigt keine Herkunft oder fachliche Freigabe.",
+  "replayTrace": "Bestätigte technische Prüfspur anzeigen",
+  "replayExport": "Bestätigtes Ergebnis herunterladen",
+  "snapshotEncodingError": "Die Datei enthält kein gültiges UTF-8. Wähle einen unveränderten JSON-Prüfsnapshot.",
+  "snapshotChooseFile": "Datei auswählen"
 }
