@@ -10,6 +10,30 @@ public sealed class KnowledgePack
     public List<SourceDefinition> Sources { get; init; } = [];
     public List<RuleDefinition> Rules { get; init; } = [];
     public List<DomainOutputDefinition> Outputs { get; init; } = [];
+    public List<KnowledgeWorkflowDefinition> Workflows { get; init; } = [];
+}
+
+public sealed class KnowledgeWorkflowDefinition
+{
+    public string Id { get; init; } = string.Empty;
+    public int Version { get; init; }
+    public string SourceId { get; init; } = string.Empty;
+    public string InitialStateId { get; init; } = string.Empty;
+    public List<KnowledgeWorkflowStateDefinition> States { get; init; } = [];
+    public List<KnowledgeWorkflowTransitionDefinition> Transitions { get; init; } = [];
+}
+
+public sealed class KnowledgeWorkflowStateDefinition
+{
+    public string Id { get; init; } = string.Empty;
+    public bool Terminal { get; init; }
+}
+
+public sealed class KnowledgeWorkflowTransitionDefinition
+{
+    public string Id { get; init; } = string.Empty;
+    public string FromStateId { get; init; } = string.Empty;
+    public string ToStateId { get; init; } = string.Empty;
 }
 
 public sealed class KnowledgeManifest
