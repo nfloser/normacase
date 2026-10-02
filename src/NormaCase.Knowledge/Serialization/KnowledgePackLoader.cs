@@ -26,6 +26,9 @@ public sealed class KnowledgePackLoader
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(json);
 
+        using var document = JsonDocument.Parse(json, new JsonDocumentOptions { MaxDepth = 64 });
+        ValidateJsonStructure(document.RootElement);
+
         var pack = JsonSerializer.Deserialize<KnowledgePack>(json, JsonOptions)
             ?? throw new JsonException("Knowledge Pack JSON did not contain an object.");
 
@@ -33,15 +36,40 @@ public sealed class KnowledgePackLoader
         return pack;
     }
 
+    private static void ValidateJsonStructure(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var property in element.EnumerateObject())
+            {
+                if (!names.Add(property.Name))
+                    throw new JsonException("Duplicate Knowledge Pack properties are not allowed.");
+                ValidateJsonStructure(property.Value);
+            }
+        }
+        else if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in element.EnumerateArray())
+            {
+                if (item.ValueKind == JsonValueKind.Null)
+                    throw new JsonException("Knowledge Pack arrays cannot contain null entries.");
+                ValidateJsonStructure(item);
+            }
+        }
+    }
+
     private static JsonSerializerOptions CreateOptions()
     {
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
+            RespectNullableAnnotations = true
         };
 
         options.Converters.Add(
-            new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper));
+            new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper, allowIntegerValues: false));
 
         return options;
     }

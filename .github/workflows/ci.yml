@@ -73,3 +73,23 @@ jobs:
         run: dotnet build tests/NormaCase.Serialization.Tests/NormaCase.Serialization.Tests.csproj --configuration Release --no-restore
       - name: Test
         run: dotnet test tests/NormaCase.Serialization.Tests/NormaCase.Serialization.Tests.csproj --configuration Release --no-build
+
+  offline-evaluator:
+    name: Offline evaluator integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Cli.Tests/NormaCase.Cli.Tests.csproj
+      - name: Build
+        run: dotnet build tests/NormaCase.Cli.Tests/NormaCase.Cli.Tests.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/NormaCase.Cli.Tests/NormaCase.Cli.Tests.csproj --configuration Release --no-build
+      - name: Run executable against synthetic example
+        run: dotnet run --project src/NormaCase.Cli --configuration Release --no-build -- evaluate --pack knowledge/demo-c/pack.json --case examples/cases/demo-c-supported.json --platform-version ci

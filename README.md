@@ -79,3 +79,17 @@ No external runtime service is required for the current core.
 Read [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md), the architecture docs and relevant ADRs before changing code.
 
 Development follows issue -> branch -> tests -> implementation -> documentation -> pull request -> CI -> review -> merge.
+
+## Offline synthetic evaluator
+
+A runnable German command-line adapter is available for synthetic case files:
+
+```bash
+dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-c/pack.json --case examples/cases/demo-c-supported.json --platform-version development
+```
+
+Use `--json` for the versioned lossless assessment document. See
+[the German offline guide](docs/development/OFFLINE_EVALUATOR.md) for supported,
+incomplete and human-review examples, file formats, exit codes and limitations.
+The adapter needs no runtime network service. It accepts SYNTHETIC packs only;
+the production web UI, authorization and persistence are not implemented yet.
