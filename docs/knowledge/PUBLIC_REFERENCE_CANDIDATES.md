@@ -50,9 +50,9 @@ Likely platform gaps such as weighted aggregation or age-dependent applicability
 
 ### Status
 
-Selected for detailed source analysis.
+Detailed source analysis completed in `docs/knowledge/research/PFLEGE_2026_SOURCE_ANALYSIS.md`.
 
-No production rule has been derived yet.
+The official source artifact is pinned there with retrieval metadata and SHA-256. Adult scoring semantics and remaining domain-review boundaries are documented. No production rule has been derived yet.
 
 ## Candidate B: prescribed patient transport
 
@@ -89,9 +89,9 @@ Potential needs such as set-membership operators or richer domain outcomes must 
 
 ### Status
 
-Selected for detailed source analysis.
+Detailed source analysis completed in `docs/knowledge/research/KRANKENTRANSPORT_2025_SOURCE_ANALYSIS.md`.
 
-No production rule has been derived yet.
+The official source artifact is pinned there with retrieval metadata and SHA-256. The analysis confirms that this domain is structurally different from Pflege scoring and exposes multi-output/workflow requirements that must be proven synthetically before changing the core. No production rule has been derived yet.
 
 ## Deferred candidate: hearing aids
 
