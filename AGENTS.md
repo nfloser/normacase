@@ -63,6 +63,17 @@ Use:
 - Perform an independent technical review before merge and fix findings in the same PR.
 - Commit, issue and PR text should be concrete and natural, not repetitive templates.
 
+## Product language
+
+- German (de-DE) is the default for the complete user-facing product: navigation, forms, field labels, validation and error messages, workflow/status descriptions, human-readable Decision Traces, reports, exports and user help.
+- Keep user-visible text in translation resources. Future locales must not require changes to deterministic rules.
+- Present dates and numbers using de-DE conventions at the presentation boundary. Keep core values and persisted/API representations culture-invariant.
+- Code symbols, stable rule/source/field IDs, API properties and enum values remain technical contracts; display their German labels separately.
+- Domain-specific labels belong in Knowledge Pack presentation metadata, not hard-coded platform branches.
+- Preserve original source titles and quoted content; do not translate source identity or silently alter meaning.
+- German language does not limit the platform to one institution, domain or service.
+- Verify German user-facing text and absence of untranslated technical status codes as part of UI/export acceptance checks.
+
 ## Definition of done
 
 A change is complete only when its relevant implementation, tests, integration, documentation, security/data impact, CI and review are complete.
