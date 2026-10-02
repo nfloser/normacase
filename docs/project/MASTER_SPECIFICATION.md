@@ -82,6 +82,14 @@ Preferred baseline:
 
 The domain and rule core remain independent from UI, persistence and web-framework details.
 
+## Product language and localization
+
+The primary MD-facing product experience defaults to German (`de-DE`). Navigation, forms, validation and error messages, review guidance, outcomes, audit presentation, reports and exports are presented in German using established domain terminology.
+
+This is a presentation concern, not a platform-core specialization. Code, APIs, stable identifiers, core domain concepts and architecture names remain English, while the frontend remains localization-ready and avoids hard-coding user-visible strings into components.
+
+Knowledge Packs carry domain-appropriate language. MD-related packs are German; authoritative source names and citations may remain in their original language. Localization must never alter deterministic rule meaning or historical reproducibility.
+
 ## Testing
 
 Use unit, domain, rule, knowledge-validation, integration, regression, contract, migration, security and end-to-end tests as each layer appears.
