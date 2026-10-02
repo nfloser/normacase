@@ -1,0 +1,14 @@
+{
+  "formatVersion": 1,
+  "assessmentDate": "2026-10-02",
+  "facts": {
+    "score": {
+      "kind": "NUMBER",
+      "number": 15
+    },
+    "band_value": {
+      "kind": "NUMBER",
+      "number": 30
+    }
+  }
+}
