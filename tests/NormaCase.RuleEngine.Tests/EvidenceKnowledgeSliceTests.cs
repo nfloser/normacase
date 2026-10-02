@@ -68,6 +68,30 @@ public sealed class EvidenceKnowledgeSliceTests
     }
 
     [Fact]
+    public void Missing_evidence_can_be_configured_as_incomplete()
+    {
+        var json = File.ReadAllText(DemoPackPath())
+            .Replace(
+                "\"missingOutcome\": \"HUMAN_REVIEW\"",
+                "\"missingOutcome\": \"INCOMPLETE\"",
+                StringComparison.Ordinal);
+
+        var pack = _loader.LoadFromJson(json);
+        var facts = new Dictionary<string, CaseValue>
+        {
+            ["criterion_ready"] = TruthValue.Yes
+        };
+
+        var result = _evaluator.Evaluate(
+            pack,
+            facts,
+            new DateOnly(2026, 10, 2));
+
+        Assert.Equal(AssessmentOutcome.Incomplete, result.Outcome);
+        Assert.Equal(new[] { "evidence_primary" }, result.MissingEvidenceRequirements);
+    }
+
+    [Fact]
     public void Missing_required_fact_still_fails_as_incomplete_before_evidence_escalation()
     {
         var pack = LoadDemoPack();
