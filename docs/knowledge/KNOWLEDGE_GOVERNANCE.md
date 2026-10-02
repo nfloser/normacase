@@ -31,9 +31,13 @@ At minimum distinguish:
 
 Productive domain rules require a traceable source with stable identity and metadata such as authority, title, document type, publication/validity dates, version, location, retrieval date, content hash and status.
 
-The current format requires source location, retrieval date and SHA-256 content hash from `PUBLIC_REFERENCE` upward. Synthetic fixtures remain explicitly synthetic and do not fabricate external provenance merely to satisfy a schema.
+Every source requires an explicit version and location. From `PUBLIC_REFERENCE` upward, sources also require a retrieval date and SHA-256 content hash. Synthetic fixtures remain explicitly synthetic and do not fabricate external provenance merely to satisfy a schema.
 
 Sources and rule versions are append/version operations, not in-place historical rewrites.
+
+Rule Trace preserves a detached immutable source revision snapshot, including all provenance metadata used for evaluation. Persist that snapshot with the assessment rather than resolving source IDs against the latest pack.
+
+Content hashes describe original source document bytes. The validator checks metadata and hash syntax without fetching a location or verifying its content. A hash does not establish source authenticity; independent source review and future integrity verification remain necessary.
 
 ## Rule safety
 
