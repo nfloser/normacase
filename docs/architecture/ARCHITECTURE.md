@@ -15,7 +15,7 @@ Initial logical modules are expected to evolve around:
 - authorization,
 - shared technical primitives.
 
-The current foundation contains the framework-independent domain/rule contracts plus a thin application layer for explicit assessment execution records. Persistence remains an adapter concern.
+The current foundation contains the framework-independent domain/rule/audit contracts plus a thin application layer for explicit assessment execution records. Persistence remains an adapter concern.
 
 ## Dependency direction
 
@@ -49,17 +49,25 @@ Evaluation receives the assessment date and Knowledge Release explicitly. Tempor
 
 Historical assessments retain the versions used when they were created.
 
-## Persistence
+## Audit and human review
 
-The storage-neutral `AssessmentRecord` is the historical assessment boundary. It
-captures the Knowledge Pack id, explicit execution metadata, canonical typed inputs
-and the exact evaluator result. Storage must persist that record rather than
-reconstructing inputs from traces or resolving provenance against newer knowledge.
+System assessments and human review are separate immutable concepts. A review references an assessment; it never rewrites the rule-engine result or its trace. Audit ordering, ids and UTC timestamps are explicit inputs rather than hidden clock/generated state in the domain core.
+
+The framework-independent contract is documented in [AUDIT.md](AUDIT.md). Persistence, actor authentication/authorization and tamper-evident storage remain adapter/application concerns.
+
+## Assessment execution records
+
+The application layer wraps one deterministic evaluation in a storage-neutral `AssessmentRecord`. It captures the Knowledge Pack id, explicit execution metadata, a canonical typed snapshot of all declared facts/evidence and a defensively detached copy of the exact evaluator result.
+
+Omitted declared facts remain explicit UNKNOWN and omitted evidence requirements remain MISSING. The application layer does not infer values, generate ids or read the system clock.
 
 See [ASSESSMENT_RECORDS.md](ASSESSMENT_RECORDS.md).
 
-PostgreSQL is the preferred persistence technology once storage is introduced because
-the platform requires transactions, constraints, referential integrity and migrations.
+## Persistence
+
+The `AssessmentRecord` is the historical assessment boundary a storage adapter persists. Storage must not reconstruct inputs from traces or resolve provenance against newer knowledge.
+
+PostgreSQL is the preferred persistence technology once storage is introduced because the platform requires transactions, constraints, referential integrity and migrations. A future adapter must also enforce audit ordering/append-only constraints transactionally.
 
 Additional datastores require a demonstrated use case.
 
