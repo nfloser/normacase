@@ -47,6 +47,7 @@ internal static class InterchangeJson
             MaxDepth = 64
         };
         options.Converters.Add(new CaseValueJsonConverter());
+        options.Converters.Add(new DomainOutputValueJsonConverter());
         options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper, allowIntegerValues: false));
         return options;
     }

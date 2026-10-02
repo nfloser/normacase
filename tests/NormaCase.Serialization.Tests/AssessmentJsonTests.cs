@@ -21,7 +21,7 @@ public sealed class AssessmentJsonTests
         var result = Evaluate(demo);
         var json = AssessmentJson.Serialize(result, "test-platform-1");
         var restored = AssessmentJson.Deserialize(json);
-        Assert.Equal(1, restored.FormatVersion);
+        Assert.Equal(2, restored.FormatVersion);
         Assert.Equal("test-platform-1", restored.PlatformVersion);
         Assert.Equal(json, AssessmentJson.Serialize(restored.Assessment, restored.PlatformVersion));
         Assert.Equal(result.RuleTrace!.Source, restored.Assessment.RuleTrace!.Source);
@@ -73,7 +73,7 @@ public sealed class AssessmentJsonTests
     }
 
     [Theory]
-    [InlineData("formatVersion", "2")]
+    [InlineData("formatVersion", "3")]
     [InlineData("platformVersion", "\"\"")]
     [InlineData("assessment", "null")]
     [InlineData("unexpected", "true")]
@@ -113,7 +113,76 @@ public sealed class AssessmentJsonTests
     {
         var json = AssessmentJson.Serialize(WithValue(CaseValue.Unknown), "1");
         Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(json.Replace("\"kind\":\"UNKNOWN\"", "\"kind\":\"NUMBER\",\"kind\":\"UNKNOWN\"")));
-        Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(json.Replace("\"formatVersion\":1", "\"formatVersion\":1,\"formatVersion\":1")));
+        Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(json.Replace("\"formatVersion\":2", "\"formatVersion\":2,\"formatVersion\":2")));
+    }
+
+    [Fact]
+    public void Structured_domain_outputs_roundtrip_without_losing_unknown_or_source_trace()
+    {
+        var result = Evaluate("demo-e");
+        var json = AssessmentJson.Serialize(result, "test-platform-2");
+        var restored = AssessmentJson.Deserialize(json);
+
+        Assert.Equal(2, restored.FormatVersion);
+        Assert.Equal(
+            json,
+            AssessmentJson.Serialize(
+                restored.Assessment,
+                restored.PlatformVersion));
+
+        var unknown = Assert.Single(
+            restored.Assessment.DomainOutputs,
+            output => output.OutputId == "segment_beta");
+        Assert.Equal(DomainOutputValueKind.Unknown, unknown.Value.Kind);
+        Assert.Null(unknown.Value.Choice);
+
+        var known = Assert.Single(
+            restored.Assessment.DomainOutputs,
+            output => output.OutputId == "decision_state");
+        Assert.Equal(DomainOutputValueKind.Choice, known.Value.Kind);
+        Assert.Equal("ELIGIBLE", known.Value.Choice);
+        Assert.Equal("SYNTH-DEMO-E-001", known.Source.Id);
+        Assert.Equal("1", known.Source.Version);
+    }
+
+    [Fact]
+    public void Legacy_format_v1_without_domain_outputs_remains_readable()
+    {
+        var node = JsonNode.Parse(
+            AssessmentJson.Serialize(Evaluate("demo-a"), "legacy-platform"))!;
+        node["formatVersion"] = 1;
+        node["assessment"]!.AsObject().Remove("domainOutputs");
+
+        var restored = AssessmentJson.Deserialize(node.ToJsonString());
+
+        Assert.Equal(1, restored.FormatVersion);
+        Assert.Empty(restored.Assessment.DomainOutputs);
+    }
+
+    [Fact]
+    public void Legacy_format_v1_cannot_smuggle_new_domain_outputs()
+    {
+        var node = JsonNode.Parse(
+            AssessmentJson.Serialize(Evaluate("demo-e"), "legacy-platform"))!;
+        node["formatVersion"] = 1;
+
+        Assert.Throws<JsonException>(
+            () => AssessmentJson.Deserialize(node.ToJsonString()));
+    }
+
+    [Theory]
+    [InlineData("{\"kind\":\"UNKNOWN\",\"choice\":\"A\"}")]
+    [InlineData("{\"kind\":\"CHOICE\"}")]
+    [InlineData("{\"kind\":\"CHOICE\",\"choice\":\"UNKNOWN\"}")]
+    [InlineData("{\"kind\":\"MAGIC\"}")]
+    public void Malformed_domain_output_values_are_rejected(string value)
+    {
+        var node = JsonNode.Parse(
+            AssessmentJson.Serialize(Evaluate("demo-e"), "test-platform-2"))!;
+        node["assessment"]!["domainOutputs"]![0]!["value"] = JsonNode.Parse(value);
+
+        Assert.Throws<JsonException>(
+            () => AssessmentJson.Deserialize(node.ToJsonString()));
     }
 
     [Fact]
@@ -139,6 +208,12 @@ public sealed class AssessmentJsonTests
         {
             "demo-a" => new Dictionary<string, CaseValue> { ["criterion_a"] = TruthValue.Yes, ["criterion_b"] = TruthValue.No },
             "demo-b" => new Dictionary<string, CaseValue> { ["score"] = 12.123456789m, ["band_value"] = 30m },
+            "demo-e" => new Dictionary<string, CaseValue>
+            {
+                ["gate_primary"] = TruthValue.Yes,
+                ["metric"] = 7m,
+                ["segment_alpha_ready"] = TruthValue.Yes
+            },
             _ => new Dictionary<string, CaseValue> { ["request_confirmed"] = TruthValue.Yes, ["measurement"] = 15m }
         };
         var evidence = demo == "demo-c"

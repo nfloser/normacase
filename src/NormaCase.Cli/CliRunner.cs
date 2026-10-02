@@ -40,6 +40,14 @@ public static class CliRunner
                 output.WriteLine(Messages.Get("Date") + ": " + assessment.AssessmentDate.ToString("d", Messages.Culture));
                 output.WriteLine(Messages.Get("Release") + ": " + assessment.KnowledgeRelease);
                 output.WriteLine(Messages.Get("PlatformVersion") + ": " + options["--platform-version"]);
+                if (assessment.DomainOutputs.Count > 0)
+                {
+                    output.WriteLine(Messages.Get("DomainOutputs") + ":");
+                    foreach (var domainOutput in assessment.DomainOutputs)
+                    {
+                        output.WriteLine("- " + domainOutput.OutputId + ": " + DomainOutputLabel(domainOutput.Value));
+                    }
+                }
                 if (assessment.RuleTrace is not null)
                 {
                     output.WriteLine(Messages.Get("Rule") + ": " + assessment.RuleTrace.RuleId + "@" + assessment.RuleTrace.RuleVersion);
@@ -61,6 +69,13 @@ public static class CliRunner
             return 3;
         }
     }
+
+    private static string DomainOutputLabel(DomainOutputValue value) => value.Kind switch
+    {
+        DomainOutputValueKind.Unknown => Messages.Get("UnknownOutput"),
+        DomainOutputValueKind.Choice when !string.IsNullOrWhiteSpace(value.Choice) => value.Choice,
+        _ => throw new ArgumentException("Invalid domain output value.")
+    };
 
     private static string OutcomeLabel(AssessmentOutcome outcome) => outcome switch
     {

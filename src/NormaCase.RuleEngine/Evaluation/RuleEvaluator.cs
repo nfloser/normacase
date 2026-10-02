@@ -37,6 +37,12 @@ public sealed class RuleEvaluator
             .Order(StringComparer.Ordinal)
             .ToArray();
 
+        var domainOutputs = EvaluateDomainOutputs(
+            pack,
+            facts,
+            evidence,
+            assessmentDate);
+
         var rule = ResolveEntryRule(pack, assessmentDate);
         if (rule is null)
         {
@@ -45,7 +51,10 @@ public sealed class RuleEvaluator
                 assessmentDate,
                 AssessmentOutcome.HumanReview,
                 missingRequiredFields,
-                null);
+                null)
+            {
+                DomainOutputs = domainOutputs
+            };
         }
 
         var condition = EvaluateCondition(rule.Condition, facts, evidence);
@@ -63,11 +72,7 @@ public sealed class RuleEvaluator
                 ? AssessmentOutcome.HumanReview
                 : ruleOutcome;
 
-        var source = pack.Sources.Single(item => string.Equals(item.Id, rule.SourceId, StringComparison.Ordinal));
-        var sourceTrace = new SourceTrace(
-            source.Id, source.Version, source.SourceLocation, source.Authority, source.Title,
-            source.DocumentType, source.Status, source.PublicationDate, source.ValidFrom,
-            source.ValidUntil, source.RetrievedAt, source.ContentHash);
+        var sourceTrace = CreateSourceTrace(pack, rule.SourceId);
 
         var trace = new RuleTrace(
             rule.Id,
@@ -83,7 +88,82 @@ public sealed class RuleEvaluator
             assessmentDate,
             finalOutcome,
             missingRequiredFields,
-            trace);
+            trace)
+        {
+            DomainOutputs = domainOutputs
+        };
+    }
+
+    private static DomainOutputTrace[] EvaluateDomainOutputs(
+        KnowledgePack pack,
+        IReadOnlyDictionary<string, CaseValue> facts,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence,
+        DateOnly assessmentDate)
+    {
+        var traces = new List<DomainOutputTrace>();
+
+        foreach (var group in pack.Outputs
+                     .GroupBy(output => output.Id, StringComparer.Ordinal)
+                     .OrderBy(group => group.Key, StringComparer.Ordinal))
+        {
+            var candidates = group
+                .Where(output => output.ValidFrom <= assessmentDate)
+                .Where(output => output.ValidUntil is null
+                    || assessmentDate <= output.ValidUntil)
+                .ToArray();
+
+            if (candidates.Length == 0)
+            {
+                continue;
+            }
+
+            if (candidates.Length > 1)
+            {
+                throw new InvalidOperationException(
+                    $"Multiple active versions of domain output '{group.Key}' exist for {assessmentDate:yyyy-MM-dd}.");
+            }
+
+            var output = candidates[0];
+            var condition = EvaluateCondition(output.Condition, facts, evidence);
+            var value = condition.Result switch
+            {
+                ConditionResult.Matched => DomainOutputValue.FromChoice(output.OnMatch),
+                ConditionResult.NotMatched => DomainOutputValue.FromChoice(output.OnNoMatch),
+                ConditionResult.Unknown => DomainOutputValue.Unknown,
+                _ => DomainOutputValue.Unknown
+            };
+
+            traces.Add(new(
+                output.Id,
+                output.Version,
+                value,
+                condition.Result,
+                condition,
+                CreateSourceTrace(pack, output.SourceId)));
+        }
+
+        return traces.ToArray();
+    }
+
+    private static SourceTrace CreateSourceTrace(
+        KnowledgePack pack,
+        string sourceId)
+    {
+        var source = pack.Sources.Single(item => string.Equals(item.Id, sourceId, StringComparison.Ordinal));
+
+        return new(
+            source.Id,
+            source.Version,
+            source.SourceLocation,
+            source.Authority,
+            source.Title,
+            source.DocumentType,
+            source.Status,
+            source.PublicationDate,
+            source.ValidFrom,
+            source.ValidUntil,
+            source.RetrievedAt,
+            source.ContentHash);
     }
 
     private static RuleDefinition? ResolveEntryRule(

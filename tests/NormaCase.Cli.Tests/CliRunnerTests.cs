@@ -41,6 +41,49 @@ public sealed class CliRunnerTests
     }
 
     [Fact]
+    public void Human_output_lists_domain_outputs_with_a_German_unknown_label()
+    {
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+
+        Assert.Equal(
+            0,
+            CliRunner.Run(
+                Args("demo-e", CasePath("demo-e-partial")),
+                output,
+                error));
+
+        Assert.Equal("", error.ToString());
+        Assert.Contains("Fachliche Ausgaben:", output.ToString());
+        Assert.Contains("- decision_state: ELIGIBLE", output.ToString());
+        Assert.Contains("- segment_alpha: OPEN", output.ToString());
+        Assert.Contains("- segment_beta: Nicht ausreichend beurteilbar", output.ToString());
+        Assert.DoesNotContain("segment_beta: UNKNOWN", output.ToString());
+    }
+
+    [Fact]
+    public void Human_output_lists_known_and_unknown_domain_outputs_in_German()
+    {
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+
+        Assert.Equal(
+            0,
+            CliRunner.Run(
+                Args("demo-e", CasePath("demo-e-mixed")),
+                output,
+                error));
+
+        var text = output.ToString();
+        Assert.Contains("Fachliche Ausgaben:", text);
+        Assert.Contains("decision_state: ELIGIBLE", text);
+        Assert.Contains("segment_beta: Nicht ausreichend beurteilbar", text);
+        Assert.Contains("external_state: PENDING_EXTERNAL", text);
+        Assert.DoesNotContain("UNKNOWN", text);
+        Assert.Equal("", error.ToString());
+    }
+
+    [Fact]
     public void Help_is_German_and_does_not_require_files()
     {
         using var output = new StringWriter();

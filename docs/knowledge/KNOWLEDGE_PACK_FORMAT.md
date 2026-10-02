@@ -11,8 +11,9 @@ Current repository examples:
 - `knowledge/demo-b/pack.json`: numeric thresholds, inclusive ranges and temporal rule versions.
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
 - `knowledge/demo-d/pack.json`: derived numeric expressions with range lookup, sum, max and UNKNOWN propagation.
+- `knowledge/demo-e/pack.json`: independent, source-backed categorical domain outputs with per-output UNKNOWN.
 
-All four packs are `SYNTHETIC`.
+All five packs are `SYNTHETIC`.
 
 ## Manifest
 
@@ -102,6 +103,23 @@ Demo D proves this capability with synthetic scoring data only; it does not enco
 - `any`: any matched child -> matched; otherwise any unknown -> unknown; otherwise not matched.
 - unknown final condition -> `INCOMPLETE`.
 
+## Independent domain outputs
+
+A Knowledge Pack may declare top-level `outputs` in addition to its entry rule. These outputs do not replace or alter the platform-level `AssessmentOutcome`; they represent separate bounded domain results that are evaluated independently.
+
+The first supported output type is `choice`. Each output version declares:
+- a stable id and positive version,
+- `validFrom` and optional `validUntil`,
+- its own source reference and deterministic condition,
+- a finite set of allowed `choices`,
+- explicit `onMatch` and `onNoMatch` values.
+
+`UNKNOWN` is reserved by the engine and cannot be declared as a choice. If an output condition is unknown, the output value remains UNKNOWN; knowledge cannot map that state to a positive or negative choice in this slice. Blank/duplicate choices, undeclared branch values, missing sources, malformed conditions and overlapping versions fail validation.
+
+Active output versions are selected using the same explicit assessment date as the entry rule. Outputs are evaluated independently, so one unknown output does not erase known sibling outputs. There is deliberately no output precedence, override mechanism or output-to-output dependency.
+
+Every `DomainOutputTrace` records output id/version, selected value, condition result/tree and a detached snapshot of the exact source revision. Demo E proves five independent synthetic outputs: bounded decision/selection states, sibling segment states where one can remain UNKNOWN, and an explicit `PENDING_EXTERNAL` state that remains distinct from UNKNOWN.
+
 ## Temporal rule versions
 
 Rules carry `validFrom` and optional `validUntil`.
@@ -121,7 +139,8 @@ An evaluation result records:
 - recursive condition trace,
 - typed actual/expected values or numeric range bounds,
 - recursive derived numeric-expression traces where used,
-- final outcome.
+- final outcome,
+- independently evaluated domain-output traces, including exact output/source revisions.
 
 This is the current base for Source -> Rule -> Test traceability.
 
