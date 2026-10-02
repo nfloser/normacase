@@ -1,3 +1,4 @@
+using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using Xunit;
 
@@ -26,5 +27,31 @@ public sealed class DecisionSemanticsTests
     public void Default_assessment_outcome_is_fail_closed()
     {
         Assert.Equal(AssessmentOutcome.Incomplete, default);
+    }
+
+    [Fact]
+    public void Default_case_value_is_unknown()
+    {
+        var value = default(CaseValue);
+
+        Assert.True(value.IsUnknown);
+        Assert.Equal(CaseValueKind.Unknown, value.Kind);
+    }
+
+    [Fact]
+    public void Truth_unknown_maps_to_generic_unknown()
+    {
+        CaseValue value = TruthValue.Unknown;
+
+        Assert.True(value.IsUnknown);
+    }
+
+    [Fact]
+    public void Numeric_case_value_preserves_decimal_value()
+    {
+        CaseValue value = 12.5m;
+
+        Assert.Equal(CaseValueKind.Number, value.Kind);
+        Assert.Equal(12.5m, value.Number);
     }
 }

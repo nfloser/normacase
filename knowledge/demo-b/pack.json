@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "packId": "synthetic.demo-b",
+    "releaseId": "demo-b-2026.1",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-B-THRESHOLD"
+  },
+  "fields": [
+    {
+      "id": "score",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "band_value",
+      "type": "number",
+      "required": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-B-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic Demo B numeric rule source",
+      "documentType": "SYNTHETIC"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-B-THRESHOLD",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "validUntil": "2026-06-30",
+      "sourceId": "SYNTH-DEMO-B-001",
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "number_gte",
+            "field": "score",
+            "threshold": 10
+          },
+          {
+            "kind": "number_in_range",
+            "field": "band_value",
+            "minimum": 18,
+            "maximum": 65
+          }
+        ]
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED"
+    },
+    {
+      "id": "DEMO-B-THRESHOLD",
+      "version": 2,
+      "validFrom": "2026-07-01",
+      "validUntil": null,
+      "sourceId": "SYNTH-DEMO-B-001",
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "number_gte",
+            "field": "score",
+            "threshold": 12
+          },
+          {
+            "kind": "number_in_range",
+            "field": "band_value",
+            "minimum": 20,
+            "maximum": 65
+          }
+        ]
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED"
+    }
+  ]
+}

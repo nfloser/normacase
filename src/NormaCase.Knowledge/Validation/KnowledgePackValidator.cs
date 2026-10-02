@@ -1,3 +1,4 @@
+using NormaCase.Domain.Decision;
 using NormaCase.Knowledge.Model;
 
 namespace NormaCase.Knowledge.Validation;
@@ -9,7 +10,16 @@ public sealed class KnowledgePackValidator
         {
             "all",
             "any",
-            "field_equals"
+            "field_equals",
+            "number_gte",
+            "number_in_range"
+        };
+
+    private static readonly HashSet<string> AllowedFieldTypes =
+        new(StringComparer.Ordinal)
+        {
+            "truth",
+            "number"
         };
 
     private static readonly HashSet<string> AllowedValidationLevels =
@@ -37,7 +47,7 @@ public sealed class KnowledgePackValidator
 
         foreach (var field in pack.Fields)
         {
-            if (!string.Equals(field.Type, "truth", StringComparison.Ordinal))
+            if (!AllowedFieldTypes.Contains(field.Type))
             {
                 errors.Add(new(
                     "unsupported_field_type",
@@ -248,8 +258,9 @@ public sealed class KnowledgePackValidator
             return;
         }
 
+        FieldDefinition? field = null;
         if (string.IsNullOrWhiteSpace(condition.Field)
-            || !fields.ContainsKey(condition.Field))
+            || !fields.TryGetValue(condition.Field, out field))
         {
             errors.Add(new(
                 "missing_field",
@@ -257,6 +268,36 @@ public sealed class KnowledgePackValidator
                 $"{path}.field"));
         }
 
+        if (condition.Conditions.Count > 0)
+        {
+            errors.Add(new(
+                "leaf_has_children",
+                $"Condition '{condition.Kind}' cannot contain child conditions.",
+                $"{path}.conditions"));
+        }
+
+        switch (condition.Kind)
+        {
+            case "field_equals":
+                ValidateTruthEquality(condition, field, errors, path);
+                break;
+
+            case "number_gte":
+                ValidateNumericThreshold(condition, field, errors, path);
+                break;
+
+            case "number_in_range":
+                ValidateNumericRange(condition, field, errors, path);
+                break;
+        }
+    }
+
+    private static void ValidateTruthEquality(
+        ConditionDefinition condition,
+        FieldDefinition? field,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
         if (condition.Expected is null)
         {
             errors.Add(new(
@@ -264,13 +305,83 @@ public sealed class KnowledgePackValidator
                 "field_equals requires an expected truth value.",
                 $"{path}.expected"));
         }
-
-        if (condition.Conditions.Count > 0)
+        else if (condition.Expected == TruthValue.Unknown)
         {
             errors.Add(new(
-                "leaf_has_children",
-                "field_equals cannot contain child conditions.",
-                $"{path}.conditions"));
+                "unknown_expected_value",
+                "field_equals cannot use UNKNOWN as an expected value.",
+                $"{path}.expected"));
+        }
+
+        ValidateFieldType(field, "truth", condition.Kind, errors, path);
+    }
+
+    private static void ValidateNumericThreshold(
+        ConditionDefinition condition,
+        FieldDefinition? field,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (condition.Threshold is null)
+        {
+            errors.Add(new(
+                "missing_threshold",
+                "number_gte requires a threshold.",
+                $"{path}.threshold"));
+        }
+
+        ValidateFieldType(field, "number", condition.Kind, errors, path);
+    }
+
+    private static void ValidateNumericRange(
+        ConditionDefinition condition,
+        FieldDefinition? field,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (condition.Minimum is null)
+        {
+            errors.Add(new(
+                "missing_minimum",
+                "number_in_range requires a minimum.",
+                $"{path}.minimum"));
+        }
+
+        if (condition.Maximum is null)
+        {
+            errors.Add(new(
+                "missing_maximum",
+                "number_in_range requires a maximum.",
+                $"{path}.maximum"));
+        }
+
+        if (condition.Minimum is not null
+            && condition.Maximum is not null
+            && condition.Minimum > condition.Maximum)
+        {
+            errors.Add(new(
+                "invalid_numeric_range",
+                "number_in_range minimum cannot exceed maximum.",
+                path));
+        }
+
+        ValidateFieldType(field, "number", condition.Kind, errors, path);
+    }
+
+    private static void ValidateFieldType(
+        FieldDefinition? field,
+        string expectedType,
+        string conditionKind,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (field is not null
+            && !string.Equals(field.Type, expectedType, StringComparison.Ordinal))
+        {
+            errors.Add(new(
+                "condition_field_type_mismatch",
+                $"Condition '{conditionKind}' requires field type '{expectedType}', but '{field.Id}' is '{field.Type}'.",
+                $"{path}.field"));
         }
     }
 

@@ -1,3 +1,4 @@
+using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Knowledge.Model;
 using NormaCase.Knowledge.Validation;
@@ -15,19 +16,19 @@ public sealed class RuleEvaluator
 
     public AssessmentResult Evaluate(
         KnowledgePack pack,
-        IReadOnlyDictionary<string, TruthValue> facts,
+        IReadOnlyDictionary<string, CaseValue> facts,
         DateOnly assessmentDate)
     {
         ArgumentNullException.ThrowIfNull(pack);
         ArgumentNullException.ThrowIfNull(facts);
 
         _validator.ValidateOrThrow(pack);
-        RejectUnknownCaseFields(pack, facts);
+        ValidateCaseFields(pack, facts);
 
         var missingRequiredFields = pack.Fields
             .Where(field => field.Required)
             .Where(field => !facts.TryGetValue(field.Id, out var value)
-                || value == TruthValue.Unknown)
+                || value.IsUnknown)
             .Select(field => field.Id)
             .Order(StringComparer.Ordinal)
             .ToArray();
@@ -97,11 +98,13 @@ public sealed class RuleEvaluator
 
     private static ConditionTrace EvaluateCondition(
         ConditionDefinition condition,
-        IReadOnlyDictionary<string, TruthValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts)
     {
         return condition.Kind switch
         {
             "field_equals" => EvaluateFieldEquals(condition, facts),
+            "number_gte" => EvaluateNumberGte(condition, facts),
+            "number_in_range" => EvaluateNumberInRange(condition, facts),
             "all" => EvaluateAll(condition, facts),
             "any" => EvaluateAny(condition, facts),
             _ => throw new InvalidOperationException(
@@ -111,30 +114,73 @@ public sealed class RuleEvaluator
 
     private static ConditionTrace EvaluateFieldEquals(
         ConditionDefinition condition,
-        IReadOnlyDictionary<string, TruthValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts)
     {
-        var actual = facts.TryGetValue(condition.Field!, out var value)
-            ? value
-            : TruthValue.Unknown;
+        var actual = GetActualValue(condition, facts);
+        var expected = CaseValue.FromTruth(condition.Expected!.Value);
 
-        var result = actual == TruthValue.Unknown
+        var result = actual.IsUnknown
             ? ConditionResult.Unknown
-            : actual == condition.Expected
+            : actual.Truth == condition.Expected
                 ? ConditionResult.Matched
                 : ConditionResult.NotMatched;
+
+        return LeafTrace(
+            condition.Kind,
+            result,
+            condition.Field!,
+            expected,
+            actual);
+    }
+
+    private static ConditionTrace EvaluateNumberGte(
+        ConditionDefinition condition,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        var actual = GetActualValue(condition, facts);
+        var expected = CaseValue.FromNumber(condition.Threshold!.Value);
+
+        var result = actual.IsUnknown
+            ? ConditionResult.Unknown
+            : actual.Number >= condition.Threshold
+                ? ConditionResult.Matched
+                : ConditionResult.NotMatched;
+
+        return LeafTrace(
+            condition.Kind,
+            result,
+            condition.Field!,
+            expected,
+            actual);
+    }
+
+    private static ConditionTrace EvaluateNumberInRange(
+        ConditionDefinition condition,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        var actual = GetActualValue(condition, facts);
+
+        var result = actual.IsUnknown
+            ? ConditionResult.Unknown
+            : actual.Number >= condition.Minimum
+                && actual.Number <= condition.Maximum
+                    ? ConditionResult.Matched
+                    : ConditionResult.NotMatched;
 
         return new(
             condition.Kind,
             result,
             condition.Field,
-            condition.Expected,
+            null,
             actual,
+            condition.Minimum,
+            condition.Maximum,
             []);
     }
 
     private static ConditionTrace EvaluateAll(
         ConditionDefinition condition,
-        IReadOnlyDictionary<string, TruthValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts)
     {
         var children = condition.Conditions
             .Select(child => EvaluateCondition(child, facts))
@@ -146,18 +192,12 @@ public sealed class RuleEvaluator
                 ? ConditionResult.Unknown
                 : ConditionResult.Matched;
 
-        return new(
-            condition.Kind,
-            result,
-            null,
-            null,
-            null,
-            children);
+        return GroupTrace(condition.Kind, result, children);
     }
 
     private static ConditionTrace EvaluateAny(
         ConditionDefinition condition,
-        IReadOnlyDictionary<string, TruthValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts)
     {
         var children = condition.Conditions
             .Select(child => EvaluateCondition(child, facts))
@@ -169,25 +209,56 @@ public sealed class RuleEvaluator
                 ? ConditionResult.Unknown
                 : ConditionResult.NotMatched;
 
-        return new(
-            condition.Kind,
+        return GroupTrace(condition.Kind, result, children);
+    }
+
+    private static ConditionTrace LeafTrace(
+        string kind,
+        ConditionResult result,
+        string field,
+        CaseValue expected,
+        CaseValue actual)
+        => new(
+            kind,
+            result,
+            field,
+            expected,
+            actual,
+            null,
+            null,
+            []);
+
+    private static ConditionTrace GroupTrace(
+        string kind,
+        ConditionResult result,
+        IReadOnlyList<ConditionTrace> children)
+        => new(
+            kind,
             result,
             null,
             null,
             null,
+            null,
+            null,
             children);
-    }
 
-    private static void RejectUnknownCaseFields(
+    private static CaseValue GetActualValue(
+        ConditionDefinition condition,
+        IReadOnlyDictionary<string, CaseValue> facts)
+        => facts.TryGetValue(condition.Field!, out var value)
+            ? value
+            : CaseValue.Unknown;
+
+    private static void ValidateCaseFields(
         KnowledgePack pack,
-        IReadOnlyDictionary<string, TruthValue> facts)
+        IReadOnlyDictionary<string, CaseValue> facts)
     {
-        var knownFields = pack.Fields
-            .Select(field => field.Id)
-            .ToHashSet(StringComparer.Ordinal);
+        var fields = pack.Fields.ToDictionary(
+            field => field.Id,
+            StringComparer.Ordinal);
 
         var unknownFields = facts.Keys
-            .Where(field => !knownFields.Contains(field))
+            .Where(field => !fields.ContainsKey(field))
             .Order(StringComparer.Ordinal)
             .ToArray();
 
@@ -197,5 +268,29 @@ public sealed class RuleEvaluator
                 $"Case contains fields not declared by the Knowledge Pack: {string.Join(", ", unknownFields)}",
                 nameof(facts));
         }
+
+        var typeMismatches = facts
+            .Where(pair => !pair.Value.IsUnknown)
+            .Where(pair => !ValueMatchesFieldType(pair.Value, fields[pair.Key].Type))
+            .Select(pair => pair.Key)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        if (typeMismatches.Length > 0)
+        {
+            throw new ArgumentException(
+                $"Case values do not match their declared field types: {string.Join(", ", typeMismatches)}",
+                nameof(facts));
+        }
     }
+
+    private static bool ValueMatchesFieldType(
+        CaseValue value,
+        string fieldType)
+        => fieldType switch
+        {
+            "truth" => value.Kind == CaseValueKind.Truth,
+            "number" => value.Kind == CaseValueKind.Number,
+            _ => false
+        };
 }

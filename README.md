@@ -25,7 +25,7 @@ Only synthetic data belongs in the repository.
 
 ```text
 src/
-  NormaCase.Domain/       framework-independent core contracts
+  NormaCase.Domain/       framework-independent case/decision contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
 
@@ -34,7 +34,9 @@ tests/
   NormaCase.RuleEngine.Tests/
 
 knowledge/
-  demo-a/                 synthetic external Knowledge Pack
+  demo-a/                 truth-valued AND/OR/UNKNOWN synthetic pack
+  demo-b/                 numeric/range/temporal-version synthetic pack
+
 docs/
   project/
   architecture/
@@ -43,7 +45,18 @@ docs/
   knowledge/
 ```
 
-The system will grow as a modular monolith. ASP.NET Core, React + TypeScript, PostgreSQL and Docker are the preferred product stack, while the domain/rule core remains independent from framework and storage details.
+The system grows as a modular monolith. ASP.NET Core, React + TypeScript, PostgreSQL and Docker remain the preferred product stack, while the domain/rule core stays independent from framework and storage details.
+
+## Current deterministic slice
+
+The current core can:
+- load external JSON Knowledge Packs,
+- validate manifests, fields, sources, rule references and validity intervals,
+- evaluate typed truth and numeric case values,
+- evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
+- preserve UNKNOWN instead of coercing it,
+- select a rule version from an explicit assessment date,
+- return source-backed recursive Decision Trace data.
 
 ## Local verification
 
@@ -54,7 +67,7 @@ dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configu
 dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release
 ```
 
-No external runtime service is required for the foundation project.
+No external runtime service is required for the current core.
 
 ## Development
 
