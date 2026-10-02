@@ -16,14 +16,17 @@ public static class DemoHost
 
     public static WebApplication Build(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            Args = args,
+            WebRootPath = Directory.Exists(webRoot) ? webRoot : null
+        });
         builder.WebHost.ConfigureKestrel(options =>
         {
             options.ListenLocalhost(5080);
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
-        var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
-        if (Directory.Exists(webRoot)) builder.WebHost.UseWebRoot(webRoot);
         builder.Logging.ClearProviders();
         var packs = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Knowledge"), "*.json")
             .Select(path => new KnowledgePackLoader().LoadFromFile(path))
