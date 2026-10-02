@@ -3,6 +3,7 @@ using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Serialization;
+using NormaCase.RuleEngine.Evaluation;
 using Xunit;
 
 namespace NormaCase.Application.Tests;
@@ -109,6 +110,33 @@ public sealed class AssessmentRecorderTests
             record.RecordedAtUtc,
             mismatchedInput,
             record.Result));
+    }
+
+    [Fact]
+    public void Recorded_result_does_not_expose_engine_arrays_as_mutable_history()
+    {
+        var record = new AssessmentRecorder().Evaluate(
+            Load("demo-c"),
+            new Dictionary<string, CaseValue>
+            {
+                ["request_confirmed"] = TruthValue.Yes,
+                ["measurement"] = 15m
+            },
+            new DateOnly(2026, 10, 2),
+            new Dictionary<string, EvidenceStatus>
+            {
+                ["verification"] = EvidenceStatus.Present
+            },
+            new AssessmentExecutionContext(
+                "assessment-immutable-001",
+                "case-immutable-001",
+                "test-platform-1",
+                new DateTimeOffset(2026, 10, 2, 20, 18, 0, TimeSpan.Zero)));
+
+        Assert.IsNotType<string[]>(record.Result.MissingRequiredFields);
+        Assert.IsNotType<DomainOutputTrace[]>(record.Result.DomainOutputs);
+        Assert.IsNotType<ConditionTrace[]>(
+            record.Result.RuleTrace!.Condition.Children);
     }
 
     [Fact]
