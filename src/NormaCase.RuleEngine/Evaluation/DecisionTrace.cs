@@ -14,7 +14,17 @@ public sealed record ConditionTrace(
     decimal? Maximum,
     IReadOnlyList<ConditionTrace> Children,
     string? EvidenceRequirementId = null,
-    EvidenceStatus? EvidenceStatus = null);
+    EvidenceStatus? EvidenceStatus = null,
+    NumericExpressionTrace? NumericExpression = null);
+
+public sealed record NumericExpressionTrace(
+    string Kind,
+    CaseValue Value,
+    string? Field,
+    decimal? SelectedMinimum,
+    decimal? SelectedMaximum,
+    decimal? SelectedValue,
+    IReadOnlyList<NumericExpressionTrace> Children);
 
 public sealed record RuleTrace(
     string RuleId,
