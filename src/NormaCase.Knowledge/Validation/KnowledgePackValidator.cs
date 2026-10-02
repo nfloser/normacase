@@ -321,6 +321,14 @@ public sealed class KnowledgePackValidator
 
         if (condition.Kind is "all" or "any")
         {
+            if (condition.NumericExpression is not null)
+            {
+                errors.Add(new(
+                    "unexpected_numeric_expression",
+                    "Condition groups cannot consume a numeric expression.",
+                    $"{path}.numericExpression"));
+            }
+
             if (condition.Conditions.Count == 0)
             {
                 errors.Add(new(
