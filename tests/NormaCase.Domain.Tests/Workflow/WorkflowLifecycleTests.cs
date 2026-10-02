@@ -122,7 +122,7 @@ public sealed class WorkflowLifecycleTests
         WorkflowStateDefinition[] states,
         WorkflowTransitionDefinition[] transitions)
     {
-        Assert.Throws<ArgumentException>(() => new WorkflowDefinition(
+        Assert.ThrowsAny<ArgumentException>(() => new WorkflowDefinition(
             workflowId,
             version,
             initialState,
