@@ -85,3 +85,15 @@ PostgreSQL.
 
 Assessment rows are append-only at the database boundary and retain the complete strict
 AssessmentRecord JSON. See [POSTGRESQL_ASSESSMENT_STORAGE.md](POSTGRESQL_ASSESSMENT_STORAGE.md).
+
+
+## Generic workflow lifecycle
+
+The framework-independent domain layer contains a small immutable workflow
+lifecycle with opaque state/transition ids, explicit workflow version and explicit
+instance revision. It supplies transition mechanics only; domain-specific workflow
+definitions and labels remain external knowledge/presentation concerns.
+
+See [WORKFLOWS.md](WORKFLOWS.md). Knowledge Pack integration, actor authorization,
+persistence, timers and automatic assessment-driven transitions remain separate
+reviewed slices.
