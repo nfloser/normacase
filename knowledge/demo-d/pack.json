@@ -1,0 +1,113 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "packId": "synthetic.demo-d",
+    "releaseId": "demo-d-2026.1",
+    "lifecycleStatus": "ACTIVE",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-D-CALCULATION"
+  },
+  "fields": [
+    {
+      "id": "base_value",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "comparison_value",
+      "type": "number",
+      "required": false
+    },
+    {
+      "id": "band_input",
+      "type": "number",
+      "required": true
+    }
+  ],
+  "calculations": [
+    {
+      "id": "band_score",
+      "kind": "range_lookup",
+      "input": "band_input",
+      "requireFullCoverage": true,
+      "coverageMinimum": 0,
+      "coverageMaximum": 100,
+      "ranges": [
+        {
+          "minimum": 0,
+          "minimumInclusive": true,
+          "maximum": 10,
+          "maximumInclusive": false,
+          "value": 0
+        },
+        {
+          "minimum": 10,
+          "minimumInclusive": true,
+          "maximum": 20,
+          "maximumInclusive": false,
+          "value": 2.5
+        },
+        {
+          "minimum": 20,
+          "minimumInclusive": true,
+          "maximum": 100,
+          "maximumInclusive": true,
+          "value": 5
+        }
+      ]
+    },
+    {
+      "id": "combined_total",
+      "kind": "sum",
+      "inputs": [
+        "base_value",
+        "band_score"
+      ]
+    },
+    {
+      "id": "peak_value",
+      "kind": "max",
+      "inputs": [
+        "comparison_value",
+        "band_score"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-D-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic Demo D calculation source",
+      "documentType": "SYNTHETIC",
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-d/pack.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-D-CALCULATION",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "validUntil": null,
+      "sourceId": "SYNTH-DEMO-D-001",
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "number_gte",
+            "field": "combined_total",
+            "threshold": 12.5
+          },
+          {
+            "kind": "number_gte",
+            "field": "peak_value",
+            "threshold": 5
+          }
+        ]
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED"
+    }
+  ]
+}
