@@ -8,7 +8,7 @@ public sealed record AssessmentDocument(int FormatVersion, string PlatformVersio
 
 public static class AssessmentJson
 {
-    public const int CurrentFormatVersion = 1;
+    public const int CurrentFormatVersion = 2;
     public const int MaximumJsonCharacters = 8 * 1024 * 1024;
 
     public static string Serialize(AssessmentResult assessment, string platformVersion)
@@ -21,7 +21,7 @@ public static class AssessmentJson
     public static AssessmentDocument Deserialize(string json)
     {
         var restored = InterchangeJson.Read<AssessmentDocument>(json);
-        if (restored.FormatVersion != CurrentFormatVersion)
+        if (restored.FormatVersion is not (1 or CurrentFormatVersion))
             throw new JsonException("Unsupported assessment document format.");
         if (string.IsNullOrWhiteSpace(restored.PlatformVersion)
             || string.IsNullOrWhiteSpace(restored.Assessment.KnowledgeRelease))
