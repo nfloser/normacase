@@ -52,14 +52,14 @@ The system grows as a modular monolith. ASP.NET Core, React + TypeScript, Postgr
 
 The current core can:
 - load external JSON Knowledge Packs,
-- validate manifests, fields, sources, rule references and validity intervals,
+- validate explicit pack format versions, fields, source provenance, rule references and validity intervals,
 - evaluate typed truth and numeric case values,
 - evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
 - preserve UNKNOWN instead of coercing it,
 - gate criteria on structured evidence availability and escalate conflicts,
 - configure safe unknown outcomes as INCOMPLETE or HUMAN_REVIEW,
 - select a rule version from an explicit assessment date,
-- return source-backed recursive Decision Trace data.
+- return source-backed recursive Decision Trace data including the selected source revision.
 
 ## Local verification
 
