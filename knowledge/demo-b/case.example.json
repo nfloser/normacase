@@ -1,0 +1,8 @@
+{
+  "formatVersion": 1,
+  "facts": {
+    "score": { "kind": "NUMBER", "number": 12 },
+    "band_value": { "kind": "NUMBER", "number": 20 }
+  },
+  "evidence": {}
+}
