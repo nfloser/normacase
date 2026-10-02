@@ -71,3 +71,24 @@ Persist the exact assessment document/source snapshots needed for historical rep
 Review reasons and references may become sensitive in real operation. Do not log them wholesale. Repository tests use synthetic identifiers and text only.
 
 No contract in this slice claims production authorization, non-repudiation, qualified electronic signatures or domain approval.
+
+## Versioned JSON interchange
+
+`NormaCase.Serialization.AssessmentAuditJson` exports and imports an entire
+`AssessmentAuditTrail` using format version 1. The document preserves event
+sequence, assessment and review identities, explicit UTC timestamps, actors,
+dispositions, reasons, optional override outcomes and structured references.
+Every field is present; optional values are explicit JSON nulls.
+
+Import rebuilds events through the domain factories and the immutable trail
+Start/Append operations. It rejects empty histories, sequence gaps, backwards
+timestamps, cross-assessment events, incompatible review payloads and mismatches
+between an event and its nested review. The shared strict JSON boundary also
+rejects duplicate/unknown properties, missing required fields, numeric enum
+values, unsupported versions and oversized/deep input.
+
+This format carries the separate human history; it does not rewrite or embed
+the original assessment result. There is no API or persistence integration yet.
+An imported actor identity is a claim, not authenticated identity. The format
+provides neither signatures, tamper evidence nor authorization. Reasons and
+references must receive the same privacy controls as assessment content.
