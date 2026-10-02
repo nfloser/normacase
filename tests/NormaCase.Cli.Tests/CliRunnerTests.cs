@@ -78,6 +78,7 @@ public sealed class CliRunnerTests
         Assert.Contains("Fachliche Ausgaben:", text);
         Assert.Contains("decision_state: ELIGIBLE", text);
         Assert.Contains("segment_beta: Unbekannt", text);
+        Assert.Contains("external_state: PENDING_EXTERNAL", text);
         Assert.DoesNotContain("UNKNOWN", text);
         Assert.Equal("", error.ToString());
     }
