@@ -6,6 +6,7 @@ public sealed class KnowledgePack
 {
     public KnowledgeManifest Manifest { get; init; } = new();
     public List<FieldDefinition> Fields { get; init; } = [];
+    public List<CalculationDefinition> Calculations { get; init; } = [];
     public List<EvidenceRequirementDefinition> EvidenceRequirements { get; init; } = [];
     public List<SourceDefinition> Sources { get; init; } = [];
     public List<RuleDefinition> Rules { get; init; } = [];
@@ -26,6 +27,27 @@ public sealed class FieldDefinition
     public string Id { get; init; } = string.Empty;
     public string Type { get; init; } = string.Empty;
     public bool Required { get; init; }
+}
+
+public sealed class CalculationDefinition
+{
+    public string Id { get; init; } = string.Empty;
+    public string Kind { get; init; } = string.Empty;
+    public string? Input { get; init; }
+    public List<string> Inputs { get; init; } = [];
+    public bool RequireFullCoverage { get; init; }
+    public decimal? CoverageMinimum { get; init; }
+    public decimal? CoverageMaximum { get; init; }
+    public List<RangeLookupDefinition> Ranges { get; init; } = [];
+}
+
+public sealed class RangeLookupDefinition
+{
+    public decimal? Minimum { get; init; }
+    public bool MinimumInclusive { get; init; } = true;
+    public decimal? Maximum { get; init; }
+    public bool MaximumInclusive { get; init; } = true;
+    public decimal? Value { get; init; }
 }
 
 public sealed class EvidenceRequirementDefinition
