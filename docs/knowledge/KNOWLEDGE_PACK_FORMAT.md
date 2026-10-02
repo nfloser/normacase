@@ -17,14 +17,18 @@ All three packs are `SYNTHETIC`.
 
 ```json
 {
+  "formatVersion": 1,
   "packId": "synthetic.demo-a",
   "releaseId": "demo-a-2026.1",
+  "lifecycleStatus": "ACTIVE",
   "validationLevel": "SYNTHETIC",
   "entryRuleId": "DEMO-A-ELIGIBILITY"
 }
 ```
 
-`releaseId` is carried into every assessment result. `entryRuleId` identifies the logical rule resolved for the explicit assessment date.
+`formatVersion` makes format changes explicit. Version 1 is currently supported. `releaseId` is carried into every assessment result. `entryRuleId` identifies the logical rule resolved for the explicit assessment date.
+
+Release lifecycle and validation level are independent. Lifecycle states are `DRAFT`, `IN_REVIEW`, `APPROVED`, `ACTIVE`, `DEPRECATED` and `RETIRED`.
 
 Validation levels currently recognized by the loader are:
 - `SYNTHETIC`
@@ -52,7 +56,13 @@ Case values must match the field type declared by the pack. The evaluator reject
 
 Every rule references a source id. Synthetic fixtures use synthetic sources only.
 
-Source id, authority, title and document type are required. A missing source reference fails pack validation and the pack is not partially loaded.
+Source id, authority, title, document type and status are required. The model also carries publication date, source validity interval, version, source location, retrieval date and a content hash.
+
+Content hashes use `sha256:<64 hexadecimal characters>`. Invalid hashes and source validity intervals are rejected.
+
+Synthetic packs do not invent external provenance. For `PUBLIC_REFERENCE`, `DOMAIN_REVIEWED` and `PRODUCTION_APPROVED`, every source must additionally provide a source location, retrieval date and content hash. This ensures a public-reference rule cannot load with only a human-readable title or anonymous URL-less citation.
+
+A missing source reference fails pack validation and the pack is not partially loaded.
 
 ## Conditions
 

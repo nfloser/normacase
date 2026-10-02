@@ -13,8 +13,10 @@ public sealed class KnowledgePack
 
 public sealed class KnowledgeManifest
 {
+    public int FormatVersion { get; init; }
     public string PackId { get; init; } = string.Empty;
     public string ReleaseId { get; init; } = string.Empty;
+    public string LifecycleStatus { get; init; } = string.Empty;
     public string ValidationLevel { get; init; } = string.Empty;
     public string EntryRuleId { get; init; } = string.Empty;
 }
@@ -37,6 +39,14 @@ public sealed class SourceDefinition
     public string Authority { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;
     public string DocumentType { get; init; } = string.Empty;
+    public DateOnly? PublicationDate { get; init; }
+    public DateOnly? ValidFrom { get; init; }
+    public DateOnly? ValidUntil { get; init; }
+    public string? Version { get; init; }
+    public string? SourceLocation { get; init; }
+    public DateOnly? RetrievedAt { get; init; }
+    public string? ContentHash { get; init; }
+    public string Status { get; init; } = string.Empty;
 }
 
 public sealed class RuleDefinition

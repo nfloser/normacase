@@ -32,6 +32,19 @@ public sealed class KnowledgePackValidator
             "PRODUCTION_APPROVED"
         };
 
+    private static readonly HashSet<string> AllowedLifecycleStatuses =
+        new(StringComparer.Ordinal)
+        {
+            "DRAFT",
+            "IN_REVIEW",
+            "APPROVED",
+            "ACTIVE",
+            "DEPRECATED",
+            "RETIRED"
+        };
+
+    private const int CurrentFormatVersion = 1;
+
     public IReadOnlyList<KnowledgeValidationError> Validate(KnowledgePack pack)
     {
         ArgumentNullException.ThrowIfNull(pack);
@@ -65,9 +78,10 @@ public sealed class KnowledgePackValidator
 
         foreach (var source in pack.Sources)
         {
-            Require(source.Authority, $"sources.{source.Id}.authority", errors);
-            Require(source.Title, $"sources.{source.Id}.title", errors);
-            Require(source.DocumentType, $"sources.{source.Id}.documentType", errors);
+            ValidateSource(
+                source,
+                RequiresPublicProvenance(pack.Manifest.ValidationLevel),
+                errors);
         }
 
         var evidence = ValidateUniqueIds(pack.EvidenceRequirements, item => item.Id, "evidence_requirement", errors);
@@ -103,10 +117,28 @@ public sealed class KnowledgePackValidator
         KnowledgePack pack,
         ICollection<KnowledgeValidationError> errors)
     {
+        if (pack.Manifest.FormatVersion != CurrentFormatVersion)
+        {
+            errors.Add(new(
+                "unsupported_format_version",
+                $"Knowledge Pack format version '{pack.Manifest.FormatVersion}' is not supported. Expected '{CurrentFormatVersion}'.",
+                "manifest.formatVersion"));
+        }
+
         Require(pack.Manifest.PackId, "manifest.packId", errors);
         Require(pack.Manifest.ReleaseId, "manifest.releaseId", errors);
+        Require(pack.Manifest.LifecycleStatus, "manifest.lifecycleStatus", errors);
         Require(pack.Manifest.ValidationLevel, "manifest.validationLevel", errors);
         Require(pack.Manifest.EntryRuleId, "manifest.entryRuleId", errors);
+
+        if (!string.IsNullOrWhiteSpace(pack.Manifest.LifecycleStatus)
+            && !AllowedLifecycleStatuses.Contains(pack.Manifest.LifecycleStatus))
+        {
+            errors.Add(new(
+                "unknown_lifecycle_status",
+                $"Unknown lifecycle status '{pack.Manifest.LifecycleStatus}'.",
+                "manifest.lifecycleStatus"));
+        }
 
         if (!string.IsNullOrWhiteSpace(pack.Manifest.ValidationLevel)
             && !AllowedValidationLevels.Contains(pack.Manifest.ValidationLevel))
@@ -426,6 +458,85 @@ public sealed class KnowledgePackValidator
                 $"Condition '{conditionKind}' requires field type '{expectedType}', but '{field.Id}' is '{field.Type}'.",
                 $"{path}.field"));
         }
+    }
+
+    private static void ValidateSource(
+        SourceDefinition source,
+        bool requirePublicProvenance,
+        ICollection<KnowledgeValidationError> errors)
+    {
+        var path = $"sources.{source.Id}";
+
+        Require(source.Authority, $"{path}.authority", errors);
+        Require(source.Title, $"{path}.title", errors);
+        Require(source.DocumentType, $"{path}.documentType", errors);
+        Require(source.Status, $"{path}.status", errors);
+
+        if (source.ValidFrom is not null
+            && source.ValidUntil is not null
+            && source.ValidUntil < source.ValidFrom)
+        {
+            errors.Add(new(
+                "invalid_source_validity_interval",
+                $"Source '{source.Id}' ends before it starts.",
+                path));
+        }
+
+        if (!string.IsNullOrWhiteSpace(source.ContentHash)
+            && !IsSha256(source.ContentHash))
+        {
+            errors.Add(new(
+                "invalid_source_content_hash",
+                $"Source '{source.Id}' contentHash must use 'sha256:' followed by 64 hexadecimal characters.",
+                $"{path}.contentHash"));
+        }
+
+        if (!requirePublicProvenance)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(source.SourceLocation))
+        {
+            errors.Add(new(
+                "missing_source_location",
+                $"Source '{source.Id}' requires sourceLocation for this validation level.",
+                $"{path}.sourceLocation"));
+        }
+
+        if (source.RetrievedAt is null)
+        {
+            errors.Add(new(
+                "missing_source_retrieved_at",
+                $"Source '{source.Id}' requires retrievedAt for this validation level.",
+                $"{path}.retrievedAt"));
+        }
+
+        if (string.IsNullOrWhiteSpace(source.ContentHash))
+        {
+            errors.Add(new(
+                "missing_source_content_hash",
+                $"Source '{source.Id}' requires contentHash for this validation level.",
+                $"{path}.contentHash"));
+        }
+    }
+
+    private static bool RequiresPublicProvenance(string validationLevel)
+        => validationLevel is
+            "PUBLIC_REFERENCE"
+            or "DOMAIN_REVIEWED"
+            or "PRODUCTION_APPROVED";
+
+    private static bool IsSha256(string value)
+    {
+        const string prefix = "sha256:";
+        if (!value.StartsWith(prefix, StringComparison.Ordinal)
+            || value.Length != prefix.Length + 64)
+        {
+            return false;
+        }
+
+        return value[prefix.Length..].All(Uri.IsHexDigit);
     }
 
     private static void ValidateTemporalOverlaps(

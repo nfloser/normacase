@@ -19,7 +19,9 @@ Source
 
 Suggested lifecycle states are `DRAFT`, `IN_REVIEW`, `APPROVED`, `ACTIVE`, `DEPRECATED` and `RETIRED`.
 
-Validation level is separate from lifecycle. At minimum distinguish:
+Validation level is separate from lifecycle. An `ACTIVE` release is therefore not automatically domain-approved; it only means that release is active within its own validation class.
+
+At minimum distinguish:
 - `SYNTHETIC`
 - `PUBLIC_REFERENCE`
 - `DOMAIN_REVIEWED`
@@ -27,7 +29,9 @@ Validation level is separate from lifecycle. At minimum distinguish:
 
 ## Sources
 
-Productive domain rules require a traceable source with stable identity and metadata such as authority, title, document type, publication/validity dates, version, location, retrieval date and content hash.
+Productive domain rules require a traceable source with stable identity and metadata such as authority, title, document type, publication/validity dates, version, location, retrieval date, content hash and status.
+
+The current format requires source location, retrieval date and SHA-256 content hash from `PUBLIC_REFERENCE` upward. Synthetic fixtures remain explicitly synthetic and do not fabricate external provenance merely to satisfy a schema.
 
 Sources and rule versions are append/version operations, not in-place historical rewrites.
 
