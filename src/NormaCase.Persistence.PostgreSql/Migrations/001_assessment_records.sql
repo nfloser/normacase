@@ -8,6 +8,7 @@ CREATE TABLE normacase.assessment_records (
     platform_version text NOT NULL,
     assessment_date date NOT NULL,
     recorded_at_utc timestamptz NOT NULL,
+    recorded_at_utc_ticks bigint NOT NULL,
     record_format_version integer NOT NULL,
     record_json json NOT NULL,
     record_sha256 text NOT NULL
