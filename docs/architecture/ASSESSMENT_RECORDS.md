@@ -26,8 +26,12 @@ stored as explicit `UNKNOWN`; an omitted evidence requirement is stored as
 The evaluator still validates the originally supplied keys and types. The application
 layer does not discard unknown fields or reinterpret rule behavior.
 
-This gives persistence a stable representation of the input state used for evaluation
-without making absence look like a negative answer.
+The returned evaluator result is also defensively snapshotted. Collection-valued trace
+members are recursively copied into read-only collections so a caller cannot cast an
+engine array and silently rewrite the historical record in memory.
+
+This gives persistence a stable representation of the input state and result used for
+evaluation without making absence look like a negative answer.
 
 ## Explicit execution metadata
 
