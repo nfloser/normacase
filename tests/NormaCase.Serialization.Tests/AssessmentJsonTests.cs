@@ -124,7 +124,11 @@ public sealed class AssessmentJsonTests
         var restored = AssessmentJson.Deserialize(json);
 
         Assert.Equal(2, restored.FormatVersion);
-        Assert.Equal(result.DomainOutputs, restored.Assessment.DomainOutputs);
+        Assert.Equal(
+            json,
+            AssessmentJson.Serialize(
+                restored.Assessment,
+                restored.PlatformVersion));
 
         var unknown = Assert.Single(
             restored.Assessment.DomainOutputs,
