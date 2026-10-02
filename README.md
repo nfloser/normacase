@@ -37,6 +37,7 @@ knowledge/
   demo-a/                 truth-valued AND/OR/UNKNOWN synthetic pack
   demo-b/                 numeric/range/temporal-version synthetic pack
   demo-c/                 evidence dependency and review synthetic pack
+  demo-d/                 numeric transformation/aggregation synthetic pack
 
 docs/
   project/
@@ -54,6 +55,7 @@ The current core can:
 - load external JSON Knowledge Packs,
 - validate manifests, fields, sources, rule references and validity intervals,
 - evaluate typed truth and numeric case values,
+- derive numeric values through validated range lookup, sum and max calculations,
 - evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
 - preserve UNKNOWN instead of coercing it,
 - gate criteria on structured evidence availability and escalate conflicts,
