@@ -68,6 +68,76 @@ public sealed class RecordedAssessmentTests
     }
 
     [Fact]
+    public void Restore_rejects_replaced_documents_and_inconsistent_metadata()
+    {
+        var (input, output) = Documents();
+        var original = RecordedAssessment.Create(
+            "assessment-001",
+            "case-001",
+            Utc(),
+            input,
+            output);
+
+        Assert.Throws<InvalidDataException>(
+            () => RecordedAssessment.Restore(
+                original.AssessmentId,
+                original.CaseId,
+                original.RecordedAtUtc,
+                original.AssessmentDate,
+                original.PlatformVersion,
+                original.KnowledgeRelease,
+                original.SystemOutcome,
+                original.CaseInputJson + Environment.NewLine,
+                original.AssessmentJson,
+                original.CaseInputSha256,
+                original.AssessmentSha256));
+
+        Assert.Throws<InvalidDataException>(
+            () => RecordedAssessment.Restore(
+                original.AssessmentId,
+                original.CaseId,
+                original.RecordedAtUtc,
+                original.AssessmentDate,
+                "different-platform",
+                original.KnowledgeRelease,
+                original.SystemOutcome,
+                original.CaseInputJson,
+                original.AssessmentJson,
+                original.CaseInputSha256,
+                original.AssessmentSha256));
+    }
+
+    [Fact]
+    public void Restore_roundtrips_an_untampered_record()
+    {
+        var (input, output) = Documents();
+        var original = RecordedAssessment.Create(
+            "assessment-001",
+            "case-001",
+            Utc(),
+            input,
+            output);
+
+        var restored = RecordedAssessment.Restore(
+            original.AssessmentId,
+            original.CaseId,
+            original.RecordedAtUtc,
+            original.AssessmentDate,
+            original.PlatformVersion,
+            original.KnowledgeRelease,
+            original.SystemOutcome,
+            original.CaseInputJson,
+            original.AssessmentJson,
+            original.CaseInputSha256,
+            original.AssessmentSha256);
+
+        Assert.Equal(original.AssessmentId, restored.AssessmentId);
+        Assert.Equal(original.CaseInputSha256, restored.CaseInputSha256);
+        Assert.Equal(original.AssessmentSha256, restored.AssessmentSha256);
+        Assert.True(restored.HasValidFingerprints());
+    }
+
+    [Fact]
     public void Assessment_and_input_dates_must_match()
     {
         var (input, output) = Documents();
