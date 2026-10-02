@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using NormaCase.Domain.Decision;
 using NormaCase.Replay;
 using NormaCase.Serialization;
 using Xunit;
@@ -93,6 +94,26 @@ public sealed class SnapshotTests
         };
         var json = AssessmentSnapshotJson.Serialize(original.KnowledgePackJson, original.Input, changed);
         Assert.Throws<SnapshotReplayException>(() => new AssessmentSnapshotService().Replay(json, "test-1"));
+    }
+
+    [Fact]
+    public void Rehashed_input_change_cannot_reuse_the_recorded_result()
+    {
+        var original = AssessmentSnapshotJson.Deserialize(Capture());
+        var facts = original.Input.Facts.ToDictionary(
+            item => item.Key,
+            item => item.Value,
+            StringComparer.Ordinal);
+        facts["criterion_b"] = TruthValue.No;
+        var changedInput = original.Input with { Facts = facts };
+
+        var json = AssessmentSnapshotJson.Serialize(
+            original.KnowledgePackJson,
+            changedInput,
+            original.Assessment);
+
+        Assert.Throws<SnapshotReplayException>(
+            () => new AssessmentSnapshotService().Replay(json, "test-1"));
     }
 
     [Theory]
