@@ -28,6 +28,7 @@ src/
   NormaCase.Domain/       framework-independent case/decision contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
+  NormaCase.Assessments/  immutable assessment/review provenance contracts
 
 tests/
   NormaCase.Domain.Tests/
@@ -63,7 +64,9 @@ The current core can:
 - configure safe unknown outcomes as INCOMPLETE or HUMAN_REVIEW,
 - select a rule version from an explicit assessment date,
 - return source-backed recursive Decision Trace data,
-- emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output.
+- emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
+- preserve exact assessment artifacts with explicit versions, UTC provenance and SHA-256 fingerprints,
+- append human review/override provenance without rewriting the original system outcome.
 
 ## Local verification
 
