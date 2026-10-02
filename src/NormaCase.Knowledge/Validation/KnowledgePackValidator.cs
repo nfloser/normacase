@@ -582,7 +582,7 @@ public sealed class KnowledgePackValidator
                 continue;
             }
 
-            if (band.Minimum > band.Maximum)
+            if (band.Minimum.Value > band.Maximum.Value)
             {
                 errors.Add(new(
                     "invalid_numeric_band",
@@ -590,9 +590,10 @@ public sealed class KnowledgePackValidator
                     bandPath));
             }
 
-            if (previous?.Minimum is not null
+            if (previous is not null
+                && previous.Minimum is not null
                 && previous.Maximum is not null
-                && band.Minimum <= previous.Maximum)
+                && band.Minimum.Value <= previous.Maximum.Value)
             {
                 errors.Add(new(
                     "invalid_numeric_band_order",
