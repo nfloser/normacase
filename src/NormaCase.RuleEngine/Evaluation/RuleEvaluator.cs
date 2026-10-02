@@ -1,10 +1,18 @@
 using NormaCase.Domain.Decision;
 using NormaCase.Knowledge.Model;
+using NormaCase.Knowledge.Validation;
 
 namespace NormaCase.RuleEngine.Evaluation;
 
 public sealed class RuleEvaluator
 {
+    private readonly KnowledgePackValidator _validator;
+
+    public RuleEvaluator(KnowledgePackValidator? validator = null)
+    {
+        _validator = validator ?? new KnowledgePackValidator();
+    }
+
     public AssessmentResult Evaluate(
         KnowledgePack pack,
         IReadOnlyDictionary<string, TruthValue> facts,
@@ -13,6 +21,7 @@ public sealed class RuleEvaluator
         ArgumentNullException.ThrowIfNull(pack);
         ArgumentNullException.ThrowIfNull(facts);
 
+        _validator.ValidateOrThrow(pack);
         RejectUnknownCaseFields(pack, facts);
 
         var missingRequiredFields = pack.Fields
@@ -37,8 +46,8 @@ public sealed class RuleEvaluator
         var condition = EvaluateCondition(rule.Condition, facts);
         var ruleOutcome = condition.Result switch
         {
-            ConditionResult.Matched => rule.OnMatch,
-            ConditionResult.NotMatched => rule.OnNoMatch,
+            ConditionResult.Matched => rule.OnMatch!.Value,
+            ConditionResult.NotMatched => rule.OnNoMatch!.Value,
             ConditionResult.Unknown => AssessmentOutcome.Incomplete,
             _ => AssessmentOutcome.Incomplete
         };
