@@ -15,14 +15,14 @@ dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-a/pack.
 dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-b/pack.json --case examples/cases/demo-b-supported.json --platform-version development
 dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-c/pack.json --case examples/cases/demo-c-supported.json --platform-version development
 dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-c/pack.json --case examples/cases/demo-c-review.json --platform-version development
+dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-e/pack.json --case examples/cases/demo-e-mixed.json --platform-version development
 ```
 
-Die Beispiele zeigen erfüllte Voraussetzungen, unvollständige Angaben und
-manuelle Prüfung bei fehlender Evidenz. Deutsche Texte liegen in RESX-Ressourcen.
+Die Beispiele zeigen erfüllte Voraussetzungen, unvollständige Angaben, manuelle Prüfung bei fehlender Evidenz und mehrere unabhängige fachliche Ausgaben. Demo E enthält absichtlich einen bekannten und einen UNKNOWN-Ausgabepfad; die deutsche Zusammenfassung zeigt UNKNOWN als „Unbekannt“. Deutsche Texte liegen in RESX-Ressourcen.
 Technische IDs und das JSON-Format bleiben sprachunabhängige Verträge.
 
 Mit `--json` wird ein versioniertes Ergebnis einschließlich Plattformstand,
-Wissensstand, Quellenrevision und Decision Trace ausgegeben. Der angegebene
+Wissensstand, Quellenrevision, Decision Trace und vorhandenen Domain-Output-Traces ausgegeben. Assessment JSON wird aktuell als Format v2 geschrieben; legacy v1 ohne Domain Outputs bleibt lesbar. Der angegebene
 Plattformstand ist eine explizite Betreiberangabe, keine kryptografische
 Build-Verifikation. Verwende für nachvollziehbare Läufe einen tatsächlichen
 Release- oder Commit-Bezeichner.
