@@ -1,0 +1,144 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "packId": "synthetic.demo-e",
+    "releaseId": "demo-e-2026.1",
+    "lifecycleStatus": "ACTIVE",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-E-ENTRY"
+  },
+  "fields": [
+    {
+      "id": "gate_primary",
+      "type": "truth",
+      "required": true
+    },
+    {
+      "id": "metric",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "segment_alpha_ready",
+      "type": "truth",
+      "required": false
+    },
+    {
+      "id": "segment_beta_ready",
+      "type": "truth",
+      "required": false
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-E-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic Demo E structured output source",
+      "documentType": "SYNTHETIC",
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-e/pack.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-E-ENTRY",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-E-001",
+      "condition": {
+        "kind": "field_equals",
+        "field": "gate_primary",
+        "expected": "YES"
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED",
+      "onUnknown": "INCOMPLETE"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "decision_state",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-E-001",
+      "type": "choice",
+      "choices": [
+        "ELIGIBLE",
+        "NOT_ELIGIBLE"
+      ],
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "field_equals",
+            "field": "gate_primary",
+            "expected": "YES"
+          },
+          {
+            "kind": "number_gte",
+            "field": "metric",
+            "threshold": 5
+          }
+        ]
+      },
+      "onMatch": "ELIGIBLE",
+      "onNoMatch": "NOT_ELIGIBLE"
+    },
+    {
+      "id": "selection_state",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-E-001",
+      "type": "choice",
+      "choices": [
+        "MODE_RED",
+        "MODE_BLUE"
+      ],
+      "condition": {
+        "kind": "number_in_range",
+        "field": "metric",
+        "minimum": 0,
+        "maximum": 9
+      },
+      "onMatch": "MODE_RED",
+      "onNoMatch": "MODE_BLUE"
+    },
+    {
+      "id": "segment_alpha",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-E-001",
+      "type": "choice",
+      "choices": [
+        "OPEN",
+        "CLOSED"
+      ],
+      "condition": {
+        "kind": "field_equals",
+        "field": "segment_alpha_ready",
+        "expected": "YES"
+      },
+      "onMatch": "OPEN",
+      "onNoMatch": "CLOSED"
+    },
+    {
+      "id": "segment_beta",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-E-001",
+      "type": "choice",
+      "choices": [
+        "OPEN",
+        "CLOSED"
+      ],
+      "condition": {
+        "kind": "field_equals",
+        "field": "segment_beta_ready",
+        "expected": "YES"
+      },
+      "onMatch": "OPEN",
+      "onNoMatch": "CLOSED"
+    }
+  ]
+}
