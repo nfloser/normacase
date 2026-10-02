@@ -201,7 +201,7 @@ public sealed class KnowledgePackValidator
 
     private static void ValidateCalculations(
         IReadOnlyList<CalculationDefinition> calculations,
-        IDictionary<string, FieldDefinition> availableFields,
+        Dictionary<string, FieldDefinition> availableFields,
         ICollection<KnowledgeValidationError> errors)
     {
         var allCalculationIds = calculations
