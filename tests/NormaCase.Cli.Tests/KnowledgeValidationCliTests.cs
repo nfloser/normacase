@@ -53,13 +53,7 @@ public sealed class KnowledgeValidationCliTests
     }
 
     [Theory]
-    [InlineData(new[] { "validate" })]
-    [InlineData(new[] { "validate", "--pack" })]
-    [InlineData(new[] { "validate", "--pack", "--case" })]
-    [InlineData(new[] { "validate", "--pack", "unused", "--json" })]
-    [InlineData(new[] { "validate", "--pack", "unused", "--case", "unused" })]
-    [InlineData(new[] { "validate", "--pack", "unused", "--platform-version", "unused" })]
-    [InlineData(new[] { "validate", "--pack", "unused", "--pack", "unused" })]
+    [MemberData(nameof(InvalidArgumentSets))]
     public void Validation_rejects_unrelated_or_ambiguous_arguments(string[] args)
     {
         using var output = new StringWriter();
@@ -118,6 +112,21 @@ public sealed class KnowledgeValidationCliTests
         using var error = new StringWriter();
         Assert.Equal(0, CliRunner.Run(["--help"], output, error));
         Assert.Contains("validate --pack DATEI", output.ToString());
+    }
+
+    public static IEnumerable<object[]> InvalidArgumentSets()
+    {
+        foreach (var args in new[]
+        {
+            new[] { "validate" },
+            new[] { "validate", "--pack" },
+            new[] { "validate", "--pack", "--case" },
+            new[] { "validate", "--pack", "unused", "--json" },
+            new[] { "validate", "--pack", "unused", "--case", "unused" },
+            new[] { "validate", "--pack", "unused", "--platform-version", "unused" },
+            new[] { "validate", "--pack", "unused", "--pack", "unused" }
+        })
+            yield return new object[] { args };
     }
 
     private static string PackPath(string demo) => Path.Combine(
