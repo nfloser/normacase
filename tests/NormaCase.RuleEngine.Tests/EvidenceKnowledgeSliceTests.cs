@@ -140,6 +140,37 @@ public sealed class EvidenceKnowledgeSliceTests
         Assert.Equal(AssessmentOutcome.HumanReview, result.Outcome);
     }
 
+    [Fact]
+    public void Present_evidence_does_not_fill_missing_child_facts()
+    {
+        var facts = Facts;
+        facts.Remove("measurement");
+        var pack = new KnowledgePackLoader().LoadFromJson(Json);
+        var evidence = new Dictionary<string, EvidenceStatus> { ["verification"] = EvidenceStatus.Present };
+        var result = new RuleEvaluator().Evaluate(pack, facts, Date, evidence);
+        Assert.Equal(AssessmentOutcome.HumanReview, result.Outcome);
+        Assert.Equal(ConditionResult.Unknown, result.RuleTrace!.Condition.Children[1].Result);
+    }
+
+    [Fact]
+    public void Evidence_gate_cannot_silently_ignore_a_comparison()
+    {
+        var node = System.Text.Json.Nodes.JsonNode.Parse(Json)!;
+        node["rules"]![0]!["condition"]!["conditions"]![1]!["field"] = "measurement";
+        var error = Assert.Throws<KnowledgeValidationException>(() =>
+            new KnowledgePackLoader().LoadFromJson(node.ToJsonString()));
+        Assert.Contains(error.Errors, item => item.Code == "ambiguous_evidence_dependency");
+    }
+
+    [Fact]
+    public void Repeated_evaluation_preserves_the_entire_serialized_trace()
+    {
+        var evidence = new Dictionary<string, EvidenceStatus> { ["verification"] = EvidenceStatus.Present };
+        var first = Evaluate(evidence);
+        var second = Evaluate(evidence);
+        Assert.Equal(System.Text.Json.JsonSerializer.Serialize(first), System.Text.Json.JsonSerializer.Serialize(second));
+    }
+
     private static AssessmentResult Evaluate(Dictionary<string, EvidenceStatus> evidence, string? json = null)
         => new RuleEvaluator().Evaluate(new KnowledgePackLoader().LoadFromJson(json ?? Json), Facts, Date, evidence);
 }

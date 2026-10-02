@@ -247,6 +247,12 @@ public sealed class KnowledgePackValidator
 
         if (condition.Kind == "requires_evidence")
         {
+            if (condition.Field is not null || condition.Expected is not null
+                || condition.Threshold is not null || condition.Minimum is not null || condition.Maximum is not null)
+            {
+                errors.Add(new("ambiguous_evidence_dependency", "Evidence gates cannot also declare field comparisons.", path));
+            }
+
             if (string.IsNullOrWhiteSpace(condition.EvidenceRequirementId)
                 || !evidence.ContainsKey(condition.EvidenceRequirementId))
             {
