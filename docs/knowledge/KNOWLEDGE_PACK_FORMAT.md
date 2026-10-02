@@ -9,8 +9,9 @@ Knowledge Packs are declarative data consumed by the platform. They do not execu
 Current repository examples:
 - `knowledge/demo-a/pack.json`: truth values, nested AND/OR and UNKNOWN semantics.
 - `knowledge/demo-b/pack.json`: numeric thresholds, inclusive ranges and temporal rule versions.
+- `knowledge/demo-c/pack.json`: generic evidence requirements and explicit missing-evidence escalation.
 
-Both packs are `SYNTHETIC`.
+All three packs are `SYNTHETIC`.
 
 ## Manifest
 
@@ -47,6 +48,24 @@ A missing required field is represented as unknown and forces the final platform
 
 Case values must match the field type declared by the pack. The evaluator rejects type mismatches rather than coercing values.
 
+## Evidence requirements
+
+A pack may declare generic evidence requirements independently from case fields:
+
+```json
+{
+  "id": "evidence_primary",
+  "description": "Synthetic primary supporting evidence",
+  "missingOutcome": "HUMAN_REVIEW"
+}
+```
+
+A rule can reference them with `evidence_present`. Missing evidence is represented as an unknown condition, never as false.
+
+For safety, `missingOutcome` is limited to `INCOMPLETE` or `HUMAN_REVIEW`. A pack cannot configure missing evidence to become `SUPPORTED` or another positive/negative substantive conclusion.
+
+Evidence supplied at runtime must be declared by the active Knowledge Pack.
+
 ## Sources
 
 Every rule references a source id. Synthetic fixtures use synthetic sources only.
@@ -59,6 +78,7 @@ Current condition kinds are:
 - `field_equals` for `truth` fields,
 - `number_gte` for inclusive numeric thresholds,
 - `number_in_range` for inclusive numeric ranges,
+- `evidence_present` for declared evidence requirements,
 - `all`,
 - `any`.
 
@@ -90,6 +110,7 @@ An evaluation result records:
 - source id,
 - recursive condition trace,
 - typed actual/expected values or numeric range bounds,
+- missing evidence ids and their configured safe escalation outcome,
 - final outcome.
 
 This is the current base for Source -> Rule -> Test traceability.
