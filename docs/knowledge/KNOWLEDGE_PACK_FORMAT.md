@@ -1,19 +1,16 @@
 # Knowledge Pack format
 
-Status: initial synthetic slice. The format will evolve through versioned changes as more rule operators and governance features are added.
+Status: evolving synthetic format. It is intentionally small and grows only as independent synthetic domains prove a need.
 
 ## Boundary
 
 Knowledge Packs are declarative data consumed by the platform. They do not execute code.
 
-The first slice uses JSON and contains:
-- manifest metadata,
-- field definitions,
-- sources,
-- rule versions,
-- nested conditions.
+Current repository examples:
+- `knowledge/demo-a/pack.json`: truth values, nested AND/OR and UNKNOWN semantics.
+- `knowledge/demo-b/pack.json`: numeric thresholds, inclusive ranges and temporal rule versions.
 
-The repository fixture at `knowledge/demo-a/pack.json` is intentionally synthetic.
+Both packs are `SYNTHETIC`.
 
 ## Manifest
 
@@ -26,45 +23,62 @@ The repository fixture at `knowledge/demo-a/pack.json` is intentionally syntheti
 }
 ```
 
-`releaseId` is carried into every assessment result. `entryRuleId` identifies the logical rule to resolve for the explicit assessment date.
+`releaseId` is carried into every assessment result. `entryRuleId` identifies the logical rule resolved for the explicit assessment date.
 
-## Fields
+Validation levels currently recognized by the loader are:
+- `SYNTHETIC`
+- `PUBLIC_REFERENCE`
+- `DOMAIN_REVIEWED`
+- `PRODUCTION_APPROVED`
 
-The first slice supports truth-valued fields:
+Public reference material must never be promoted to a stronger level implicitly.
 
-```json
-{
-  "id": "criterion_a",
-  "type": "truth",
-  "required": true
-}
-```
+## Fields and case values
 
-Runtime values are `YES`, `NO`, `UNKNOWN` or `NOT_APPLICABLE`.
+Current field types are:
+- `truth`
+- `number`
 
-A missing required field is treated as unknown and forces the final platform outcome to `INCOMPLETE`.
+Truth runtime values are `YES`, `NO`, `UNKNOWN` and `NOT_APPLICABLE`.
+
+Numeric runtime values use exact decimal values in the deterministic core.
+
+A missing required field is represented as unknown and forces the final platform outcome to `INCOMPLETE`.
+
+Case values must match the field type declared by the pack. The evaluator rejects type mismatches rather than coercing values.
 
 ## Sources
 
-Every rule references a source id. The synthetic fixture uses a synthetic source only.
+Every rule references a source id. Synthetic fixtures use synthetic sources only.
 
-A rule referencing a missing source fails pack validation and the pack is not partially loaded.
+Source id, authority, title and document type are required. A missing source reference fails pack validation and the pack is not partially loaded.
 
-## Rules
+## Conditions
 
-The first rule model supports:
-- `field_equals`
-- `all`
-- `any`
+Current condition kinds are:
+- `field_equals` for `truth` fields,
+- `number_gte` for inclusive numeric thresholds,
+- `number_in_range` for inclusive numeric ranges,
+- `all`,
+- `any`.
 
 Groups may be nested.
 
-Rule validity uses explicit `validFrom` / `validUntil` dates. Evaluation receives the assessment date as input; it does not read system time.
+Operators are validated against field types. A numeric operator cannot target a truth field, and vice versa.
 
-Unknown condition semantics are fail-closed:
-- `all`: any false -> not matched; otherwise any unknown -> unknown; otherwise matched.
-- `any`: any true -> matched; otherwise any unknown -> unknown; otherwise not matched.
+### Boolean UNKNOWN semantics
+
+- `all`: any not-matched child -> not matched; otherwise any unknown -> unknown; otherwise matched.
+- `any`: any matched child -> matched; otherwise any unknown -> unknown; otherwise not matched.
 - unknown final condition -> `INCOMPLETE`.
+
+## Temporal rule versions
+
+Rules carry `validFrom` and optional `validUntil`.
+
+Evaluation receives `assessmentDate` explicitly and never reads system time. Versions for the same logical rule may not overlap.
+
+Demo B deliberately switches from rule version 1 to version 2 on 2026-07-01 to regression-test historical resolution.
 
 ## Decision trace
 
@@ -72,9 +86,10 @@ An evaluation result records:
 - Knowledge Release,
 - assessment date,
 - missing required fields,
-- rule id/version,
+- selected rule id/version,
 - source id,
 - recursive condition trace,
+- typed actual/expected values or numeric range bounds,
 - final outcome.
 
-This is the first step toward full Source -> Rule -> Test traceability.
+This is the current base for Source -> Rule -> Test traceability.
