@@ -166,13 +166,14 @@ public sealed class PostgresAssessmentRecordStoreTests
                 platform_version,
                 assessment_date,
                 recorded_at_utc,
+                recorded_at_utc_ticks,
                 record_format_version,
                 record_json,
                 record_sha256
             )
             VALUES (
                 $1, $2, $3, $4, $5,
-                $6, $7, $8, $9, $10
+                $6, $7, $8, $9, $10, $11
             );
             """,
             connection))
@@ -192,6 +193,8 @@ public sealed class PostgresAssessmentRecordStoreTests
             command.Parameters.AddWithValue(
                 NpgsqlDbType.TimestampTz,
                 record.RecordedAtUtc.UtcDateTime);
+            command.Parameters.AddWithValue(
+                record.RecordedAtUtc.Ticks);
             command.Parameters.AddWithValue(
                 AssessmentRecordJson.CurrentFormatVersion);
             command.Parameters.AddWithValue(
@@ -299,7 +302,7 @@ public sealed class PostgresAssessmentRecordStoreTests
                     22,
                     0,
                     0,
-                    TimeSpan.Zero)));
+                    TimeSpan.Zero).AddTicks(7)));
     }
 
     private static AssessmentId NewId(string prefix)
