@@ -20,4 +20,10 @@ public sealed class DecisionSemanticsTests
         Assert.Contains(AssessmentOutcome.Incomplete, outcomes);
         Assert.Contains(AssessmentOutcome.HumanReview, outcomes);
     }
+
+    [Fact]
+    public void Default_assessment_outcome_is_fail_closed()
+    {
+        Assert.Equal(AssessmentOutcome.Incomplete, default);
+    }
 }
