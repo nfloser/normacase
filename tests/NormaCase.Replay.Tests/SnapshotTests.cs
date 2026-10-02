@@ -1,10 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using NormaCase.Assessments;
+using NormaCase.Replay;
 using NormaCase.Serialization;
 using Xunit;
 
-namespace NormaCase.Assessments.Tests;
+namespace NormaCase.Replay.Tests;
 
 public sealed class SnapshotTests
 {
@@ -113,7 +113,7 @@ public sealed class SnapshotTests
     {
         var original = AssessmentSnapshotJson.Deserialize(Capture());
         var trace = original.Assessment.Assessment.RuleTrace!;
-        var result = original.Assessment.Assessment with { RuleTrace = trace with { RuleVersion = "changed-version" } };
+        var result = original.Assessment.Assessment with { RuleTrace = trace with { RuleVersion = 999 } };
         var json = AssessmentSnapshotJson.Serialize(original.KnowledgePackJson, original.Input,
             original.Assessment with { Assessment = result });
         Assert.Throws<SnapshotReplayException>(() => new AssessmentSnapshotService().Replay(json, "test-1"));

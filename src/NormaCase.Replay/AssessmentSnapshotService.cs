@@ -3,7 +3,7 @@ using NormaCase.Knowledge.Serialization;
 using NormaCase.RuleEngine.Evaluation;
 using NormaCase.Serialization;
 
-namespace NormaCase.Assessments;
+namespace NormaCase.Replay;
 
 /// <summary>Captures explicit inputs and verifies replay without active knowledge lookup or implicit time.</summary>
 public sealed class AssessmentSnapshotService

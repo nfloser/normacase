@@ -10,7 +10,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <ProjectReference Include="../../src/NormaCase.Assessments/NormaCase.Assessments.csproj" />
+    <ProjectReference Include="../../src/NormaCase.Replay/NormaCase.Replay.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../knowledge/demo-a/pack.json" Link="Fixtures/demo-a-pack.json" CopyToOutputDirectory="PreserveNewest" />
