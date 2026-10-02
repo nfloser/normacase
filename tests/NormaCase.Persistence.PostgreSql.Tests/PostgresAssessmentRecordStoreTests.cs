@@ -5,6 +5,7 @@ using NpgsqlTypes;
 using NormaCase.Application.Assessments;
 using NormaCase.Domain.Audit;
 using NormaCase.Domain.Cases;
+using NormaCase.Domain.Decision;
 using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Serialization;
 using NormaCase.Persistence.PostgreSql;
