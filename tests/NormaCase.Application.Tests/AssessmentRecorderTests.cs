@@ -93,6 +93,12 @@ public sealed class AssessmentRecorderTests
             "case-003",
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 22, 17, 0, TimeSpan.FromHours(2))));
+
+        Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
+            "assessment-003",
+            "case-003",
+            "test-platform-1",
+            default));
     }
 
     private static NormaCase.Knowledge.Model.KnowledgePack Load(string demo)
