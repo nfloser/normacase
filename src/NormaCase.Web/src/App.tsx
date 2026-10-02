@@ -1,8 +1,7 @@
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { buildCaseJson, CaseInputError, emptyEvidence, emptyValues } from "./caseBuilder";
-import { parseExampleForm } from "./exampleParser";
 import { de, outcomeLabel } from "./i18n/de";
-import type { AssessmentDocument, EvidenceInput, PackCatalogItem } from "./types";
+import type { AssessmentDocument, EvidenceInput, ExampleForm, PackCatalogItem } from "./types";
 
 interface ResultState {
   raw: string;
@@ -39,8 +38,8 @@ export default function App() {
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const pack = useMemo(() => packs.find((item) => item.packId === packId) ?? null, [packs, packId]);
-  const outputLabels = useMemo(
-    () => new Map(pack?.presentation.outputs.map((item) => [item.id, item.label]) ?? []),
+  const outputPresentations = useMemo(
+    () => new Map(pack?.presentation.outputs.map((item) => [item.id, item]) ?? []),
     [pack]
   );
   const fieldLabels = useMemo(
@@ -106,7 +105,7 @@ export default function App() {
         headers: { Accept: "application/json" }
       });
       if (!response.ok) throw new Error("example");
-      const form = parseExampleForm(pack, await response.text());
+      const form = await response.json() as ExampleForm;
       setAssessmentDate(form.assessmentDate);
       setValues(form.values);
       setEvidence(form.evidence);
@@ -363,8 +362,10 @@ export default function App() {
                   <div className="output-list">
                     {assessment.domainOutputs.map((item) => (
                       <article className="output-card" key={item.outputId}>
-                        <span>{outputLabels.get(item.outputId) ?? item.outputId}</span>
-                        <strong>{item.value.kind === "UNKNOWN" ? "Nicht ausreichend beurteilbar" : item.value.choice}</strong>
+                        <span>{outputPresentations.get(item.outputId)?.label ?? item.outputId}</span>
+                        <strong>{item.value.kind === "UNKNOWN"
+                          ? "Nicht ausreichend beurteilbar"
+                          : outputPresentations.get(item.outputId)?.choices[item.value.choice ?? ""] ?? item.value.choice}</strong>
                         <small>{item.source.title}{item.source.version ? ` · ${item.source.version}` : ""}</small>
                       </article>
                     ))}
