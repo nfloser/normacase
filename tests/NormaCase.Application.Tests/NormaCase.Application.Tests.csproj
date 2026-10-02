@@ -17,21 +17,14 @@
     <ProjectReference Include="../../src/NormaCase.Application/NormaCase.Application.csproj" />
     <ProjectReference Include="../../src/NormaCase.Domain/NormaCase.Domain.csproj" />
     <ProjectReference Include="../../src/NormaCase.Knowledge/NormaCase.Knowledge.csproj" />
-    <ProjectReference Include="../../src/NormaCase.Serialization/NormaCase.Serialization.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="../../knowledge/demo-a/pack.json"
           Link="Fixtures/demo-a-pack.json"
           CopyToOutputDirectory="PreserveNewest" />
-    <None Include="../../knowledge/demo-b/pack.json"
-          Link="Fixtures/demo-b-pack.json"
-          CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../knowledge/demo-c/pack.json"
           Link="Fixtures/demo-c-pack.json"
-          CopyToOutputDirectory="PreserveNewest" />
-    <None Include="../../knowledge/demo-e/pack.json"
-          Link="Fixtures/demo-e-pack.json"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

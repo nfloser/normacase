@@ -186,6 +186,33 @@ public sealed class AssessmentJsonTests
     }
 
     [Fact]
+    public void Conflicting_evidence_status_roundtrips_in_nested_trace()
+    {
+        var facts = new Dictionary<string, CaseValue>
+        {
+            ["request_confirmed"] = TruthValue.Yes,
+            ["measurement"] = 15m
+        };
+        var evidence = new Dictionary<string, EvidenceStatus>
+        {
+            ["verification"] = EvidenceStatus.Conflicting
+        };
+        var result = new RuleEvaluator().Evaluate(
+            Load("demo-c"),
+            facts,
+            new DateOnly(2026, 10, 2),
+            evidence);
+
+        var restored = AssessmentJson.Deserialize(
+            AssessmentJson.Serialize(result, "test-platform-evidence"));
+
+        var trace = Assert.Single(
+            restored.Assessment.RuleTrace!.Condition.Children,
+            child => child.EvidenceRequirementId == "verification");
+        Assert.Equal(EvidenceStatus.Conflicting, trace.EvidenceStatus);
+    }
+
+    [Fact]
     public void No_active_rule_result_roundtrips()
     {
         var pack = Load("demo-a");

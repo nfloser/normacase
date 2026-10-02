@@ -26,6 +26,7 @@ Run the checks that exist for the affected area. At minimum for the current foun
 
 ```bash
 dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release
+dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj --configuration Release
 ```
 
 Do not remove tests or features merely to make a new change pass. Keep documentation synchronized with behavior.
