@@ -56,11 +56,11 @@ Case values must match the field type declared by the pack. The evaluator reject
 
 Every rule references a source id. Synthetic fixtures use synthetic sources only.
 
-Source id, authority, title, document type, status, version and source location are required for every source. The model also carries publication date, source validity interval, version, source location, retrieval date and a content hash.
+Source id, authority, title, document type and status are required for every source. The model also carries publication date, source validity interval, version, source location, retrieval date and a content hash.
 
 Content hashes use `sha256:<64 hexadecimal characters>`. Invalid hashes and source validity intervals are rejected.
 
-Synthetic packs do not invent external provenance. For `PUBLIC_REFERENCE`, `DOMAIN_REVIEWED` and `PRODUCTION_APPROVED`, every source must additionally provide a source location, retrieval date and content hash. This ensures a public-reference rule cannot load with only a human-readable title or anonymous URL-less citation.
+Synthetic packs do not invent external provenance. Format v1 therefore keeps version and source location optional for `SYNTHETIC` packs. For `PUBLIC_REFERENCE`, `DOMAIN_REVIEWED` and `PRODUCTION_APPROVED`, every source must additionally provide a version, source location, retrieval date and content hash. This ensures a governed rule cannot load with only a human-readable title or anonymous URL-less citation.
 
 A missing source reference fails pack validation and the pack is not partially loaded.
 
@@ -144,9 +144,11 @@ a historical result. Consumers should persist the result with this snapshot; a
 source ID alone is insufficient to distinguish revisions. This is a metadata
 snapshot, not document archival or a complete immutable assessment store.
 
-Every source declares a non-empty `version` and `sourceLocation`. The synthetic
-fixtures identify revision 1 of their repository pack; they leave retrieval dates
-and hashes absent because there was no external document retrieval.
+The synthetic fixtures currently identify revision 1 of their repository pack,
+but format v1 does not retroactively require those optional fields from every
+`SYNTHETIC` pack. A trace snapshots them when present and preserves `null`
+when absent. Governed non-synthetic packs require a version and source location,
+plus the retrieval metadata described above.
 
 A `sha256:` hash identifies the exact original source document bytes supplied by
 the knowledge author, not a normalized title, extracted text or a web URL. It is
