@@ -10,7 +10,8 @@ public sealed record AssessmentExecutionContext
         string platformVersion,
         DateTimeOffset recordedAtUtc)
     {
-        if (assessmentId.IsEmpty)\n            throw new ArgumentException("Assessment id must be explicit.", nameof(assessmentId));
+        if (assessmentId.IsEmpty)
+            throw new ArgumentException("Assessment id must be explicit.", nameof(assessmentId));
         ArgumentException.ThrowIfNullOrWhiteSpace(caseId);
         ArgumentException.ThrowIfNullOrWhiteSpace(platformVersion);
         if (recordedAtUtc == default
