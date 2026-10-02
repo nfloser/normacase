@@ -54,10 +54,15 @@ State and transition ids are technical identifiers, not platform enums.
 The core deliberately contains no labels such as medical review stages,
 institution names or benefit-specific process states.
 
-The next integration slice may add versioned declarative workflow definitions
-to Knowledge Packs and validate/load them into these generic contracts.
-That integration must not hard-code domain vocabulary into
-`NormaCase.Domain`.
+Knowledge Packs may carry optional versioned, source-bound declarative workflow
+definitions. `NormaCase.Knowledge.Workflow.KnowledgeWorkflowMaterializer` converts
+a validated definition into this generic Domain contract. The Knowledge validator
+requires the workflow source to exist and delegates graph invariants back to the
+Domain workflow definition rather than maintaining separate transition semantics.
+
+The next integration step may bind a selected Knowledge workflow definition to an
+explicit workflow instance. It must not hard-code domain vocabulary into
+`NormaCase.Domain` or infer transitions from assessment outcomes.
 
 Presentation labels belong in external presentation metadata.
 
