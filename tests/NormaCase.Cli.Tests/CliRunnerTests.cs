@@ -62,6 +62,27 @@ public sealed class CliRunnerTests
     }
 
     [Fact]
+    public void Human_output_lists_known_and_unknown_domain_outputs_in_German()
+    {
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+
+        Assert.Equal(
+            0,
+            CliRunner.Run(
+                Args("demo-e", CasePath("demo-e-mixed")),
+                output,
+                error));
+
+        var text = output.ToString();
+        Assert.Contains("Fachliche Ausgaben:", text);
+        Assert.Contains("decision_state: ELIGIBLE", text);
+        Assert.Contains("segment_beta: Unbekannt", text);
+        Assert.DoesNotContain("UNKNOWN", text);
+        Assert.Equal("", error.ToString());
+    }
+
+    [Fact]
     public void Help_is_German_and_does_not_require_files()
     {
         using var output = new StringWriter();
