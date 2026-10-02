@@ -32,6 +32,12 @@ public sealed class KnowledgePackValidator
             "number"
         };
 
+    private static readonly HashSet<string> AllowedOutputTypes =
+        new(StringComparer.Ordinal)
+        {
+            "choice"
+        };
+
     private static readonly HashSet<string> AllowedValidationLevels =
         new(StringComparer.Ordinal)
         {
@@ -95,6 +101,7 @@ public sealed class KnowledgePackValidator
 
         var evidence = ValidateUniqueIds(pack.EvidenceRequirements, item => item.Id, "evidence_requirement", errors);
         var rules = ValidateRules(pack, fields, sources, evidence, errors);
+        var outputs = ValidateDomainOutputs(pack.Outputs, fields, sources, evidence, errors);
 
         if (!string.IsNullOrWhiteSpace(pack.Manifest.EntryRuleId)
             && !rules.Any(rule => string.Equals(
@@ -109,6 +116,7 @@ public sealed class KnowledgePackValidator
         }
 
         ValidateTemporalOverlaps(rules, errors);
+        ValidateOutputTemporalOverlaps(outputs, errors);
 
         return errors;
     }
@@ -189,6 +197,140 @@ public sealed class KnowledgePackValidator
         }
 
         return result;
+    }
+
+    private static List<DomainOutputDefinition> ValidateDomainOutputs(
+        IReadOnlyList<DomainOutputDefinition> outputs,
+        IReadOnlyDictionary<string, FieldDefinition> fields,
+        IReadOnlyDictionary<string, SourceDefinition> sources,
+        IReadOnlyDictionary<string, EvidenceRequirementDefinition> evidence,
+        ICollection<KnowledgeValidationError> errors)
+    {
+        var result = new List<DomainOutputDefinition>();
+        var identities = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var output in outputs)
+        {
+            result.Add(output);
+            var path = $"outputs.{output.Id}@{output.Version}";
+
+            Require(output.Id, $"{path}.id", errors);
+
+            if (output.Version <= 0)
+            {
+                errors.Add(new(
+                    "invalid_output_version",
+                    $"Domain output '{output.Id}' must have a positive version.",
+                    $"{path}.version"));
+            }
+
+            var identity = $"{output.Id}@{output.Version}";
+            if (!identities.Add(identity))
+            {
+                errors.Add(new(
+                    "duplicate_output_version",
+                    $"Duplicate domain output version '{identity}'.",
+                    path));
+            }
+
+            if (output.ValidUntil is not null
+                && output.ValidUntil < output.ValidFrom)
+            {
+                errors.Add(new(
+                    "invalid_output_validity_interval",
+                    $"Domain output '{identity}' ends before it starts.",
+                    path));
+            }
+
+            if (string.IsNullOrWhiteSpace(output.SourceId)
+                || !sources.ContainsKey(output.SourceId))
+            {
+                errors.Add(new(
+                    "missing_output_source",
+                    $"Domain output '{identity}' references unknown source '{output.SourceId}'.",
+                    $"{path}.sourceId"));
+            }
+
+            if (!AllowedOutputTypes.Contains(output.Type))
+            {
+                errors.Add(new(
+                    "unsupported_output_type",
+                    $"Domain output '{identity}' uses unsupported type '{output.Type}'.",
+                    $"{path}.type"));
+            }
+
+            if (output.Choices.Count == 0)
+            {
+                errors.Add(new(
+                    "empty_output_choices",
+                    $"Domain output '{identity}' must declare at least one choice.",
+                    $"{path}.choices"));
+            }
+
+            var choices = new HashSet<string>(StringComparer.Ordinal);
+            for (var index = 0; index < output.Choices.Count; index++)
+            {
+                var choice = output.Choices[index];
+                var choicePath = $"{path}.choices[{index}]";
+
+                if (string.IsNullOrWhiteSpace(choice))
+                {
+                    errors.Add(new(
+                        "blank_output_choice",
+                        $"Domain output '{identity}' contains a blank choice.",
+                        choicePath));
+                    continue;
+                }
+
+                if (string.Equals(choice, "UNKNOWN", StringComparison.OrdinalIgnoreCase))
+                {
+                    errors.Add(new(
+                        "reserved_output_choice",
+                        $"Domain output '{identity}' cannot declare UNKNOWN as a choice.",
+                        choicePath));
+                }
+
+                if (!choices.Add(choice))
+                {
+                    errors.Add(new(
+                        "duplicate_output_choice",
+                        $"Domain output '{identity}' declares duplicate choice '{choice}'.",
+                        choicePath));
+                }
+            }
+
+            ValidateOutputBranchValue(output.OnMatch, "onMatch", identity, choices, errors, path);
+            ValidateOutputBranchValue(output.OnNoMatch, "onNoMatch", identity, choices, errors, path);
+            ValidateCondition(output.Condition, fields, evidence, errors, $"{path}.condition");
+        }
+
+        return result;
+    }
+
+    private static void ValidateOutputBranchValue(
+        string value,
+        string member,
+        string identity,
+        IReadOnlySet<string> choices,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            errors.Add(new(
+                "missing_output_branch_value",
+                $"Domain output '{identity}' must define {member}.",
+                $"{path}.{member}"));
+            return;
+        }
+
+        if (!choices.Contains(value))
+        {
+            errors.Add(new(
+                "invalid_output_branch_value",
+                $"Domain output '{identity}' maps {member} to undeclared choice '{value}'.",
+                $"{path}.{member}"));
+        }
     }
 
     private static List<RuleDefinition> ValidateRules(
@@ -791,6 +933,34 @@ public sealed class KnowledgePackValidator
         }
 
         return value[prefix.Length..].All(Uri.IsHexDigit);
+    }
+
+    private static void ValidateOutputTemporalOverlaps(
+        IEnumerable<DomainOutputDefinition> outputs,
+        ICollection<KnowledgeValidationError> errors)
+    {
+        foreach (var group in outputs.GroupBy(output => output.Id, StringComparer.Ordinal))
+        {
+            var ordered = group
+                .OrderBy(output => output.ValidFrom)
+                .ThenBy(output => output.Version)
+                .ToArray();
+
+            for (var index = 1; index < ordered.Length; index++)
+            {
+                var previous = ordered[index - 1];
+                var current = ordered[index];
+
+                if (previous.ValidUntil is null
+                    || previous.ValidUntil >= current.ValidFrom)
+                {
+                    errors.Add(new(
+                        "overlapping_output_validity",
+                        $"Domain output '{group.Key}' has overlapping versions {previous.Version} and {current.Version}.",
+                        $"outputs.{group.Key}"));
+                }
+            }
+        }
     }
 
     private static void ValidateTemporalOverlaps(
