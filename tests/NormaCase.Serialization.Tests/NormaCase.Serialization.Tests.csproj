@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../src/NormaCase.Application/NormaCase.Application.csproj" />
     <ProjectReference Include="../../src/NormaCase.Domain/NormaCase.Domain.csproj" />
     <ProjectReference Include="../../src/NormaCase.Knowledge/NormaCase.Knowledge.csproj" />
     <ProjectReference Include="../../src/NormaCase.Serialization/NormaCase.Serialization.csproj" />
