@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../NormaCase.Knowledge/NormaCase.Knowledge.csproj" />
+    <ProjectReference Include="../NormaCase.RuleEngine/NormaCase.RuleEngine.csproj" />
+    <ProjectReference Include="../NormaCase.Serialization/NormaCase.Serialization.csproj" />
+  </ItemGroup>
+</Project>
