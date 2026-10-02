@@ -95,3 +95,15 @@ Use `--json` for the versioned lossless assessment document. See
 incomplete and human-review examples, file formats, exit codes and limitations.
 The adapter needs no runtime network service. It accepts SYNTHETIC packs only;
 the production web UI, authorization and persistence are not implemented yet.
+
+## Local synthetic HTTP adapter
+
+```bash
+dotnet run --project src/NormaCase.Api
+```
+
+The ASP.NET Core development host listens on loopback port 5080 and provides
+`GET /api/packs` and `POST /api/assessments/{packId}`. It uses the same engine and
+lossless assessment contract as the CLI. See [the German API guide](docs/development/LOCAL_API.md)
+for curl examples, limits and security boundaries. Synthetic knowledge only;
+production authentication, persistence and the user interface remain open work.
