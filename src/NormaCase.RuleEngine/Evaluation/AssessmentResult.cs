@@ -7,4 +7,7 @@ public sealed record AssessmentResult(
     DateOnly AssessmentDate,
     AssessmentOutcome Outcome,
     IReadOnlyList<string> MissingRequiredFields,
-    RuleTrace? RuleTrace);
+    RuleTrace? RuleTrace)
+{
+    public IReadOnlyList<StructuredOutputTrace> Outputs { get; init; } = [];
+}
