@@ -24,7 +24,8 @@ Each row contains queryable technical metadata:
 - Knowledge Release,
 - platform version,
 - assessment date,
-- explicit UTC recording time,
+- queryable UTC recording time,
+- exact .NET UTC ticks for lossless timestamp verification,
 - AssessmentRecord format version.
 
 The complete record is stored separately in a PostgreSQL `json` column. `json`
