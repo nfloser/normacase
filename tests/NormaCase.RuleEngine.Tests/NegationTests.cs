@@ -146,6 +146,35 @@ public sealed class NegationTests
         Assert.Contains(exception.Errors, error => error.Code == "unknown_condition_kind");
     }
 
+    [Fact]
+    public void De_Morgan_forms_agree_for_every_pair_of_explicit_truth_values()
+    {
+        var second = """{"kind":"field_equals","field":"criterion_b","expected":"YES"}""";
+        foreach (var firstValue in Enum.GetValues<TruthValue>())
+        foreach (var secondValue in Enum.GetValues<TruthValue>())
+        foreach (var group in new[] { "all", "any" })
+        {
+            var opposite = group == "all" ? "any" : "all";
+            var facts = new Dictionary<string, CaseValue>
+                { ["criterion_a"] = firstValue, ["criterion_b"] = secondValue };
+            var left = Evaluate(Not("{\"kind\":\"" + group + "\",\"conditions\":[" + Leaf + "," + second + "]}"), facts);
+            var right = Evaluate("{\"kind\":\"" + opposite + "\",\"conditions\":[" + Not(Leaf) + "," + Not(second) + "]}", facts);
+            Assert.Equal(left.RuleTrace!.Condition.Result, right.RuleTrace!.Condition.Result);
+            Assert.Equal(left.Outcome, right.Outcome);
+        }
+    }
+
+    [Fact]
+    public void Unknown_negation_respects_the_explicit_human_review_branch()
+    {
+        var node = JsonNode.Parse(Pack(Not(Leaf)))!;
+        node["rules"]![0]!["onUnknown"] = "HUMAN_REVIEW";
+        var result = new RuleEvaluator().Evaluate(new KnowledgePackLoader().LoadFromJson(node.ToJsonString()),
+            new Dictionary<string, CaseValue>(), new DateOnly(2026, 10, 2));
+        Assert.Equal(ConditionResult.Unknown, result.RuleTrace!.Condition.Result);
+        Assert.Equal(AssessmentOutcome.HumanReview, result.Outcome);
+    }
+
     private static AssessmentResult Evaluate(string condition, Dictionary<string, CaseValue> facts,
         Dictionary<string, EvidenceStatus>? evidence = null) =>
         new RuleEvaluator().Evaluate(new KnowledgePackLoader().LoadFromJson(Pack(condition)),
