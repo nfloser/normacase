@@ -5,6 +5,8 @@ namespace NormaCase.Knowledge.Validation;
 
 public sealed class KnowledgePackValidator
 {
+    private const int CurrentFormatVersion = 1;
+
     private static readonly HashSet<string> AllowedConditionKinds =
         new(StringComparer.Ordinal)
         {
@@ -65,9 +67,54 @@ public sealed class KnowledgePackValidator
 
         foreach (var source in pack.Sources)
         {
-            Require(source.Authority, $"sources.{source.Id}.authority", errors);
-            Require(source.Title, $"sources.{source.Id}.title", errors);
-            Require(source.DocumentType, $"sources.{source.Id}.documentType", errors);
+            var sourcePath = $"sources.{source.Id}";
+
+            Require(source.Authority, $"{sourcePath}.authority", errors);
+            Require(source.Title, $"{sourcePath}.title", errors);
+            Require(source.DocumentType, $"{sourcePath}.documentType", errors);
+            Require(source.Version, $"{sourcePath}.version", errors);
+            Require(source.Location, $"{sourcePath}.location", errors);
+
+            if (source.ValidFrom is not null
+                && source.ValidUntil is not null
+                && source.ValidUntil < source.ValidFrom)
+            {
+                errors.Add(new(
+                    "invalid_source_validity_interval",
+                    $"Source '{source.Id}' ends before its validity starts.",
+                    sourcePath));
+            }
+
+            if (source.ContentHash is not null
+                && !IsSha256Hash(source.ContentHash))
+            {
+                errors.Add(new(
+                    "invalid_source_content_hash",
+                    $"Source '{source.Id}' contentHash must use 'sha256:' followed by 64 hexadecimal characters.",
+                    $"{sourcePath}.contentHash"));
+            }
+
+            if (!string.Equals(
+                    pack.Manifest.ValidationLevel,
+                    "SYNTHETIC",
+                    StringComparison.Ordinal))
+            {
+                if (source.RetrievedOn is null)
+                {
+                    errors.Add(new(
+                        "missing_source_retrieval_date",
+                        $"Source '{source.Id}' must record retrievedOn for non-synthetic knowledge.",
+                        $"{sourcePath}.retrievedOn"));
+                }
+
+                if (string.IsNullOrWhiteSpace(source.ContentHash))
+                {
+                    errors.Add(new(
+                        "missing_source_content_hash",
+                        $"Source '{source.Id}' must record a SHA-256 contentHash for non-synthetic knowledge.",
+                        $"{sourcePath}.contentHash"));
+                }
+            }
         }
 
         var evidence = ValidateUniqueIds(pack.EvidenceRequirements, item => item.Id, "evidence_requirement", errors);
@@ -103,6 +150,14 @@ public sealed class KnowledgePackValidator
         KnowledgePack pack,
         ICollection<KnowledgeValidationError> errors)
     {
+        if (pack.Manifest.FormatVersion != CurrentFormatVersion)
+        {
+            errors.Add(new(
+                "unsupported_format_version",
+                $"Knowledge Pack formatVersion must be {CurrentFormatVersion}, but was {pack.Manifest.FormatVersion}.",
+                "manifest.formatVersion"));
+        }
+
         Require(pack.Manifest.PackId, "manifest.packId", errors);
         Require(pack.Manifest.ReleaseId, "manifest.releaseId", errors);
         Require(pack.Manifest.ValidationLevel, "manifest.validationLevel", errors);
@@ -454,6 +509,27 @@ public sealed class KnowledgePackValidator
                 }
             }
         }
+    }
+
+    private static bool IsSha256Hash(string value)
+    {
+        const string prefix = "sha256:";
+
+        if (!value.StartsWith(prefix, StringComparison.Ordinal)
+            || value.Length != prefix.Length + 64)
+        {
+            return false;
+        }
+
+        foreach (var character in value.AsSpan(prefix.Length))
+        {
+            if (!char.IsAsciiHexDigit(character))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static void Require(
