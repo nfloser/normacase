@@ -76,8 +76,11 @@ function App() {
     if(file.size>1024*1024){setReplayError(de.snapshotTooLarge);return;}
     const controller=new AbortController();pending.current=controller;setBusy(true);
     try {
-      const body=await file.text();
+      const bytes=await file.arrayBuffer();
       if(controller.signal.aborted)return;
+      let body:string;
+      try {body=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}
+      catch {setReplayError(de.snapshotEncodingError);return;}
       const response=await fetch('/api/snapshots/replay',{method:'POST',headers:{'Content-Type':'application/json'},body,signal:controller.signal});
       const text=await response.text();
       if(controller.signal.aborted)return;

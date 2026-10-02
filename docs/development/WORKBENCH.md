@@ -69,7 +69,7 @@ abweichender Plattformstand oder ein inkonsistentes Ergebnis wird abgelehnt.
 Eine bestandene Wiederholung bestätigt keine Herkunft, Berechtigung oder fachliche
 Freigabe; siehe [Prüfsnapshots](ASSESSMENT_SNAPSHOTS.md).
 
-Die Datei wird lokal an den Loopback-Dienst übertragen und im Arbeitsspeicher
+Ungültiges UTF-8 wird bereits vor einer Übertragung abgelehnt. Gültige Dateien werden lokal an den Loopback-Dienst übertragen und im Arbeitsspeicher
 geprüft. Sie wird nicht serverseitig oder im Browser-Speicher persistiert.
 Dateiauswahl oder Änderungen der Prüfangaben entfernen vorherige Ergebnisse und
 brechen veraltete Anfragen ab. Ausschließlich synthetische Daten verwenden.

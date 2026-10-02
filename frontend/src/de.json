@@ -64,5 +64,6 @@
   "replayVerified": "Offline-Wiederholung bestätigt",
   "replayReadOnly": "Das gespeicherte Ergebnis wurde vollständig bestätigt und wird schreibgeschützt angezeigt. Aktuelle Fachlabels werden nicht auf historische Prüfungen übertragen. Die Prüfsumme bestätigt keine Herkunft oder fachliche Freigabe.",
   "replayTrace": "Bestätigte technische Prüfspur anzeigen",
-  "replayExport": "Bestätigtes Ergebnis herunterladen"
+  "replayExport": "Bestätigtes Ergebnis herunterladen",
+  "snapshotEncodingError": "Die Datei enthält kein gültiges UTF-8. Wähle einen unveränderten JSON-Prüfsnapshot."
 }

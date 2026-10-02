@@ -141,3 +141,12 @@ test('oversized snapshot files are rejected before sending a request',async({pag
  await expect(page.getByRole('alert')).toContainText('1 MiB');
  expect(sent).toBe(0);
 });
+
+test('invalid UTF-8 snapshot files are rejected before sending a request',async({page})=>{
+ await page.goto('/');
+ let sent=0;
+ page.on('request',request=>{if(request.url().endsWith('/api/snapshots/replay'))sent++;});
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from([0xff,0xfe,0xff])});
+ await expect(page.getByRole('alert')).toContainText('kein gültiges UTF-8');
+ expect(sent).toBe(0);
+});
