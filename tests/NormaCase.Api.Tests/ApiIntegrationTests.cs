@@ -39,6 +39,7 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
     [InlineData("demo-b-supported", "demo-b", AssessmentOutcome.Supported)]
     [InlineData("demo-c-review", "demo-c", AssessmentOutcome.HumanReview)]
     [InlineData("demo-d-supported", "demo-d", AssessmentOutcome.Supported)]
+    [InlineData("demo-e-partial", "demo-e", AssessmentOutcome.Supported)]
     public async Task Http_result_matches_direct_engine_evaluation(string name, string demo, AssessmentOutcome expected)
     {
         var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", name + ".json"));
@@ -106,6 +107,42 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
             document.Assessment.DomainOutputs,
             output => output.OutputId == "external_state"
                 && output.Value.Choice == "PENDING_EXTERNAL");
+        var beta = Assert.Single(
+            document.Assessment.DomainOutputs,
+            output => output.OutputId == "segment_beta");
+        Assert.Equal(DomainOutputValueKind.Unknown, beta.Value.Kind);
+        Assert.Null(beta.Value.Choice);
+        Assert.Equal("SYNTH-DEMO-E-001", beta.Source.Id);
+        Assert.Equal("1", beta.Source.Version);
+        Assert.Equal(
+            "repository:knowledge/demo-e/pack.json",
+            beta.Source.SourceLocation);
+    }
+
+    [Fact]
+    public async Task Demo_E_http_response_uses_v2_and_preserves_known_and_unknown_outputs()
+    {
+        var json = File.ReadAllText(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                "Cases",
+                "demo-e-partial.json"));
+
+        var response = await Post("demo-e", json);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = AssessmentJson.Deserialize(
+            await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(2, document.FormatVersion);
+        Assert.Equal(AssessmentOutcome.Supported, document.Assessment.Outcome);
+
+        var decision = Assert.Single(
+            document.Assessment.DomainOutputs,
+            output => output.OutputId == "decision_state");
+        Assert.Equal(DomainOutputValueKind.Choice, decision.Value.Kind);
+        Assert.Equal("ELIGIBLE", decision.Value.Choice);
+
         var beta = Assert.Single(
             document.Assessment.DomainOutputs,
             output => output.OutputId == "segment_beta");
