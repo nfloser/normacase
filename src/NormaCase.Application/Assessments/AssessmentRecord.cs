@@ -14,7 +14,8 @@ public sealed record AssessmentRecord
         AssessmentInputSnapshot input,
         AssessmentResult result)
     {
-        if (assessmentId.IsEmpty)\n            throw new ArgumentException("Assessment id must be explicit.", nameof(assessmentId));
+        if (assessmentId.IsEmpty)
+            throw new ArgumentException("Assessment id must be explicit.", nameof(assessmentId));
         ArgumentException.ThrowIfNullOrWhiteSpace(caseId);
         ArgumentException.ThrowIfNullOrWhiteSpace(knowledgePackId);
         ArgumentException.ThrowIfNullOrWhiteSpace(platformVersion);
