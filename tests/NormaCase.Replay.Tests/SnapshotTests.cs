@@ -87,14 +87,19 @@ public sealed class SnapshotTests
         Assert.Throws<SnapshotReplayException>(() => new AssessmentSnapshotService().Replay(json, "test-1"));
     }
 
-    [Fact]
-    public void Replay_uses_the_embedded_historical_pack_and_explicit_date()
+    [Theory]
+    [InlineData("2025-01-01", null)]
+    [InlineData("2026-06-30", 1)]
+    [InlineData("2026-07-01", 2)]
+    public void Replay_uses_the_embedded_historical_pack_and_explicit_date(string date, int? ruleVersion)
     {
         var input = JsonNode.Parse(Case("demo-b-supported"))!;
-        input["assessmentDate"] = "2025-01-01";
+        input["assessmentDate"] = date;
         var service = new AssessmentSnapshotService();
         var json = service.Capture(Pack("demo-b"), input.ToJsonString(), "test-1");
-        Assert.Equal(new DateOnly(2025, 1, 1), service.Replay(json, "test-1").Assessment.AssessmentDate);
+        var result = service.Replay(json, "test-1").Assessment;
+        Assert.Equal(DateOnly.Parse(date, System.Globalization.CultureInfo.InvariantCulture), result.AssessmentDate);
+        Assert.Equal(ruleVersion, result.RuleTrace?.RuleVersion);
     }
 
 
@@ -135,6 +140,37 @@ public sealed class SnapshotTests
     {
         Assert.Throws<JsonException>(() => AssessmentSnapshotJson.Deserialize(
             new string('x', AssessmentJson.MaximumJsonCharacters + 1)));
+    }
+
+
+    [Theory]
+    [InlineData("PRESENT")]
+    [InlineData("MISSING")]
+    [InlineData("CONFLICTING")]
+    public void Evidence_states_survive_capture_and_verified_replay(string status)
+    {
+        var input = JsonNode.Parse(Case("demo-c-supported"))!;
+        input["evidence"]!["verification"] = status;
+        var service = new AssessmentSnapshotService();
+        var json = service.Capture(Pack("demo-c"), input.ToJsonString(), "test-1");
+        var snapshot = AssessmentSnapshotJson.Deserialize(json);
+        Assert.Equal(status, snapshot.Input.Evidence!["verification"].ToString().ToUpperInvariant());
+        var replay = service.Replay(json, "test-1");
+        Assert.Equal(AssessmentJson.Serialize(snapshot.Assessment.Assessment, "test-1"),
+            AssessmentJson.Serialize(replay.Assessment, "test-1"));
+    }
+
+    [Fact]
+    public void Rehashed_domain_output_change_is_rejected()
+    {
+        var service = new AssessmentSnapshotService();
+        var original = AssessmentSnapshotJson.Deserialize(
+            service.Capture(Pack("demo-e"), Case("demo-e-partial"), "test-1"));
+        var node = JsonNode.Parse(AssessmentJson.Serialize(original.Assessment.Assessment, "test-1"))!;
+        node["assessment"]!["domainOutputs"]![0]!["value"]!["choice"] = "ALTERED";
+        var changed = AssessmentJson.Deserialize(node.ToJsonString());
+        var json = AssessmentSnapshotJson.Serialize(original.KnowledgePackJson, original.Input, changed);
+        Assert.Throws<SnapshotReplayException>(() => service.Replay(json, "test-1"));
     }
 
     private static string Capture() => new AssessmentSnapshotService().Capture(Pack("demo-a"), Case("demo-a-supported"), "test-1");
