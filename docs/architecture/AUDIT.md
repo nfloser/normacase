@@ -92,3 +92,14 @@ the original assessment result. There is no API or persistence integration yet.
 An imported actor identity is a claim, not authenticated identity. The format
 provides neither signatures, tamper evidence nor authorization. Reasons and
 references must receive the same privacy controls as assessment content.
+
+
+## PostgreSQL persistence boundary
+
+The optional PostgreSQL adapter persists validated audit trails as immutable
+version snapshots rather than mutable review rows. The complete strict JSON history
+is retained for each accepted sequence; the adapter rejects skipped or divergent
+prefixes and the database rejects UPDATE/DELETE.
+
+See [POSTGRESQL_ASSESSMENT_STORAGE.md](POSTGRESQL_ASSESSMENT_STORAGE.md).
+This persistence does not authenticate actors or authorize review actions.
