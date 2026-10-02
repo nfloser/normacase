@@ -18,8 +18,10 @@ try:
         try:
             with urlopen("http://localhost:5080/api/packs", timeout=1) as response:
                 catalog = json.load(response)
-                assert len(catalog) == 4
+                assert len(catalog) == 5
                 assert all(pack["validationLevel"] == "SYNTHETIC" for pack in catalog)
+                assert all(pack["presentation"]["locale"] == "de-DE" for pack in catalog)
+                assert any(pack["packId"] == "synthetic.demo-e" for pack in catalog)
                 assert response.headers["Cache-Control"] == "no-store"
             break
         except URLError:
