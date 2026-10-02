@@ -22,7 +22,7 @@ def extract_verified(archive, target):
         for name in names:
             path = PurePosixPath(name)
             info = bundle.getinfo(name)
-            if (path.is_absolute() or ".." in path.parts or "\\" in name
+            if (name != info.orig_filename or path.is_absolute() or ".." in path.parts or "\\" in name
                     or ":" in name or info.is_dir()
                     or (info.external_attr >> 16) & 0o170000 == 0o120000):
                 raise ValueError("Invalid bundle path")
