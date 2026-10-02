@@ -26,11 +26,15 @@ Only synthetic data belongs in the repository.
 ```text
 src/
   NormaCase.Domain/       framework-independent core contracts
+  NormaCase.Knowledge/    Knowledge Pack model, loader and validation
+  NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
 
 tests/
-  NormaCase.Domain.Tests/ core semantics and regression tests
+  NormaCase.Domain.Tests/
+  NormaCase.RuleEngine.Tests/
 
-knowledge/                versioned Knowledge Packs (introduced incrementally)
+knowledge/
+  demo-a/                 synthetic external Knowledge Pack
 docs/
   project/
   architecture/
@@ -46,8 +50,8 @@ The system will grow as a modular monolith. ASP.NET Core, React + TypeScript, Po
 Requires the .NET 10 SDK.
 
 ```bash
-dotnet restore tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj
 dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release
+dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release
 ```
 
 No external runtime service is required for the foundation project.
