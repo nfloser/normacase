@@ -117,7 +117,16 @@ public sealed class WorkflowExecutionServiceTests
     public void Invalid_pack_is_rejected_before_workflow_selection()
     {
         var pack = LoadPack();
-        pack.Workflows.Single().SourceId = "missing-source";
+        var original = pack.Workflows.Single();
+        pack.Workflows[0] = new KnowledgeWorkflowDefinition
+        {
+            Id = original.Id,
+            Version = original.Version,
+            SourceId = "missing-source",
+            InitialStateId = original.InitialStateId,
+            States = original.States.ToList(),
+            Transitions = original.Transitions.ToList()
+        };
 
         var exception = Assert.Throws<KnowledgeValidationException>(
             () => _service.Start(
