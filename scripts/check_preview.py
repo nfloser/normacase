@@ -26,6 +26,17 @@ def extract_verified(archive, target):
                     or ":" in name or info.is_dir()
                     or (info.external_attr >> 16) & 0o170000 == 0o120000):
                 raise ValueError("Invalid bundle path")
+
+        if "preview.json" not in names:
+            raise ValueError("Bundle manifest missing")
+        manifest = json.loads(bundle.read("preview.json").decode("utf-8"))
+        expected = manifest["files"]
+        if set(names) != set(expected) | {"preview.json"}:
+            raise ValueError("Bundle file inventory mismatch")
+        for name, digest in expected.items():
+            if hashlib.sha256(bundle.read(name)).hexdigest() != digest:
+                raise ValueError("Bundle integrity mismatch")
+
         bundle.extractall(target)
         # zipfile does not restore executable bits on Unix.
         if os.name != "nt":
@@ -33,13 +44,6 @@ def extract_verified(archive, target):
                 mode = (info.external_attr >> 16) & 0o777
                 if mode:
                     (target / info.filename).chmod(mode)
-    manifest = json.loads((target / "preview.json").read_text(encoding="utf-8"))
-    expected = manifest["files"]
-    if set(names) != set(expected) | {"preview.json"}:
-        raise ValueError("Bundle file inventory mismatch")
-    for name, digest in expected.items():
-        if hashlib.sha256((target / name).read_bytes()).hexdigest() != digest:
-            raise ValueError("Bundle integrity mismatch")
     return manifest
 
 
