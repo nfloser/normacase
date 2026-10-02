@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
+using NormaCase.Knowledge.Model;
 using NormaCase.Knowledge.Serialization;
 using NormaCase.Knowledge.Validation;
 using NormaCase.RuleEngine.Evaluation;
@@ -182,7 +183,7 @@ public sealed class NumericExpressionSliceTests
         => Assert.Throws<KnowledgeValidationException>(
             () => _loader.LoadFromJson(node.ToJsonString()));
 
-    private Knowledge.Model.KnowledgePack LoadDemoPack()
+    private KnowledgePack LoadDemoPack()
         => _loader.LoadFromFile(DemoPackPath());
 
     private static JsonNode DemoD()
