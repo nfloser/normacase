@@ -350,5 +350,7 @@ public static class ApiHost
             new ApiError(code, message),
             statusCode: statusCode);
 
-    private sealed class RequestTooLargeException : Exception;
+    private sealed class RequestTooLargeException : Exception
+    {
+    }
 }
