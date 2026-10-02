@@ -28,10 +28,12 @@ src/
   NormaCase.Domain/       framework-independent case/decision contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
+  NormaCase.Application/  storage-neutral assessment execution records
 
 tests/
   NormaCase.Domain.Tests/
   NormaCase.RuleEngine.Tests/
+  NormaCase.Application.Tests/
 
 knowledge/
   demo-a/                 truth-valued AND/OR/UNKNOWN synthetic pack
@@ -63,7 +65,8 @@ The current core can:
 - configure safe unknown outcomes as INCOMPLETE or HUMAN_REVIEW,
 - select a rule version from an explicit assessment date,
 - return source-backed recursive Decision Trace data,
-- emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output.
+- emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
+- wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and the exact result.
 
 ## Local verification
 
@@ -72,9 +75,10 @@ Requires the .NET 10 SDK.
 ```bash
 dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release
 dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release
+dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj --configuration Release
 ```
 
-No external runtime service is required for the current core.
+No external runtime service is required for the current core. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md); it is the boundary a future PostgreSQL adapter will persist, not a database implementation itself.
 
 ## Development
 
