@@ -60,6 +60,8 @@ public sealed class SnapshotCliTests
     {
         var pack = JsonNode.Parse(File.ReadAllText(Fixture("demo-a")))!;
         pack["manifest"]!["validationLevel"] = "PUBLIC_REFERENCE";
+        pack["sources"]![0]!["retrievedAt"] = "2026-10-02";
+        pack["sources"]![0]!["contentHash"] = "sha256:" + new string('0', 64);
         var casePath = Path.Combine(AppContext.BaseDirectory, "Cases", "demo-a-supported.json");
         var packPath = Path.GetTempFileName();
         var snapshotPath = Path.GetTempFileName();
