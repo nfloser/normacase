@@ -9,6 +9,7 @@ public sealed class KnowledgePack
     public List<EvidenceRequirementDefinition> EvidenceRequirements { get; init; } = [];
     public List<SourceDefinition> Sources { get; init; } = [];
     public List<RuleDefinition> Rules { get; init; } = [];
+    public List<DomainOutputDefinition> Outputs { get; init; } = [];
 }
 
 public sealed class KnowledgeManifest
@@ -60,6 +61,20 @@ public sealed class RuleDefinition
     public AssessmentOutcome? OnMatch { get; init; }
     public AssessmentOutcome? OnNoMatch { get; init; }
     public AssessmentOutcome? OnUnknown { get; init; }
+}
+
+public sealed class DomainOutputDefinition
+{
+    public string Id { get; init; } = string.Empty;
+    public int Version { get; init; }
+    public DateOnly ValidFrom { get; init; }
+    public DateOnly? ValidUntil { get; init; }
+    public string SourceId { get; init; } = string.Empty;
+    public string Type { get; init; } = string.Empty;
+    public List<string> Choices { get; init; } = [];
+    public ConditionDefinition Condition { get; init; } = new();
+    public string OnMatch { get; init; } = string.Empty;
+    public string OnNoMatch { get; init; } = string.Empty;
 }
 
 public sealed class ConditionDefinition
