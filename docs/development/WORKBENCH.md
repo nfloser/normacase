@@ -46,3 +46,30 @@ Die Browser-Tests starten den echten API-Prozess und prüfen erfüllte Vorausset
 UNKNOWN/unvollständige Angaben, manuelle Prüfung, genaue Dezimalwerte,
 Ergebnis-Reset und mobile Darstellung. npm Restore/Browserinstallation benötigen
 beim Einrichten Netzwerkzugriff; die gebündelte Anwendung benötigt ihn nicht.
+
+## Prüfsnapshots herunterladen und wiederholen
+
+Nach „Jetzt prüfen“ steht zusätzlich „Prüfsnapshot herunterladen“ bereit. Die Datei
+enthält das ursprüngliche Wissenspaket, sämtliche Eingaben, das Ergebnis und die
+Prüfwerte. Ergebnis und Snapshot werden aus derselben Auswertung erzeugt. Die
+JSON-Texte werden im Browser unverändert heruntergeladen; auch sehr genaue
+Dezimalwerte werden nicht durch JavaScript Number gerundet.
+
+Unter „Gespeicherte Prüfung offline überprüfen“ kann eine synthetische Snapshotdatei
+bis 1 MiB ausgewählt werden. Der lokale Dienst validiert das eingebettete Wissen und
+berechnet die ursprüngliche Prüfung erneut. Bei Erfolg erscheinen eine deutsche
+Bestätigung, der ursprüngliche Prüfzeitpunkt, Wissens- und Plattformstand sowie ein
+Download des bestätigten Ergebnisses. Die Anzeige ist schreibgeschützt; aktuelle
+Fachlabels werden nicht als historische Präsentationsmetadaten verwendet. Die
+vollständige bestätigte Prüfspur bleibt im JSON verfügbar.
+
+Der Plattformstand muss zur tatsächlich gestarteten API-Version passen. Bei einer
+älteren Datei ist der passende archivierte Programmstand erforderlich. Ein
+abweichender Plattformstand oder ein inkonsistentes Ergebnis wird abgelehnt.
+Eine bestandene Wiederholung bestätigt keine Herkunft, Berechtigung oder fachliche
+Freigabe; siehe [Prüfsnapshots](ASSESSMENT_SNAPSHOTS.md).
+
+Die Datei wird lokal an den Loopback-Dienst übertragen und im Arbeitsspeicher
+geprüft. Sie wird nicht serverseitig oder im Browser-Speicher persistiert.
+Dateiauswahl oder Änderungen der Prüfangaben entfernen vorherige Ergebnisse und
+brechen veraltete Anfragen ab. Ausschließlich synthetische Daten verwenden.

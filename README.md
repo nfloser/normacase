@@ -139,3 +139,7 @@ assessment in a portable snapshot, then verify replay against that embedded
 knowledge and an explicit platform identity. See
 [the German snapshot guide](docs/development/ASSESSMENT_SNAPSHOTS.md) for commands,
 checksum limitations and historical replay requirements.
+
+The German workbench also downloads complete snapshots after evaluation and verifies
+uploaded synthetic snapshot files locally. Imported results remain read-only; see
+[the workbench guide](docs/development/WORKBENCH.md).

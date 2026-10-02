@@ -29,7 +29,11 @@ public sealed class SnapshotApiTests : IClassFixture<WebApplicationFactory<Progr
         var snapshot = envelope.RootElement.GetProperty("snapshotJson").GetString()!;
         var assessment = envelope.RootElement.GetProperty("assessmentJson").GetString()!;
         var restored = AssessmentSnapshotJson.Deserialize(snapshot);
-        Assert.Equal(CaseInputJson.Deserialize(input).AssessmentDate, restored.Input.AssessmentDate);
+        var expectedInput = CaseInputJson.Deserialize(input);
+        Assert.Equal(expectedInput.AssessmentDate, restored.Input.AssessmentDate);
+        Assert.Equal(expectedInput.Facts.Count, restored.Input.Facts.Count);
+        foreach (var fact in expectedInput.Facts)
+            Assert.Equal(fact.Value, restored.Input.Facts[fact.Key]);
         var direct = await Post("/api/assessments/synthetic." + demo, input);
         Assert.Equal(await direct.Content.ReadAsStringAsync(), assessment);
         var replay = await Post("/api/snapshots/replay", snapshot);
@@ -87,6 +91,42 @@ public sealed class SnapshotApiTests : IClassFixture<WebApplicationFactory<Progr
             (await Post("/api/snapshots/unknown-secret", "{}")).StatusCode);
     }
 
+
+    [Fact]
+    public async Task Replay_accepts_only_synthetic_embedded_knowledge()
+    {
+        var original = AssessmentSnapshotJson.Deserialize(await Capture());
+        var pack = JsonNode.Parse(original.KnowledgePackJson)!;
+        pack["manifest"]!["validationLevel"] = "PUBLIC_REFERENCE";
+        foreach (var source in pack["sources"]!.AsArray())
+        {
+            source!["retrievedAt"] = "2026-10-02";
+            source["contentHash"] = "sha256:" + new string('0', 64);
+        }
+        var json = AssessmentSnapshotJson.Serialize(pack.ToJsonString(), original.Input, original.Assessment);
+        var response = await Post("/api/snapshots/replay", json);
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.DoesNotContain("knowledgePackJson", await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task Existing_endpoint_preserves_UTF8_BOM_compatibility()
+    {
+        var input = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", "demo-a-supported.json"));
+        var response = await Post("/api/assessments/synthetic.demo-a", "\uFEFF" + input);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Invalid_UTF8_is_rejected_without_decoder_details()
+    {
+        using var content = new ByteArrayContent(new byte[] { 0xff, 0xfe, 0xff });
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+        var response = await _client.PostAsync("/api/snapshots/replay", content);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.DoesNotContain("Decoder", await response.Content.ReadAsStringAsync());
+    }
+
     private async Task<string> Capture()
     {
         var input = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", "demo-a-supported.json"));
@@ -101,7 +141,6 @@ public sealed class SnapshotApiTests : IClassFixture<WebApplicationFactory<Progr
 
     private sealed class ChunkedContent(byte[] bytes) : HttpContent
     {
-        public ChunkedContent() : this([]) { }
 
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
             => stream.WriteAsync(bytes).AsTask();

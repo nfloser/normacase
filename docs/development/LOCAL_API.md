@@ -48,3 +48,26 @@ Programm: Pack-Katalog, Demo-E-Assessment-JSON v2 einschließlich UNKNOWN-Fachau
 Sicherheitsheader und Origin-Ablehnung. Der separate Workbench-Job baut die lokal
 gebündelten React-/TypeScript-Assets und prüft reale Chromium-Szenarien gegen den
 gleichen .NET-Prozess. Das Smoke-Skript gibt keine Fallinhalte aus.
+
+## Snapshot-Adapter
+
+- `POST /api/snapshots/{packId}` empfängt denselben strukturierten Fall wie der
+  bestehende Assessment-Endpunkt. Die Antwort enthält `snapshotJson` und
+  `assessmentJson` als JSON-Zeichenfolgen aus einer Auswertung.
+- `POST /api/snapshots/replay` empfängt den vollständigen Snapshot direkt als
+  JSON-Body. Die Antwort enthält das bestätigte `assessmentJson` als Zeichenfolge.
+
+Die Zeichenfolgen erhalten exakte Dezimalwerte auch in JavaScript-Clients. Der
+Replay-Adapter verwendet ausschließlich das eingebettete Wissenspaket und die
+tatsächliche Assembly-InformationalVersion der API. Der Aufrufer kann den
+Plattformstand nicht per Request überschreiben. Das eingebettete Pack muss
+SYNTHETIC sein; ein aktueller Katalogeintrag wird für historische Wiederholung
+nicht vorausgesetzt.
+
+Zusätzliche Fehler: 403 nichtsynthetischer Snapshot; 409 Plattformstand,
+Wissensrelease oder neu berechnetes Ergebnis stimmt nicht überein.
+Prüfsummen-/Strukturfehler bleiben 400. Der gemeinsame JSON-Adapter zählt maximal
+1 MiB tatsächlich empfangene Bytes, auch bei unbekannter Content-Length und
+mehrbyteigem UTF-8. UTF-8 mit optionaler UTF-8-BOM wird unterstützt.
+Die übrigen Host-, Origin-, Inhalts-, Datenschutz- und Sicherheitsgrenzen gelten
+unverändert auch für beide Snapshot-Endpunkte.
