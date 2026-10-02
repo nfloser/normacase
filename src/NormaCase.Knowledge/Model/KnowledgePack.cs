@@ -41,8 +41,8 @@ public sealed class RuleDefinition
     public DateOnly? ValidUntil { get; init; }
     public string SourceId { get; init; } = string.Empty;
     public ConditionDefinition Condition { get; init; } = new();
-    public AssessmentOutcome OnMatch { get; init; }
-    public AssessmentOutcome OnNoMatch { get; init; }
+    public AssessmentOutcome? OnMatch { get; init; }
+    public AssessmentOutcome? OnNoMatch { get; init; }
 }
 
 public sealed class ConditionDefinition
