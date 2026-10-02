@@ -44,7 +44,19 @@ export const de = {
   humanReview: "Manuelle Prüfung erforderlich",
   outcomeNotApplicable: "Nicht anwendbar",
   skipToForm: "Zum Prüfformular springen",
-  reset: "Eingaben zurücksetzen"
+  reset: "Eingaben zurücksetzen",
+  heroCopy: "Deterministische, nachvollziehbare Tests mit synthetischen Wissensständen.",
+  configureHeading: "Prüfung konfigurieren",
+  configureCopy: "Wähle einen synthetischen Wissensstand und erfasse die Angaben explizit.",
+  loading: "Prüfdaten werden geladen …",
+  caseData: "Falldaten",
+  evidenceStatus: "Evidenzstatus",
+  resultCopy: "Plattformstatus und fachliche Ausgaben bleiben voneinander getrennt.",
+  platformStatus: "Plattformstatus",
+  unknownOutput: "Nicht ausreichend beurteilbar",
+  numberStatus: "Eingabestatus",
+  numberUnknown: "Unbekannt",
+  numberValue: "Wert eingeben"
 } as const;
 
 export function outcomeLabel(outcome: AssessmentDocument["assessment"]["outcome"]): string {
