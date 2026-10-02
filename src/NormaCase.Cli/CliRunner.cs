@@ -55,17 +55,6 @@ public static class CliRunner
                 }
                 if (assessment.MissingRequiredFields.Count > 0)
                     output.WriteLine(Messages.Get("Missing") + ": " + string.Join(", ", assessment.MissingRequiredFields));
-                if (assessment.DomainOutputs.Count > 0)
-                {
-                    output.WriteLine(Messages.Get("DomainOutputs") + ":");
-                    foreach (var domainOutput in assessment.DomainOutputs)
-                    {
-                        var value = domainOutput.Value.IsUnknown
-                            ? Messages.Get("Unknown")
-                            : domainOutput.Value.Choice!;
-                        output.WriteLine("  " + domainOutput.OutputId + ": " + value);
-                    }
-                }
             }
             return 0;
         }
