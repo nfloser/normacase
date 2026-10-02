@@ -1,3 +1,4 @@
+using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Knowledge.Serialization;
 using NormaCase.Knowledge.Validation;
@@ -15,7 +16,7 @@ public sealed class SyntheticKnowledgeSliceTests
     public void Matching_case_returns_supported_with_source_backed_trace()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
             ["criterion_a"] = TruthValue.Yes,
             ["criterion_b"] = TruthValue.Yes,
@@ -30,19 +31,25 @@ public sealed class SyntheticKnowledgeSliceTests
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
         Assert.Equal("demo-a-2026.1", result.KnowledgeRelease);
         Assert.Empty(result.MissingRequiredFields);
+
         var trace = Assert.IsType<RuleTrace>(result.RuleTrace);
         Assert.Equal("DEMO-A-ELIGIBILITY", trace.RuleId);
         Assert.Equal(1, trace.RuleVersion);
         Assert.Equal("SYNTH-DEMO-A-001", trace.SourceId);
         Assert.Equal(ConditionResult.Matched, trace.ConditionResult);
         Assert.Equal("all", trace.Condition.Kind);
+
+        var firstLeaf = trace.Condition.Children[0];
+        Assert.Equal(CaseValueKind.Truth, firstLeaf.Actual!.Value.Kind);
+        Assert.Equal(TruthValue.Yes, firstLeaf.Actual.Value.Truth);
+        Assert.Equal(TruthValue.Yes, firstLeaf.Expected!.Value.Truth);
     }
 
     [Fact]
     public void Nested_any_branch_can_satisfy_the_rule()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
             ["criterion_a"] = TruthValue.Yes,
             ["criterion_b"] = TruthValue.No,
@@ -62,7 +69,7 @@ public sealed class SyntheticKnowledgeSliceTests
     public void Complete_nonmatching_case_returns_not_supported()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
             ["criterion_a"] = TruthValue.No,
             ["criterion_b"] = TruthValue.Yes,
@@ -82,7 +89,7 @@ public sealed class SyntheticKnowledgeSliceTests
     public void Missing_required_fact_remains_unknown_and_fails_closed()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
             ["criterion_b"] = TruthValue.Yes,
             ["criterion_c"] = TruthValue.No
@@ -98,7 +105,7 @@ public sealed class SyntheticKnowledgeSliceTests
         Assert.Equal(ConditionResult.Unknown, result.RuleTrace!.ConditionResult);
 
         var missingLeaf = result.RuleTrace.Condition.Children[0];
-        Assert.Equal(TruthValue.Unknown, missingLeaf.Actual);
+        Assert.True(missingLeaf.Actual!.Value.IsUnknown);
         Assert.Equal(ConditionResult.Unknown, missingLeaf.Result);
     }
 
@@ -106,9 +113,9 @@ public sealed class SyntheticKnowledgeSliceTests
     public void Explicit_unknown_required_fact_fails_closed()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
-            ["criterion_a"] = TruthValue.Unknown,
+            ["criterion_a"] = CaseValue.Unknown,
             ["criterion_b"] = TruthValue.Yes
         };
 
@@ -125,7 +132,7 @@ public sealed class SyntheticKnowledgeSliceTests
     public void Any_without_a_match_remains_unknown_when_one_branch_is_unknown()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
             ["criterion_a"] = TruthValue.Yes,
             ["criterion_b"] = TruthValue.No
@@ -161,7 +168,7 @@ public sealed class SyntheticKnowledgeSliceTests
     public void Assessment_date_is_explicit_and_no_rule_means_human_review()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
             ["criterion_a"] = TruthValue.Yes,
             ["criterion_b"] = TruthValue.Yes
@@ -198,7 +205,7 @@ public sealed class SyntheticKnowledgeSliceTests
     public void Case_fields_not_declared_by_the_pack_are_rejected()
     {
         var pack = LoadDemoPack();
-        var facts = new Dictionary<string, TruthValue>
+        var facts = new Dictionary<string, CaseValue>
         {
             ["criterion_a"] = TruthValue.Yes,
             ["criterion_b"] = TruthValue.Yes,
