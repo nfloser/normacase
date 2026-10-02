@@ -28,10 +28,14 @@ src/
   NormaCase.Domain/       framework-independent case/decision contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
+  NormaCase.Serialization/ strict assessment JSON interchange
+  NormaCase.Cli/           local offline assessment runner
 
 tests/
   NormaCase.Domain.Tests/
   NormaCase.RuleEngine.Tests/
+  NormaCase.Serialization.Tests/
+  NormaCase.Cli.Tests/
 
 knowledge/
   demo-a/                 truth-valued AND/OR/UNKNOWN synthetic pack
@@ -63,6 +67,34 @@ The current core can:
 - select a rule version from an explicit assessment date,
 - return source-backed recursive Decision Trace data.
 
+## Lokale Offline-Auswertung
+
+Benötigt das .NET 10 SDK. Die CLI liest ausschließlich lokale Dateien; der Bewertungsstichtag wird immer explizit übergeben.
+
+```bash
+dotnet run --project src/NormaCase.Cli/NormaCase.Cli.csproj -- \
+  evaluate \
+  --pack knowledge/demo-a/pack.json \
+  --case knowledge/demo-a/case.example.json \
+  --date 2026-10-02
+```
+
+Für Demo B und C können die jeweiligen `pack.json`- und `case.example.json`-Dateien identisch verwendet werden. Die Eingabewerte sind strikt typisiert. `UNKNOWN` bleibt erhalten; unbekannte oder doppelte JSON-Eigenschaften werden abgewiesen.
+
+Ein versioniertes Assessment-JSON kann optional geschrieben werden:
+
+```bash
+dotnet run --project src/NormaCase.Cli/NormaCase.Cli.csproj -- \
+  evaluate \
+  --pack knowledge/demo-a/pack.json \
+  --case knowledge/demo-a/case.example.json \
+  --date 2026-10-02 \
+  --output assessment.json \
+  --platform-version 0.1.0-dev
+```
+
+Exit-Codes: `0` Erfolg, `2` ungültige Eingabe/Knowledge Pack, `3` Datei-/IO-Fehler. Fehlerausgaben enthalten keine Fallinhalte.
+
 ## Local verification
 
 Requires the .NET 10 SDK.
@@ -70,6 +102,8 @@ Requires the .NET 10 SDK.
 ```bash
 dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release
 dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release
+dotnet test tests/NormaCase.Serialization.Tests/NormaCase.Serialization.Tests.csproj --configuration Release
+dotnet test tests/NormaCase.Cli.Tests/NormaCase.Cli.Tests.csproj --configuration Release
 ```
 
 No external runtime service is required for the current core.
