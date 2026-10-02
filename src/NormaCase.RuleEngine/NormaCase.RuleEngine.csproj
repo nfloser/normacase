@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>NormaCase.RuleEngine</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../NormaCase.Domain/NormaCase.Domain.csproj" />
+    <ProjectReference Include="../NormaCase.Knowledge/NormaCase.Knowledge.csproj" />
+  </ItemGroup>
+</Project>
