@@ -25,7 +25,7 @@ Only synthetic data belongs in the repository.
 
 ```text
 src/
-  NormaCase.Domain/       framework-independent case/decision/audit contracts
+  NormaCase.Domain/       framework-independent case/decision/workflow/audit contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
   NormaCase.Application/  storage-neutral assessment execution records
@@ -70,6 +70,7 @@ The current core can:
 - select a rule version from an explicit assessment date,
 - return source-backed recursive Decision Trace data,
 - emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
+- advance generic immutable workflow instances through explicitly declared deterministic transitions,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
 - persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint.
