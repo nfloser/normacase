@@ -29,6 +29,10 @@ Validation level is separate from lifecycle. At minimum distinguish:
 
 Productive domain rules require a traceable source with stable identity and metadata such as authority, title, document type, publication/validity dates, version, location, retrieval date and content hash.
 
+Source `contentHash` is the SHA-256 digest of the exact retrieved bytes represented by that source revision. A hash supports identity and reproducibility; it does not establish authenticity, approval or trust by itself. NormaCase pack validation never fetches remote content during deterministic evaluation.
+
+Non-synthetic Knowledge Packs require retrieval date and content hash metadata. Synthetic packs may omit these fields so test fixtures do not imply an external source retrieval that never happened.
+
 Sources and rule versions are append/version operations, not in-place historical rewrites.
 
 ## Rule safety
