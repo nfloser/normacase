@@ -34,3 +34,11 @@ public sealed class AssessmentRecordIntegrityException : Exception
 
     public AssessmentId AssessmentId { get; }
 }
+
+public sealed class AssessmentRecordStorageException : Exception
+{
+    public AssessmentRecordStorageException()
+        : base("Assessment record storage operation failed.")
+    {
+    }
+}
