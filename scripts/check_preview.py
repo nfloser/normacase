@@ -14,6 +14,17 @@ from urllib.request import Request, urlopen
 import zipfile
 
 
+def verify_archive_sidecar(archive):
+    sidecar = archive.with_suffix(archive.suffix + ".sha256")
+    if not sidecar.is_file():
+        raise ValueError("Archive checksum sidecar missing")
+    parts = sidecar.read_text(encoding="ascii").strip().split("  ", 1)
+    if len(parts) != 2 or parts[1] != archive.name:
+        raise ValueError("Archive checksum sidecar invalid")
+    if hashlib.sha256(archive.read_bytes()).hexdigest() != parts[0]:
+        raise ValueError("Archive checksum mismatch")
+
+
 def extract_verified(archive, target):
     with zipfile.ZipFile(archive) as bundle:
         names = bundle.namelist()
@@ -48,6 +59,7 @@ def extract_verified(archive, target):
 
 
 def check(archive, rid, commit):
+    verify_archive_sidecar(archive)
     with tempfile.TemporaryDirectory(prefix="NormaCase preview ") as temporary:
         root = Path(temporary) / "extracted bundle"
         root.mkdir()
