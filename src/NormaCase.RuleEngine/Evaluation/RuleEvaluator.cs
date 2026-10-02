@@ -78,12 +78,19 @@ public sealed class RuleEvaluator
             condition,
             sourceTrace);
 
+        var outputs = rule.Outputs
+            .Select(output => EvaluateStructuredOutput(output, rule, sourceTrace, facts, evidence))
+            .ToArray();
+
         return new(
             pack.Manifest.ReleaseId,
             assessmentDate,
             finalOutcome,
             missingRequiredFields,
-            trace);
+            trace)
+        {
+            Outputs = outputs
+        };
     }
 
     private static RuleDefinition? ResolveEntryRule(
@@ -379,6 +386,52 @@ public sealed class RuleEvaluator
             null,
             children);
     }
+
+    private static StructuredOutputTrace EvaluateStructuredOutput(
+        StructuredOutputDefinition output,
+        RuleDefinition rule,
+        SourceTrace source,
+        IReadOnlyDictionary<string, CaseValue> facts,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence)
+    {
+        var condition = EvaluateCondition(output.Condition, facts, evidence);
+        var definition = condition.Result switch
+        {
+            ConditionResult.Matched => output.OnMatch,
+            ConditionResult.NotMatched => output.OnNoMatch,
+            ConditionResult.Unknown => output.OnUnknown,
+            _ => output.OnUnknown
+        };
+
+        return new(
+            output.Id,
+            output.Scope,
+            ParseOutputRole(output.Role),
+            CreateOutputValue(definition),
+            rule.Id,
+            rule.Version,
+            condition,
+            source);
+    }
+
+    private static StructuredOutputRole ParseOutputRole(string role)
+        => role switch
+        {
+            "DECISION" => StructuredOutputRole.Decision,
+            "WORKFLOW" => StructuredOutputRole.Workflow,
+            "INFORMATION" => StructuredOutputRole.Information,
+            _ => throw new InvalidOperationException($"Knowledge validation should reject unknown output role '{role}'.")
+        };
+
+    private static StructuredOutputValue CreateOutputValue(StructuredOutputValueDefinition value)
+        => value.Kind switch
+        {
+            "UNKNOWN" => StructuredOutputValue.Unknown,
+            "TRUTH" => StructuredOutputValue.FromTruth(value.Truth!.Value),
+            "NUMBER" => StructuredOutputValue.FromNumber(value.Number!.Value),
+            "CODE" => StructuredOutputValue.FromCode(value.Code!),
+            _ => throw new InvalidOperationException($"Knowledge validation should reject unknown output value kind '{value.Kind}'.")
+        };
 
     private static bool HasConflictingEvidence(ConditionTrace trace)
         => trace.EvidenceStatus == EvidenceStatus.Conflicting
