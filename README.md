@@ -30,6 +30,8 @@ src/
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
   NormaCase.Application/  storage-neutral assessment execution records
   NormaCase.Replay/       portable snapshot capture and verified offline replay
+  NormaCase.Persistence.PostgreSql/
+                         append-only PostgreSQL assessment record adapter
 
 tests/
   NormaCase.Domain.Tests/
@@ -69,7 +71,8 @@ The current core can:
 - return source-backed recursive Decision Trace data,
 - emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
-- wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result.
+- wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
+- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint.
 
 ## Local verification
 
@@ -81,7 +84,9 @@ dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj -
 dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj --configuration Release
 ```
 
-No external runtime service is required for the current core. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md), while human review/audit semantics are documented in [docs/architecture/AUDIT.md](docs/architecture/AUDIT.md). Neither is a database implementation.
+The deterministic core itself needs no external runtime service. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md), while human review/audit semantics are documented in [docs/architecture/AUDIT.md](docs/architecture/AUDIT.md).
+
+An optional PostgreSQL adapter persists immutable assessment records without coupling the core to storage. Its schema, migration and integrity guarantees are documented in [docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md](docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md). It is not connected to the user-facing API yet.
 
 ## Development
 

@@ -74,3 +74,14 @@ Additional datastores require a demonstrated use case.
 ## Offline/on-premises design
 
 Runtime-critical assets and domain knowledge are local. External fonts, CDNs, analytics, telemetry or cloud AI services are not required for core operation.
+
+
+## PostgreSQL persistence adapter
+
+Historical assessment persistence is implemented as an optional infrastructure adapter:
+`NormaCase.Persistence.PostgreSql` depends on the storage-neutral Application and
+Serialization contracts. Domain, Knowledge and RuleEngine do not depend on Npgsql or
+PostgreSQL.
+
+Assessment rows are append-only at the database boundary and retain the complete strict
+AssessmentRecord JSON. See [POSTGRESQL_ASSESSMENT_STORAGE.md](POSTGRESQL_ASSESSMENT_STORAGE.md).

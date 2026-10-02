@@ -176,3 +176,38 @@ jobs:
         with:
           dotnet-version: '10.0.x'
       - run: dotnet test tests/NormaCase.Replay.Tests --configuration Release
+
+
+  postgres-persistence:
+    name: Immutable PostgreSQL assessment storage
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: normacase_test
+          POSTGRES_USER: normacase_test
+          POSTGRES_PASSWORD: synthetic-test-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U normacase_test -d normacase_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_test;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj
+      - name: Build
+        run: dotnet build tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-build
