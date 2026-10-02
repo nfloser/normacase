@@ -28,16 +28,16 @@ Source metadata stated by the guideline:
 
 Source locations in the PDF: front matter, page 2 of the PDF presentation (PDF text page index 1).
 
-### Provenance blocker
+### Captured artifact provenance
 
-Exact artifact SHA-256 is **not yet recorded**.
+The exact official PDF artifact was retrieved from the canonical URL by a GitHub Actions runner on **2026-10-02** solely to capture deterministic provenance metadata.
 
-The research environment could inspect the official PDF through the web document viewer, but direct binary retrieval required to calculate the exact file hash failed. No placeholder or guessed hash is permitted.
+- retrieved at: **2026-10-02**
+- size: **1,749,350 bytes**
+- SHA-256: **`f39b25b55a30cd2dcf9b5ac1547f73be3f9d077b12c87f69ded38e6fac104e4b`**
+- Knowledge source hash representation: **`sha256:f39b25b55a30cd2dcf9b5ac1547f73be3f9d077b12c87f69ded38e6fac104e4b`**
 
-Therefore:
-- this source analysis may be reviewed and merged as research,
-- **no `PUBLIC_REFERENCE` Knowledge Pack using this source may be activated until the exact artifact is captured and its SHA-256 recorded**, and
-- Issue #20 remains incomplete until that provenance requirement is satisfied.
+The temporary CI workflow used to calculate this value is removed before merge. Runtime evaluation remains offline and does not fetch this source.
 
 ## Scope boundary
 
