@@ -28,8 +28,8 @@ public sealed record RuleTrace(
 /// <summary>Detached immutable metadata for the exact source revision used by this rule.</summary>
 public sealed record SourceTrace(
     string Id,
-    string Version,
-    string SourceLocation,
+    string? Version,
+    string? SourceLocation,
     string Authority,
     string Title,
     string DocumentType,
