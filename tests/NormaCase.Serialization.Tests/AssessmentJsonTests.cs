@@ -26,7 +26,7 @@ public sealed class AssessmentJsonTests
         Assert.Equal("test-platform-1", restored.PlatformVersion);
         Assert.Equal(json, AssessmentJson.Serialize(restored.Assessment, restored.PlatformVersion));
         Assert.Equal(result.RuleTrace!.Source, restored.Assessment.RuleTrace!.Source);
-        Assert.Equal(result.RuleTrace.Condition.Children[0].Actual, restored.Assessment.RuleTrace.Condition.Children[0].Actual);
+        Assert.Equal(result.RuleTrace.Condition, restored.Assessment.RuleTrace.Condition);
         Assert.Equal(result.Outputs, restored.Assessment.Outputs);
     }
 
