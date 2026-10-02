@@ -37,6 +37,13 @@ public sealed class RuleEvaluator
             .Order(StringComparer.Ordinal)
             .ToArray();
 
+        var evaluationFacts = new Dictionary<string, CaseValue>(
+            facts,
+            StringComparer.Ordinal);
+        var calculationTraces = EvaluateCalculations(
+            pack.Calculations,
+            evaluationFacts);
+
         var rule = ResolveEntryRule(pack, assessmentDate);
         if (rule is null)
         {
@@ -45,10 +52,16 @@ public sealed class RuleEvaluator
                 assessmentDate,
                 AssessmentOutcome.HumanReview,
                 missingRequiredFields,
-                null);
+                null)
+            {
+                Calculations = calculationTraces
+            };
         }
 
-        var condition = EvaluateCondition(rule.Condition, facts, evidence);
+        var condition = EvaluateCondition(
+            rule.Condition,
+            evaluationFacts,
+            evidence);
         var ruleOutcome = condition.Result switch
         {
             ConditionResult.Matched => rule.OnMatch!.Value,
@@ -83,7 +96,192 @@ public sealed class RuleEvaluator
             assessmentDate,
             finalOutcome,
             missingRequiredFields,
-            trace);
+            trace)
+        {
+            Calculations = calculationTraces
+        };
+    }
+
+    private static IReadOnlyList<CalculationTrace> EvaluateCalculations(
+        IReadOnlyList<CalculationDefinition> calculations,
+        IDictionary<string, CaseValue> evaluationFacts)
+    {
+        var traces = new List<CalculationTrace>(calculations.Count);
+
+        foreach (var calculation in calculations)
+        {
+            var trace = calculation.Kind switch
+            {
+                "range_lookup" => EvaluateRangeLookup(
+                    calculation,
+                    evaluationFacts),
+                "sum" => EvaluateSum(
+                    calculation,
+                    evaluationFacts),
+                "max" => EvaluateMax(
+                    calculation,
+                    evaluationFacts),
+                _ => throw new InvalidOperationException(
+                    $"Knowledge validation should reject unknown calculation kind '{calculation.Kind}'.")
+            };
+
+            evaluationFacts.Add(calculation.Id, trace.Result);
+            traces.Add(trace);
+        }
+
+        return traces;
+    }
+
+    private static CalculationTrace EvaluateRangeLookup(
+        CalculationDefinition calculation,
+        IReadOnlyDictionary<string, CaseValue> evaluationFacts)
+    {
+        var inputValue = GetCalculationInput(
+            calculation.Input!,
+            evaluationFacts);
+        var inputs = new[]
+        {
+            new CalculationInputTrace(
+                calculation.Input!,
+                inputValue)
+        };
+
+        if (inputValue.IsUnknown)
+        {
+            return new(
+                calculation.Id,
+                calculation.Kind,
+                inputs,
+                CaseValue.Unknown,
+                null);
+        }
+
+        var number = inputValue.Number!.Value;
+        var matches = calculation.Ranges
+            .Where(range => IsInLookupRange(number, range))
+            .ToArray();
+
+        if (matches.Length == 0)
+        {
+            return new(
+                calculation.Id,
+                calculation.Kind,
+                inputs,
+                CaseValue.Unknown,
+                null);
+        }
+
+        if (matches.Length != 1)
+        {
+            throw new InvalidOperationException(
+                $"Validated range_lookup '{calculation.Id}' matched more than one range.");
+        }
+
+        var selected = matches[0];
+        var result = CaseValue.FromNumber(selected.Value!.Value);
+        var rangeTrace = new RangeLookupTrace(
+            selected.Minimum!.Value,
+            selected.MinimumInclusive,
+            selected.Maximum!.Value,
+            selected.MaximumInclusive,
+            selected.Value.Value);
+
+        return new(
+            calculation.Id,
+            calculation.Kind,
+            inputs,
+            result,
+            rangeTrace);
+    }
+
+    private static CalculationTrace EvaluateSum(
+        CalculationDefinition calculation,
+        IReadOnlyDictionary<string, CaseValue> evaluationFacts)
+    {
+        var inputs = GetCalculationInputs(
+            calculation.Inputs,
+            evaluationFacts);
+
+        if (inputs.Any(input => input.Value.IsUnknown))
+        {
+            return new(
+                calculation.Id,
+                calculation.Kind,
+                inputs,
+                CaseValue.Unknown,
+                null);
+        }
+
+        var sum = inputs.Aggregate(
+            0m,
+            (current, input) => checked(
+                current + input.Value.Number!.Value));
+
+        return new(
+            calculation.Id,
+            calculation.Kind,
+            inputs,
+            CaseValue.FromNumber(sum),
+            null);
+    }
+
+    private static CalculationTrace EvaluateMax(
+        CalculationDefinition calculation,
+        IReadOnlyDictionary<string, CaseValue> evaluationFacts)
+    {
+        var inputs = GetCalculationInputs(
+            calculation.Inputs,
+            evaluationFacts);
+
+        if (inputs.Any(input => input.Value.IsUnknown))
+        {
+            return new(
+                calculation.Id,
+                calculation.Kind,
+                inputs,
+                CaseValue.Unknown,
+                null);
+        }
+
+        var maximum = inputs
+            .Max(input => input.Value.Number!.Value);
+
+        return new(
+            calculation.Id,
+            calculation.Kind,
+            inputs,
+            CaseValue.FromNumber(maximum),
+            null);
+    }
+
+    private static CalculationInputTrace[] GetCalculationInputs(
+        IEnumerable<string> inputIds,
+        IReadOnlyDictionary<string, CaseValue> evaluationFacts)
+        => inputIds
+            .Select(id => new CalculationInputTrace(
+                id,
+                GetCalculationInput(id, evaluationFacts)))
+            .ToArray();
+
+    private static CaseValue GetCalculationInput(
+        string inputId,
+        IReadOnlyDictionary<string, CaseValue> evaluationFacts)
+        => evaluationFacts.TryGetValue(inputId, out var value)
+            ? value
+            : CaseValue.Unknown;
+
+    private static bool IsInLookupRange(
+        decimal value,
+        RangeLookupDefinition range)
+    {
+        var lowerMatches = range.MinimumInclusive
+            ? value >= range.Minimum
+            : value > range.Minimum;
+        var upperMatches = range.MaximumInclusive
+            ? value <= range.Maximum
+            : value < range.Maximum;
+
+        return lowerMatches && upperMatches;
     }
 
     private static RuleDefinition? ResolveEntryRule(
