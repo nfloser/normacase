@@ -21,6 +21,21 @@
     <None Include="../../knowledge/demo-a/pack.json"
           Link="Fixtures/demo-a-pack.json"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-a/case.example.json"
+          Link="Fixtures/demo-a-case.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-b/pack.json"
+          Link="Fixtures/demo-b-pack.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-b/case.example.json"
+          Link="Fixtures/demo-b-case.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-c/pack.json"
+          Link="Fixtures/demo-c-pack.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-c/case.example.json"
+          Link="Fixtures/demo-c-case.json"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="Fixtures/*.json"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
