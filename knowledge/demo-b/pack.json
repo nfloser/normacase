@@ -25,7 +25,9 @@
       "authority": "NormaCase synthetic test suite",
       "title": "Synthetic Demo B numeric rule source",
       "documentType": "SYNTHETIC",
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-b/pack.json"
     }
   ],
   "rules": [

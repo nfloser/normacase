@@ -56,7 +56,7 @@ Case values must match the field type declared by the pack. The evaluator reject
 
 Every rule references a source id. Synthetic fixtures use synthetic sources only.
 
-Source id, authority, title, document type and status are required. The model also carries publication date, source validity interval, version, source location, retrieval date and a content hash.
+Source id, authority, title, document type, status, version and source location are required for every source. The model also carries publication date, source validity interval, version, source location, retrieval date and a content hash.
 
 Content hashes use `sha256:<64 hexadecimal characters>`. Invalid hashes and source validity intervals are rejected.
 
@@ -98,7 +98,7 @@ An evaluation result records:
 - assessment date,
 - missing required fields,
 - selected rule id/version,
-- source id,
+- source id and an immutable snapshot of its version, location, authority, title, type, status, publication/validity dates, retrieval date and content hash,
 - recursive condition trace,
 - typed actual/expected values or numeric range bounds,
 - final outcome.
@@ -135,3 +135,22 @@ result and final outcome are recorded separately.
 Demo C requires a confirmed synthetic request and verification evidence for either
 a numeric threshold or an alternative confirmation. Missing verification escalates
 to human review. Demo A/B need no evidence and retain their existing behavior.
+
+## Source revision snapshots
+
+Rule Trace contains a detached immutable `SourceTrace` record. Changing a source
+collection or loading a later release cannot rewrite metadata already returned in
+a historical result. Consumers should persist the result with this snapshot; a
+source ID alone is insufficient to distinguish revisions. This is a metadata
+snapshot, not document archival or a complete immutable assessment store.
+
+Every source declares a non-empty `version` and `sourceLocation`. The synthetic
+fixtures identify revision 1 of their repository pack; they leave retrieval dates
+and hashes absent because there was no external document retrieval.
+
+A `sha256:` hash identifies the exact original source document bytes supplied by
+the knowledge author, not a normalized title, extracted text or a web URL. It is
+not a signature or proof of authenticity. Validation checks syntax and required
+metadata only; it does not fetch remote content or verify bytes against the hash.
+The source validity interval is recorded metadata; this change does not add an
+implicit rule/source temporal policy. Rule selection still uses the explicit date.

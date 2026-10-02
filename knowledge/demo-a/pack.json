@@ -30,7 +30,9 @@
       "authority": "NormaCase synthetic test suite",
       "title": "Synthetic Demo A rule source",
       "documentType": "SYNTHETIC",
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-a/pack.json"
     }
   ],
   "rules": [

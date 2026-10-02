@@ -35,7 +35,9 @@
       "authority": "NormaCase synthetic test suite",
       "title": "Synthetic evidence dependency example",
       "documentType": "SYNTHETIC",
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-c/pack.json"
     }
   ],
   "rules": [
