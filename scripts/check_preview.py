@@ -57,7 +57,13 @@ def check(archive, rid, commit):
         runtime = "hostfxr.dll" if rid == "win-x64" else "libhostfxr.so"
         assert (root / "api" / runtime).is_file(), "API runtime missing"
         assert (root / "cli" / runtime).is_file(), "CLI runtime missing"
+        for folder, name in [("api", "Api"), ("cli", "Cli")]:
+            options = json.loads((root / folder / ("NormaCase." + name + ".runtimeconfig.json"))
+                                 .read_text(encoding="utf-8"))["runtimeOptions"]
+            assert options.get("includedFrameworks"), "Self-contained runtime configuration missing"
+            assert "framework" not in options and "frameworks" not in options
         environment = {**os.environ, "DOTNET_ROOT": str(root / "absent-runtime"),
+                       "DOTNET_ROOT_X64": str(root / "absent-runtime"),
                        "DOTNET_MULTILEVEL_LOOKUP": "0", "ASPNETCORE_ENVIRONMENT": "Production"}
         cli = root / "cli" / ("NormaCase.Cli" + suffix)
 

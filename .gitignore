@@ -37,3 +37,7 @@ frontend/node_modules/
 frontend/test-results/
 frontend/playwright-report/
 src/NormaCase.Api/wwwroot/
+
+# Self-contained preview archives
+artifacts/
+**/__pycache__/

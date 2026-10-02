@@ -148,3 +148,18 @@ checksum limitations and historical replay requirements.
 The German workbench also downloads complete snapshots after evaluation and verifies
 uploaded synthetic snapshot files locally. Imported results remain read-only; see
 [the workbench guide](docs/development/WORKBENCH.md).
+
+## Downloadable synthetic preview
+
+Native Windows x64 and Linux x64 preview packages are built and smoke-tested by
+[the preview workflow](.github/workflows/preview.yml). Successful runs publish
+`synthetic-preview-win-x64` and `synthetic-preview-linux-x64` artifacts for 14 days.
+Download the artifact for your operating system from the GitHub Actions run,
+extract the contained application ZIP completely, then follow `START.de.md`.
+Node and an installed .NET runtime are not needed; Linux still needs the native
+system libraries described in [the German start guide](docs/development/PREVIEW_START.de.md).
+
+The preview includes the German workbench, offline CLI, all synthetic packs and
+examples, its exact source/platform identity and corruption-detection checksums.
+It keeps the existing loopback-only host and does not expose persistence or
+production authorization. A CI preview is not an approved product release.
