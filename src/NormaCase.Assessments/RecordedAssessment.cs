@@ -62,33 +62,23 @@ public sealed class RecordedAssessment
         string caseInputJson,
         string assessmentJson)
     {
-        var validAssessmentId = TechnicalIdentifier.Require(
-            assessmentId,
-            nameof(assessmentId));
-        var validCaseId = TechnicalIdentifier.Require(
-            caseId,
-            nameof(caseId));
-        var validRecordedAt = TechnicalIdentifier.RequireUtc(
-            recordedAtUtc,
-            nameof(recordedAtUtc));
+        var input = CaseInputJson.Deserialize(
+            RequireDocument(caseInputJson, nameof(caseInputJson)));
+        var assessment = AssessmentJson.Deserialize(
+            RequireDocument(assessmentJson, nameof(assessmentJson)));
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(caseInputJson);
-        ArgumentException.ThrowIfNullOrWhiteSpace(assessmentJson);
-
-        var input = CaseInputJson.Deserialize(caseInputJson);
-        var assessment = AssessmentJson.Deserialize(assessmentJson);
-
-        if (input.AssessmentDate
-            != assessment.Assessment.AssessmentDate)
-        {
-            throw new InvalidDataException(
-                "Case input and assessment dates do not match.");
-        }
+        ValidateDocumentAgreement(input, assessment);
 
         return new(
-            validAssessmentId,
-            validCaseId,
-            validRecordedAt,
+            TechnicalIdentifier.Require(
+                assessmentId,
+                nameof(assessmentId)),
+            TechnicalIdentifier.Require(
+                caseId,
+                nameof(caseId)),
+            TechnicalIdentifier.RequireUtc(
+                recordedAtUtc,
+                nameof(recordedAtUtc)),
             assessment.Assessment.AssessmentDate,
             assessment.PlatformVersion,
             assessment.Assessment.KnowledgeRelease,
@@ -97,6 +87,74 @@ public sealed class RecordedAssessment
             assessmentJson,
             Fingerprint(caseInputJson),
             Fingerprint(assessmentJson));
+    }
+
+    public static RecordedAssessment Restore(
+        string assessmentId,
+        string caseId,
+        DateTimeOffset recordedAtUtc,
+        DateOnly assessmentDate,
+        string platformVersion,
+        string knowledgeRelease,
+        AssessmentOutcome systemOutcome,
+        string caseInputJson,
+        string assessmentJson,
+        string caseInputSha256,
+        string assessmentSha256)
+    {
+        var input = CaseInputJson.Deserialize(
+            RequireDocument(caseInputJson, nameof(caseInputJson)));
+        var assessment = AssessmentJson.Deserialize(
+            RequireDocument(assessmentJson, nameof(assessmentJson)));
+
+        ValidateDocumentAgreement(input, assessment);
+
+        if (assessmentDate != assessment.Assessment.AssessmentDate
+            || !string.Equals(
+                platformVersion,
+                assessment.PlatformVersion,
+                StringComparison.Ordinal)
+            || !string.Equals(
+                knowledgeRelease,
+                assessment.Assessment.KnowledgeRelease,
+                StringComparison.Ordinal)
+            || systemOutcome != assessment.Assessment.Outcome)
+        {
+            throw new InvalidDataException(
+                "Persisted assessment metadata does not match the assessment document.");
+        }
+
+        if (!string.Equals(
+                caseInputSha256,
+                Fingerprint(caseInputJson),
+                StringComparison.Ordinal)
+            || !string.Equals(
+                assessmentSha256,
+                Fingerprint(assessmentJson),
+                StringComparison.Ordinal))
+        {
+            throw new InvalidDataException(
+                "Persisted assessment fingerprint does not match the exact document.");
+        }
+
+        return new(
+            TechnicalIdentifier.Require(
+                assessmentId,
+                nameof(assessmentId)),
+            TechnicalIdentifier.Require(
+                caseId,
+                nameof(caseId)),
+            TechnicalIdentifier.RequireUtc(
+                recordedAtUtc,
+                nameof(recordedAtUtc)),
+            assessmentDate,
+            platformVersion,
+            knowledgeRelease,
+            systemOutcome,
+            caseInputJson,
+            assessmentJson,
+            caseInputSha256,
+            assessmentSha256);
     }
 
     public bool HasValidFingerprints()
@@ -108,6 +166,26 @@ public sealed class RecordedAssessment
                 AssessmentSha256,
                 Fingerprint(AssessmentJson),
                 StringComparison.Ordinal);
+
+    private static string RequireDocument(
+        string value,
+        string parameterName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
+        return value;
+    }
+
+    private static void ValidateDocumentAgreement(
+        CaseInput input,
+        AssessmentDocument assessment)
+    {
+        if (input.AssessmentDate
+            != assessment.Assessment.AssessmentDate)
+        {
+            throw new InvalidDataException(
+                "Case input and assessment dates do not match.");
+        }
+    }
 
     private static string Fingerprint(string value)
         => Convert.ToHexString(
