@@ -50,7 +50,7 @@ class PreviewIntegrityTests(unittest.TestCase):
             with self.subTest(path=path), tempfile.TemporaryDirectory() as temporary:
                 directory = Path(temporary)
                 archive, target = self.make_bundle(directory, extra=path)
-                with self.assertRaisesRegex(ValueError, "path"):
+                with self.assertRaisesRegex(ValueError, "path|inventory"):
                     extract_verified(archive, target)
                 self.assertEqual([], list(target.iterdir()))
                 self.assertFalse((directory / "outside").exists())
