@@ -83,6 +83,11 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
             output => output.OutputId == "segment_beta");
         Assert.Equal(DomainOutputValueKind.Unknown, beta.Value.Kind);
         Assert.Null(beta.Value.Choice);
+        Assert.Equal("SYNTH-DEMO-E-001", beta.Source.Id);
+        Assert.Equal("1", beta.Source.Version);
+        Assert.Equal(
+            "repository:knowledge/demo-e/pack.json",
+            beta.Source.SourceLocation);
     }
 
     [Fact]
