@@ -11,8 +11,13 @@ public sealed record AssessmentExecutionContext
         ArgumentException.ThrowIfNullOrWhiteSpace(assessmentId);
         ArgumentException.ThrowIfNullOrWhiteSpace(caseId);
         ArgumentException.ThrowIfNullOrWhiteSpace(platformVersion);
-        if (recordedAtUtc.Offset != TimeSpan.Zero)
-            throw new ArgumentException("Recording timestamp must be UTC.", nameof(recordedAtUtc));
+        if (recordedAtUtc == default
+            || recordedAtUtc.Offset != TimeSpan.Zero)
+        {
+            throw new ArgumentException(
+                "Recording timestamp must be an explicit UTC value.",
+                nameof(recordedAtUtc));
+        }
 
         AssessmentId = assessmentId;
         CaseId = caseId;
