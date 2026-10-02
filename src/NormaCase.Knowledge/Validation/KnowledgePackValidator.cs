@@ -10,6 +10,7 @@ public sealed class KnowledgePackValidator
         {
             "all",
             "any",
+            "not",
             "field_equals",
             "number_gte",
             "number_in_range",
@@ -425,6 +426,28 @@ public sealed class KnowledgePackValidator
                 "unknown_condition_kind",
                 $"Unknown condition kind '{condition.Kind}'.",
                 $"{path}.kind"));
+            return;
+        }
+
+        if (condition.Kind == "not")
+        {
+            if (condition.Field is not null || condition.Expected is not null
+                || condition.Threshold is not null || condition.Minimum is not null || condition.Maximum is not null
+                || condition.NumericExpression is not null || condition.EvidenceRequirementId is not null)
+            {
+                errors.Add(new("ambiguous_negation", "not can only declare its single child condition.", path));
+            }
+
+            if (condition.Conditions.Count != 1)
+            {
+                errors.Add(new("invalid_negation", "not must contain exactly one condition.", path + ".conditions"));
+            }
+
+            for (var index = 0; index < condition.Conditions.Count; index++)
+            {
+                ValidateCondition(condition.Conditions[index], fields, evidence, errors, path + ".conditions[" + index + "]");
+            }
+
             return;
         }
 
