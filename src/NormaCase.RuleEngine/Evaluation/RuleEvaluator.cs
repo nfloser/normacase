@@ -37,6 +37,12 @@ public sealed class RuleEvaluator
             .Order(StringComparer.Ordinal)
             .ToArray();
 
+        var domainOutputs = EvaluateDomainOutputs(
+            pack,
+            facts,
+            evidence,
+            assessmentDate);
+
         var rule = ResolveEntryRule(pack, assessmentDate);
         if (rule is null)
         {
@@ -45,7 +51,10 @@ public sealed class RuleEvaluator
                 assessmentDate,
                 AssessmentOutcome.HumanReview,
                 missingRequiredFields,
-                null);
+                null)
+            {
+                DomainOutputs = domainOutputs
+            };
         }
 
         var condition = EvaluateCondition(rule.Condition, facts, evidence);
@@ -73,12 +82,6 @@ public sealed class RuleEvaluator
             finalOutcome,
             condition,
             sourceTrace);
-
-        var domainOutputs = EvaluateDomainOutputs(
-            pack,
-            facts,
-            evidence,
-            assessmentDate);
 
         return new(
             pack.Manifest.ReleaseId,
