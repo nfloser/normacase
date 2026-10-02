@@ -14,7 +14,9 @@ public sealed class SnapshotTests
     [InlineData("demo-b-supported")]
     [InlineData("demo-c-supported")]
     [InlineData("demo-d-supported")]
-    [InlineData("demo-e-supported")]
+    [InlineData("demo-e-partial")]
+    [InlineData("demo-e-mixed")]
+    [InlineData("demo-c-review")]
     public void Capture_is_deterministic_and_replay_preserves_the_complete_document(string example)
     {
         var pack = Pack(example[..6]);

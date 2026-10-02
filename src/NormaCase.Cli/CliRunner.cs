@@ -1,3 +1,4 @@
+using NormaCase.Assessments;
 using System.Text;
 using System.Text.Json;
 using NormaCase.Domain.Decision;
@@ -23,18 +24,38 @@ public static class CliRunner
         try
         {
             var options = Parse(args);
-            var pack = new KnowledgePackLoader().LoadFromJson(ReadBoundedFile(options["--pack"]));
-            if (pack.Manifest.ValidationLevel != "SYNTHETIC")
-                throw new ArgumentException("This entry point accepts synthetic knowledge only.");
-            var input = CaseInputJson.Deserialize(ReadBoundedFile(options["--case"]));
-            var assessment = new NormaCase.RuleEngine.Evaluation.RuleEvaluator()
-                .Evaluate(pack, input.Facts, input.AssessmentDate, input.Evidence);
+            AssessmentDocument document;
+            if (args[0] == "replay")
+            {
+                var json = ReadBoundedFile(options["--snapshot"]);
+                var snapshot = AssessmentSnapshotJson.Deserialize(json);
+                RequireSynthetic(snapshot.KnowledgePackJson);
+                document = new AssessmentSnapshotService().Replay(json, options["--platform-version"]);
+            }
+            else
+            {
+                var packJson = ReadBoundedFile(options["--pack"]);
+                RequireSynthetic(packJson);
+                var caseJson = ReadBoundedFile(options["--case"]);
+                if (args[0] == "snapshot")
+                {
+                    output.WriteLine(new AssessmentSnapshotService().Capture(packJson, caseJson, options["--platform-version"]));
+                    return 0;
+                }
+                var pack = new KnowledgePackLoader().LoadFromJson(packJson);
+                var input = CaseInputJson.Deserialize(caseJson);
+                var result = new NormaCase.RuleEngine.Evaluation.RuleEvaluator()
+                    .Evaluate(pack, input.Facts, input.AssessmentDate, input.Evidence);
+                document = new AssessmentDocument(AssessmentJson.CurrentFormatVersion, options["--platform-version"], result);
+            }
+            var assessment = document.Assessment;
             if (options.ContainsKey("--json"))
             {
                 output.WriteLine(AssessmentJson.Serialize(assessment, options["--platform-version"]));
             }
             else
             {
+                if (args[0] == "replay") output.WriteLine(Messages.Get("ReplayVerified"));
                 output.WriteLine(Messages.Get("SyntheticNotice"));
                 output.WriteLine(Messages.Get("Outcome") + ": " + OutcomeLabel(assessment.Outcome));
                 output.WriteLine(Messages.Get("Date") + ": " + assessment.AssessmentDate.ToString("d", Messages.Culture));
@@ -57,6 +78,11 @@ public static class CliRunner
                     output.WriteLine(Messages.Get("Missing") + ": " + string.Join(", ", assessment.MissingRequiredFields));
             }
             return 0;
+        }
+        catch (SnapshotReplayException)
+        {
+            error.WriteLine(Messages.Get("ReplayError"));
+            return 4;
         }
         catch (Exception exception) when (exception is JsonException or KnowledgeValidationException or ArgumentException or OverflowException or DecoderFallbackException)
         {
@@ -89,27 +115,33 @@ public static class CliRunner
 
     private static Dictionary<string, string> Parse(string[] args)
     {
-        if (args.Length == 0 || args[0] != "evaluate")
+        if (args.Length == 0 || args[0] is not ("evaluate" or "snapshot" or "replay"))
             throw new ArgumentException("Command required.");
         var options = new Dictionary<string, string>(StringComparer.Ordinal);
         for (var index = 1; index < args.Length; index++)
         {
             var key = args[index];
-            if (key == "--json")
+            if (key == "--json" && args[0] != "snapshot")
             {
                 if (!options.TryAdd(key, "true"))
                     throw new ArgumentException("Duplicate option.");
                 continue;
             }
-            if (key is not ("--pack" or "--case" or "--platform-version")
+            if (!(key == "--platform-version" || (args[0] == "replay" ? key == "--snapshot" : key is "--pack" or "--case"))
                 || ++index >= args.Length || string.IsNullOrWhiteSpace(args[index])
                 || args[index].StartsWith("--", StringComparison.Ordinal)
                 || !options.TryAdd(key, args[index]))
                 throw new ArgumentException("Invalid options.");
         }
-        if (!options.ContainsKey("--pack") || !options.ContainsKey("--case") || !options.ContainsKey("--platform-version"))
+        if (!options.ContainsKey("--platform-version") || (args[0] == "replay" ? !options.ContainsKey("--snapshot") : !options.ContainsKey("--pack") || !options.ContainsKey("--case")))
             throw new ArgumentException("Required option missing.");
         return options;
+    }
+
+    private static void RequireSynthetic(string packJson)
+    {
+        if (new KnowledgePackLoader().LoadFromJson(packJson).Manifest.ValidationLevel != "SYNTHETIC")
+            throw new ArgumentException("This entry point accepts synthetic knowledge only.");
     }
 
     private static string ReadBoundedFile(string path)
