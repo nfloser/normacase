@@ -1,5 +1,6 @@
 using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
+using NormaCase.Domain.Evidence;
 
 namespace NormaCase.RuleEngine.Evaluation;
 
@@ -11,7 +12,9 @@ public sealed record ConditionTrace(
     CaseValue? Actual,
     decimal? Minimum,
     decimal? Maximum,
-    IReadOnlyList<ConditionTrace> Children);
+    IReadOnlyList<ConditionTrace> Children,
+    string? EvidenceRequirementId = null,
+    EvidenceStatus? EvidenceStatus = null);
 
 public sealed record RuleTrace(
     string RuleId,

@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "packId": "synthetic.demo-c",
+    "releaseId": "demo-c-2026.1",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-C-VERIFICATION"
+  },
+  "fields": [
+    {
+      "id": "request_confirmed",
+      "type": "truth",
+      "required": true
+    },
+    {
+      "id": "measurement",
+      "type": "number",
+      "required": false
+    },
+    {
+      "id": "alternative_confirmed",
+      "type": "truth",
+      "required": false
+    }
+  ],
+  "evidenceRequirements": [
+    {
+      "id": "verification"
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-C-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic evidence dependency example",
+      "documentType": "SYNTHETIC"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-C-VERIFICATION",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-C-001",
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "field_equals",
+            "field": "request_confirmed",
+            "expected": "YES"
+          },
+          {
+            "kind": "requires_evidence",
+            "evidenceRequirementId": "verification",
+            "conditions": [
+              {
+                "kind": "any",
+                "conditions": [
+                  {
+                    "kind": "number_gte",
+                    "field": "measurement",
+                    "threshold": 10
+                  },
+                  {
+                    "kind": "field_equals",
+                    "field": "alternative_confirmed",
+                    "expected": "YES"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED",
+      "onUnknown": "HUMAN_REVIEW"
+    }
+  ]
+}

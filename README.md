@@ -36,6 +36,7 @@ tests/
 knowledge/
   demo-a/                 truth-valued AND/OR/UNKNOWN synthetic pack
   demo-b/                 numeric/range/temporal-version synthetic pack
+  demo-c/                 evidence dependency and review synthetic pack
 
 docs/
   project/
@@ -55,6 +56,8 @@ The current core can:
 - evaluate typed truth and numeric case values,
 - evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
 - preserve UNKNOWN instead of coercing it,
+- gate criteria on structured evidence availability and escalate conflicts,
+- configure safe unknown outcomes as INCOMPLETE or HUMAN_REVIEW,
 - select a rule version from an explicit assessment date,
 - return source-backed recursive Decision Trace data.
 
