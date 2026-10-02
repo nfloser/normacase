@@ -113,7 +113,7 @@ public sealed class AssessmentJsonTests
     {
         var json = AssessmentJson.Serialize(WithValue(CaseValue.Unknown), "1");
         Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(json.Replace("\"kind\":\"UNKNOWN\"", "\"kind\":\"NUMBER\",\"kind\":\"UNKNOWN\"")));
-        Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(json.Replace("\"formatVersion\":1", "\"formatVersion\":1,\"formatVersion\":1")));
+        Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(json.Replace("\"formatVersion\":2", "\"formatVersion\":2,\"formatVersion\":2")));
     }
 
     [Fact]
@@ -153,6 +153,17 @@ public sealed class AssessmentJsonTests
 
         Assert.Equal(1, restored.FormatVersion);
         Assert.Empty(restored.Assessment.DomainOutputs);
+    }
+
+    [Fact]
+    public void Legacy_format_v1_cannot_smuggle_new_domain_outputs()
+    {
+        var node = JsonNode.Parse(
+            AssessmentJson.Serialize(Evaluate("demo-e"), "legacy-platform"))!;
+        node["formatVersion"] = 1;
+
+        Assert.Throws<JsonException>(
+            () => AssessmentJson.Deserialize(node.ToJsonString()));
     }
 
     [Theory]
