@@ -98,6 +98,40 @@ public sealed class NumericKnowledgeSliceTests
     }
 
     [Fact]
+    public void Numeric_operator_cannot_target_a_truth_field()
+    {
+        var json = File.ReadAllText(DemoPackPath())
+            .Replace(
+                "\"id\": \"score\",\n      \"type\": \"number\"",
+                "\"id\": \"score\",\n      \"type\": \"truth\"",
+                StringComparison.Ordinal);
+
+        var exception = Assert.Throws<NormaCase.Knowledge.Validation.KnowledgeValidationException>(
+            () => _loader.LoadFromJson(json));
+
+        Assert.Contains(
+            exception.Errors,
+            error => error.Code == "condition_field_type_mismatch");
+    }
+
+    [Fact]
+    public void Overlapping_temporal_rule_versions_are_rejected()
+    {
+        var json = File.ReadAllText(DemoPackPath())
+            .Replace(
+                "\"validUntil\": \"2026-06-30\"",
+                "\"validUntil\": \"2026-07-01\"",
+                StringComparison.Ordinal);
+
+        var exception = Assert.Throws<NormaCase.Knowledge.Validation.KnowledgeValidationException>(
+            () => _loader.LoadFromJson(json));
+
+        Assert.Contains(
+            exception.Errors,
+            error => error.Code == "overlapping_rule_validity");
+    }
+
+    [Fact]
     public void Truth_value_cannot_be_coerced_into_numeric_field()
     {
         var pack = LoadDemoPack();
