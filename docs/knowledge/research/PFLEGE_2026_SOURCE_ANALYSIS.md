@@ -222,15 +222,14 @@ The following remain outside this source slice:
 
 ## Proposed next engineering split
 
-1. Complete source provenance by recording the exact official PDF SHA-256.
-2. Design a **generic** declarative numeric transformation/aggregation model:
+1. Design a **generic** declarative numeric transformation/aggregation model:
    - range lookup,
    - sum,
    - max,
    - banded result mapping.
-3. Protect UNKNOWN and type semantics with synthetic tests first.
-4. Add a separate source-backed test matrix for the adult scoring boundaries.
-5. Only then create an initial `PUBLIC_REFERENCE` Pflege scoring pack.
-6. Model F 4.1.B only after a dedicated source/domain review of the detailed criterion.
+2. Protect UNKNOWN and type semantics with synthetic tests first.
+3. Add a separate source-backed test matrix for the adult scoring boundaries.
+4. Only then create an initial `PUBLIC_REFERENCE` Pflege scoring pack using the pinned source provenance above.
+5. Model F 4.1.B only after a dedicated source/domain review of the detailed criterion.
 
 If implementing these capabilities requires naming Pflege modules in platform code, the abstraction is wrong.
