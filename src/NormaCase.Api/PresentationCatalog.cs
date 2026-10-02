@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NormaCase.Knowledge.Model;
+using NormaCase.Serialization;
 using NormaCase.RuleEngine.Evaluation;
 using NormaCase.Serialization;
 
@@ -19,7 +20,7 @@ internal sealed record PresentationDocument(
     Dictionary<string, PresentationText> Outputs,
     List<PresentationExample> Examples);
 
-internal sealed record LoadedExample(string Id, string Label, string Json);
+internal sealed record LoadedExample(string Id, string Label, CaseInput Input);
 internal sealed record LoadedPresentation(
     string Locale,
     string Name,
@@ -93,7 +94,7 @@ internal static class PresentationCatalog
                 var exampleJson = File.ReadAllText(examplePath);
                 var input = CaseInputJson.Deserialize(exampleJson);
                 _ = new RuleEvaluator().Evaluate(pack, input.Facts, input.AssessmentDate, input.Evidence);
-                examples.Add(new(example.Id, example.Label, exampleJson));
+                examples.Add(new(example.Id, example.Label, input));
             }
 
             result[document.PackId] = new(
