@@ -206,7 +206,7 @@ export default function App() {
         <div className="hero__inner">
           <p className="eyebrow">{de.appTitle}</p>
           <h1>{de.appSubtitle}</h1>
-          <p className="hero__copy">Deterministische, nachvollziehbare Tests mit synthetischen Wissensständen.</p>
+          <p className="hero__copy">{de.heroCopy}</p>
           <div className="notice" role="note">{de.syntheticNotice}</div>
         </div>
       </header>
@@ -221,7 +221,7 @@ export default function App() {
             </div>
           </div>
 
-          {loading ? <p role="status">Prüfdaten werden geladen …</p> : null}
+          {loading ? <p role="status">{de.loading}</p> : null}
           {message ? <div className="error" role="alert">{message}</div> : null}
 
           <form id="assessment-form" onSubmit={submit}>
@@ -258,7 +258,7 @@ export default function App() {
 
             {pack && pack.fields.length > 0 ? (
               <fieldset>
-                <legend>Falldaten</legend>
+                <legend>{de.caseData}</legend>
                 <div className="field-list">
                   {pack.fields.map((field) => (
                     <label className="field-card" key={field.id} htmlFor={field.id}>
@@ -272,15 +272,30 @@ export default function App() {
                           {truthOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                         </select>
                       ) : (
-                        <input
-                          id={field.id}
-                          type="text"
-                          inputMode="decimal"
-                          autoComplete="off"
-                          value={values[field.id] ?? ""}
-                          onChange={(event) => setField(field.id, event.target.value)}
-                          placeholder={de.unknown}
-                        />
+                        <div className="numeric-control">
+                          <select
+                            aria-label={`${field.label}: ${de.numberStatus}`}
+                            value={(values[field.id] ?? "UNKNOWN") === "UNKNOWN" ? "UNKNOWN" : "VALUE"}
+                            onChange={(event) => setField(
+                              field.id,
+                              event.target.value === "UNKNOWN" ? "UNKNOWN" : ""
+                            )}
+                          >
+                            <option value="UNKNOWN">{de.numberUnknown}</option>
+                            <option value="VALUE">{de.numberValue}</option>
+                          </select>
+                          {(values[field.id] ?? "UNKNOWN") !== "UNKNOWN" ? (
+                            <input
+                              id={field.id}
+                              type="text"
+                              inputMode="decimal"
+                              autoComplete="off"
+                              aria-label={field.label}
+                              value={values[field.id] ?? ""}
+                              onChange={(event) => setField(field.id, event.target.value)}
+                            />
+                          ) : null}
+                        </div>
                       )}
                     </label>
                   ))}
@@ -290,7 +305,7 @@ export default function App() {
 
             {pack && pack.evidenceRequirements.length > 0 ? (
               <fieldset>
-                <legend>Evidenzstatus</legend>
+                <legend>{de.evidenceStatus}</legend>
                 <div className="field-list">
                   {pack.evidenceRequirements.map((item) => (
                     <label className="field-card" key={item.id} htmlFor={`evidence-${item.id}`}>
@@ -323,14 +338,14 @@ export default function App() {
             <p className="step">02</p>
             <div>
               <h2 id="result-heading" tabIndex={-1} ref={resultHeadingRef}>{de.result}</h2>
-              <p>Plattformstatus und fachliche Ausgaben bleiben voneinander getrennt.</p>
+              <p>{de.resultCopy}</p>
             </div>
           </div>
 
           {!assessment ? <div className="empty-state">{de.noResult}</div> : (
             <div className="result-stack">
               <div className={`outcome outcome--${assessment.outcome.toLowerCase().replaceAll("_", "-")}`}>
-                <span>Plattformstatus</span>
+                <span>{de.platformStatus}</span>
                 <strong>{outcomeLabel(assessment.outcome)}</strong>
               </div>
 
@@ -364,7 +379,7 @@ export default function App() {
                       <article className="output-card" key={item.outputId}>
                         <span>{outputPresentations.get(item.outputId)?.label ?? item.outputId}</span>
                         <strong>{item.value.kind === "UNKNOWN"
-                          ? "Nicht ausreichend beurteilbar"
+                          ? de.unknownOutput
                           : outputPresentations.get(item.outputId)?.choices[item.value.choice ?? ""] ?? item.value.choice}</strong>
                         <small>{item.source.title}{item.source.version ? ` · ${item.source.version}` : ""}</small>
                       </article>
