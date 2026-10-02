@@ -211,3 +211,97 @@ jobs:
         run: dotnet build tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-restore
       - name: Test
         run: dotnet test tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-build
+
+  preview-bundles:
+    name: Self-contained preview (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            archive_ext: tar.gz
+          - os: windows-latest
+            rid: win-x64
+            archive_ext: zip
+    env:
+      RID: ${{ matrix.rid }}
+      ARCHIVE_EXT: ${{ matrix.archive_ext }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Define exact build identity
+        shell: bash
+        run: |
+          echo "PLATFORM_VERSION=preview-${GITHUB_SHA}" >> "$GITHUB_ENV"
+          echo "BUNDLE_NAME=normacase-preview-${RID}-${GITHUB_SHA:0:12}" >> "$GITHUB_ENV"
+      - name: Restore and test frontend
+        shell: bash
+        run: |
+          npm --prefix frontend ci
+          npm --prefix frontend test
+          npm --prefix frontend run typecheck
+      - name: Build German workbench
+        shell: bash
+        run: npm --prefix frontend run build
+      - name: Publish self-contained API
+        shell: bash
+        run: >-
+          dotnet publish src/NormaCase.Api/NormaCase.Api.csproj
+          --configuration Release
+          --runtime "$RID"
+          --self-contained true
+          -p:InformationalVersion="$PLATFORM_VERSION"
+          -p:IncludeSourceRevisionInInformationalVersion=false
+          --output artifacts/publish-api
+      - name: Publish self-contained CLI
+        shell: bash
+        run: >-
+          dotnet publish src/NormaCase.Cli/NormaCase.Cli.csproj
+          --configuration Release
+          --runtime "$RID"
+          --self-contained true
+          -p:InformationalVersion="$PLATFORM_VERSION"
+          -p:IncludeSourceRevisionInInformationalVersion=false
+          --output artifacts/publish-cli
+      - name: Assemble preview
+        shell: bash
+        run: >-
+          python scripts/package_preview.py
+          --rid "$RID"
+          --source-commit "$GITHUB_SHA"
+          --platform-version "$PLATFORM_VERSION"
+          --api-dir artifacts/publish-api
+          --cli-dir artifacts/publish-cli
+          --repo-root .
+          --output-dir "artifacts/$BUNDLE_NAME"
+      - name: Archive preview
+        id: archive
+        shell: bash
+        run: |
+          ARCHIVE="artifacts/$BUNDLE_NAME.$ARCHIVE_EXT"
+          python scripts/archive_preview.py --bundle-dir "artifacts/$BUNDLE_NAME" --archive "$ARCHIVE"
+          echo "archive=$ARCHIVE" >> "$GITHUB_OUTPUT"
+          echo "checksum=$ARCHIVE.sha256" >> "$GITHUB_OUTPUT"
+      - name: Smoke-test extracted archive
+        shell: bash
+        run: python scripts/smoke_preview_bundle.py --archive "${{ steps.archive.outputs.archive }}"
+      - name: Upload tested preview
+        uses: actions/upload-artifact@v7
+        with:
+          name: normacase-preview-${{ matrix.rid }}
+          path: |
+            ${{ steps.archive.outputs.archive }}
+            ${{ steps.archive.outputs.checksum }}
+          if-no-files-found: error
+          retention-days: 7
