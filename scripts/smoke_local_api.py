@@ -18,7 +18,14 @@ try:
         try:
             with urlopen("http://localhost:5080/api/packs", timeout=1) as response:
                 catalog = json.load(response)
-                assert len(catalog) == 4
+                pack_ids = {pack["packId"] for pack in catalog}
+                assert {
+                    "synthetic.demo-a",
+                    "synthetic.demo-b",
+                    "synthetic.demo-c",
+                    "synthetic.demo-d",
+                    "synthetic.demo-e",
+                }.issubset(pack_ids)
                 assert all(pack["validationLevel"] == "SYNTHETIC" for pack in catalog)
                 assert response.headers["Cache-Control"] == "no-store"
             break
@@ -30,14 +37,24 @@ try:
         raise RuntimeError("Local API did not become ready.")
 
     request = Request(
-        "http://localhost:5080/api/assessments/synthetic.demo-d",
-        data=Path("examples/cases/demo-d-supported.json").read_bytes(),
+        "http://localhost:5080/api/assessments/synthetic.demo-e",
+        data=Path("examples/cases/demo-e-partial.json").read_bytes(),
         headers={"Content-Type": "application/json"},
     )
     with urlopen(request, timeout=5) as response:
         result = json.load(response)
+        assert result["formatVersion"] == 2
         assert result["assessment"]["outcome"] == "SUPPORTED"
         assert result["assessment"]["assessmentDate"] == "2026-10-02"
+        outputs = {
+            output["outputId"]: output["value"]
+            for output in result["assessment"]["domainOutputs"]
+        }
+        assert outputs["decision_state"] == {
+            "kind": "CHOICE",
+            "choice": "ELIGIBLE",
+        }
+        assert outputs["segment_beta"] == {"kind": "UNKNOWN"}
         assert response.headers["X-Content-Type-Options"] == "nosniff"
 
     denied = Request("http://localhost:5080/api/packs", headers={"Origin": "https://example.invalid"})
