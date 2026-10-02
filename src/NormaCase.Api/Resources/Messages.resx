@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="LocalOnly" xml:space="preserve"><value>Dieser lokale Entwicklungsdienst akzeptiert nur lokale Anfragen.</value></data>
+  <data name="UnsupportedMediaType" xml:space="preserve"><value>Für Prüfungen wird ausschließlich application/json mit UTF-8 unterstützt.</value></data>
+  <data name="RequestTooLarge" xml:space="preserve"><value>Die Anfrage überschreitet die zulässige Größe.</value></data>
+  <data name="InvalidInput" xml:space="preserve"><value>Die Eingabe ist ungültig. Prüfe Format, Datentypen und Referenzen.</value></data>
+  <data name="UnknownPack" xml:space="preserve"><value>Das angeforderte synthetische Knowledge Pack ist nicht verfügbar.</value></data>
+  <data name="StartupError" xml:space="preserve"><value>Der lokale NormaCase-Dienst konnte mit den angegebenen Parametern nicht gestartet werden.</value></data>
+  <data name="KnowledgeError" xml:space="preserve"><value>Die lokalen synthetischen Knowledge Packs konnten nicht sicher geladen werden.</value></data>
+</root>
