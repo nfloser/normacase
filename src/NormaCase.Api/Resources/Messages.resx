@@ -11,4 +11,10 @@
   <data name="UnknownPack" xml:space="preserve"><value>Das angeforderte synthetische Knowledge Pack ist nicht verfügbar.</value></data>
   <data name="StartupError" xml:space="preserve"><value>Der lokale NormaCase-Dienst konnte mit den angegebenen Parametern nicht gestartet werden.</value></data>
   <data name="KnowledgeError" xml:space="preserve"><value>Die lokalen synthetischen Knowledge Packs konnten nicht sicher geladen werden.</value></data>
+  <data name="Help" xml:space="preserve"><value>NormaCase – lokaler Entwicklungsdienst für synthetische Fälle
+
+Aufruf: --knowledge-root ORDNER --platform-version VERSION [--port PORT]
+
+Der Dienst bindet ausschließlich an 127.0.0.1. Standardport: 5099.
+Keine Authentifizierung, keine Persistenz und keine Freigabe für echte Patientendaten.</value></data>
 </root>
