@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 
 test('a real synthetic case evaluates, exposes source and clears stale output',async({page})=>{
  await page.goto('/');
@@ -25,7 +26,10 @@ test('missing evidence requires human review and export retains the original JSO
  await expect(page.getByRole('heading',{name:'Manuelle Prüfung erforderlich'})).toBeVisible();
  const download=page.waitForEvent('download');
  await page.getByRole('button',{name:'Ergebnis als JSON herunterladen'}).click();
- expect((await download).suggestedFilename()).toBe('normacase-assessment.json');
+ const file = await download;
+ expect(file.suggestedFilename()).toBe('normacase-assessment.json');
+ await page.getByText('Technische Prüfspur anzeigen').click();
+ expect(await readFile(await file.path(),'utf8')).toBe(await page.locator('pre').textContent());
  await page.screenshot({path:'test-results/workbench-desktop.png',fullPage:true});
 });
 

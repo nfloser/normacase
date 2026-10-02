@@ -20,3 +20,10 @@ test('loading an example never roundtrips decimals through Number',()=>{
  const data=exampleValues('{"assessmentDate":"2026-10-02","facts":{"value":{"kind":"NUMBER","number":123456789.1234567890123456789}}}');
  assert.equal(data.values.value,'123456789,1234567890123456789');
 });
+
+test('the presentation endpoint keeps string decimal examples exact',()=>{
+ const data=exampleValues('{"assessmentDate":"2026-10-02","values":{"value":"123456789.1234567890123456789","confirmed":"UNKNOWN"},"evidence":{"verification":"CONFLICTING"}}');
+ assert.equal(data.values.value,'123456789,1234567890123456789');
+ assert.equal(data.values.confirmed,'');
+ assert.equal(data.evidence.verification,'CONFLICTING');
+});

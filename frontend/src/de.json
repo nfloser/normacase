@@ -43,7 +43,7 @@
   "dateError": "Wähle ein ausdrückliches Prüfdatum.",
   "inputError": "Die Eingabe konnte nicht verarbeitet werden.",
   "loading": "Prüfbereiche werden geladen …",
-  "noSource": "Für dieses Prüfdatum ist keine aktive Regel verfügbar.",
+  "noSource": "Keine Regelprüfspur vorhanden.",
   "fieldReference": "Feldreferenz",
   "evidenceReference": "Nachweisreferenz",
   "foot": "Die Verantwortung für eine fachliche Begutachtung bleibt beim Menschen.",
