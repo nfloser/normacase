@@ -28,6 +28,9 @@ src/
   NormaCase.Domain/       framework-independent case/decision contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
+  NormaCase.Serialization/ versioned lossless JSON interchange
+  NormaCase.Cli/          German offline synthetic evaluator
+  NormaCase.Api/          loopback-only synthetic HTTP adapter
 
 tests/
   NormaCase.Domain.Tests/
@@ -93,3 +96,16 @@ Use `--json` for the versioned lossless assessment document. See
 incomplete and human-review examples, file formats, exit codes and limitations.
 The adapter needs no runtime network service. It accepts SYNTHETIC packs only;
 the production web UI, authorization and persistence are not implemented yet.
+
+
+## Local synthetic HTTP adapter
+
+A loopback-only ASP.NET Core adapter exposes the same synthetic evaluator contract for future UI work:
+
+```bash
+dotnet run --project src/NormaCase.Api -- --knowledge-root knowledge --platform-version development --port 5099
+```
+
+It listens only on `127.0.0.1`, accepts SYNTHETIC packs only, has no authentication/persistence/runtime network dependency, and must not be used with real patient data.
+
+See [the German local API guide](docs/development/LOCAL_API.md) for endpoints, security boundaries, status codes and examples.
