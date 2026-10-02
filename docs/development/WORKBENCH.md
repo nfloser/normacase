@@ -24,7 +24,7 @@ Tausendertrennzeichen. Änderungen an Eingaben brechen laufende Requests ab und
 entfernen veraltete Ergebnisse.
 
 Generische Texte liegen in frontend/src/de.json, fach-/beispielspezifische
-Beschriftungen in knowledge/presentation.de-DE.json. Die Präsentationsdaten
+Beschriftungen in knowledge/demo-*/presentation.de-DE.json. Die Präsentationsdaten
 beeinflussen keine Regelentscheidung. Schrift und alle JavaScript-/CSS-Assets sind
 lokal; es gibt keine CDN-/Cloud-/Analytics-Abhängigkeit zur Laufzeit. Falldaten
 bleiben im Arbeitsspeicher, solange die Seite geöffnet ist. Keine Speicherung oder

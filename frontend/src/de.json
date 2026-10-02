@@ -51,5 +51,7 @@
   "emptyNumber": "Leer = unbekannt",
   "sourceLocation": "Fundstelle",
   "reset": "Angaben zurücksetzen",
-  "local": "Lokal · de-DE"
+  "local": "Lokal · de-DE",
+  "domainOutputs": "Einzelne Fachausgaben",
+  "outputReference": "Fachausgabe"
 }

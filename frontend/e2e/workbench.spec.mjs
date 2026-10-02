@@ -52,3 +52,15 @@ test('the browser preserves decimal precision all the way into the trace',async(
  await page.getByText('Technische Prüfspur anzeigen').click();
  await expect(page.locator('pre')).toContainText('123456789.1234567890123456789');
 });
+
+test('independent outputs keep UNKNOWN and the external pending state distinct',async({page})=>{
+ await page.goto('/');
+ await page.getByLabel('Prüfbereich',{exact:true}).selectOption('synthetic.demo-e');
+ await page.getByLabel('Beispiel auswählen').selectOption('mixed');
+ await page.getByRole('button',{name:'Beispiel laden'}).click();
+ await expect(page.getByLabel('Prüfdatum')).toHaveValue('2026-10-02');
+ await page.getByRole('button',{name:'Jetzt prüfen'}).click();
+ await expect(page.getByRole('heading',{name:'Einzelne Fachausgaben'})).toBeVisible();
+ await expect(page.locator('.domain-outputs')).toContainText('Extern ausstehend');
+ await expect(page.locator('.domain-outputs')).toContainText('Unbekannt');
+});

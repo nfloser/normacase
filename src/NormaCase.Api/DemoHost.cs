@@ -1,7 +1,11 @@
+using System.Globalization;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using NormaCase.Domain.Cases;
+using NormaCase.Domain.Decision;
+using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Model;
 using NormaCase.Knowledge.Serialization;
 using NormaCase.Knowledge.Validation;
@@ -17,11 +21,7 @@ public static class DemoHost
     public static WebApplication Build(string[] args)
     {
         var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
-        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-        {
-            Args = args,
-            WebRootPath = Directory.Exists(webRoot) ? webRoot : null
-        });
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args, WebRootPath = Directory.Exists(webRoot) ? webRoot : null });
         builder.WebHost.ConfigureKestrel(options =>
         {
             options.ListenLocalhost(5080);
@@ -82,7 +82,14 @@ public static class DemoHost
                         description = presentation.Description,
                         outputs = presentation.Outputs
                             .OrderBy(item => item.Key, StringComparer.Ordinal)
-                            .Select(item => new { id = item.Key, label = item.Value.Label })
+                            .Select(item => new
+                            {
+                                id = item.Key,
+                                label = item.Value.Label,
+                                choices = item.Value.Choices
+                                    .OrderBy(choice => choice.Key, StringComparer.Ordinal)
+                                    .ToDictionary(choice => choice.Key, choice => choice.Value, StringComparer.Ordinal)
+                            })
                             .ToArray(),
                         examples = presentation.Examples
                             .Select(item => new { id = item.Id, label = item.Label })
@@ -113,11 +120,29 @@ public static class DemoHost
             if (!presentations.TryGetValue(packId, out var presentation))
                 return Error("unknown_pack", 404);
 
+            var pack = packs[packId];
             var example = presentation.Examples.SingleOrDefault(
                 item => string.Equals(item.Id, exampleId, StringComparison.Ordinal));
-            return example is null
-                ? Error("unknown_example", 404)
-                : Results.Content(example.Json, "application/json", Encoding.UTF8);
+            if (example is null)
+                return Error("unknown_example", 404);
+
+            return Results.Json(new
+            {
+                assessmentDate = example.Input.AssessmentDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                values = pack.Fields.ToDictionary(
+                    field => field.Id,
+                    field => ExampleValue(example.Input.Facts.TryGetValue(field.Id, out var value)
+                        ? value
+                        : CaseValue.Unknown),
+                    StringComparer.Ordinal),
+                evidence = pack.EvidenceRequirements.ToDictionary(
+                    item => item.Id,
+                    item => example.Input.Evidence is not null
+                        && example.Input.Evidence.TryGetValue(item.Id, out var status)
+                            ? status.ToString().ToUpperInvariant()
+                            : "MISSING",
+                    StringComparer.Ordinal)
+            });
         });
 
         app.MapPost("/api/assessments/{packId}", async (string packId, HttpRequest request) =>
@@ -156,6 +181,21 @@ public static class DemoHost
 
         return app;
     }
+
+    private static string ExampleValue(CaseValue value)
+        => value.Kind switch
+        {
+            CaseValueKind.Unknown => "UNKNOWN",
+            CaseValueKind.Truth => value.Truth switch
+            {
+                TruthValue.Yes => "YES",
+                TruthValue.No => "NO",
+                TruthValue.NotApplicable => "NOT_APPLICABLE",
+                _ => "UNKNOWN"
+            },
+            CaseValueKind.Number => value.Number!.Value.ToString(CultureInfo.InvariantCulture),
+            _ => "UNKNOWN"
+        };
 
     private static bool AllowedOrigin(HttpRequest request)
     {

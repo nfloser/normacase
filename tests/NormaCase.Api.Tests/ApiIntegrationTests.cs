@@ -85,9 +85,11 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         var response = await _client.GetAsync("/api/packs/synthetic.demo-e/examples/mixed");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var input = CaseInputJson.Deserialize(await response.Content.ReadAsStringAsync());
-        Assert.Equal(new DateOnly(2026, 10, 2), input.AssessmentDate);
-        Assert.True(input.Facts.ContainsKey("gate_primary"));
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal("2026-10-02", document.RootElement.GetProperty("assessmentDate").GetString());
+        Assert.Equal("YES", document.RootElement.GetProperty("values").GetProperty("gate_primary").GetString());
+        Assert.Equal("7", document.RootElement.GetProperty("values").GetProperty("metric").GetString());
+        Assert.Equal("UNKNOWN", document.RootElement.GetProperty("values").GetProperty("segment_beta_ready").GetString());
         Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
     }
 
