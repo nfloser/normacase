@@ -76,6 +76,32 @@ public sealed class AssessmentRecordJsonTests
     }
 
     [Fact]
+    public void Default_recording_timestamp_is_rejected_on_restore()
+    {
+        var record = new AssessmentRecorder().Evaluate(
+            Load("demo-a"),
+            new Dictionary<string, CaseValue>
+            {
+                ["criterion_a"] = TruthValue.Yes,
+                ["criterion_b"] = TruthValue.Yes
+            },
+            new DateOnly(2026, 10, 2),
+            evidence: null,
+            new AssessmentExecutionContext(
+                "assessment-json-default-time",
+                "case-json-default-time",
+                "test-platform-2",
+                new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
+
+        var node = System.Text.Json.Nodes.JsonNode.Parse(
+            AssessmentRecordJson.Serialize(record))!;
+        node["record"]!["recordedAtUtc"] = "0001-01-01T00:00:00+00:00";
+
+        Assert.Throws<JsonException>(
+            () => AssessmentRecordJson.Deserialize(node.ToJsonString()));
+    }
+
+    [Fact]
     public void Unsupported_or_ambiguous_record_documents_are_rejected()
     {
         var record = new AssessmentRecorder().Evaluate(
