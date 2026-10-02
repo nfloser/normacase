@@ -33,7 +33,7 @@ The domain and rule core must not reference ASP.NET Core, Entity Framework, Post
 
 Knowledge Packs are data, not executable extensions. They may define schemas, declarative rules, workflows, sources, templates and synthetic cases, but they may not execute arbitrary code.
 
-The platform interprets a bounded declarative rule model.
+The platform interprets a bounded declarative rule model. The generic `not` condition has exactly one child and preserves UNKNOWN. Its child trace remains intact, including evidence state. Domain-specific uses remain Knowledge Pack data.
 
 ## Assessment result layers
 
