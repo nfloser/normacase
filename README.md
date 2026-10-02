@@ -148,3 +148,14 @@ checksum limitations and historical replay requirements.
 The German workbench also downloads complete snapshots after evaluation and verifies
 uploaded synthetic snapshot files locally. Imported results remain read-only; see
 [the workbench guide](docs/development/WORKBENCH.md).
+
+
+## Self-contained synthetic previews
+
+CI builds and smoke-tests self-contained `linux-x64` and `win-x64` preview
+archives containing the local German workbench, API, CLI, all synthetic Knowledge
+Packs and examples. The extracted archives run through their native .NET apphosts
+without requiring an installed runtime.
+
+These are synthetic engineering previews, not production releases. See
+[the German preview bundle guide](docs/development/PREVIEW_BUNDLES.md).
