@@ -7,4 +7,5 @@ public sealed record AssessmentResult(
     DateOnly AssessmentDate,
     AssessmentOutcome Outcome,
     IReadOnlyList<string> MissingRequiredFields,
+    IReadOnlyList<string> MissingEvidenceRequirements,
     RuleTrace? RuleTrace);
