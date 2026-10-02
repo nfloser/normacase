@@ -66,6 +66,37 @@ explicit workflow instance. It must not hard-code domain vocabulary into
 
 Presentation labels belong in external presentation metadata.
 
+## Application execution binding
+
+`NormaCase.Application.Workflows.WorkflowExecutionService` is the first orchestration
+layer above Knowledge and Domain workflow contracts.
+
+Starting an execution requires an explicit workflow id and version. The service:
+
+- validates the supplied Knowledge Pack,
+- selects exactly that workflow id/version,
+- materializes the generic immutable Domain definition,
+- starts the Domain instance at revision 0,
+- snapshots the Knowledge Pack id and Knowledge Release,
+- copies the exact source revision referenced by the workflow.
+
+The resulting `WorkflowExecution` retains the immutable materialized
+`WorkflowDefinition`. Advancing an execution therefore does not re-read the caller's
+mutable `KnowledgePack`; mutations after start cannot silently change the graph or
+source metadata of the in-flight execution.
+
+`Apply` requires one explicit transition id and delegates transition semantics to the
+Domain instance. It returns a new execution with the same Knowledge/source/definition
+snapshot and the next immutable instance revision.
+
+This is deliberately an **in-memory application contract**, not a persistence format.
+A later reviewed slice may define storage/reload and append-only workflow transition
+audit records. Such a format must preserve the exact Knowledge Release, source
+revision, workflow definition identity and instance revision needed for historical
+reconstruction.
+
+No assessment outcome triggers a transition automatically.
+
 ## Determinism and audit boundary
 
 The lifecycle:
