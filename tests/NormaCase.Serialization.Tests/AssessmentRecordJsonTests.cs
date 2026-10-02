@@ -1,5 +1,6 @@
 using System.Text.Json;
 using NormaCase.Application.Assessments;
+using NormaCase.Domain.Audit;
 using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Domain.Evidence;
@@ -24,7 +25,7 @@ public sealed class AssessmentRecordJsonTests
             new DateOnly(2026, 10, 2),
             evidence: null,
             new AssessmentExecutionContext(
-                "assessment-json-001",
+                new AssessmentId("assessment-json-001"),
                 "case-json-001",
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 30, 0, TimeSpan.Zero)));
@@ -59,7 +60,7 @@ public sealed class AssessmentRecordJsonTests
                 ["verification"] = EvidenceStatus.Conflicting
             },
             new AssessmentExecutionContext(
-                "assessment-json-002",
+                new AssessmentId("assessment-json-002"),
                 "case-json-002",
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 31, 0, TimeSpan.Zero)));
@@ -88,7 +89,7 @@ public sealed class AssessmentRecordJsonTests
             new DateOnly(2026, 10, 2),
             evidence: null,
             new AssessmentExecutionContext(
-                "assessment-json-default-time",
+                new AssessmentId("assessment-json-default-time"),
                 "case-json-default-time",
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
@@ -114,7 +115,7 @@ public sealed class AssessmentRecordJsonTests
             new DateOnly(2026, 10, 2),
             evidence: null,
             new AssessmentExecutionContext(
-                "assessment-json-003",
+                new AssessmentId("assessment-json-003"),
                 "case-json-003",
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
