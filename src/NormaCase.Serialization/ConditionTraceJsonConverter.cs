@@ -50,7 +50,7 @@ internal sealed class ConditionTraceJsonConverter : JsonConverter<ConditionTrace
         var children = Required<ConditionTrace[]>(root, "children", options);
         var evidenceRequirementId = OptionalNullableString(root, "evidenceRequirementId");
         var evidenceStatus = OptionalNullable<EvidenceStatus>(root, "evidenceStatus", options);
-        var numericExpression = OptionalNullable<NumericExpressionTrace>(
+        var numericExpression = OptionalReference<NumericExpressionTrace>(
             root,
             "numericExpression",
             options);
@@ -168,6 +168,22 @@ internal sealed class ConditionTraceJsonConverter : JsonConverter<ConditionTrace
         }
 
         return JsonSerializer.Deserialize<T>(value.GetRawText(), options);
+    }
+
+    private static T? OptionalReference<T>(
+        JsonElement root,
+        string name,
+        JsonSerializerOptions options)
+        where T : class
+    {
+        if (!root.TryGetProperty(name, out var value)
+            || value.ValueKind == JsonValueKind.Null)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Deserialize<T>(value.GetRawText(), options)
+            ?? throw new JsonException($"Condition trace property '{name}' is invalid.");
     }
 
     private static decimal? NullableDecimal(JsonElement root, string name)
