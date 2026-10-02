@@ -27,6 +27,11 @@
       "id": "segment_beta_ready",
       "type": "truth",
       "required": false
+    },
+    {
+      "id": "external_check_complete",
+      "type": "truth",
+      "required": false
     }
   ],
   "sources": [
@@ -139,6 +144,24 @@
       },
       "onMatch": "OPEN",
       "onNoMatch": "CLOSED"
+    },
+    {
+      "id": "external_state",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-E-001",
+      "type": "choice",
+      "choices": [
+        "COMPLETE",
+        "PENDING_EXTERNAL"
+      ],
+      "condition": {
+        "kind": "field_equals",
+        "field": "external_check_complete",
+        "expected": "YES"
+      },
+      "onMatch": "COMPLETE",
+      "onNoMatch": "PENDING_EXTERNAL"
     }
   ]
 }
