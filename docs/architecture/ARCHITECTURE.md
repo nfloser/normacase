@@ -49,6 +49,12 @@ Evaluation receives the assessment date and Knowledge Release explicitly. Tempor
 
 Historical assessments retain the versions used when they were created.
 
+## Audit and human review
+
+System assessments and human review are separate immutable concepts. A review references an assessment; it never rewrites the rule-engine result or its trace. Audit ordering, ids and UTC timestamps are explicit inputs rather than hidden clock/generated state in the domain core.
+
+The current framework-independent contract is documented in [AUDIT.md](AUDIT.md). Persistence, actor authentication/authorization and tamper-evident storage remain adapter/application concerns.
+
 ## Persistence
 
 PostgreSQL is the preferred persistence technology once storage is introduced because the platform requires transactions, constraints, referential integrity and migrations.
