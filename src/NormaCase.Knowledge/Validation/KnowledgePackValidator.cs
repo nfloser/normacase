@@ -32,6 +32,22 @@ public sealed class KnowledgePackValidator
             "number"
         };
 
+    private static readonly HashSet<string> AllowedOutputRoles =
+        new(StringComparer.Ordinal)
+        {
+            "DECISION",
+            "WORKFLOW",
+            "INFORMATION"
+        };
+
+    private static readonly HashSet<string> AllowedOutputTypes =
+        new(StringComparer.Ordinal)
+        {
+            "truth",
+            "number",
+            "code"
+        };
+
     private static readonly HashSet<string> AllowedValidationLevels =
         new(StringComparer.Ordinal)
         {
@@ -265,9 +281,148 @@ public sealed class KnowledgePackValidator
             }
 
             ValidateCondition(rule.Condition, fields, evidence, errors, $"{path}.condition");
+            ValidateStructuredOutputs(rule, fields, evidence, errors, path);
         }
 
         return rules;
+    }
+
+    private static void ValidateStructuredOutputs(
+        RuleDefinition rule,
+        IReadOnlyDictionary<string, FieldDefinition> fields,
+        IReadOnlyDictionary<string, EvidenceRequirementDefinition> evidence,
+        ICollection<KnowledgeValidationError> errors,
+        string rulePath)
+    {
+        var identities = new HashSet<string>(StringComparer.Ordinal);
+
+        for (var index = 0; index < rule.Outputs.Count; index++)
+        {
+            var output = rule.Outputs[index];
+            var path = $"{rulePath}.outputs[{index}]";
+            Require(output.Id, $"{path}.id", errors);
+            Require(output.Role, $"{path}.role", errors);
+            Require(output.Type, $"{path}.type", errors);
+
+            var identity = $"{output.Id}\u001f{output.Scope ?? string.Empty}";
+            if (!string.IsNullOrWhiteSpace(output.Id) && !identities.Add(identity))
+            {
+                errors.Add(new(
+                    "duplicate_output_identity",
+                    $"Duplicate structured output identity '{output.Id}' with scope '{output.Scope}'.",
+                    path));
+            }
+
+            if (!string.IsNullOrWhiteSpace(output.Role) && !AllowedOutputRoles.Contains(output.Role))
+            {
+                errors.Add(new(
+                    "unknown_output_role",
+                    $"Unknown structured output role '{output.Role}'.",
+                    $"{path}.role"));
+            }
+
+            if (!string.IsNullOrWhiteSpace(output.Type) && !AllowedOutputTypes.Contains(output.Type))
+            {
+                errors.Add(new(
+                    "unknown_output_type",
+                    $"Unknown structured output type '{output.Type}'.",
+                    $"{path}.type"));
+            }
+
+            var allowedCodes = new HashSet<string>(StringComparer.Ordinal);
+            if (string.Equals(output.Type, "code", StringComparison.Ordinal))
+            {
+                foreach (var code in output.AllowedCodes)
+                {
+                    if (string.IsNullOrWhiteSpace(code) || !allowedCodes.Add(code))
+                    {
+                        errors.Add(new(
+                            "invalid_output_allowed_codes",
+                            $"Structured output '{output.Id}' must declare unique non-empty allowed codes.",
+                            $"{path}.allowedCodes"));
+                    }
+                }
+
+                if (output.AllowedCodes.Count == 0)
+                {
+                    errors.Add(new(
+                        "unbounded_output_code",
+                        $"Code output '{output.Id}' requires at least one allowed code.",
+                        $"{path}.allowedCodes"));
+                }
+            }
+            else if (output.AllowedCodes.Count > 0)
+            {
+                errors.Add(new(
+                    "unexpected_output_allowed_codes",
+                    $"Only code outputs may declare allowed codes.",
+                    $"{path}.allowedCodes"));
+            }
+
+            ValidateCondition(output.Condition, fields, evidence, errors, $"{path}.condition");
+            ValidateStructuredOutputValue(output.OnMatch, output.Type, allowedCodes, errors, $"{path}.onMatch");
+            ValidateStructuredOutputValue(output.OnNoMatch, output.Type, allowedCodes, errors, $"{path}.onNoMatch");
+            ValidateStructuredOutputValue(output.OnUnknown, output.Type, allowedCodes, errors, $"{path}.onUnknown");
+        }
+    }
+
+    private static void ValidateStructuredOutputValue(
+        StructuredOutputValueDefinition value,
+        string outputType,
+        IReadOnlySet<string> allowedCodes,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        switch (value.Kind)
+        {
+            case "UNKNOWN":
+                if (value.Truth is not null || value.Number is not null || value.Code is not null)
+                {
+                    errors.Add(new("ambiguous_output_value", "UNKNOWN output cannot carry a payload.", path));
+                }
+                return;
+
+            case "TRUTH":
+                if (!string.Equals(outputType, "truth", StringComparison.Ordinal)
+                    || value.Truth is null
+                    || value.Truth == TruthValue.Unknown
+                    || value.Number is not null
+                    || value.Code is not null)
+                {
+                    errors.Add(new("output_value_type_mismatch", "TRUTH output value does not match its declared output type.", path));
+                }
+                return;
+
+            case "NUMBER":
+                if (!string.Equals(outputType, "number", StringComparison.Ordinal)
+                    || value.Number is null
+                    || value.Truth is not null
+                    || value.Code is not null)
+                {
+                    errors.Add(new("output_value_type_mismatch", "NUMBER output value does not match its declared output type.", path));
+                }
+                return;
+
+            case "CODE":
+                if (!string.Equals(outputType, "code", StringComparison.Ordinal)
+                    || string.IsNullOrWhiteSpace(value.Code)
+                    || value.Truth is not null
+                    || value.Number is not null)
+                {
+                    errors.Add(new("output_value_type_mismatch", "CODE output value does not match its declared output type.", path));
+                    return;
+                }
+
+                if (!allowedCodes.Contains(value.Code))
+                {
+                    errors.Add(new("output_code_not_allowed", $"Output code '{value.Code}' is not declared in allowedCodes.", path));
+                }
+                return;
+
+            default:
+                errors.Add(new("unknown_output_value_kind", $"Unknown structured output value kind '{value.Kind}'.", $"{path}.kind"));
+                return;
+        }
     }
 
     private static void ValidateCondition(
