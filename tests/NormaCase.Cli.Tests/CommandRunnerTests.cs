@@ -28,6 +28,30 @@ public sealed class CommandRunnerTests
         Assert.Equal(string.Empty, error.ToString());
     }
 
+    [Theory]
+    [InlineData("demo-a-pack.json", "demo-a-case.json")]
+    [InlineData("demo-b-pack.json", "demo-b-case.json")]
+    [InlineData("demo-c-pack.json", "demo-c-case.json")]
+    public async Task Runnable_synthetic_examples_evaluate_successfully(string packName, string caseName)
+    {
+        var output = new StringWriter();
+        var error = new StringWriter();
+
+        var exitCode = await CommandRunner.RunAsync(
+            [
+                "evaluate",
+                "--pack", Fixture(packName),
+                "--case", Fixture(caseName),
+                "--date", "2026-10-02"
+            ],
+            output,
+            error);
+
+        Assert.Equal(ExitCodes.Success, exitCode);
+        Assert.Contains("Ergebnis: Unterstützt", output.ToString(), StringComparison.Ordinal);
+        Assert.Equal(string.Empty, error.ToString());
+    }
+
     [Fact]
     public async Task Output_option_writes_versioned_assessment_json()
     {
