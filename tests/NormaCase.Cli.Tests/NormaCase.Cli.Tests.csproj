@@ -16,6 +16,7 @@
     <None Include="../../knowledge/demo-a/pack.json" Link="Fixtures/demo-a-pack.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../knowledge/demo-b/pack.json" Link="Fixtures/demo-b-pack.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../knowledge/demo-c/pack.json" Link="Fixtures/demo-c-pack.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-e/pack.json" Link="Fixtures/demo-e-pack.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../examples/cases/*.json" Link="Cases/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
