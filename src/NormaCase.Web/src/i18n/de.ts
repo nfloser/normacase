@@ -2,7 +2,7 @@ export const de = {
   appTitle: "NormaCase",
   appSubtitle: "Synthetische Prüfwerkbank",
   syntheticNotice: "Nur synthetische Demonstration – keine fachlich freigegebene Begutachtung.",
-  pack: "Synthetisches Knowledge Pack",
+  pack: "Synthetisches Regelpaket",
   choosePack: "Beispiel auswählen",
   assessmentDate: "Prüfdatum",
   example: "Beispielfall",
