@@ -1,0 +1,9 @@
+{
+  "formatVersion": 1,
+  "facts": {
+    "criterion_a": { "kind": "TRUTH", "truth": "YES" },
+    "criterion_b": { "kind": "TRUTH", "truth": "YES" },
+    "criterion_c": { "kind": "UNKNOWN" }
+  },
+  "evidence": {}
+}
