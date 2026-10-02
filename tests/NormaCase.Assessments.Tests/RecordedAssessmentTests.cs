@@ -14,6 +14,17 @@ namespace NormaCase.Assessments.Tests;
 public sealed class RecordedAssessmentTests
 {
     [Fact]
+    public void Provenance_contracts_expose_no_public_setters()
+    {
+        Assert.All(
+            typeof(RecordedAssessment).GetProperties(),
+            property => Assert.False(property.CanWrite));
+        Assert.All(
+            typeof(AssessmentReview).GetProperties(),
+            property => Assert.False(property.CanWrite));
+    }
+
+    [Fact]
     public void Record_preserves_exact_documents_and_derives_reproducibility_metadata()
     {
         var (input, output) = Documents();
