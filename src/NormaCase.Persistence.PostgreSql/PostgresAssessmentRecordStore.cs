@@ -43,13 +43,14 @@ public sealed class PostgresAssessmentRecordStore
                     platform_version,
                     assessment_date,
                     recorded_at_utc,
+                    recorded_at_utc_ticks,
                     record_format_version,
                     record_json,
                     record_sha256
                 )
                 VALUES (
                     $1, $2, $3, $4, $5,
-                    $6, $7, $8, $9, $10
+                    $6, $7, $8, $9, $10, $11
                 );
                 """,
                 connection);
@@ -65,6 +66,8 @@ public sealed class PostgresAssessmentRecordStore
             command.Parameters.AddWithValue(
                 NpgsqlDbType.TimestampTz,
                 record.RecordedAtUtc.UtcDateTime);
+            command.Parameters.AddWithValue(
+                record.RecordedAtUtc.Ticks);
             command.Parameters.AddWithValue(
                 AssessmentRecordJson.CurrentFormatVersion);
             command.Parameters.AddWithValue(
@@ -109,6 +112,7 @@ public sealed class PostgresAssessmentRecordStore
                     platform_version,
                     assessment_date,
                     recorded_at_utc,
+                    recorded_at_utc_ticks,
                     record_format_version,
                     record_json::text,
                     record_sha256
@@ -132,9 +136,10 @@ public sealed class PostgresAssessmentRecordStore
                 DateTime.SpecifyKind(
                     reader.GetDateTime(5),
                     DateTimeKind.Utc));
-            var formatVersion = reader.GetInt32(6);
-            var json = reader.GetString(7);
-            var checksum = reader.GetString(8);
+            var recordedAtTicks = reader.GetInt64(6);
+            var formatVersion = reader.GetInt32(7);
+            var json = reader.GetString(8);
+            var checksum = reader.GetString(9);
 
             if (formatVersion
                     != AssessmentRecordJson.CurrentFormatVersion
@@ -175,7 +180,9 @@ public sealed class PostgresAssessmentRecordStore
                     platformVersion,
                     StringComparison.Ordinal)
                 || record.Result.AssessmentDate != assessmentDate
-                || record.RecordedAtUtc != recordedAt)
+                || record.RecordedAtUtc.Ticks != recordedAtTicks
+                || TruncateToPostgresMicroseconds(
+                    record.RecordedAtUtc) != recordedAt)
             {
                 throw new AssessmentRecordIntegrityException(
                     assessmentId);
@@ -191,6 +198,13 @@ public sealed class PostgresAssessmentRecordStore
         {
             throw new AssessmentRecordStorageException();
         }
+    }
+
+    private static DateTimeOffset TruncateToPostgresMicroseconds(
+        DateTimeOffset value)
+    {
+        var ticks = value.Ticks - (value.Ticks % 10);
+        return new DateTimeOffset(ticks, TimeSpan.Zero);
     }
 
     private static string Sha256(string json)
