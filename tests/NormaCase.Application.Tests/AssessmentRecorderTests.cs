@@ -1,4 +1,5 @@
 using NormaCase.Application.Assessments;
+using NormaCase.Domain.Audit;
 using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Domain.Evidence;
@@ -24,7 +25,7 @@ public sealed class AssessmentRecorderTests
             ["verification"] = EvidenceStatus.Present
         };
         var context = new AssessmentExecutionContext(
-            "assessment-001",
+            new AssessmentId("assessment-001"),
             "case-001",
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 20, 15, 0, TimeSpan.Zero));
@@ -39,7 +40,7 @@ public sealed class AssessmentRecorderTests
         facts["measurement"] = 999m;
         evidence["verification"] = EvidenceStatus.Missing;
 
-        Assert.Equal("assessment-001", record.AssessmentId);
+        Assert.Equal("assessment-001", record.AssessmentId.Value);
         Assert.Equal("case-001", record.CaseId);
         Assert.Equal("synthetic.demo-c", record.KnowledgePackId);
         Assert.Equal("test-platform-1", record.PlatformVersion);
@@ -61,7 +62,7 @@ public sealed class AssessmentRecorderTests
             ["request_confirmed"] = TruthValue.Yes
         };
         var context = new AssessmentExecutionContext(
-            "assessment-002",
+            new AssessmentId("assessment-002"),
             "case-002",
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 20, 16, 0, TimeSpan.Zero));
@@ -93,7 +94,7 @@ public sealed class AssessmentRecorderTests
             new DateOnly(2026, 10, 2),
             evidence: null,
             new AssessmentExecutionContext(
-                "assessment-003",
+                new AssessmentId("assessment-003"),
                 "case-003",
                 "test-platform-1",
                 new DateTimeOffset(2026, 10, 2, 20, 17, 0, TimeSpan.Zero)));
@@ -128,7 +129,7 @@ public sealed class AssessmentRecorderTests
                 ["verification"] = EvidenceStatus.Present
             },
             new AssessmentExecutionContext(
-                "assessment-immutable-001",
+                new AssessmentId("assessment-immutable-001"),
                 "case-immutable-001",
                 "test-platform-1",
                 new DateTimeOffset(2026, 10, 2, 20, 18, 0, TimeSpan.Zero)));
@@ -143,19 +144,19 @@ public sealed class AssessmentRecorderTests
     public void Invalid_execution_metadata_is_rejected_instead_of_being_invented()
     {
         Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
-            "",
+            default,
             "case-003",
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 20, 17, 0, TimeSpan.Zero)));
 
         Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
-            "assessment-003",
+            new AssessmentId("assessment-003"),
             "case-003",
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 22, 17, 0, TimeSpan.FromHours(2))));
 
         Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
-            "assessment-003",
+            new AssessmentId("assessment-003"),
             "case-003",
             "test-platform-1",
             default));
