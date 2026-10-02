@@ -111,3 +111,5 @@ jobs:
         run: dotnet build tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --no-restore
       - name: Test
         run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --no-build
+      - name: Run actual local HTTP executable
+        run: python scripts/smoke_local_api.py

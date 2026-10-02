@@ -39,3 +39,7 @@ Berechtigungs-/Datenschutzarchitektur und geprüfte Betriebsfreigabe.
 ```bash
 dotnet test tests/NormaCase.Api.Tests --configuration Release
 ```
+
+CI prüft zusätzlich zum HTTP-Testhost auch das tatsächlich gestartete Kestrel-
+Programm: Pack-Katalog, Demo-D-Berechnung, Sicherheitsheader und Origin-Ablehnung.
+Das Smoke-Skript gibt keine Fallinhalte aus.

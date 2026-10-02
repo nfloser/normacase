@@ -34,6 +34,7 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
     [InlineData("demo-a-incomplete", "demo-a", AssessmentOutcome.Incomplete)]
     [InlineData("demo-b-supported", "demo-b", AssessmentOutcome.Supported)]
     [InlineData("demo-c-review", "demo-c", AssessmentOutcome.HumanReview)]
+    [InlineData("demo-d-supported", "demo-d", AssessmentOutcome.Supported)]
     public async Task Http_result_matches_direct_engine_evaluation(string name, string demo, AssessmentOutcome expected)
     {
         var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", name + ".json"));
