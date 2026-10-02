@@ -23,6 +23,14 @@ public sealed class KnowledgePackValidator
             "number"
         };
 
+    private static readonly HashSet<string> AllowedCalculationKinds =
+        new(StringComparer.Ordinal)
+        {
+            "range_lookup",
+            "sum",
+            "max"
+        };
+
     private static readonly HashSet<string> AllowedValidationLevels =
         new(StringComparer.Ordinal)
         {
@@ -70,6 +78,15 @@ public sealed class KnowledgePackValidator
             }
         }
 
+        var expressionFields = new Dictionary<string, FieldDefinition>(
+            fields,
+            StringComparer.Ordinal);
+
+        ValidateCalculations(
+            pack.Calculations,
+            expressionFields,
+            errors);
+
         var sources = ValidateUniqueIds(
             pack.Sources,
             source => source.Id,
@@ -85,7 +102,7 @@ public sealed class KnowledgePackValidator
         }
 
         var evidence = ValidateUniqueIds(pack.EvidenceRequirements, item => item.Id, "evidence_requirement", errors);
-        var rules = ValidateRules(pack, fields, sources, evidence, errors);
+        var rules = ValidateRules(pack, expressionFields, sources, evidence, errors);
 
         if (!string.IsNullOrWhiteSpace(pack.Manifest.EntryRuleId)
             && !rules.Any(rule => string.Equals(
@@ -180,6 +197,355 @@ public sealed class KnowledgePackValidator
         }
 
         return result;
+    }
+
+    private static void ValidateCalculations(
+        IReadOnlyList<CalculationDefinition> calculations,
+        IDictionary<string, FieldDefinition> availableFields,
+        ICollection<KnowledgeValidationError> errors)
+    {
+        var allCalculationIds = calculations
+            .Where(item => !string.IsNullOrWhiteSpace(item.Id))
+            .Select(item => item.Id)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var seenCalculationIds = new HashSet<string>(StringComparer.Ordinal);
+
+        for (var index = 0; index < calculations.Count; index++)
+        {
+            var calculation = calculations[index];
+            var displayId = string.IsNullOrWhiteSpace(calculation.Id)
+                ? $"[{index}]"
+                : calculation.Id;
+            var path = $"calculations.{displayId}";
+
+            Require(calculation.Id, $"{path}.id", errors);
+            Require(calculation.Kind, $"{path}.kind", errors);
+
+            if (!string.IsNullOrWhiteSpace(calculation.Id))
+            {
+                if (!seenCalculationIds.Add(calculation.Id))
+                {
+                    errors.Add(new(
+                        "duplicate_calculation_id",
+                        $"Duplicate calculation id '{calculation.Id}'.",
+                        $"{path}.id"));
+                }
+
+                if (availableFields.ContainsKey(calculation.Id))
+                {
+                    errors.Add(new(
+                        "calculation_output_collision",
+                        $"Calculation output '{calculation.Id}' collides with an existing field or earlier calculation.",
+                        $"{path}.id"));
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(calculation.Kind)
+                && !AllowedCalculationKinds.Contains(calculation.Kind))
+            {
+                errors.Add(new(
+                    "unknown_calculation_kind",
+                    $"Unknown calculation kind '{calculation.Kind}'.",
+                    $"{path}.kind"));
+            }
+            else
+            {
+                switch (calculation.Kind)
+                {
+                    case "range_lookup":
+                        ValidateRangeLookupCalculation(
+                            calculation,
+                            availableFields,
+                            allCalculationIds,
+                            errors,
+                            path);
+                        break;
+
+                    case "sum":
+                    case "max":
+                        ValidateAggregateCalculation(
+                            calculation,
+                            availableFields,
+                            allCalculationIds,
+                            errors,
+                            path);
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(calculation.Id)
+                && !availableFields.ContainsKey(calculation.Id))
+            {
+                availableFields.Add(
+                    calculation.Id,
+                    new FieldDefinition
+                    {
+                        Id = calculation.Id,
+                        Type = "number",
+                        Required = false
+                    });
+            }
+        }
+    }
+
+    private static void ValidateRangeLookupCalculation(
+        CalculationDefinition calculation,
+        IReadOnlyDictionary<string, FieldDefinition> availableFields,
+        IReadOnlySet<string> allCalculationIds,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (string.IsNullOrWhiteSpace(calculation.Input))
+        {
+            errors.Add(new(
+                "missing_calculation_input",
+                "range_lookup requires exactly one input field.",
+                $"{path}.input"));
+        }
+        else
+        {
+            ValidateCalculationInput(
+                calculation.Input,
+                availableFields,
+                allCalculationIds,
+                errors,
+                $"{path}.input");
+        }
+
+        if (calculation.Inputs.Count > 0)
+        {
+            errors.Add(new(
+                "ambiguous_calculation_inputs",
+                "range_lookup uses 'input', not 'inputs'.",
+                $"{path}.inputs"));
+        }
+
+        if (calculation.Ranges.Count == 0)
+        {
+            errors.Add(new(
+                "missing_lookup_ranges",
+                "range_lookup requires at least one range.",
+                $"{path}.ranges"));
+            return;
+        }
+
+        var validRanges = new List<RangeLookupDefinition>();
+
+        for (var index = 0; index < calculation.Ranges.Count; index++)
+        {
+            var range = calculation.Ranges[index];
+            var rangePath = $"{path}.ranges[{index}]";
+
+            if (range.Minimum is null)
+            {
+                errors.Add(new("missing_lookup_minimum", "Lookup range requires minimum.", $"{rangePath}.minimum"));
+            }
+
+            if (range.Maximum is null)
+            {
+                errors.Add(new("missing_lookup_maximum", "Lookup range requires maximum.", $"{rangePath}.maximum"));
+            }
+
+            if (range.Value is null)
+            {
+                errors.Add(new("missing_lookup_value", "Lookup range requires value.", $"{rangePath}.value"));
+            }
+
+            if (range.Minimum is not null
+                && range.Maximum is not null)
+            {
+                if (range.Minimum > range.Maximum
+                    || (range.Minimum == range.Maximum
+                        && !(range.MinimumInclusive && range.MaximumInclusive)))
+                {
+                    errors.Add(new(
+                        "invalid_lookup_range",
+                        "Lookup range must contain at least one numeric value.",
+                        rangePath));
+                }
+                else if (range.Value is not null)
+                {
+                    validRanges.Add(range);
+                }
+            }
+        }
+
+        var ordered = validRanges
+            .OrderBy(range => range.Minimum!.Value)
+            .ThenBy(range => range.Maximum!.Value)
+            .ToArray();
+
+        for (var index = 1; index < ordered.Length; index++)
+        {
+            var previous = ordered[index - 1];
+            var current = ordered[index];
+            var previousMaximum = previous.Maximum!.Value;
+            var currentMinimum = current.Minimum!.Value;
+
+            if (currentMinimum < previousMaximum
+                || (currentMinimum == previousMaximum
+                    && previous.MaximumInclusive
+                    && current.MinimumInclusive))
+            {
+                errors.Add(new(
+                    "overlapping_lookup_ranges",
+                    "range_lookup ranges must not overlap or match the same boundary value.",
+                    $"{path}.ranges"));
+            }
+        }
+
+        if (!calculation.RequireFullCoverage)
+        {
+            if (calculation.CoverageMinimum is not null
+                || calculation.CoverageMaximum is not null)
+            {
+                errors.Add(new(
+                    "unexpected_lookup_coverage_bounds",
+                    "coverageMinimum/coverageMaximum require requireFullCoverage=true.",
+                    path));
+            }
+
+            return;
+        }
+
+        if (calculation.CoverageMinimum is null
+            || calculation.CoverageMaximum is null)
+        {
+            errors.Add(new(
+                "missing_lookup_coverage_bounds",
+                "Full lookup coverage requires coverageMinimum and coverageMaximum.",
+                path));
+            return;
+        }
+
+        if (calculation.CoverageMinimum > calculation.CoverageMaximum)
+        {
+            errors.Add(new(
+                "invalid_lookup_coverage",
+                "coverageMinimum cannot exceed coverageMaximum.",
+                path));
+            return;
+        }
+
+        if (ordered.Length == 0)
+        {
+            return;
+        }
+
+        var first = ordered[0];
+        var last = ordered[^1];
+
+        if (first.Minimum != calculation.CoverageMinimum
+            || !first.MinimumInclusive
+            || last.Maximum != calculation.CoverageMaximum
+            || !last.MaximumInclusive)
+        {
+            errors.Add(new(
+                "lookup_coverage_boundary",
+                "Full lookup coverage must include both declared coverage boundaries exactly.",
+                path));
+        }
+
+        for (var index = 1; index < ordered.Length; index++)
+        {
+            var previous = ordered[index - 1];
+            var current = ordered[index];
+
+            if (current.Minimum > previous.Maximum
+                || (current.Minimum == previous.Maximum
+                    && !previous.MaximumInclusive
+                    && !current.MinimumInclusive))
+            {
+                errors.Add(new(
+                    "lookup_coverage_gap",
+                    "Full lookup coverage contains an uncovered numeric interval or boundary.",
+                    $"{path}.ranges"));
+            }
+        }
+    }
+
+    private static void ValidateAggregateCalculation(
+        CalculationDefinition calculation,
+        IReadOnlyDictionary<string, FieldDefinition> availableFields,
+        IReadOnlySet<string> allCalculationIds,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (!string.IsNullOrWhiteSpace(calculation.Input))
+        {
+            errors.Add(new(
+                "ambiguous_calculation_inputs",
+                $"{calculation.Kind} uses 'inputs', not 'input'.",
+                $"{path}.input"));
+        }
+
+        if (calculation.Inputs.Count == 0)
+        {
+            errors.Add(new(
+                "missing_calculation_inputs",
+                $"{calculation.Kind} requires at least one input.",
+                $"{path}.inputs"));
+        }
+
+        for (var index = 0; index < calculation.Inputs.Count; index++)
+        {
+            ValidateCalculationInput(
+                calculation.Inputs[index],
+                availableFields,
+                allCalculationIds,
+                errors,
+                $"{path}.inputs[{index}]");
+        }
+
+        if (calculation.Ranges.Count > 0
+            || calculation.RequireFullCoverage
+            || calculation.CoverageMinimum is not null
+            || calculation.CoverageMaximum is not null)
+        {
+            errors.Add(new(
+                "unexpected_calculation_range",
+                $"{calculation.Kind} cannot define lookup ranges or coverage.",
+                path));
+        }
+    }
+
+    private static void ValidateCalculationInput(
+        string inputId,
+        IReadOnlyDictionary<string, FieldDefinition> availableFields,
+        IReadOnlySet<string> allCalculationIds,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (string.IsNullOrWhiteSpace(inputId))
+        {
+            errors.Add(new(
+                "missing_calculation_input",
+                "Calculation input id is required.",
+                path));
+            return;
+        }
+
+        if (!availableFields.TryGetValue(inputId, out var field))
+        {
+            errors.Add(new(
+                allCalculationIds.Contains(inputId)
+                    ? "calculation_forward_reference"
+                    : "missing_calculation_input",
+                allCalculationIds.Contains(inputId)
+                    ? $"Calculation input '{inputId}' must reference an earlier calculation."
+                    : $"Calculation input '{inputId}' is not declared.",
+                path));
+            return;
+        }
+
+        if (!string.Equals(field.Type, "number", StringComparison.Ordinal))
+        {
+            errors.Add(new(
+                "calculation_input_type_mismatch",
+                $"Calculation input '{inputId}' must be numeric, but is '{field.Type}'.",
+                path));
+        }
     }
 
     private static List<RuleDefinition> ValidateRules(
