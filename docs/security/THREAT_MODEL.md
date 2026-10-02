@@ -30,7 +30,7 @@ Baseline: immutable version identities, content hashing/signature support, contr
 ### Historical rewriting
 Editing an active rule in place could destroy reproducibility.
 
-Baseline: versioned Knowledge Releases and immutable historical assessments.
+Baseline: versioned Knowledge Releases and immutable historical assessments. Recorded assessments retain the exact versioned input/output artifacts and SHA-256 fingerprints; human review is a separate append-only provenance record. Fingerprints detect replacement/corruption but are not signatures, authorization controls or proof of actor identity.
 
 ### Malicious Knowledge Pack
 A pack could attempt code execution or invalid/cyclic references.
