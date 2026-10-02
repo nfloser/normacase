@@ -22,4 +22,20 @@ public sealed record RuleTrace(
     string SourceId,
     ConditionResult ConditionResult,
     AssessmentOutcome Outcome,
-    ConditionTrace Condition);
+    ConditionTrace Condition,
+    SourceTrace Source);
+
+/// <summary>Detached immutable metadata for the exact source revision used by this rule.</summary>
+public sealed record SourceTrace(
+    string Id,
+    string Version,
+    string SourceLocation,
+    string Authority,
+    string Title,
+    string DocumentType,
+    string Status,
+    DateOnly? PublicationDate,
+    DateOnly? ValidFrom,
+    DateOnly? ValidUntil,
+    DateOnly? RetrievedAt,
+    string? ContentHash);

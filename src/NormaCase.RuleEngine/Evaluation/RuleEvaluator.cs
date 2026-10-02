@@ -63,13 +63,20 @@ public sealed class RuleEvaluator
                 ? AssessmentOutcome.HumanReview
                 : ruleOutcome;
 
+        var source = pack.Sources.Single(item => string.Equals(item.Id, rule.SourceId, StringComparison.Ordinal));
+        var sourceTrace = new SourceTrace(
+            source.Id, source.Version!, source.SourceLocation!, source.Authority, source.Title,
+            source.DocumentType, source.Status, source.PublicationDate, source.ValidFrom,
+            source.ValidUntil, source.RetrievedAt, source.ContentHash);
+
         var trace = new RuleTrace(
             rule.Id,
             rule.Version,
             rule.SourceId,
             condition.Result,
             finalOutcome,
-            condition);
+            condition,
+            sourceTrace);
 
         return new(
             pack.Manifest.ReleaseId,
