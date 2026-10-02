@@ -25,7 +25,7 @@ Only synthetic data belongs in the repository.
 
 ```text
 src/
-  NormaCase.Domain/       framework-independent case/decision contracts
+  NormaCase.Domain/       framework-independent case/decision/audit contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
   NormaCase.Application/  storage-neutral assessment execution records
@@ -66,7 +66,8 @@ The current core can:
 - select a rule version from an explicit assessment date,
 - return source-backed recursive Decision Trace data,
 - emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
-- wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and the exact result.
+- model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
+- wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result.
 
 ## Local verification
 
@@ -78,7 +79,7 @@ dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj -
 dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj --configuration Release
 ```
 
-No external runtime service is required for the current core. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md); it is the boundary a future PostgreSQL adapter will persist, not a database implementation itself.
+No external runtime service is required for the current core. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md), while human review/audit semantics are documented in [docs/architecture/AUDIT.md](docs/architecture/AUDIT.md). Neither is a database implementation.
 
 ## Development
 
