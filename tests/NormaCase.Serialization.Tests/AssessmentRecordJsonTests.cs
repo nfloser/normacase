@@ -69,9 +69,10 @@ public sealed class AssessmentRecordJsonTests
 
         Assert.Equal(EvidenceStatus.Conflicting, restored.Input.Evidence["verification"]);
         Assert.Equal(AssessmentOutcome.HumanReview, restored.Result.Outcome);
-        Assert.Equal(
-            EvidenceStatus.Conflicting,
-            restored.Result.RuleTrace!.Condition.EvidenceStatus);
+        var evidenceTrace = Assert.Single(
+            restored.Result.RuleTrace!.Condition.Children,
+            child => child.EvidenceRequirementId == "verification");
+        Assert.Equal(EvidenceStatus.Conflicting, evidenceTrace.EvidenceStatus);
     }
 
     [Fact]
