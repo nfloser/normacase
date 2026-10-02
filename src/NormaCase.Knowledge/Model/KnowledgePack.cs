@@ -50,5 +50,8 @@ public sealed class ConditionDefinition
     public string Kind { get; init; } = string.Empty;
     public string? Field { get; init; }
     public TruthValue? Expected { get; init; }
+    public decimal? Threshold { get; init; }
+    public decimal? Minimum { get; init; }
+    public decimal? Maximum { get; init; }
     public List<ConditionDefinition> Conditions { get; init; } = [];
 }
