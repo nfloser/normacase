@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Help" xml:space="preserve"><value>NormaCase Offline-Auswertung
+
+Verwendung:
+  normacase evaluate --pack &lt;pack.json&gt; --case &lt;fall.json&gt; --date &lt;JJJJ-MM-TT&gt;
+  normacase evaluate --pack &lt;pack.json&gt; --case &lt;fall.json&gt; --date &lt;JJJJ-MM-TT&gt; --output &lt;assessment.json&gt; --platform-version &lt;version&gt;
+
+Die Auswertung arbeitet ausschließlich mit lokalen Dateien und einem expliziten Bewertungsstichtag.</value></data>
+  <data name="UsageError" xml:space="preserve"><value>Ungültiger Aufruf. Verwenden Sie --help für die verfügbaren Optionen.</value></data>
+  <data name="IoError" xml:space="preserve"><value>Datei konnte nicht gelesen oder geschrieben werden.</value></data>
+  <data name="KnowledgeError" xml:space="preserve"><value>Knowledge Pack ist ungültig oder für diese Auswertung nicht eindeutig.</value></data>
+  <data name="InputError" xml:space="preserve"><value>Eingabedatei ist ungültig oder passt nicht zum Knowledge Pack.</value></data>
+  <data name="Outcome" xml:space="preserve"><value>Ergebnis: {0}</value></data>
+  <data name="KnowledgeRelease" xml:space="preserve"><value>Wissensstand: {0}</value></data>
+  <data name="AssessmentDate" xml:space="preserve"><value>Bewertungsstichtag: {0}</value></data>
+  <data name="MissingFields" xml:space="preserve"><value>Fehlende Pflichtfelder: {0}</value></data>
+  <data name="OutputWritten" xml:space="preserve"><value>Assessment-JSON geschrieben: {0}</value></data>
+  <data name="OutcomeSupported" xml:space="preserve"><value>Unterstützt</value></data>
+  <data name="OutcomeNotSupported" xml:space="preserve"><value>Nicht unterstützt</value></data>
+  <data name="OutcomeIncomplete" xml:space="preserve"><value>Unvollständig</value></data>
+  <data name="OutcomeHumanReview" xml:space="preserve"><value>Manuelle Prüfung erforderlich</value></data>
+  <data name="OutcomeNotApplicable" xml:space="preserve"><value>Nicht anwendbar</value></data>
+</root>
