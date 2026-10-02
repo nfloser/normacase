@@ -60,6 +60,28 @@ public sealed class RuleDefinition
     public AssessmentOutcome? OnMatch { get; init; }
     public AssessmentOutcome? OnNoMatch { get; init; }
     public AssessmentOutcome? OnUnknown { get; init; }
+    public List<StructuredOutputDefinition> Outputs { get; init; } = [];
+}
+
+public sealed class StructuredOutputDefinition
+{
+    public string Id { get; init; } = string.Empty;
+    public string? Scope { get; init; }
+    public string Role { get; init; } = string.Empty;
+    public string Type { get; init; } = string.Empty;
+    public List<string> AllowedCodes { get; init; } = [];
+    public ConditionDefinition Condition { get; init; } = new();
+    public StructuredOutputValueDefinition OnMatch { get; init; } = new();
+    public StructuredOutputValueDefinition OnNoMatch { get; init; } = new();
+    public StructuredOutputValueDefinition OnUnknown { get; init; } = new();
+}
+
+public sealed class StructuredOutputValueDefinition
+{
+    public string Kind { get; init; } = string.Empty;
+    public TruthValue? Truth { get; init; }
+    public decimal? Number { get; init; }
+    public string? Code { get; init; }
 }
 
 public sealed class ConditionDefinition
