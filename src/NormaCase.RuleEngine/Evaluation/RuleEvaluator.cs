@@ -65,7 +65,7 @@ public sealed class RuleEvaluator
 
         var source = pack.Sources.Single(item => string.Equals(item.Id, rule.SourceId, StringComparison.Ordinal));
         var sourceTrace = new SourceTrace(
-            source.Id, source.Version!, source.SourceLocation!, source.Authority, source.Title,
+            source.Id, source.Version, source.SourceLocation, source.Authority, source.Title,
             source.DocumentType, source.Status, source.PublicationDate, source.ValidFrom,
             source.ValidUntil, source.RetrievedAt, source.ContentHash);
 
