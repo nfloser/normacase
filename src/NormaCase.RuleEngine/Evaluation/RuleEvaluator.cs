@@ -201,6 +201,7 @@ public sealed class RuleEvaluator
             "number_in_range" => EvaluateNumberInRange(condition, facts),
             "all" => EvaluateAll(condition, facts, evidence),
             "any" => EvaluateAny(condition, facts, evidence),
+            "not" => EvaluateNot(condition, facts, evidence),
             "requires_evidence" => EvaluateEvidenceDependency(condition, facts, evidence),
             _ => throw new InvalidOperationException(
                 $"Knowledge validation should reject unknown condition kind '{condition.Kind}'.")
@@ -309,6 +310,21 @@ public sealed class RuleEvaluator
                 : ConditionResult.NotMatched;
 
         return GroupTrace(condition.Kind, result, children);
+    }
+
+    private static ConditionTrace EvaluateNot(
+        ConditionDefinition condition,
+        IReadOnlyDictionary<string, CaseValue> facts,
+        IReadOnlyDictionary<string, EvidenceStatus> evidence)
+    {
+        var child = EvaluateCondition(condition.Conditions[0], facts, evidence);
+        var result = child.Result switch
+        {
+            ConditionResult.Matched => ConditionResult.NotMatched,
+            ConditionResult.NotMatched => ConditionResult.Matched,
+            _ => ConditionResult.Unknown
+        };
+        return GroupTrace(condition.Kind, result, [child]);
     }
 
     private static ConditionTrace EvaluateEvidenceDependency(
