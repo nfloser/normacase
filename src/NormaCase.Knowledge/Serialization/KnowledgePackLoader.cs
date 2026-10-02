@@ -65,7 +65,8 @@ public sealed class KnowledgePackLoader
         {
             PropertyNameCaseInsensitive = true,
             UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
-            RespectNullableAnnotations = true
+            RespectNullableAnnotations = true,
+            NumberHandling = JsonNumberHandling.Strict
         };
 
         options.Converters.Add(
