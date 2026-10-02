@@ -15,7 +15,7 @@ def copy_directory(source: Path, target: Path) -> None:
 
 
 def write_text(path: Path, text: str, executable: bool = False) -> None:
-    path.write_text(text, encoding="utf-8", newline="\\n")
+    path.write_text(text, encoding="utf-8", newline="\n")
     if executable:
         path.chmod(path.stat().st_mode | 0o111)
 
@@ -30,7 +30,7 @@ def build_manifest(root: Path) -> str:
             continue
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         lines.append(f"{digest}  {path.relative_to(root).as_posix()}")
-    return "\\n".join(lines) + "\\n"
+    return "\n".join(lines) + "\n"
 
 
 def main() -> None:
@@ -67,7 +67,7 @@ def main() -> None:
     }
     write_text(
         root / "build-info.json",
-        json.dumps(build_info, indent=2, ensure_ascii=False) + "\\n",
+        json.dumps(build_info, indent=2, ensure_ascii=False) + "\n",
     )
 
     start_instruction = (
