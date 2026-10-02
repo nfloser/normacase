@@ -78,7 +78,8 @@ Current condition kinds are:
 - `number_gte` for inclusive numeric thresholds,
 - `number_in_range` for inclusive numeric ranges,
 - `all`,
-- `any`.
+- `any`,
+- `not`.
 
 Groups may be nested.
 
@@ -107,6 +108,41 @@ Demo D proves this capability with synthetic scoring data only; it does not enco
 - `all`: any not-matched child -> not matched; otherwise any unknown -> unknown; otherwise matched.
 - `any`: any matched child -> matched; otherwise any unknown -> unknown; otherwise not matched.
 - unknown final condition -> `INCOMPLETE`.
+
+### Negation
+
+`not` contains exactly one condition in `conditions`. It can wrap a truth,
+numeric, group, evidence or another negation condition. It cannot simultaneously
+declare a field, expected value, threshold/bounds, numeric expression or evidence
+reference. The child is validated recursively.
+
+```json
+{
+  "kind": "not",
+  "conditions": [
+    { "kind": "field_equals", "field": "criterion_a", "expected": "YES" }
+  ]
+}
+```
+
+| Child condition | Negated condition |
+| --- | --- |
+| Matched | NotMatched |
+| NotMatched | Matched |
+| Unknown | Unknown |
+
+The complete child trace stays available. Negation acts on the condition result;
+it does not rewrite the underlying fact. For example, a NOT_APPLICABLE fact
+remains NOT_APPLICABLE in the trace, and negating "equals YES" does not convert it
+to NO. Missing inputs/evidence remain UNKNOWN, globally missing required fields
+still force INCOMPLETE, and conflicting evidence still forces HUMAN_REVIEW even
+when another group branch masks the unknown condition.
+
+Both entry rules and independent output conditions may use `not`. Existing
+Knowledge/Assessment/Snapshot envelopes remain at their current versions: the
+recursive condition tree already carries operator ids. Older platform builds
+reject the new operator; replay still requires the recorded platform identity.
+Existing released synthetic fixtures are not rewritten by this extension.
 
 ## Independent domain outputs
 
