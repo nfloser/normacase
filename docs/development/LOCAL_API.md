@@ -8,11 +8,12 @@ dotnet run --project src/NormaCase.Api
 
 Der Dienst lauscht ausschließlich auf Loopback-Port 5080. Aufrufparameter oder
 ASPNETCORE_URLS ändern diese Bindung nicht. Es gibt keine Runtime-Netzwerkabfragen.
-Alle vier mitgelieferten synthetischen Packs werden lokal geladen und validiert.
+Alle fünf mitgelieferten synthetischen Packs werden lokal geladen und validiert.
 
-- `GET http://localhost:5080/api/packs`: Pack-/Release-IDs, Felder und Evidenzreferenzen.
+- `GET http://localhost:5080/api/packs`: Pack-/Release-IDs, Felder, Evidenzreferenzen sowie externe deutsche Präsentationsmetadaten und Beispiel-IDs.
+- `GET http://localhost:5080/api/packs/{packId}/examples/{exampleId}`: synthetische UI-Vorlage mit explizitem Prüfdatum; numerische Werte werden als verlustfreie Strings ausgeliefert.
 - `POST http://localhost:5080/api/assessments/synthetic.demo-c`: versionierter Fall als JSON.
-- Antwort: verlustfreies Assessment-JSON mit Build-/Wissensstand und Decision Trace.
+- Antwort: verlustfreies Assessment-JSON mit Build-/Wissensstand, Decision Trace und gegebenenfalls unabhängigen Fachausgaben.
 
 Beispiel (curl ist unter Windows als curl.exe verfügbar):
 
@@ -31,7 +32,9 @@ Meldungen liegen in RESX-Ressourcen. Antworten sind nicht cachebar; Eingabeinhal
 Dateipfade und Exception-Texte werden nicht ausgegeben oder protokolliert.
 
 Requests sind auf 1 MiB begrenzt. Keine CORS-Freigabe, Forwarded-Header-Auswertung
-oder externe Bindung. Der Dienst enthält keine Authentifizierung, Speicherung,
+oder externe Bindung. Browserantworten setzen restriktive CSP-, Frame-, Referrer-
+und MIME-Sicherheitsheader. Nach einem Frontend-Build wird die lokale Workbench
+unter `http://localhost:5080/` aus demselben Prozess ausgeliefert. Der Dienst enthält keine Authentifizierung, Speicherung,
 Patientendatenverwaltung oder fachliche Freigabe. Er dient ausschließlich lokalen
 synthetischen Entwicklungstests. Eine produktive API benötigt eine gesonderte
 Berechtigungs-/Datenschutzarchitektur und geprüfte Betriebsfreigabe.
@@ -41,5 +44,7 @@ dotnet test tests/NormaCase.Api.Tests --configuration Release
 ```
 
 CI prüft zusätzlich zum HTTP-Testhost auch das tatsächlich gestartete Kestrel-
-Programm: Pack-Katalog, Demo-D-Berechnung, Sicherheitsheader und Origin-Ablehnung.
-Das Smoke-Skript gibt keine Fallinhalte aus.
+Programm: Pack-Katalog, Demo-E-Assessment-JSON v2 einschließlich UNKNOWN-Fachausgabe,
+Sicherheitsheader und Origin-Ablehnung. Der separate Workbench-Job baut die lokal
+gebündelten React-/TypeScript-Assets und prüft reale Chromium-Szenarien gegen den
+gleichen .NET-Prozess. Das Smoke-Skript gibt keine Fallinhalte aus.
