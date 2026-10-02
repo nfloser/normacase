@@ -50,6 +50,11 @@ Truth runtime values are `YES`, `NO`, `UNKNOWN` and `NOT_APPLICABLE`.
 
 Numeric runtime values use exact decimal values in the deterministic core.
 
+Knowledge JSON requires numeric tokens for numeric properties, including format/rule
+versions, thresholds, bounds and lookup values. Quoted numeric strings are rejected
+rather than coerced. Source revision strings remain strings; this requirement applies
+to properties declared as numeric by the format.
+
 A missing required field is represented as unknown and forces the final platform outcome to `INCOMPLETE`.
 
 Case values must match the field type declared by the pack. The evaluator rejects type mismatches rather than coercing values.
