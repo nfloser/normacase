@@ -17,12 +17,15 @@ All three packs are `SYNTHETIC`.
 
 ```json
 {
+  "formatVersion": 1,
   "packId": "synthetic.demo-a",
   "releaseId": "demo-a-2026.1",
   "validationLevel": "SYNTHETIC",
   "entryRuleId": "DEMO-A-ELIGIBILITY"
 }
 ```
+
+`formatVersion` versions the declarative pack contract independently from a Knowledge Release. The current supported format is `1`; missing or unsupported versions fail validation instead of being guessed.
 
 `releaseId` is carried into every assessment result. `entryRuleId` identifies the logical rule resolved for the explicit assessment date.
 
@@ -52,7 +55,13 @@ Case values must match the field type declared by the pack. The evaluator reject
 
 Every rule references a source id. Synthetic fixtures use synthetic sources only.
 
-Source id, authority, title and document type are required. A missing source reference fails pack validation and the pack is not partially loaded.
+Every source has a stable id, authority, title, document type, source version and location. Optional provenance fields are `publishedOn`, `validFrom`, `validUntil`, `retrievedOn` and `contentHash`. Invalid validity intervals are rejected.
+
+`contentHash` uses `sha256:<64 hexadecimal characters>` and identifies the exact retrieved source bytes. The validator checks the metadata shape only: it does not fetch a URL, recalculate a remote document hash or prove authenticity. Retrieval/archival belongs upstream of deterministic evaluation.
+
+For `PUBLIC_REFERENCE`, `DOMAIN_REVIEWED` and `PRODUCTION_APPROVED` packs, every source must record `retrievedOn` and `contentHash`. Synthetic packs may omit them rather than pretending that an external document was retrieved.
+
+A missing source reference fails pack validation and the pack is not partially loaded.
 
 ## Conditions
 
@@ -88,7 +97,7 @@ An evaluation result records:
 - assessment date,
 - missing required fields,
 - selected rule id/version,
-- source id,
+- source id, source version, source location and optional content hash,
 - recursive condition trace,
 - typed actual/expected values or numeric range bounds,
 - final outcome.
