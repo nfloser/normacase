@@ -64,6 +64,7 @@ The current core can:
 - select a rule version from an explicit assessment date,
 - return source-backed recursive Decision Trace data,
 - emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output.
+- model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time.
 
 ## Local verification
 
