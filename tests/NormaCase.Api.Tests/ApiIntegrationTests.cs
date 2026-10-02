@@ -24,12 +24,18 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         Assert.Equal(5, json.RootElement.GetArrayLength());
         foreach (var pack in json.RootElement.EnumerateArray())
+        {
             Assert.Equal("SYNTHETIC", pack.GetProperty("validationLevel").GetString());
-        Assert.Contains(
-            json.RootElement.EnumerateArray(),
-            pack => pack.GetProperty("packId").GetString() == "synthetic.demo-e");
+            Assert.Equal("de-DE", pack.GetProperty("presentation").GetProperty("locale").GetString());
+            Assert.False(string.IsNullOrWhiteSpace(pack.GetProperty("presentation").GetProperty("name").GetString()));
+        }
         Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
         Assert.Contains("nosniff", response.Headers.GetValues("X-Content-Type-Options"));
+        Assert.Contains("no-referrer", response.Headers.GetValues("Referrer-Policy"));
+        Assert.Contains("DENY", response.Headers.GetValues("X-Frame-Options"));
+        Assert.Contains(
+            "frame-ancestors 'none'",
+            response.Headers.GetValues("Content-Security-Policy").Single());
     }
 
     [Theory]
@@ -52,6 +58,70 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         Assert.Equal(AssessmentJson.Serialize(direct, document.PlatformVersion),
             AssessmentJson.Serialize(document.Assessment, document.PlatformVersion));
         Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
+    }
+
+    [Fact]
+    public async Task Catalog_exposes_external_German_labels_and_examples_for_Demo_E()
+    {
+        var response = await _client.GetAsync("/api/packs");
+        response.EnsureSuccessStatusCode();
+
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var demo = Assert.Single(
+            json.RootElement.EnumerateArray(),
+            item => item.GetProperty("packId").GetString() == "synthetic.demo-e");
+
+        var presentation = demo.GetProperty("presentation");
+        Assert.Equal("Demo E – Mehrere Ergebnisse", presentation.GetProperty("name").GetString());
+
+        var metric = Assert.Single(
+            demo.GetProperty("fields").EnumerateArray(),
+            item => item.GetProperty("id").GetString() == "metric");
+        Assert.Equal("Kennzahl", metric.GetProperty("label").GetString());
+
+        Assert.Contains(
+            presentation.GetProperty("examples").EnumerateArray(),
+            item => item.GetProperty("id").GetString() == "mixed"
+                && item.GetProperty("label").GetString() == "Bekannte und unbekannte Ausgaben");
+    }
+
+    [Fact]
+    public async Task Synthetic_example_can_be_loaded_without_a_file_or_technical_case_id()
+    {
+        var response = await _client.GetAsync("/api/packs/synthetic.demo-e/examples/mixed");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal("2026-10-02", document.RootElement.GetProperty("assessmentDate").GetString());
+        Assert.Equal("YES", document.RootElement.GetProperty("values").GetProperty("gate_primary").GetString());
+        Assert.Equal("7", document.RootElement.GetProperty("values").GetProperty("metric").GetString());
+        Assert.Equal("UNKNOWN", document.RootElement.GetProperty("values").GetProperty("segment_beta_ready").GetString());
+        Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
+    }
+
+    [Fact]
+    public async Task Demo_E_roundtrips_domain_outputs_through_the_real_HTTP_contract()
+    {
+        var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", "demo-e-mixed.json"));
+        var response = await Post("demo-e", json);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = AssessmentJson.Deserialize(await response.Content.ReadAsStringAsync());
+        Assert.Equal(5, document.Assessment.DomainOutputs.Count);
+        Assert.Contains(
+            document.Assessment.DomainOutputs,
+            output => output.OutputId == "external_state"
+                && output.Value.Choice == "PENDING_EXTERNAL");
+        var beta = Assert.Single(
+            document.Assessment.DomainOutputs,
+            output => output.OutputId == "segment_beta");
+        Assert.Equal(DomainOutputValueKind.Unknown, beta.Value.Kind);
+        Assert.Null(beta.Value.Choice);
+        Assert.Equal("SYNTH-DEMO-E-001", beta.Source.Id);
+        Assert.Equal("1", beta.Source.Version);
+        Assert.Equal(
+            "repository:knowledge/demo-e/pack.json",
+            beta.Source.SourceLocation);
     }
 
     [Fact]
