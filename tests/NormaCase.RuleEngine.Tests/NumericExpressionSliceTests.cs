@@ -148,6 +148,52 @@ public sealed class NumericExpressionSliceTests
     }
 
     [Fact]
+    public void Numeric_range_condition_can_consume_a_derived_expression()
+    {
+        var node = DemoD();
+        var condition = node["rules"]![0]!["condition"]!.AsObject();
+        condition["kind"] = "number_in_range";
+        condition.Remove("threshold");
+        condition["minimum"] = 14m;
+        condition["maximum"] = 20m;
+
+        var pack = _loader.LoadFromJson(node.ToJsonString());
+        var facts = new Dictionary<string, CaseValue>
+        {
+            ["base_input"] = 5m,
+            ["option_a"] = 3m,
+            ["option_b"] = 6m
+        };
+
+        var result = _evaluator.Evaluate(pack, facts, new DateOnly(2026, 10, 2));
+
+        Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
+        Assert.Equal(14m, result.RuleTrace!.Condition.Actual!.Value.Number);
+        Assert.NotNull(result.RuleTrace.Condition.NumericExpression);
+    }
+
+    [Fact]
+    public void Condition_group_cannot_silently_ignore_a_numeric_expression()
+    {
+        var node = DemoD();
+        var condition = node["rules"]![0]!["condition"]!.AsObject();
+        var original = condition.DeepClone();
+
+        condition.Clear();
+        condition["kind"] = "all";
+        condition["conditions"] = new JsonArray(original);
+        condition["numericExpression"] = new JsonObject
+        {
+            ["kind"] = "field",
+            ["field"] = "base_input"
+        };
+
+        var error = LoadFailure(node);
+
+        Assert.Contains(error.Errors, item => item.Code == "unexpected_numeric_expression");
+    }
+
+    [Fact]
     public void Repeated_evaluation_produces_identical_trace()
     {
         var pack = LoadDemoPack();
