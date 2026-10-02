@@ -97,6 +97,46 @@ public sealed class SnapshotTests
         Assert.Equal(new DateOnly(2025, 1, 1), service.Replay(json, "test-1").Assessment.AssessmentDate);
     }
 
+
+    [Fact]
+    public void Rehashed_pack_release_change_is_rejected()
+    {
+        var original = AssessmentSnapshotJson.Deserialize(Capture());
+        var pack = JsonNode.Parse(original.KnowledgePackJson)!;
+        pack["manifest"]!["releaseId"] = "synthetic-changed-release";
+        var json = AssessmentSnapshotJson.Serialize(pack.ToJsonString(), original.Input, original.Assessment);
+        Assert.Throws<SnapshotReplayException>(() => new AssessmentSnapshotService().Replay(json, "test-1"));
+    }
+
+    [Fact]
+    public void Rehashed_trace_change_is_rejected()
+    {
+        var original = AssessmentSnapshotJson.Deserialize(Capture());
+        var trace = original.Assessment.Assessment.RuleTrace!;
+        var result = original.Assessment.Assessment with { RuleTrace = trace with { RuleVersion = "changed-version" } };
+        var json = AssessmentSnapshotJson.Serialize(original.KnowledgePackJson, original.Input,
+            original.Assessment with { Assessment = result });
+        Assert.Throws<SnapshotReplayException>(() => new AssessmentSnapshotService().Replay(json, "test-1"));
+    }
+
+    [Theory]
+    [InlineData("input", "formatVersion", "2")]
+    [InlineData("assessment", "formatVersion", "1")]
+    [InlineData("assessment", "platformVersion", "null")]
+    public void Nested_contracts_are_strict(string parent, string property, string value)
+    {
+        var node = JsonNode.Parse(Capture())!;
+        node[parent]![property] = JsonNode.Parse(value);
+        Assert.Throws<JsonException>(() => AssessmentSnapshotJson.Deserialize(node.ToJsonString()));
+    }
+
+    [Fact]
+    public void Oversized_envelope_is_rejected_before_parsing()
+    {
+        Assert.Throws<JsonException>(() => AssessmentSnapshotJson.Deserialize(
+            new string(' ', AssessmentJson.MaximumJsonCharacters + 1)));
+    }
+
     private static string Capture() => new AssessmentSnapshotService().Capture(Pack("demo-a"), Case("demo-a-supported"), "test-1");
     private static string Pack(string demo) => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", demo + "-pack.json"));
     private static string Case(string example) => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", example + ".json"));
