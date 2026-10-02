@@ -7,6 +7,7 @@ using NormaCase.Serialization;
 namespace NormaCase.Api;
 
 internal sealed record PresentationText(string Label, string? HelpText = null);
+internal sealed record PresentationOutputText(string Label, Dictionary<string, string> Choices);
 internal sealed record PresentationExample(string Id, string Label, string CaseFile);
 internal sealed record PresentationDocument(
     int FormatVersion,
@@ -16,7 +17,7 @@ internal sealed record PresentationDocument(
     string Description,
     Dictionary<string, PresentationText> Fields,
     Dictionary<string, PresentationText> EvidenceRequirements,
-    Dictionary<string, PresentationText> Outputs,
+    Dictionary<string, PresentationOutputText> Outputs,
     List<PresentationExample> Examples);
 
 internal sealed record LoadedExample(string Id, string Label, CaseInput Input);
@@ -26,7 +27,7 @@ internal sealed record LoadedPresentation(
     string Description,
     IReadOnlyDictionary<string, PresentationText> Fields,
     IReadOnlyDictionary<string, PresentationText> EvidenceRequirements,
-    IReadOnlyDictionary<string, PresentationText> Outputs,
+    IReadOnlyDictionary<string, PresentationOutputText> Outputs,
     IReadOnlyList<LoadedExample> Examples);
 
 internal static class PresentationCatalog
@@ -69,12 +70,26 @@ internal static class PresentationCatalog
             ValidateKeys(pack.EvidenceRequirements.Select(item => item.Id), document.EvidenceRequirements.Keys);
             ValidateKeys(pack.Outputs.Select(item => item.Id).Distinct(StringComparer.Ordinal), document.Outputs.Keys);
 
-            foreach (var item in document.Fields.Values
-                         .Concat(document.EvidenceRequirements.Values)
-                         .Concat(document.Outputs.Values))
+            foreach (var item in document.Fields.Values.Concat(document.EvidenceRequirements.Values))
             {
                 if (string.IsNullOrWhiteSpace(item.Label))
                     throw new InvalidOperationException("Presentation labels must not be empty.");
+            }
+
+            foreach (var item in document.Outputs)
+            {
+                if (string.IsNullOrWhiteSpace(item.Value.Label)
+                    || item.Value.Choices.Any(choice => string.IsNullOrWhiteSpace(choice.Value)))
+                {
+                    throw new InvalidOperationException("Output presentation labels must not be empty.");
+                }
+
+                var expectedChoices = pack.Outputs
+                    .Where(output => string.Equals(output.Id, item.Key, StringComparison.Ordinal))
+                    .SelectMany(output => output.Choices)
+                    .ToHashSet(StringComparer.Ordinal);
+                if (!expectedChoices.SetEquals(item.Value.Choices.Keys))
+                    throw new InvalidOperationException("Output presentation choices must match the synthetic pack.");
             }
 
             var examples = new List<LoadedExample>();
@@ -102,7 +117,7 @@ internal static class PresentationCatalog
                 document.Description,
                 new Dictionary<string, PresentationText>(document.Fields, StringComparer.Ordinal),
                 new Dictionary<string, PresentationText>(document.EvidenceRequirements, StringComparer.Ordinal),
-                new Dictionary<string, PresentationText>(document.Outputs, StringComparer.Ordinal),
+                new Dictionary<string, PresentationOutputText>(document.Outputs, StringComparer.Ordinal),
                 examples);
         }
 
