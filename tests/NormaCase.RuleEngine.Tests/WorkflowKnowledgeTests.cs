@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using NormaCase.Knowledge.Serialization;
 using NormaCase.Knowledge.Validation;
+using NormaCase.Knowledge.Workflow;
 using Xunit;
 
 namespace NormaCase.RuleEngine.Tests;
