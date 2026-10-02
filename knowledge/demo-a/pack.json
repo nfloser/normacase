@@ -1,5 +1,6 @@
 {
   "manifest": {
+    "formatVersion": 1,
     "packId": "synthetic.demo-a",
     "releaseId": "demo-a-2026.1",
     "validationLevel": "SYNTHETIC",
@@ -27,7 +28,9 @@
       "id": "SYNTH-DEMO-A-001",
       "authority": "NormaCase synthetic test suite",
       "title": "Synthetic Demo A rule source",
-      "documentType": "SYNTHETIC"
+      "documentType": "SYNTHETIC",
+      "version": "synthetic-v1",
+      "location": "synthetic://demo-a/source-001"
     }
   ],
   "rules": [
