@@ -23,7 +23,7 @@ Workflows. Die Prüfung darf auch Packs mit `PUBLIC_REFERENCE`,
 `evaluate`, `snapshot` und `replay` im aktuellen Demonstrations-CLI weiterhin
 nicht ausgeführt werden.
 
-Bei semantischen Fehlern gibt `validate` stabile technische Fehlercodes aus,
+Bei semantischen Fehlern gibt `validate` höchstens 20 unterschiedliche, ordinal sortierte technische Fehlercodes aus,
 nicht die importierten Validator-Meldungen, Dateipfade oder Knowledge-Inhalte.
 
 Für synthetische Auswertungen:
@@ -61,8 +61,9 @@ Rückgabecodes:
 `evaluate`, `snapshot` und `replay` akzeptieren ausschließlich SYNTHETIC-Packs.
 `validate` darf dagegen deklarierte Validation Levels strukturell prüfen, ohne
 dadurch eine Ausführung oder fachliche Freigabe zu erlauben. Das CLI ist ein
-Engineering-/Demonstrationswerkzeug; Weboberfläche, produktive Speicherung,
-Authentifizierung und Freigabeprozesse stehen weiterhin aus. Verwende
+Engineering-/Demonstrationswerkzeug und speichert selbst keine Fälle.
+Eine deutsche Web-Prüfwerkstatt und PostgreSQL-Speicheradapter sind vorhanden;
+produktive Authentifizierung und fachliche Freigabeprozesse stehen weiterhin aus. Verwende
 ausschließlich synthetische Fälle. JSON-Ausgaben enthalten Eingabe-/Tracewerte;
 behandle spätere produktive Exporte als sensible Daten und protokolliere sie nicht
 unbeabsichtigt. Fehlermeldungen enthalten keine Dateipfade oder Fallinhalte.
