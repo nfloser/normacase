@@ -34,6 +34,8 @@ public static class DemoHost
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
             context.Response.StatusCode = 500;
+            context.Response.Headers.CacheControl = "no-store";
+            context.Response.Headers["X-Content-Type-Options"] = "nosniff";
             await context.Response.WriteAsJsonAsync(new { code = "internal_error", message = ApiMessages.Get("internal_error") });
         }));
         app.Use(async (context, next) =>
