@@ -95,6 +95,36 @@ public sealed class KnowledgeValidationCliTests
     }
 
     [Fact]
+    public void Oversized_pack_is_rejected_before_parsing()
+    {
+        var directory = Path.Combine(
+            Path.GetTempPath(),
+            Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, "oversized-synthetic-pack.json");
+        try
+        {
+            File.WriteAllText(
+                path,
+                new string(' ', NormaCase.Serialization.AssessmentJson.MaximumJsonCharacters + 1));
+
+            using var output = new StringWriter();
+            using var error = new StringWriter();
+
+            Assert.Equal(
+                2,
+                CliRunner.Run(["validate", "--pack", path], output, error));
+            Assert.Equal("", output.ToString());
+            Assert.Contains("ungültig", error.ToString());
+            Assert.DoesNotContain(path, error.ToString());
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Fact]
     public void Missing_pack_has_the_existing_private_IO_error()
     {
         using var output = new StringWriter();
