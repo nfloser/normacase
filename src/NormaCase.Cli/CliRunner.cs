@@ -28,7 +28,7 @@ public static class CliRunner
             if (args[0] == "validate")
             {
                 var packJson = ReadBoundedFile(options["--pack"]);
-                var pack = new KnowledgePackLoader().LoadFromJson(packJson);
+                _ = new KnowledgePackLoader().LoadFromJson(packJson);
                 output.WriteLine(Messages.Get("ValidationSuccess"));
                 output.WriteLine(Messages.Get("ValidationDisclaimer"));
                 return 0;
