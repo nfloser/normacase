@@ -24,7 +24,7 @@ public sealed class CommandRunnerTests
 
         Assert.Equal(ExitCodes.Success, exitCode);
         Assert.Contains("Ergebnis: Unterstützt", output.ToString(), StringComparison.Ordinal);
-        Assert.Contains("Knowledge Release: demo-a-2026.1", output.ToString(), StringComparison.Ordinal);
+        Assert.Contains("Wissensstand: demo-a-2026.1", output.ToString(), StringComparison.Ordinal);
         Assert.Equal(string.Empty, error.ToString());
     }
 
