@@ -134,7 +134,7 @@ public sealed class SnapshotTests
     public void Oversized_envelope_is_rejected_before_parsing()
     {
         Assert.Throws<JsonException>(() => AssessmentSnapshotJson.Deserialize(
-            new string(' ', AssessmentJson.MaximumJsonCharacters + 1)));
+            new string('x', AssessmentJson.MaximumJsonCharacters + 1)));
     }
 
     private static string Capture() => new AssessmentSnapshotService().Capture(Pack("demo-a"), Case("demo-a-supported"), "test-1");
