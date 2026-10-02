@@ -35,6 +35,15 @@ public sealed class PostgresAssessmentRecordStoreTests
             connection);
 
         Assert.Equal(1L, await command.ExecuteScalarAsync());
+
+        await using var auditCommand = new NpgsqlCommand(
+            """
+            SELECT count(*)
+            FROM normacase.schema_migrations
+            WHERE version = 2;
+            """,
+            connection);
+        Assert.Equal(1L, await auditCommand.ExecuteScalarAsync());
     }
 
     [Fact]

@@ -101,3 +101,39 @@ Tests cover:
 - database-enforced UPDATE/DELETE rejection,
 - fingerprint failure before deserialization,
 - redacted connection failures.
+
+
+## Human review audit trail versions
+
+Human-review history uses the same infrastructure boundary but remains a separate
+immutable concept from the system assessment.
+
+`PostgresAssessmentAuditTrailStore` stores an accepted `AssessmentAuditTrail` as
+an immutable version row identified by assessment id and the trail's last sequence.
+
+The first stored version must contain only sequence 1
+(`ASSESSMENT_CREATED`). Every later write must contain the complete existing trail
+plus exactly one new event. Before inserting, the adapter locks and verifies the
+latest version, reconstructs it through `AssessmentAuditJson`, and compares the
+incoming prefix with the exact stored JSON. A divergent or skipped history is rejected.
+
+Competing writes for the same next sequence cannot create two histories: the
+database primary key on `(assessment_id, last_sequence)` allows at most one
+version. UPDATE and DELETE are rejected by database triggers.
+
+Each version stores:
+
+- assessment id and last sequence,
+- queryable last-event UTC timestamp,
+- exact .NET UTC ticks for lossless timestamp verification,
+- audit JSON format version,
+- the exact strict `AssessmentAuditJson` document in PostgreSQL `json`,
+- SHA-256 of those UTF-8 JSON bytes.
+
+The assessment id is a foreign key to the immutable assessment record. Audit
+history therefore cannot be persisted for a non-existent assessment.
+
+SHA-256 still provides corruption/inconsistency detection only. It does not prove
+who created or reviewed a record. Actor ids imported from audit JSON remain
+unauthenticated claims until authentication/authorization and operator identity
+controls are implemented.
