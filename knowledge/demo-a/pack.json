@@ -1,0 +1,69 @@
+{
+  "manifest": {
+    "packId": "synthetic.demo-a",
+    "releaseId": "demo-a-2026.1",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-A-ELIGIBILITY"
+  },
+  "fields": [
+    {
+      "id": "criterion_a",
+      "type": "truth",
+      "required": true
+    },
+    {
+      "id": "criterion_b",
+      "type": "truth",
+      "required": true
+    },
+    {
+      "id": "criterion_c",
+      "type": "truth",
+      "required": false
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-A-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic Demo A rule source",
+      "documentType": "SYNTHETIC"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-A-ELIGIBILITY",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "validUntil": null,
+      "sourceId": "SYNTH-DEMO-A-001",
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "field_equals",
+            "field": "criterion_a",
+            "expected": "YES"
+          },
+          {
+            "kind": "any",
+            "conditions": [
+              {
+                "kind": "field_equals",
+                "field": "criterion_b",
+                "expected": "YES"
+              },
+              {
+                "kind": "field_equals",
+                "field": "criterion_c",
+                "expected": "YES"
+              }
+            ]
+          }
+        ]
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED"
+    }
+  ]
+}
