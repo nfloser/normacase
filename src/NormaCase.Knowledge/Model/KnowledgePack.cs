@@ -71,5 +71,22 @@ public sealed class ConditionDefinition
     public decimal? Threshold { get; init; }
     public decimal? Minimum { get; init; }
     public decimal? Maximum { get; init; }
+    public NumericExpressionDefinition? NumericExpression { get; init; }
     public List<ConditionDefinition> Conditions { get; init; } = [];
+}
+
+public sealed class NumericExpressionDefinition
+{
+    public string Kind { get; init; } = string.Empty;
+    public string? Field { get; init; }
+    public NumericExpressionDefinition? Input { get; init; }
+    public List<NumericExpressionDefinition> Operands { get; init; } = [];
+    public List<NumericRangeBandDefinition> Bands { get; init; } = [];
+}
+
+public sealed class NumericRangeBandDefinition
+{
+    public decimal? Minimum { get; init; }
+    public decimal? Maximum { get; init; }
+    public decimal? Value { get; init; }
 }
