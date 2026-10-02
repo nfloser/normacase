@@ -32,3 +32,26 @@ jobs:
 
       - name: Test
         run: dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release --no-build
+
+  rule-engine:
+    name: Synthetic knowledge slice
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj
+
+      - name: Build
+        run: dotnet build tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release --no-build
