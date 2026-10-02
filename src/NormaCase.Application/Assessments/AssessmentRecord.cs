@@ -38,7 +38,7 @@ public sealed record AssessmentRecord
         PlatformVersion = platformVersion;
         RecordedAtUtc = recordedAtUtc;
         Input = input;
-        Result = result;
+        Result = AssessmentResultSnapshot.Copy(result);
     }
 
     public string AssessmentId { get; }
