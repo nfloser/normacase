@@ -94,7 +94,7 @@ public sealed class SyntheticKnowledgeSliceTests
             new DateOnly(2026, 10, 2));
 
         Assert.Equal(AssessmentOutcome.Incomplete, result.Outcome);
-        Assert.Equal(["criterion_a"], result.MissingRequiredFields);
+        Assert.Equal(new[] { "criterion_a" }, result.MissingRequiredFields);
         Assert.Equal(ConditionResult.Unknown, result.RuleTrace!.ConditionResult);
 
         var missingLeaf = result.RuleTrace.Condition.Children[0];
@@ -176,7 +176,7 @@ public sealed class SyntheticKnowledgeSliceTests
                 new DateOnly(2026, 10, 2)));
     }
 
-    private Knowledge.Model.KnowledgePack LoadDemoPack()
+    private NormaCase.Knowledge.Model.KnowledgePack LoadDemoPack()
         => _loader.LoadFromFile(DemoPackPath());
 
     private static string DemoPackPath()
