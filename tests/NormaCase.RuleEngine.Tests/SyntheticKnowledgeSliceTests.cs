@@ -30,12 +30,12 @@ public sealed class SyntheticKnowledgeSliceTests
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
         Assert.Equal("demo-a-2026.1", result.KnowledgeRelease);
         Assert.Empty(result.MissingRequiredFields);
-        Assert.NotNull(result.RuleTrace);
-        Assert.Equal("DEMO-A-ELIGIBILITY", result.RuleTrace.RuleId);
-        Assert.Equal(1, result.RuleTrace.RuleVersion);
-        Assert.Equal("SYNTH-DEMO-A-001", result.RuleTrace.SourceId);
-        Assert.Equal(ConditionResult.Matched, result.RuleTrace.ConditionResult);
-        Assert.Equal("all", result.RuleTrace.Condition.Kind);
+        var trace = Assert.IsType<RuleTrace>(result.RuleTrace);
+        Assert.Equal("DEMO-A-ELIGIBILITY", trace.RuleId);
+        Assert.Equal(1, trace.RuleVersion);
+        Assert.Equal("SYNTH-DEMO-A-001", trace.SourceId);
+        Assert.Equal(ConditionResult.Matched, trace.ConditionResult);
+        Assert.Equal("all", trace.Condition.Kind);
     }
 
     [Fact]
@@ -146,8 +146,8 @@ public sealed class SyntheticKnowledgeSliceTests
     {
         var json = File.ReadAllText(DemoPackPath())
             .Replace(
-                ""sourceId": "SYNTH-DEMO-A-001"",
-                ""sourceId": "MISSING-SOURCE"",
+                "\"sourceId\": \"SYNTH-DEMO-A-001\"",
+                "\"sourceId\": \"MISSING-SOURCE\"",
                 StringComparison.Ordinal);
 
         var exception = Assert.Throws<KnowledgeValidationException>(
