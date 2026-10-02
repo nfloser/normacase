@@ -54,10 +54,10 @@ public sealed class AssessmentRecorderTests
     [Fact]
     public void Snapshot_expands_omitted_declared_inputs_to_explicit_unknown_and_missing()
     {
-        var pack = Load("demo-a");
+        var pack = Load("demo-c");
         var facts = new Dictionary<string, CaseValue>
         {
-            ["criterion_a"] = TruthValue.Yes
+            ["request_confirmed"] = TruthValue.Yes
         };
         var context = new AssessmentExecutionContext(
             "assessment-002",
@@ -73,10 +73,42 @@ public sealed class AssessmentRecorderTests
             context);
 
         Assert.Equal(pack.Fields.Count, record.Input.Facts.Count);
-        Assert.Equal(CaseValue.Unknown, record.Input.Facts["criterion_b"]);
-        Assert.Equal(CaseValue.Unknown, record.Input.Facts["criterion_c"]);
-        Assert.Empty(record.Input.Evidence);
-        Assert.Equal(AssessmentOutcome.Incomplete, record.Result.Outcome);
+        Assert.Equal(CaseValue.Unknown, record.Input.Facts["measurement"]);
+        Assert.Equal(CaseValue.Unknown, record.Input.Facts["alternative_confirmed"]);
+        Assert.Equal(EvidenceStatus.Missing, record.Input.Evidence["verification"]);
+        Assert.Equal(AssessmentOutcome.HumanReview, record.Result.Outcome);
+    }
+
+    [Fact]
+    public void Record_rejects_an_input_snapshot_for_a_different_assessment_date()
+    {
+        var record = new AssessmentRecorder().Evaluate(
+            Load("demo-a"),
+            new Dictionary<string, CaseValue>
+            {
+                ["criterion_a"] = TruthValue.Yes,
+                ["criterion_b"] = TruthValue.Yes
+            },
+            new DateOnly(2026, 10, 2),
+            evidence: null,
+            new AssessmentExecutionContext(
+                "assessment-003",
+                "case-003",
+                "test-platform-1",
+                new DateTimeOffset(2026, 10, 2, 20, 17, 0, TimeSpan.Zero)));
+        var mismatchedInput = new AssessmentInputSnapshot(
+            new DateOnly(2026, 10, 3),
+            record.Input.Facts,
+            record.Input.Evidence);
+
+        Assert.Throws<ArgumentException>(() => new AssessmentRecord(
+            record.AssessmentId,
+            record.CaseId,
+            record.KnowledgePackId,
+            record.PlatformVersion,
+            record.RecordedAtUtc,
+            mismatchedInput,
+            record.Result));
     }
 
     [Fact]
