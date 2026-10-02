@@ -21,11 +21,12 @@ public sealed class StructuredDomainOutputTests
         var result = EvaluateDemoE(includeBeta: false);
 
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
-        Assert.Equal(4, result.DomainOutputs.Count);
+        Assert.Equal(5, result.DomainOutputs.Count);
 
         AssertChoice(result, "decision_state", "ELIGIBLE");
         AssertChoice(result, "selection_state", "MODE_RED");
         AssertChoice(result, "segment_alpha", "OPEN");
+        AssertChoice(result, "external_state", "PENDING_EXTERNAL");
 
         var beta = Assert.Single(result.DomainOutputs, item => item.OutputId == "segment_beta");
         Assert.Equal(DomainOutputValueKind.Unknown, beta.Value.Kind);
@@ -58,7 +59,8 @@ public sealed class StructuredDomainOutputTests
             ["gate_primary"] = TruthValue.Yes,
             ["metric"] = 14m,
             ["segment_alpha_ready"] = TruthValue.No,
-            ["segment_beta_ready"] = TruthValue.Yes
+            ["segment_beta_ready"] = TruthValue.Yes,
+            ["external_check_complete"] = TruthValue.No
         };
 
         var result = _evaluator.Evaluate(
@@ -71,6 +73,7 @@ public sealed class StructuredDomainOutputTests
         AssertChoice(result, "selection_state", "MODE_BLUE");
         AssertChoice(result, "segment_alpha", "CLOSED");
         AssertChoice(result, "segment_beta", "OPEN");
+        AssertChoice(result, "external_state", "PENDING_EXTERNAL");
     }
 
     [Fact]
@@ -87,11 +90,30 @@ public sealed class StructuredDomainOutputTests
 
         Assert.Equal(AssessmentOutcome.HumanReview, result.Outcome);
         Assert.Null(result.RuleTrace);
-        Assert.Equal(4, result.DomainOutputs.Count);
+        Assert.Equal(5, result.DomainOutputs.Count);
         AssertChoice(result, "decision_state", "ELIGIBLE");
         AssertChoice(result, "selection_state", "MODE_RED");
         AssertChoice(result, "segment_alpha", "OPEN");
         AssertChoice(result, "segment_beta", "CLOSED");
+        AssertChoice(result, "external_state", "PENDING_EXTERNAL");
+    }
+
+    [Fact]
+    public void Known_external_pending_state_is_distinct_from_unknown()
+    {
+        var result = EvaluateDemoE(includeBeta: false);
+
+        var pending = Assert.Single(
+            result.DomainOutputs,
+            output => output.OutputId == "external_state");
+        var unknown = Assert.Single(
+            result.DomainOutputs,
+            output => output.OutputId == "segment_beta");
+
+        Assert.Equal(DomainOutputValueKind.Choice, pending.Value.Kind);
+        Assert.Equal("PENDING_EXTERNAL", pending.Value.Choice);
+        Assert.Equal(DomainOutputValueKind.Unknown, unknown.Value.Kind);
+        Assert.Null(unknown.Value.Choice);
     }
 
     [Fact]
@@ -216,7 +238,8 @@ public sealed class StructuredDomainOutputTests
         {
             ["gate_primary"] = TruthValue.Yes,
             ["metric"] = 7m,
-            ["segment_alpha_ready"] = TruthValue.Yes
+            ["segment_alpha_ready"] = TruthValue.Yes,
+            ["external_check_complete"] = TruthValue.No
         };
 
         if (includeBeta)
