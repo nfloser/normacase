@@ -92,6 +92,7 @@ test('snapshot download and uploaded replay retain exact original JSON',async({p
  expect(download.suggestedFilename()).toBe('normacase-snapshot.json');
  const original=await readFile(await download.path(),'utf8');
  expect(original).toContain('123456789.1234567890123456789');
+ await expect(page.getByRole('button',{name:'Datei auswählen',exact:true})).toBeVisible();
  await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'snapshot.json',mimeType:'application/json',buffer:Buffer.from(original)});
  await expect(page.getByRole('heading',{name:'Offline-Wiederholung bestätigt',exact:true})).toBeVisible();
  const verified=page.waitForEvent('download');

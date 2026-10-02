@@ -24,6 +24,7 @@ function App() {
   const [error,setError]=useState('');
   const [busy,setBusy]=useState(false);
   const pending=useRef<AbortController|null>(null);
+  const snapshotFile=useRef<HTMLInputElement|null>(null);
   const pack=packs.find(item=>item.packId===selected);
   useEffect(()=>{
     const controller=new AbortController();
@@ -132,7 +133,10 @@ function App() {
     </section></div>
     <section className="card snapshot-tools" aria-live="polite">
       <h2>{de.snapshotHeading}</h2><p>{de.snapshotHelp}</p>
-      <label className="field">{de.snapshotSelect}<input type="file" accept=".json,application/json" onChange={verifySnapshot} disabled={busy}/></label>
+      <div className="field"><span>{de.snapshotSelect}</span>
+        <input ref={snapshotFile} aria-label={de.snapshotSelect} type="file" hidden accept=".json,application/json" onChange={verifySnapshot} disabled={busy}/>
+        <button type="button" className="secondary file-button" onClick={()=>snapshotFile.current?.click()} disabled={busy}>{de.snapshotChooseFile}</button>
+      </div>
       {busy&&<p>{de.checking}</p>}
       {replayError&&<div className="error" role="alert"><strong>{de.errorHeading}</strong><p>{replayError}</p></div>}
       {replayed&&<><h3>{de.replayVerified}</h3><p>{de.replayReadOnly}</p>

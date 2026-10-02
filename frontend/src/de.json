@@ -62,8 +62,9 @@
   "snapshotSelect": "Prüfsnapshot auswählen",
   "snapshotTooLarge": "Die Datei überschreitet die zulässige Größe von 1 MiB.",
   "replayVerified": "Offline-Wiederholung bestätigt",
-  "replayReadOnly": "Das gespeicherte Ergebnis wurde vollständig bestätigt und wird schreibgeschützt angezeigt. Aktuelle Fachlabels werden nicht auf historische Prüfungen übertragen. Die Prüfsumme bestätigt keine Herkunft oder fachliche Freigabe.",
+  "replayReadOnly": "Die ursprüngliche Prüfung wurde vollständig bestätigt. Das Ergebnis wird schreibgeschützt angezeigt. Die Prüfsumme bestätigt keine Herkunft oder fachliche Freigabe.",
   "replayTrace": "Bestätigte technische Prüfspur anzeigen",
   "replayExport": "Bestätigtes Ergebnis herunterladen",
-  "snapshotEncodingError": "Die Datei enthält kein gültiges UTF-8. Wähle einen unveränderten JSON-Prüfsnapshot."
+  "snapshotEncodingError": "Die Datei enthält kein gültiges UTF-8. Wähle einen unveränderten JSON-Prüfsnapshot.",
+  "snapshotChooseFile": "Datei auswählen"
 }
