@@ -13,6 +13,10 @@
     "segment_alpha_ready": {
       "kind": "TRUTH",
       "truth": "YES"
+    },
+    "external_check_complete": {
+      "kind": "TRUTH",
+      "truth": "NO"
     }
   }
 }
