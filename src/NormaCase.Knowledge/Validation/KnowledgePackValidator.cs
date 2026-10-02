@@ -471,8 +471,6 @@ public sealed class KnowledgePackValidator
         Require(source.Title, $"{path}.title", errors);
         Require(source.DocumentType, $"{path}.documentType", errors);
         Require(source.Status, $"{path}.status", errors);
-        Require(source.Version ?? string.Empty, $"{path}.version", errors);
-        Require(source.SourceLocation ?? string.Empty, $"{path}.sourceLocation", errors);
 
         if (source.ValidFrom is not null
             && source.ValidUntil is not null
@@ -496,6 +494,14 @@ public sealed class KnowledgePackValidator
         if (!requirePublicProvenance)
         {
             return;
+        }
+
+        if (string.IsNullOrWhiteSpace(source.Version))
+        {
+            errors.Add(new(
+                "missing_source_version",
+                $"Source '{source.Id}' requires version for this validation level.",
+                $"{path}.version"));
         }
 
         if (string.IsNullOrWhiteSpace(source.SourceLocation))

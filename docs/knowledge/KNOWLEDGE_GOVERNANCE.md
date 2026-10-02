@@ -31,7 +31,7 @@ At minimum distinguish:
 
 Productive domain rules require a traceable source with stable identity and metadata such as authority, title, document type, publication/validity dates, version, location, retrieval date, content hash and status.
 
-Every source requires an explicit version and location. From `PUBLIC_REFERENCE` upward, sources also require a retrieval date and SHA-256 content hash. Synthetic fixtures remain explicitly synthetic and do not fabricate external provenance merely to satisfy a schema.
+From `PUBLIC_REFERENCE` upward, every source requires an explicit version, location, retrieval date and SHA-256 content hash. Format-v1 synthetic packs may omit version/location for compatibility, although repository fixtures include them. Synthetic fixtures remain explicitly synthetic and do not fabricate external retrieval metadata merely to satisfy a schema.
 
 Sources and rule versions are append/version operations, not in-place historical rewrites.
 

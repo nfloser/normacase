@@ -36,16 +36,28 @@ public sealed class SourceRevisionTraceTests
         Assert.Null(source.RetrievedAt);
     }
 
-    [Theory]
-    [InlineData("version")]
-    [InlineData("sourceLocation")]
-    public void Every_source_requires_a_version_and_location(string property)
+    [Fact]
+    public void Synthetic_format_v1_keeps_optional_revision_metadata_compatible()
     {
         var node = DemoA();
-        node["sources"]![0]!.AsObject().Remove(property);
-        var error = Assert.Throws<KnowledgeValidationException>(() =>
-            new KnowledgePackLoader().LoadFromJson(node.ToJsonString()));
-        Assert.Contains(error.Errors, item => item.Code == "required_value_missing" && item.Path.EndsWith("." + property, StringComparison.Ordinal));
+        var source = node["sources"]![0]!.AsObject();
+        source.Remove("version");
+        source.Remove("sourceLocation");
+
+        var pack = new KnowledgePackLoader().LoadFromJson(node.ToJsonString());
+        var facts = new Dictionary<string, CaseValue>
+        {
+            ["criterion_a"] = TruthValue.Yes,
+            ["criterion_b"] = TruthValue.Yes
+        };
+
+        var result = new RuleEvaluator().Evaluate(
+            pack,
+            facts,
+            new DateOnly(2026, 10, 2));
+
+        Assert.Null(result.RuleTrace!.Source.Version);
+        Assert.Null(result.RuleTrace.Source.SourceLocation);
     }
 
     [Fact]

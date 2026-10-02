@@ -80,11 +80,13 @@ public sealed class KnowledgeProvenanceTests
     public void Public_reference_requires_retrievable_hashed_source_provenance()
     {
         var node = DemoA();
+        node["sources"]![0]!.AsObject().Remove("version");
         node["sources"]![0]!.AsObject().Remove("sourceLocation");
         node["manifest"]!["validationLevel"] = "PUBLIC_REFERENCE";
 
         var exception = LoadFailure(node);
 
+        Assert.Contains(exception.Errors, error => error.Code == "missing_source_version");
         Assert.Contains(exception.Errors, error => error.Code == "missing_source_location");
         Assert.Contains(exception.Errors, error => error.Code == "missing_source_retrieved_at");
         Assert.Contains(exception.Errors, error => error.Code == "missing_source_content_hash");
