@@ -104,7 +104,7 @@ public sealed class RuleEvaluator
 
     private static IReadOnlyList<CalculationTrace> EvaluateCalculations(
         IReadOnlyList<CalculationDefinition> calculations,
-        IDictionary<string, CaseValue> evaluationFacts)
+        Dictionary<string, CaseValue> evaluationFacts)
     {
         var traces = new List<CalculationTrace>(calculations.Count);
 
@@ -274,12 +274,15 @@ public sealed class RuleEvaluator
         decimal value,
         RangeLookupDefinition range)
     {
+        var minimum = range.Minimum!.Value;
+        var maximum = range.Maximum!.Value;
+
         var lowerMatches = range.MinimumInclusive
-            ? value >= range.Minimum
-            : value > range.Minimum;
+            ? value >= minimum
+            : value > minimum;
         var upperMatches = range.MaximumInclusive
-            ? value <= range.Maximum
-            : value < range.Maximum;
+            ? value <= maximum
+            : value < maximum;
 
         return lowerMatches && upperMatches;
     }
