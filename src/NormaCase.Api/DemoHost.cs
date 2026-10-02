@@ -20,7 +20,8 @@ public static class DemoHost
 
     public static WebApplication Build(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args, WebRootPath = Directory.Exists(webRoot) ? webRoot : null });
         builder.WebHost.ConfigureKestrel(options =>
         {
             options.ListenLocalhost(5080);
@@ -41,12 +42,14 @@ public static class DemoHost
             context.Response.StatusCode = 500;
             context.Response.Headers.CacheControl = "no-store";
             context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+            context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
             await context.Response.WriteAsJsonAsync(new { code = "internal_error", message = ApiMessages.Get("internal_error") });
         }));
         app.Use(async (context, next) =>
         {
             context.Response.Headers.CacheControl = "no-store";
             context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+            context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
             var host = context.Request.Host.Host;
             var localHost = host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
                 || host == "127.0.0.1" || host == "::1" || host == "[::1]";
@@ -59,6 +62,9 @@ public static class DemoHost
             }
             await next(context);
         });
+
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
 
         app.MapGet("/api/packs", () => packs.Values.OrderBy(pack => pack.Manifest.PackId, StringComparer.Ordinal)
             .Select(pack =>
@@ -114,6 +120,7 @@ public static class DemoHost
             if (!presentations.TryGetValue(packId, out var presentation))
                 return Error("unknown_pack", 404);
 
+            var pack = packs[packId];
             var example = presentation.Examples.SingleOrDefault(
                 item => string.Equals(item.Id, exampleId, StringComparison.Ordinal));
             if (example is null)

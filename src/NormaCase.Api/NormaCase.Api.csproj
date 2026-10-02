@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
+    <Content Update="wwwroot/**" CopyToOutputDirectory="PreserveNewest" />
     <ProjectReference Include="../NormaCase.Serialization/NormaCase.Serialization.csproj" />
   </ItemGroup>
   <ItemGroup>

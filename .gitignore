@@ -32,3 +32,8 @@ Thumbs.db
 !.env.example
 appsettings.*.local.json
 secrets.json
+
+frontend/node_modules/
+frontend/test-results/
+frontend/playwright-report/
+src/NormaCase.Api/wwwroot/
