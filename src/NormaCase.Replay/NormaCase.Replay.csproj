@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../NormaCase.Knowledge/NormaCase.Knowledge.csproj" />
+    <ProjectReference Include="../NormaCase.RuleEngine/NormaCase.RuleEngine.csproj" />
+    <ProjectReference Include="../NormaCase.Serialization/NormaCase.Serialization.csproj" />
+  </ItemGroup>
+</Project>

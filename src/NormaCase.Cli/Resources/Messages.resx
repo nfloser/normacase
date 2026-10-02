@@ -6,14 +6,18 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
   <data name="Help" xml:space="preserve"><value>NormaCase – Offline-Prüfung synthetischer Fälle
 
-Aufruf: evaluate --pack DATEI --case DATEI --platform-version VERSION [--json]
+Aufruf:
+evaluate --pack DATEI --case DATEI --platform-version VERSION [--json]
+snapshot --pack DATEI --case DATEI --platform-version VERSION
+replay --snapshot DATEI --platform-version VERSION [--json]
 
---pack: lokales Knowledge Pack
+--pack: lokales Wissenspaket
+--snapshot: selbstständiger Prüfsnapshot mit eingebettetem Wissen
 --case: strukturierter synthetischer Fall mit explizitem Prüfdatum
 --platform-version: verwendeter Plattformstand
 --json: versioniertes technisches JSON statt deutscher Zusammenfassung
 
-Rückgabecodes: 0 = ausgeführt, 2 = ungültige Eingabe, 3 = Dateifehler.
+Rückgabecodes: 0 = ausgeführt, 2 = ungültige Eingabe, 3 = Dateifehler, 4 = Wiederholung nicht bestätigt.
 Ein unvollständiges Ergebnis ist kein technischer Programmfehler.</value></data>
   <data name="SyntheticNotice" xml:space="preserve"><value>Synthetische Demonstration – keine fachlich freigegebene Begutachtung.</value></data>
   <data name="Outcome" xml:space="preserve"><value>Ergebnis</value></data>
@@ -30,6 +34,8 @@ Ein unvollständiges Ergebnis ist kein technischer Programmfehler.</value></data
   <data name="Incomplete" xml:space="preserve"><value>Angaben unvollständig</value></data>
   <data name="HumanReview" xml:space="preserve"><value>Manuelle Prüfung erforderlich</value></data>
   <data name="NotApplicable" xml:space="preserve"><value>Nicht anwendbar</value></data>
-  <data name="InputError" xml:space="preserve"><value>Die Eingabe oder das Knowledge Pack ist ungültig. Prüfe Format, Datentypen, Referenzen und Aufrufparameter. Hilfe: --help</value></data>
+  <data name="InputError" xml:space="preserve"><value>Die Eingabe oder das Wissenspaket ist ungültig. Prüfe Format, Datentypen, Referenzen und Aufrufparameter. Hilfe: --help</value></data>
   <data name="IoError" xml:space="preserve"><value>Eine Datei konnte nicht gelesen werden. Prüfe Pfad und Zugriffsrechte.</value></data>
+  <data name="ReplayVerified" xml:space="preserve"><value>Offline-Wiederholung bestätigt: Eingaben, Wissensstand und Ergebnis stimmen überein.</value></data>
+  <data name="ReplayError" xml:space="preserve"><value>Die Wiederholung konnte nicht bestätigt werden. Prüfe Plattformstand, Wissensstand und gespeichertes Ergebnis.</value></data>
 </root>

@@ -3,6 +3,6 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../NormaCase.Serialization/NormaCase.Serialization.csproj" />
+    <ProjectReference Include="../NormaCase.Replay/NormaCase.Replay.csproj" />
   </ItemGroup>
 </Project>
