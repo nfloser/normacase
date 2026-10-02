@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 test('a real synthetic case evaluates, exposes source and clears stale output',async({page})=>{
  await page.goto('/');
- await page.getByLabel('Prüfbereich',{exact:true}).selectOption('synthetic.demo-c');
+ await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-c');
  await page.getByLabel('Beispiel auswählen').selectOption('supported');
  await page.getByRole('button',{name:'Beispiel laden'}).click();
  await expect(page.getByLabel('Prüfdatum')).toHaveValue('2026-10-02');
@@ -18,7 +18,7 @@ test('a real synthetic case evaluates, exposes source and clears stale output',a
 
 test('missing evidence requires human review and export retains the original JSON',async({page})=>{
  await page.goto('/');
- await page.getByLabel('Prüfbereich',{exact:true}).selectOption('synthetic.demo-c');
+ await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-c');
  await page.getByLabel('Beispiel auswählen').selectOption('review');
  await page.getByRole('button',{name:'Beispiel laden'}).click();
  await expect(page.getByLabel('Prüfdatum')).toHaveValue('2026-10-02');
@@ -47,7 +47,7 @@ test('incomplete inputs remain unknown and the page fits a narrow viewport',asyn
 
 test('the browser preserves decimal precision all the way into the trace',async({page})=>{
  await page.goto('/');
- await page.getByLabel('Prüfbereich',{exact:true}).selectOption('synthetic.demo-b');
+ await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-b');
  await page.getByLabel('Prüfdatum').fill('2026-10-02');
  await page.getByLabel('Synthetischer Wert',{exact:false}).fill('123456789,1234567890123456789');
  await page.getByLabel('Bereichswert',{exact:false}).fill('30');
@@ -59,7 +59,7 @@ test('the browser preserves decimal precision all the way into the trace',async(
 
 test('independent outputs keep UNKNOWN and the external pending state distinct',async({page})=>{
  await page.goto('/');
- await page.getByLabel('Prüfbereich',{exact:true}).selectOption('synthetic.demo-e');
+ await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-e');
  await page.getByLabel('Beispiel auswählen').selectOption('mixed');
  await page.getByRole('button',{name:'Beispiel laden'}).click();
  await expect(page.getByLabel('Prüfdatum')).toHaveValue('2026-10-02');
