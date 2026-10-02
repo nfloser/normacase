@@ -346,23 +346,24 @@ public sealed class PostgresAssessmentAuditTrailStoreTests
 
         await using (var connection =
             await dataSource.OpenConnectionAsync())
-        await using (var corrupt = new NpgsqlCommand(
-            """
-            ALTER TABLE normacase.assessment_audit_trail_versions
-                DISABLE TRIGGER assessment_audit_trails_no_update;
-            UPDATE normacase.assessment_audit_trail_versions
-            SET audit_sha256 =
-                '0000000000000000000000000000000000000000000000000000000000000000'
-            WHERE assessment_id = $1
-              AND last_sequence = 2;
-            ALTER TABLE normacase.assessment_audit_trail_versions
-                ENABLE TRIGGER assessment_audit_trails_no_update;
-            """,
-            connection))
         {
-            corrupt.Parameters.AddWithValue(
-                record.AssessmentId.Value);
-            await corrupt.ExecuteNonQueryAsync();
+            await WithAuditUpdateTriggerDisabled(
+                connection,
+                async () =>
+                {
+                    await using var corrupt = new NpgsqlCommand(
+                        """
+                        UPDATE normacase.assessment_audit_trail_versions
+                        SET audit_sha256 =
+                            '0000000000000000000000000000000000000000000000000000000000000000'
+                        WHERE assessment_id = $1
+                          AND last_sequence = 2;
+                        """,
+                        connection);
+                    corrupt.Parameters.AddWithValue(
+                        record.AssessmentId.Value);
+                    await corrupt.ExecuteNonQueryAsync();
+                });
         }
 
         var exception =
@@ -397,23 +398,24 @@ public sealed class PostgresAssessmentAuditTrailStoreTests
 
         await using (var connection =
             await dataSource.OpenConnectionAsync())
-        await using (var corrupt = new NpgsqlCommand(
-            """
-            ALTER TABLE normacase.assessment_audit_trail_versions
-                DISABLE TRIGGER assessment_audit_trails_no_update;
-            UPDATE normacase.assessment_audit_trail_versions
-            SET occurred_at_utc_ticks =
-                occurred_at_utc_ticks + 1
-            WHERE assessment_id = $1
-              AND last_sequence = 1;
-            ALTER TABLE normacase.assessment_audit_trail_versions
-                ENABLE TRIGGER assessment_audit_trails_no_update;
-            """,
-            connection))
         {
-            corrupt.Parameters.AddWithValue(
-                record.AssessmentId.Value);
-            await corrupt.ExecuteNonQueryAsync();
+            await WithAuditUpdateTriggerDisabled(
+                connection,
+                async () =>
+                {
+                    await using var corrupt = new NpgsqlCommand(
+                        """
+                        UPDATE normacase.assessment_audit_trail_versions
+                        SET occurred_at_utc_ticks =
+                            occurred_at_utc_ticks + 1
+                        WHERE assessment_id = $1
+                          AND last_sequence = 1;
+                        """,
+                        connection);
+                    corrupt.Parameters.AddWithValue(
+                        record.AssessmentId.Value);
+                    await corrupt.ExecuteNonQueryAsync();
+                });
         }
 
         await Assert.ThrowsAsync<
@@ -456,6 +458,36 @@ public sealed class PostgresAssessmentAuditTrailStoreTests
             builder.ConnectionString,
             exception.ToString(),
             StringComparison.Ordinal);
+    }
+
+    private static async Task WithAuditUpdateTriggerDisabled(
+        NpgsqlConnection connection,
+        Func<Task> action)
+    {
+        await using (var disable = new NpgsqlCommand(
+            """
+            ALTER TABLE normacase.assessment_audit_trail_versions
+                DISABLE TRIGGER assessment_audit_trails_no_update;
+            """,
+            connection))
+        {
+            await disable.ExecuteNonQueryAsync();
+        }
+
+        try
+        {
+            await action();
+        }
+        finally
+        {
+            await using var enable = new NpgsqlCommand(
+                """
+                ALTER TABLE normacase.assessment_audit_trail_versions
+                    ENABLE TRIGGER assessment_audit_trails_no_update;
+                """,
+                connection);
+            await enable.ExecuteNonQueryAsync();
+        }
     }
 
     private static async Task<AssessmentRecord>
