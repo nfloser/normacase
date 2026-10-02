@@ -31,6 +31,11 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         }
         Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
         Assert.Contains("nosniff", response.Headers.GetValues("X-Content-Type-Options"));
+        Assert.Contains("no-referrer", response.Headers.GetValues("Referrer-Policy"));
+        Assert.Contains("DENY", response.Headers.GetValues("X-Frame-Options"));
+        Assert.Contains(
+            "frame-ancestors 'none'",
+            response.Headers.GetValues("Content-Security-Policy").Single());
     }
 
     [Theory]
