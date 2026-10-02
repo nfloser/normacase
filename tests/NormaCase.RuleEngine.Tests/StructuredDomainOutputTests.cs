@@ -76,17 +76,22 @@ public sealed class StructuredDomainOutputTests
     [Fact]
     public void Active_outputs_are_still_evaluated_when_entry_rule_is_not_active()
     {
-        var pack = LoadDemoE();
-        var facts = DemoFacts(includeBeta: true);
+        var node = DemoE();
+        node["rules"]![0]!["validFrom"] = "2027-01-01";
+        var pack = _loader.LoadFromJson(node.ToJsonString());
 
         var result = _evaluator.Evaluate(
             pack,
-            facts,
-            new DateOnly(2025, 12, 31));
+            DemoFacts(includeBeta: true),
+            new DateOnly(2026, 10, 2));
 
         Assert.Equal(AssessmentOutcome.HumanReview, result.Outcome);
         Assert.Null(result.RuleTrace);
-        Assert.Empty(result.DomainOutputs);
+        Assert.Equal(4, result.DomainOutputs.Count);
+        AssertChoice(result, "decision_state", "ELIGIBLE");
+        AssertChoice(result, "selection_state", "MODE_RED");
+        AssertChoice(result, "segment_alpha", "OPEN");
+        AssertChoice(result, "segment_beta", "CLOSED");
     }
 
     [Fact]
