@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NormaCase.Knowledge.Model;
-using NormaCase.Serialization;
 using NormaCase.RuleEngine.Evaluation;
 using NormaCase.Serialization;
 
