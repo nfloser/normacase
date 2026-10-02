@@ -74,6 +74,22 @@ public sealed class StructuredDomainOutputTests
     }
 
     [Fact]
+    public void Active_outputs_are_still_evaluated_when_entry_rule_is_not_active()
+    {
+        var pack = LoadDemoE();
+        var facts = DemoFacts(includeBeta: true);
+
+        var result = _evaluator.Evaluate(
+            pack,
+            facts,
+            new DateOnly(2025, 12, 31));
+
+        Assert.Equal(AssessmentOutcome.HumanReview, result.Outcome);
+        Assert.Null(result.RuleTrace);
+        Assert.Empty(result.DomainOutputs);
+    }
+
+    [Fact]
     public void Existing_pack_without_outputs_returns_empty_output_collection()
     {
         var pack = _loader.LoadFromFile(FixturePath("demo-a"));
