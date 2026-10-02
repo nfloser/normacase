@@ -39,3 +39,21 @@ public sealed record SourceTrace(
     DateOnly? ValidUntil,
     DateOnly? RetrievedAt,
     string? ContentHash);
+
+public sealed record CalculationInputTrace(
+    string Id,
+    CaseValue Value);
+
+public sealed record RangeLookupTrace(
+    decimal Minimum,
+    bool MinimumInclusive,
+    decimal Maximum,
+    bool MaximumInclusive,
+    decimal Value);
+
+public sealed record CalculationTrace(
+    string Id,
+    string Kind,
+    IReadOnlyList<CalculationInputTrace> Inputs,
+    CaseValue Result,
+    RangeLookupTrace? SelectedRange);
