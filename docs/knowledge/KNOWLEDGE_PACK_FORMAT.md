@@ -10,8 +10,9 @@ Current repository examples:
 - `knowledge/demo-a/pack.json`: truth values, nested AND/OR and UNKNOWN semantics.
 - `knowledge/demo-b/pack.json`: numeric thresholds, inclusive ranges and temporal rule versions.
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
+- `knowledge/demo-d/pack.json`: derived numeric expressions with range lookup, sum, max and UNKNOWN propagation.
 
-All three packs are `SYNTHETIC`.
+All four packs are `SYNTHETIC`.
 
 ## Manifest
 
@@ -77,6 +78,24 @@ Groups may be nested.
 
 Operators are validated against field types. A numeric operator cannot target a truth field, and vice versa.
 
+### Derived numeric expressions
+
+`number_gte` and `number_in_range` may consume either a raw numeric `field` or one `numericExpression`. Declaring both is invalid.
+
+Numeric expressions are bounded declarative data. Supported kinds are:
+- `field`: reads one declared numeric case field,
+- `range_lookup`: maps a numeric input through ordered, non-overlapping inclusive bands,
+- `sum`: adds one or more numeric operands,
+- `max`: selects the greatest value from one or more numeric operands.
+
+A range lookup band declares `minimum`, `maximum` and the numeric `value` returned for that interval. Missing bounds, reversed bounds, overlapping/out-of-order bands and empty band lists are rejected during pack validation.
+
+Missing or UNKNOWN inputs propagate UNKNOWN through range lookup, sum and max. Sum never treats an unknown value as zero, and max never chooses a known operand while another operand is unknown. A value outside every lookup band also produces UNKNOWN so incomplete knowledge fails closed.
+
+Decision Trace stores the recursive numeric-expression tree, every intermediate value and the selected range band for a successful lookup. The expression model uses decimal arithmetic and has no scripting, network or implicit-time behavior.
+
+Demo D proves this capability with synthetic scoring data only; it does not encode medical thresholds or a domain-specific result model.
+
 ### Boolean UNKNOWN semantics
 
 - `all`: any not-matched child -> not matched; otherwise any unknown -> unknown; otherwise matched.
@@ -101,6 +120,7 @@ An evaluation result records:
 - source id and an immutable snapshot of its version, location, authority, title, type, status, publication/validity dates, retrieval date and content hash,
 - recursive condition trace,
 - typed actual/expected values or numeric range bounds,
+- recursive derived numeric-expression traces where used,
 - final outcome.
 
 This is the current base for Source -> Rule -> Test traceability.
