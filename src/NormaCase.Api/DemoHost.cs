@@ -11,6 +11,7 @@ using NormaCase.Knowledge.Serialization;
 using NormaCase.Knowledge.Validation;
 using NormaCase.RuleEngine.Evaluation;
 using NormaCase.Serialization;
+using NormaCase.Replay;
 
 namespace NormaCase.Api;
 
@@ -28,9 +29,11 @@ public static class DemoHost
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
         builder.Logging.ClearProviders();
-        var packs = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Knowledge"), "*.json")
-            .Select(path => new KnowledgePackLoader().LoadFromFile(path))
-            .ToDictionary(pack => pack.Manifest.PackId, StringComparer.Ordinal);
+        var catalog = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Knowledge"), "*.json")
+            .Select(path => File.ReadAllText(path, new UTF8Encoding(false, true)))
+            .Select(json => (Json: json, Pack: new KnowledgePackLoader().LoadFromJson(json)))
+            .ToDictionary(item => item.Pack.Manifest.PackId, StringComparer.Ordinal);
+        var packs = catalog.ToDictionary(item => item.Key, item => item.Value.Pack, StringComparer.Ordinal);
         if (packs.Count == 0 || packs.Values.Any(pack => pack.Manifest.ValidationLevel != "SYNTHETIC"))
             throw new InvalidOperationException("Local demo catalog must contain synthetic knowledge only.");
         var presentations = PresentationCatalog.Load(packs);
@@ -149,41 +152,79 @@ public static class DemoHost
             });
         });
 
-        app.MapPost("/api/assessments/{packId}", async (string packId, HttpRequest request) =>
+        app.MapPost("/api/assessments/{packId}", (string packId, HttpRequest request) =>
         {
             if (!packs.TryGetValue(packId, out var pack))
-                return Error("unknown_pack", 404);
-            if (!request.HasJsonContentType())
-                return Error("json_required", 415);
-            if (request.ContentLength > MaximumBodyBytes)
-                return Error("input_too_large", 413);
-            try
+                return Task.FromResult(Error("unknown_pack", 404));
+            return HandleJson(request, json =>
             {
-                using var reader = new StreamReader(request.Body, new UTF8Encoding(false, true));
-                var buffer = new char[4096];
-                var text = new StringBuilder();
-                int read;
-                while ((read = await reader.ReadAsync(buffer, request.HttpContext.RequestAborted)) > 0)
-                {
-                    if (text.Length + read > MaximumBodyBytes)
-                        return Error("input_too_large", 413);
-                    text.Append(buffer, 0, read);
-                }
-                var input = CaseInputJson.Deserialize(text.ToString());
+                var input = CaseInputJson.Deserialize(json);
                 var result = new RuleEvaluator().Evaluate(pack, input.Facts, input.AssessmentDate, input.Evidence);
                 return Results.Content(AssessmentJson.Serialize(result, platformVersion), "application/json", Encoding.UTF8);
-            }
-            catch (BadHttpRequestException exception) when (exception.StatusCode == 413)
-            {
-                return Error("input_too_large", 413);
-            }
-            catch (Exception exception) when (exception is JsonException or KnowledgeValidationException or ArgumentException or OverflowException)
-            {
-                return Error("invalid_input", 400);
-            }
+            });
         });
 
+        app.MapPost("/api/snapshots/{packId}", (string packId, HttpRequest request) =>
+        {
+            if (!catalog.TryGetValue(packId, out var item))
+                return Task.FromResult(Error("unknown_pack", 404));
+            return HandleJson(request, json =>
+            {
+                var snapshotJson = new AssessmentSnapshotService().Capture(item.Json, json, platformVersion);
+                var snapshot = AssessmentSnapshotJson.Deserialize(snapshotJson);
+                return Results.Json(new
+                {
+                    snapshotJson,
+                    assessmentJson = AssessmentJson.Serialize(snapshot.Assessment.Assessment, platformVersion)
+                });
+            });
+        });
+
+        app.MapPost("/api/snapshots/replay", (HttpRequest request) => HandleJson(request, json =>
+        {
+            var snapshot = AssessmentSnapshotJson.Deserialize(json);
+            var embedded = new KnowledgePackLoader().LoadFromJson(snapshot.KnowledgePackJson);
+            if (embedded.Manifest.ValidationLevel != "SYNTHETIC")
+                return Error("synthetic_only", 403);
+            var result = new AssessmentSnapshotService().Replay(json, platformVersion);
+            return Results.Json(new { assessmentJson = AssessmentJson.Serialize(result.Assessment, result.PlatformVersion) });
+        }));
+
         return app;
+    }
+
+    private static async Task<IResult> HandleJson(HttpRequest request, Func<string, IResult> process)
+    {
+        if (!request.HasJsonContentType())
+            return Error("json_required", 415);
+        if (request.ContentLength > MaximumBodyBytes)
+            return Error("input_too_large", 413);
+        try
+        {
+            using var bytes = new MemoryStream();
+            var buffer = new byte[4096];
+            int read;
+            while ((read = await request.Body.ReadAsync(buffer, request.HttpContext.RequestAborted)) > 0)
+            {
+                if (bytes.Length + read > MaximumBodyBytes)
+                    return Error("input_too_large", 413);
+                bytes.Write(buffer, 0, read);
+            }
+            var text = new UTF8Encoding(false, true).GetString(bytes.GetBuffer(), 0, checked((int)bytes.Length));
+            return process(text.StartsWith('\uFEFF') ? text[1..] : text);
+        }
+        catch (BadHttpRequestException exception) when (exception.StatusCode == 413)
+        {
+            return Error("input_too_large", 413);
+        }
+        catch (SnapshotReplayException)
+        {
+            return Error("replay_mismatch", 409);
+        }
+        catch (Exception exception) when (exception is JsonException or KnowledgeValidationException or ArgumentException or OverflowException)
+        {
+            return Error("invalid_input", 400);
+        }
     }
 
     private static string ExampleValue(CaseValue value)

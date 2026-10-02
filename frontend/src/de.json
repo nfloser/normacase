@@ -55,5 +55,14 @@
   "domainOutputs": "Einzelne Fachausgaben",
   "outputReference": "Fachausgabe",
   "numberStatus": "Eingabestatus",
-  "numberValue": "Wert eingeben"
+  "numberValue": "Wert eingeben",
+  "snapshotExport": "Prüfsnapshot herunterladen",
+  "snapshotHeading": "Gespeicherte Prüfung offline überprüfen",
+  "snapshotHelp": "Wähle einen synthetischen Prüfsnapshot bis 1 MiB. Die Prüfung verwendet das eingebettete Wissenspaket und den ursprünglichen Prüfzeitpunkt. Die Datei wird nicht gespeichert.",
+  "snapshotSelect": "Prüfsnapshot auswählen",
+  "snapshotTooLarge": "Die Datei überschreitet die zulässige Größe von 1 MiB.",
+  "replayVerified": "Offline-Wiederholung bestätigt",
+  "replayReadOnly": "Das gespeicherte Ergebnis wurde vollständig bestätigt und wird schreibgeschützt angezeigt. Aktuelle Fachlabels werden nicht auf historische Prüfungen übertragen. Die Prüfsumme bestätigt keine Herkunft oder fachliche Freigabe.",
+  "replayTrace": "Bestätigte technische Prüfspur anzeigen",
+  "replayExport": "Bestätigtes Ergebnis herunterladen"
 }

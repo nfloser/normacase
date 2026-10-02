@@ -3,3 +3,5 @@
 .domain-outputs dd small{display:block;font-size:.72rem;line-height:1.5;color:#819187;margin-top:.3rem}
 
 .numeric-input{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(0,1.2fr);gap:8px}.numeric-input select,.numeric-input input{margin:0}@media(max-width:760px){.numeric-input{grid-template-columns:1fr}}
+
+.snapshot-tools{margin-top:22px}.snapshot-tools h2{font-size:19px;margin:0 0 10px}.snapshot-tools p{font-size:13px;line-height:1.6;color:#60756a}.snapshot-tools input[type=file]{max-width:100%;min-width:0}.snapshot-tools h3{font-size:18px;margin-top:24px}.export+.export{margin-left:8px}@media(max-width:760px){.export+.export{margin-left:0;display:block}}
