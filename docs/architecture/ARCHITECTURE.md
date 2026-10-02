@@ -49,6 +49,16 @@ Evaluation receives the assessment date and Knowledge Release explicitly. Tempor
 
 Historical assessments retain the versions used when they were created.
 
+## Historical assessment records and review provenance
+
+The application layer preserves a completed assessment as an immutable record containing the exact versioned CaseInput JSON, the exact Assessment JSON, explicit technical assessment/case ids, an explicit UTC recording instant, and SHA-256 fingerprints of both serialized artifacts.
+
+Assessment date, platform version, Knowledge Release and the original system outcome are derived from the validated documents instead of being accepted as duplicate caller claims. Input/output assessment dates must agree.
+
+A human review is append-only provenance that references the immutable assessment record. Confirmation, return-for-completion and system-outcome override are separate review actions. An override records both the original system disposition and the reviewer-selected platform disposition, plus actor, reason and explicit UTC review time; it never rewrites the system result.
+
+These contracts intentionally contain no persistence technology or implicit clock. A later PostgreSQL adapter owns transactions, uniqueness, concurrency and durable append-only storage.
+
 ## Persistence
 
 PostgreSQL is the preferred persistence technology once storage is introduced because the platform requires transactions, constraints, referential integrity and migrations.
