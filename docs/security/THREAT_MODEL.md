@@ -37,6 +37,18 @@ A pack could attempt code execution or invalid/cyclic references.
 
 Baseline: declarative schemas only; no scripting/eval; validate schema, references, dependencies, temporal overlaps and tests before activation.
 
+### Snapshot substitution or false provenance
+A portable assessment snapshot can be internally consistent while still having been
+created or replaced by an unauthorized actor. Its SHA-256 fingerprints detect
+accidental alteration; they do not authenticate the producer, executable, storage
+location or domain approval.
+
+Baseline: replay validates embedded knowledge, inputs and the complete deterministic
+result without network lookup, but treats platform identity as caller-supplied.
+Sensitive snapshots stay under operator control and are not logged. Future productive
+storage/import must add authorization, trusted provenance and tamper-evident or
+signed storage where required.
+
 ### Sensitive logging
 Medical or identity data could leak through logs and CI.
 
