@@ -124,3 +124,11 @@ synthetic examples, explicit dates, evidence states, source revisions, independe
 domain outputs and exact JSON export. See [the German workbench guide](docs/development/WORKBENCH.md).
 `frontend/` is the canonical browser project; its production build writes the API's
 bundled web assets. No runtime CDN, external font or analytics service is used.
+
+## Self-contained offline snapshots
+
+The synthetic CLI can capture the original case, complete Knowledge Pack and
+assessment in a portable snapshot, then verify replay against that embedded
+knowledge and an explicit platform identity. See
+[the German snapshot guide](docs/development/ASSESSMENT_SNAPSHOTS.md) for commands,
+checksum limitations and historical replay requirements.

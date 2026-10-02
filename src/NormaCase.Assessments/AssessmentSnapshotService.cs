@@ -1,3 +1,4 @@
+using System.Text.Json;
 using NormaCase.Knowledge.Serialization;
 using NormaCase.RuleEngine.Evaluation;
 using NormaCase.Serialization;
@@ -10,6 +11,9 @@ public sealed class AssessmentSnapshotService
     public string Capture(string knowledgePackJson, string caseJson, string platformVersion)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(platformVersion);
+        ArgumentException.ThrowIfNullOrWhiteSpace(knowledgePackJson);
+        if (knowledgePackJson.Length > AssessmentJson.MaximumJsonCharacters)
+            throw new JsonException("Knowledge input exceeds supported size.");
         var pack = new KnowledgePackLoader().LoadFromJson(knowledgePackJson);
         var input = CaseInputJson.Deserialize(caseJson);
         var result = new RuleEvaluator().Evaluate(pack, input.Facts, input.AssessmentDate, input.Evidence);

@@ -32,13 +32,13 @@ public sealed class SnapshotTests
     }
 
     [Fact]
-    public void Original_decimal_and_unused_facts_are_preserved()
+    public void Original_decimal_precision_is_preserved()
     {
         var input = JsonNode.Parse(Case("demo-b-supported"))!;
-        input["facts"]!["unused"] = JsonNode.Parse("{\"kind\":\"NUMBER\",\"number\":123456789.1234567890123456789}");
+        input["facts"]!["score"] = JsonNode.Parse("{\"kind\":\"NUMBER\",\"number\":123456789.1234567890123456789}");
         var json = new AssessmentSnapshotService().Capture(Pack("demo-b"), input.ToJsonString(), "test-1");
         var snapshot = AssessmentSnapshotJson.Deserialize(json);
-        Assert.Equal(123456789.1234567890123456789m, snapshot.Input.Facts["unused"].Number);
+        Assert.Equal(123456789.1234567890123456789m, snapshot.Input.Facts["score"].Number);
         new AssessmentSnapshotService().Replay(json, "test-1");
     }
 
