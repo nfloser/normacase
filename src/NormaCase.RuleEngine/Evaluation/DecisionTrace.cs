@@ -20,6 +20,9 @@ public sealed record RuleTrace(
     string RuleId,
     int RuleVersion,
     string SourceId,
+    string SourceVersion,
+    string SourceLocation,
+    string? SourceContentHash,
     ConditionResult ConditionResult,
     AssessmentOutcome Outcome,
     ConditionTrace Condition);
