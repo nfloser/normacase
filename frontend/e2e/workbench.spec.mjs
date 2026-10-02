@@ -75,3 +75,31 @@ test('independent outputs keep UNKNOWN and the external pending state distinct',
  await expect(page.locator('.domain-outputs')).toContainText('Extern ausstehend');
  await expect(page.locator('.domain-outputs')).toContainText('Unbekannt');
 });
+
+test('snapshot download and uploaded replay retain exact original JSON',async({page})=>{
+ await page.goto('/');
+ await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-b');
+ await page.getByLabel('Prüfdatum',{exact:true}).fill('2026-10-02');
+ await page.getByRole('combobox',{name:'Synthetischer Wert – Eingabestatus'}).selectOption('VALUE');
+ await page.getByRole('combobox',{name:'Bereichswert – Eingabestatus'}).selectOption('VALUE');
+ await page.getByRole('textbox',{name:/Synthetischer Wert/}).fill('123456789,1234567890123456789');
+ await page.getByRole('textbox',{name:/Bereichswert/}).fill('30');
+ await page.getByRole('button',{name:'Jetzt prüfen'}).click();
+ await expect(page.getByRole('heading',{name:'Voraussetzungen erfüllt',exact:true})).toBeVisible();
+ const downloading=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Prüfsnapshot herunterladen',exact:true}).click();
+ const download=await downloading;
+ expect(download.suggestedFilename()).toBe('normacase-snapshot.json');
+ const original=await readFile(await download.path(),'utf8');
+ expect(original).toContain('123456789.1234567890123456789');
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'snapshot.json',mimeType:'application/json',buffer:Buffer.from(original)});
+ await expect(page.getByRole('heading',{name:'Offline-Wiederholung bestätigt',exact:true})).toBeVisible();
+ const verified=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Bestätigtes Ergebnis herunterladen',exact:true}).click();
+ const result=await verified;
+ expect(await readFile(await result.path(),'utf8')).toContain('123456789.1234567890123456789');
+ const altered=JSON.parse(original);altered.contentSha256='0'.repeat(64);
+ await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'altered.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(altered))});
+ await expect(page.getByRole('heading',{name:'Offline-Wiederholung bestätigt',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('alert')).toContainText('ungültig');
+});
