@@ -49,8 +49,8 @@ test('the browser preserves decimal precision all the way into the trace',async(
  await page.goto('/');
  await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-b');
  await page.getByLabel('Prüfdatum').fill('2026-10-02');
- await page.getByLabel('Synthetischer Wert',{exact:true}).fill('123456789,1234567890123456789');
- await page.getByLabel('Bereichswert',{exact:true}).fill('30');
+ await page.getByRole('textbox',{name:/Synthetischer Wert/}).fill('123456789,1234567890123456789');
+ await page.getByRole('textbox',{name:/Bereichswert/}).fill('30');
  await page.getByRole('button',{name:'Jetzt prüfen'}).click();
  await expect(page.getByRole('heading',{name:'Voraussetzungen erfüllt'})).toBeVisible();
  await page.getByText('Technische Prüfspur anzeigen').click();
