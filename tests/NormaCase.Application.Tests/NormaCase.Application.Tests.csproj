@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/NormaCase.Application/NormaCase.Application.csproj" />
+    <ProjectReference Include="../../src/NormaCase.Domain/NormaCase.Domain.csproj" />
+    <ProjectReference Include="../../src/NormaCase.Knowledge/NormaCase.Knowledge.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../knowledge/demo-a/pack.json"
+          Link="Fixtures/demo-a-pack.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-c/pack.json"
+          Link="Fixtures/demo-c-pack.json"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
