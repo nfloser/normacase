@@ -63,6 +63,8 @@ public sealed class AssessmentJsonTests
     [InlineData("{\"kind\":\"TRUTH\",\"truth\":\"MAGIC\"}")]
     [InlineData("{\"kind\":\"TRUTH\",\"truth\":\"1\"}")]
     [InlineData("{\"kind\":\"MAGIC\"}")]
+    [InlineData("{\"kind\":\"NUMBER\",\"number\":1e-29}")]
+    [InlineData("{\"kind\":\"NUMBER\",\"number\":0.12345678901234567890123456789}")]
     public void Malformed_values_are_rejected(string value)
     {
         var node = JsonNode.Parse(AssessmentJson.Serialize(WithValue(CaseValue.Unknown), "1"))!;
@@ -95,6 +97,14 @@ public sealed class AssessmentJsonTests
     {
         var node = JsonNode.Parse(AssessmentJson.Serialize(Evaluate("demo-a"), "1"))!;
         node["assessment"]!["outcome"] = 0;
+        Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(node.ToJsonString()));
+    }
+
+    [Fact]
+    public void Numeric_string_enum_values_are_rejected()
+    {
+        var node = JsonNode.Parse(AssessmentJson.Serialize(Evaluate("demo-a"), "1"))!;
+        node["assessment"]!["outcome"] = "0";
         Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(node.ToJsonString()));
     }
 
