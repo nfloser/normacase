@@ -12,6 +12,15 @@ public sealed class KnowledgePackValidator
             "field_equals"
         };
 
+    private static readonly HashSet<string> AllowedValidationLevels =
+        new(StringComparer.Ordinal)
+        {
+            "SYNTHETIC",
+            "PUBLIC_REFERENCE",
+            "DOMAIN_REVIEWED",
+            "PRODUCTION_APPROVED"
+        };
+
     public IReadOnlyList<KnowledgeValidationError> Validate(KnowledgePack pack)
     {
         ArgumentNullException.ThrowIfNull(pack);
@@ -42,6 +51,13 @@ public sealed class KnowledgePackValidator
             source => source.Id,
             "source",
             errors);
+
+        foreach (var source in pack.Sources)
+        {
+            Require(source.Authority, $"sources.{source.Id}.authority", errors);
+            Require(source.Title, $"sources.{source.Id}.title", errors);
+            Require(source.DocumentType, $"sources.{source.Id}.documentType", errors);
+        }
 
         var rules = ValidateRules(pack, fields, sources, errors);
 
@@ -79,6 +95,15 @@ public sealed class KnowledgePackValidator
         Require(pack.Manifest.ReleaseId, "manifest.releaseId", errors);
         Require(pack.Manifest.ValidationLevel, "manifest.validationLevel", errors);
         Require(pack.Manifest.EntryRuleId, "manifest.entryRuleId", errors);
+
+        if (!string.IsNullOrWhiteSpace(pack.Manifest.ValidationLevel)
+            && !AllowedValidationLevels.Contains(pack.Manifest.ValidationLevel))
+        {
+            errors.Add(new(
+                "unknown_validation_level",
+                $"Unknown validation level '{pack.Manifest.ValidationLevel}'.",
+                "manifest.validationLevel"));
+        }
     }
 
     private static IReadOnlyDictionary<string, T> ValidateUniqueIds<T>(
