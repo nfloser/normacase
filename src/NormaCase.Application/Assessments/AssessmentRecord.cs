@@ -1,3 +1,4 @@
+using NormaCase.Domain.Audit;
 using NormaCase.RuleEngine.Evaluation;
 
 namespace NormaCase.Application.Assessments;
@@ -5,7 +6,7 @@ namespace NormaCase.Application.Assessments;
 public sealed record AssessmentRecord
 {
     public AssessmentRecord(
-        string assessmentId,
+        AssessmentId assessmentId,
         string caseId,
         string knowledgePackId,
         string platformVersion,
@@ -13,7 +14,7 @@ public sealed record AssessmentRecord
         AssessmentInputSnapshot input,
         AssessmentResult result)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(assessmentId);
+        if (assessmentId.IsEmpty)\n            throw new ArgumentException("Assessment id must be explicit.", nameof(assessmentId));
         ArgumentException.ThrowIfNullOrWhiteSpace(caseId);
         ArgumentException.ThrowIfNullOrWhiteSpace(knowledgePackId);
         ArgumentException.ThrowIfNullOrWhiteSpace(platformVersion);
@@ -41,7 +42,7 @@ public sealed record AssessmentRecord
         Result = AssessmentResultSnapshot.Copy(result);
     }
 
-    public string AssessmentId { get; }
+    public AssessmentId AssessmentId { get; }
     public string CaseId { get; }
     public string KnowledgePackId { get; }
     public string PlatformVersion { get; }
