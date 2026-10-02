@@ -24,10 +24,11 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         Assert.Equal(5, json.RootElement.GetArrayLength());
         foreach (var pack in json.RootElement.EnumerateArray())
+        {
             Assert.Equal("SYNTHETIC", pack.GetProperty("validationLevel").GetString());
-        Assert.Contains(
-            json.RootElement.EnumerateArray(),
-            pack => pack.GetProperty("packId").GetString() == "synthetic.demo-e");
+            Assert.Equal("de-DE", pack.GetProperty("presentation").GetProperty("locale").GetString());
+            Assert.False(string.IsNullOrWhiteSpace(pack.GetProperty("presentation").GetProperty("name").GetString()));
+        }
         Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
         Assert.Contains("nosniff", response.Headers.GetValues("X-Content-Type-Options"));
     }
@@ -38,7 +39,6 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
     [InlineData("demo-b-supported", "demo-b", AssessmentOutcome.Supported)]
     [InlineData("demo-c-review", "demo-c", AssessmentOutcome.HumanReview)]
     [InlineData("demo-d-supported", "demo-d", AssessmentOutcome.Supported)]
-    [InlineData("demo-e-partial", "demo-e", AssessmentOutcome.Supported)]
     public async Task Http_result_matches_direct_engine_evaluation(string name, string demo, AssessmentOutcome expected)
     {
         var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", name + ".json"));
@@ -55,29 +55,57 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
     }
 
     [Fact]
-    public async Task Demo_E_http_response_uses_v2_and_preserves_known_and_unknown_outputs()
+    public async Task Catalog_exposes_external_German_labels_and_examples_for_Demo_E()
     {
-        var json = File.ReadAllText(
-            Path.Combine(
-                AppContext.BaseDirectory,
-                "Cases",
-                "demo-e-partial.json"));
+        var response = await _client.GetAsync("/api/packs");
+        response.EnsureSuccessStatusCode();
 
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var demo = Assert.Single(
+            json.RootElement.EnumerateArray(),
+            item => item.GetProperty("packId").GetString() == "synthetic.demo-e");
+
+        var presentation = demo.GetProperty("presentation");
+        Assert.Equal("Demo E – Mehrere Ergebnisse", presentation.GetProperty("name").GetString());
+
+        var metric = Assert.Single(
+            demo.GetProperty("fields").EnumerateArray(),
+            item => item.GetProperty("id").GetString() == "metric");
+        Assert.Equal("Kennzahl", metric.GetProperty("label").GetString());
+
+        Assert.Contains(
+            presentation.GetProperty("examples").EnumerateArray(),
+            item => item.GetProperty("id").GetString() == "mixed"
+                && item.GetProperty("label").GetString() == "Bekannte und unbekannte Ausgaben");
+    }
+
+    [Fact]
+    public async Task Synthetic_example_can_be_loaded_without_a_file_or_technical_case_id()
+    {
+        var response = await _client.GetAsync("/api/packs/synthetic.demo-e/examples/mixed");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal("2026-10-02", document.RootElement.GetProperty("assessmentDate").GetString());
+        Assert.Equal("YES", document.RootElement.GetProperty("values").GetProperty("gate_primary").GetString());
+        Assert.Equal("7", document.RootElement.GetProperty("values").GetProperty("metric").GetString());
+        Assert.Equal("UNKNOWN", document.RootElement.GetProperty("values").GetProperty("segment_beta_ready").GetString());
+        Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
+    }
+
+    [Fact]
+    public async Task Demo_E_roundtrips_domain_outputs_through_the_real_HTTP_contract()
+    {
+        var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", "demo-e-mixed.json"));
         var response = await Post("demo-e", json);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var document = AssessmentJson.Deserialize(
-            await response.Content.ReadAsStringAsync());
-
-        Assert.Equal(2, document.FormatVersion);
-        Assert.Equal(AssessmentOutcome.Supported, document.Assessment.Outcome);
-
-        var decision = Assert.Single(
+        var document = AssessmentJson.Deserialize(await response.Content.ReadAsStringAsync());
+        Assert.Equal(5, document.Assessment.DomainOutputs.Count);
+        Assert.Contains(
             document.Assessment.DomainOutputs,
-            output => output.OutputId == "decision_state");
-        Assert.Equal(DomainOutputValueKind.Choice, decision.Value.Kind);
-        Assert.Equal("ELIGIBLE", decision.Value.Choice);
-
+            output => output.OutputId == "external_state"
+                && output.Value.Choice == "PENDING_EXTERNAL");
         var beta = Assert.Single(
             document.Assessment.DomainOutputs,
             output => output.OutputId == "segment_beta");

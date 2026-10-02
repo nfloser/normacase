@@ -27,6 +27,7 @@ try:
                     "synthetic.demo-e",
                 }.issubset(pack_ids)
                 assert all(pack["validationLevel"] == "SYNTHETIC" for pack in catalog)
+                assert all(pack["presentation"]["locale"] == "de-DE" for pack in catalog)
                 assert response.headers["Cache-Control"] == "no-store"
             break
         except URLError:

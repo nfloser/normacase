@@ -1,0 +1,20 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "synthetic.demo-c",
+  "name": "Demo C – Evidenzabhängigkeit",
+  "description": "Synthetisches Beispiel für strukturierte Evidenz und manuelle Prüfung.",
+  "fields": {
+    "request_confirmed": { "label": "Anforderung bestätigt", "helpText": "Synthetische Ja/Nein-Angabe." },
+    "measurement": { "label": "Messwert", "helpText": "Optionaler synthetischer Dezimalwert." },
+    "alternative_confirmed": { "label": "Alternative bestätigt", "helpText": "Optionaler alternativer Wahrheitswert." }
+  },
+  "evidenceRequirements": {
+    "verification": { "label": "Verifikationsnachweis", "helpText": "Nur der strukturierte Verfügbarkeitsstatus wird ausgewertet." }
+  },
+  "outputs": {},
+  "examples": [
+    { "id": "supported", "label": "Evidenz vorhanden", "caseFile": "demo-c-supported.json" },
+    { "id": "review", "label": "Manuelle Prüfung erforderlich", "caseFile": "demo-c-review.json" }
+  ]
+}

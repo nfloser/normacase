@@ -1,7 +1,11 @@
+using System.Globalization;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using NormaCase.Domain.Cases;
+using NormaCase.Domain.Decision;
+using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Model;
 using NormaCase.Knowledge.Serialization;
 using NormaCase.Knowledge.Validation;
@@ -16,7 +20,8 @@ public static class DemoHost
 
     public static WebApplication Build(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args, WebRootPath = Directory.Exists(webRoot) ? webRoot : null });
         builder.WebHost.ConfigureKestrel(options =>
         {
             options.ListenLocalhost(5080);
@@ -28,6 +33,7 @@ public static class DemoHost
             .ToDictionary(pack => pack.Manifest.PackId, StringComparer.Ordinal);
         if (packs.Count == 0 || packs.Values.Any(pack => pack.Manifest.ValidationLevel != "SYNTHETIC"))
             throw new InvalidOperationException("Local demo catalog must contain synthetic knowledge only.");
+        var presentations = PresentationCatalog.Load(packs);
         var platformVersion = typeof(DemoHost).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         var app = builder.Build();
 
@@ -36,12 +42,16 @@ public static class DemoHost
             context.Response.StatusCode = 500;
             context.Response.Headers.CacheControl = "no-store";
             context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+            context.Response.Headers["Referrer-Policy"] = "no-referrer";
+            context.Response.Headers["X-Frame-Options"] = "DENY";
+            context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
             await context.Response.WriteAsJsonAsync(new { code = "internal_error", message = ApiMessages.Get("internal_error") });
         }));
         app.Use(async (context, next) =>
         {
             context.Response.Headers.CacheControl = "no-store";
             context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+            context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
             var host = context.Request.Host.Host;
             var localHost = host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
                 || host == "127.0.0.1" || host == "::1" || host == "[::1]";
@@ -55,15 +65,87 @@ public static class DemoHost
             await next(context);
         });
 
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+
         app.MapGet("/api/packs", () => packs.Values.OrderBy(pack => pack.Manifest.PackId, StringComparer.Ordinal)
-            .Select(pack => new
+            .Select(pack =>
             {
-                packId = pack.Manifest.PackId,
-                releaseId = pack.Manifest.ReleaseId,
-                validationLevel = pack.Manifest.ValidationLevel,
-                fields = pack.Fields.Select(field => new { id = field.Id, type = field.Type, required = field.Required }).ToArray(),
-                evidenceRequirements = pack.EvidenceRequirements.Select(item => item.Id).ToArray()
+                var presentation = presentations[pack.Manifest.PackId];
+                return new
+                {
+                    packId = pack.Manifest.PackId,
+                    releaseId = pack.Manifest.ReleaseId,
+                    validationLevel = pack.Manifest.ValidationLevel,
+                    presentation = new
+                    {
+                        locale = presentation.Locale,
+                        name = presentation.Name,
+                        description = presentation.Description,
+                        outputs = presentation.Outputs
+                            .OrderBy(item => item.Key, StringComparer.Ordinal)
+                            .Select(item => new
+                            {
+                                id = item.Key,
+                                label = item.Value.Label,
+                                choices = item.Value.Choices
+                                    .OrderBy(choice => choice.Key, StringComparer.Ordinal)
+                                    .ToDictionary(choice => choice.Key, choice => choice.Value, StringComparer.Ordinal)
+                            })
+                            .ToArray(),
+                        examples = presentation.Examples
+                            .Select(item => new { id = item.Id, label = item.Label })
+                            .ToArray()
+                    },
+                    fields = pack.Fields.Select(field =>
+                    {
+                        var text = presentation.Fields[field.Id];
+                        return new
+                        {
+                            id = field.Id,
+                            type = field.Type,
+                            required = field.Required,
+                            label = text.Label,
+                            helpText = text.HelpText
+                        };
+                    }).ToArray(),
+                    evidenceRequirements = pack.EvidenceRequirements.Select(item =>
+                    {
+                        var text = presentation.EvidenceRequirements[item.Id];
+                        return new { id = item.Id, label = text.Label, helpText = text.HelpText };
+                    }).ToArray()
+                };
             }).ToArray());
+
+        app.MapGet("/api/packs/{packId}/examples/{exampleId}", (string packId, string exampleId) =>
+        {
+            if (!presentations.TryGetValue(packId, out var presentation))
+                return Error("unknown_pack", 404);
+
+            var pack = packs[packId];
+            var example = presentation.Examples.SingleOrDefault(
+                item => string.Equals(item.Id, exampleId, StringComparison.Ordinal));
+            if (example is null)
+                return Error("unknown_example", 404);
+
+            return Results.Json(new
+            {
+                assessmentDate = example.Input.AssessmentDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                values = pack.Fields.ToDictionary(
+                    field => field.Id,
+                    field => ExampleValue(example.Input.Facts.TryGetValue(field.Id, out var value)
+                        ? value
+                        : CaseValue.Unknown),
+                    StringComparer.Ordinal),
+                evidence = pack.EvidenceRequirements.ToDictionary(
+                    item => item.Id,
+                    item => example.Input.Evidence is not null
+                        && example.Input.Evidence.TryGetValue(item.Id, out var status)
+                            ? status.ToString().ToUpperInvariant()
+                            : "MISSING",
+                    StringComparer.Ordinal)
+            });
+        });
 
         app.MapPost("/api/assessments/{packId}", async (string packId, HttpRequest request) =>
         {
@@ -101,6 +183,21 @@ public static class DemoHost
 
         return app;
     }
+
+    private static string ExampleValue(CaseValue value)
+        => value.Kind switch
+        {
+            CaseValueKind.Unknown => "UNKNOWN",
+            CaseValueKind.Truth => value.Truth switch
+            {
+                TruthValue.Yes => "YES",
+                TruthValue.No => "NO",
+                TruthValue.NotApplicable => "NOT_APPLICABLE",
+                _ => "UNKNOWN"
+            },
+            CaseValueKind.Number => value.Number!.Value.ToString(CultureInfo.InvariantCulture),
+            _ => "UNKNOWN"
+        };
 
     private static bool AllowedOrigin(HttpRequest request)
     {

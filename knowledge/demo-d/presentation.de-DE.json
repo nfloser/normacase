@@ -1,0 +1,17 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "synthetic.demo-d",
+  "name": "Demo D – Deklarative Berechnung",
+  "description": "Synthetisches Beispiel für abgeleitete Zahlenwerte ohne Skripte.",
+  "fields": {
+    "base_input": { "label": "Basiswert", "helpText": "Pflichtwert der synthetischen Berechnung." },
+    "option_a": { "label": "Option A", "helpText": "Optionaler synthetischer Dezimalwert." },
+    "option_b": { "label": "Option B", "helpText": "Optionaler synthetischer Dezimalwert." }
+  },
+  "evidenceRequirements": {},
+  "outputs": {},
+  "examples": [
+    { "id": "supported", "label": "Berechnungsbeispiel", "caseFile": "demo-d-supported.json" }
+  ]
+}
