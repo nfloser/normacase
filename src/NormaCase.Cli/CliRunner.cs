@@ -100,7 +100,8 @@ public static class CliRunner
             foreach (var code in exception.Errors
                 .Select(item => item.Code)
                 .Distinct(StringComparer.Ordinal)
-                .OrderBy(code => code, StringComparer.Ordinal))
+                .OrderBy(code => code, StringComparer.Ordinal)
+                .Take(20))
             {
                 error.WriteLine(code);
             }
