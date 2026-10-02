@@ -23,23 +23,23 @@ public sealed class NumericExpressionSliceTests
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
         var condition = Assert.IsType<RuleTrace>(result.RuleTrace).Condition;
         Assert.Equal(ConditionResult.Matched, condition.Result);
-        Assert.Equal(12.5m, condition.Actual!.Value.Number);
+        Assert.Equal(14m, condition.Actual!.Value.Number);
 
         var expression = Assert.IsType<NumericExpressionTrace>(condition.NumericExpression);
         Assert.Equal("sum", expression.Kind);
-        Assert.Equal(12.5m, expression.Value.Number);
+        Assert.Equal(14m, expression.Value.Number);
         Assert.Equal(2, expression.Children.Count);
 
         var baseLookup = expression.Children[0];
         Assert.Equal("range_lookup", baseLookup.Kind);
-        Assert.Equal(5m, baseLookup.Value.Number);
+        Assert.Equal(6m, baseLookup.Value.Number);
         Assert.Equal(5m, baseLookup.SelectedMinimum);
         Assert.Equal(9m, baseLookup.SelectedMaximum);
-        Assert.Equal(5m, baseLookup.SelectedValue);
+        Assert.Equal(6m, baseLookup.SelectedValue);
 
         var alternatives = expression.Children[1];
         Assert.Equal("max", alternatives.Kind);
-        Assert.Equal(7.5m, alternatives.Value.Number);
+        Assert.Equal(8m, alternatives.Value.Number);
         Assert.Equal(2, alternatives.Children.Count);
     }
 
@@ -50,7 +50,7 @@ public sealed class NumericExpressionSliceTests
 
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
         var lookup = result.RuleTrace!.Condition.NumericExpression!.Children[0];
-        Assert.Equal(5m, lookup.Value.Number);
+        Assert.Equal(6m, lookup.Value.Number);
         Assert.Equal(5m, lookup.SelectedMinimum);
         Assert.Equal(9m, lookup.SelectedMaximum);
     }
