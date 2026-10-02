@@ -15,7 +15,7 @@ Initial logical modules are expected to evolve around:
 - authorization,
 - shared technical primitives.
 
-The current bootstrap contains only the framework-independent domain contracts needed to establish semantics.
+The current foundation contains the framework-independent domain/rule contracts plus a thin application layer for explicit assessment execution records. Persistence remains an adapter concern.
 
 ## Dependency direction
 
@@ -51,7 +51,15 @@ Historical assessments retain the versions used when they were created.
 
 ## Persistence
 
-PostgreSQL is the preferred persistence technology once storage is introduced because the platform requires transactions, constraints, referential integrity and migrations.
+The storage-neutral `AssessmentRecord` is the historical assessment boundary. It
+captures the Knowledge Pack id, explicit execution metadata, canonical typed inputs
+and the exact evaluator result. Storage must persist that record rather than
+reconstructing inputs from traces or resolving provenance against newer knowledge.
+
+See [ASSESSMENT_RECORDS.md](ASSESSMENT_RECORDS.md).
+
+PostgreSQL is the preferred persistence technology once storage is introduced because
+the platform requires transactions, constraints, referential integrity and migrations.
 
 Additional datastores require a demonstrated use case.
 
