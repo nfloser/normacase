@@ -21,10 +21,21 @@ public static class AssessmentRecordJson
 
     public static AssessmentRecord Deserialize(string json)
     {
-        var document = InterchangeJson.Read<AssessmentRecordDocument>(json);
-        if (document.FormatVersion != CurrentFormatVersion)
-            throw new JsonException("Unsupported assessment record format.");
+        try
+        {
+            var document = InterchangeJson.Read<AssessmentRecordDocument>(json);
+            if (document.FormatVersion != CurrentFormatVersion)
+                throw new JsonException("Unsupported assessment record format.");
 
-        return document.Record;
+            return document.Record;
+        }
+        catch (JsonException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            throw new JsonException("Invalid assessment record.", exception);
+        }
     }
 }
