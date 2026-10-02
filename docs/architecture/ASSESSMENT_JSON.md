@@ -40,3 +40,24 @@ Importers must perform authorization and context validation before trusting an
 external document. Exported traces can contain sensitive values in production;
 store them under operator control and never log them wholesale. Repository tests
 use synthetic data only.
+
+## Self-contained replay snapshots
+
+`AssessmentSnapshotJson` is a separate format-v1 envelope containing the original
+Knowledge Pack JSON string, a SHA-256 fingerprint of those exact UTF-8 pack bytes,
+strict `CaseInput`, format-v2 `AssessmentDocument` and a second SHA-256 checksum
+over the complete canonical payload. Both checksums detect changes; neither is an
+authenticity guarantee.
+
+`NormaCase.Replay.AssessmentSnapshotService` owns capture and verified replay.
+It validates embedded knowledge, requires an explicitly matching platform identity,
+evaluates the embedded case/date and compares the complete result against the
+recorded document. Serialization itself does not run the engine. The caller must
+provide the truthful executable version; a string cannot authenticate a binary.
+See [the German snapshot guide](../development/ASSESSMENT_SNAPSHOTS.md).
+
+Replay is a downstream application boundary for portable interchange, separate from
+the storage-neutral `NormaCase.Application` assessment execution record. It does not
+introduce competing case/assessment identifiers, recording timestamps, review models
+or a persistence aggregate. Serialization depends on Application for record transport;
+Replay depends on Serialization, so the dependency direction remains acyclic.
