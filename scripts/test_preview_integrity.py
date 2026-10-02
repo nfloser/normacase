@@ -6,7 +6,7 @@ import tempfile
 import unittest
 import zipfile
 
-from check_preview import extract_verified
+from check_preview import extract_verified, verify_archive_sidecar
 
 
 class PreviewIntegrityTests(unittest.TestCase):
@@ -32,6 +32,21 @@ class PreviewIntegrityTests(unittest.TestCase):
             archive, target = self.make_bundle(Path(temporary))
             extract_verified(archive, target)
             self.assertEqual(b"synthetic fixture", (target / "api/fixture").read_bytes())
+
+    def test_archive_sidecar_is_verified(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            archive, _ = self.make_bundle(directory)
+            digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+            archive.with_suffix(".zip.sha256").write_text(
+                digest + "  " + archive.name + "\n",
+                encoding="ascii")
+            verify_archive_sidecar(archive)
+            archive.with_suffix(".zip.sha256").write_text(
+                "0" * 64 + "  " + archive.name + "\n",
+                encoding="ascii")
+            with self.assertRaisesRegex(ValueError, "checksum"):
+                verify_archive_sidecar(archive)
 
     def test_changed_bytes_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
