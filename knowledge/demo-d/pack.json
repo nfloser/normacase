@@ -1,0 +1,99 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "packId": "synthetic.demo-d",
+    "releaseId": "demo-d-2026.1",
+    "lifecycleStatus": "ACTIVE",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-D-DERIVED-SCORE"
+  },
+  "fields": [
+    {
+      "id": "base_input",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "option_a",
+      "type": "number",
+      "required": false
+    },
+    {
+      "id": "option_b",
+      "type": "number",
+      "required": false
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-D-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic Demo D derived numeric score source",
+      "documentType": "SYNTHETIC",
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-d/pack.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-D-DERIVED-SCORE",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-D-001",
+      "condition": {
+        "kind": "number_gte",
+        "threshold": 14,
+        "numericExpression": {
+          "kind": "sum",
+          "operands": [
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "base_input"
+              },
+              "bands": [
+                { "minimum": 0, "maximum": 4, "value": 1 },
+                { "minimum": 5, "maximum": 9, "value": 6 },
+                { "minimum": 10, "maximum": 20, "value": 11 }
+              ]
+            },
+            {
+              "kind": "max",
+              "operands": [
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "option_a"
+                  },
+                  "bands": [
+                    { "minimum": 0, "maximum": 2, "value": 2 },
+                    { "minimum": 3, "maximum": 5, "value": 4 },
+                    { "minimum": 6, "maximum": 10, "value": 8 }
+                  ]
+                },
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "option_b"
+                  },
+                  "bands": [
+                    { "minimum": 0, "maximum": 2, "value": 2 },
+                    { "minimum": 3, "maximum": 5, "value": 4 },
+                    { "minimum": 6, "maximum": 10, "value": 8 }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED",
+      "onUnknown": "INCOMPLETE"
+    }
+  ]
+}

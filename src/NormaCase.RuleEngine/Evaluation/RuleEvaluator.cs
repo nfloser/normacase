@@ -152,7 +152,7 @@ public sealed class RuleEvaluator
         ConditionDefinition condition,
         IReadOnlyDictionary<string, CaseValue> facts)
     {
-        var actual = GetActualValue(condition, facts);
+        var (actual, expressionTrace) = ResolveNumericInput(condition, facts);
         var expected = CaseValue.FromNumber(condition.Threshold!.Value);
 
         var result = actual.IsUnknown
@@ -164,16 +164,17 @@ public sealed class RuleEvaluator
         return LeafTrace(
             condition.Kind,
             result,
-            condition.Field!,
+            condition.Field,
             expected,
-            actual);
+            actual,
+            expressionTrace);
     }
 
     private static ConditionTrace EvaluateNumberInRange(
         ConditionDefinition condition,
         IReadOnlyDictionary<string, CaseValue> facts)
     {
-        var actual = GetActualValue(condition, facts);
+        var (actual, expressionTrace) = ResolveNumericInput(condition, facts);
 
         var result = actual.IsUnknown
             ? ConditionResult.Unknown
@@ -190,7 +191,8 @@ public sealed class RuleEvaluator
             actual,
             condition.Minimum,
             condition.Maximum,
-            []);
+            [],
+            NumericExpression: expressionTrace);
     }
 
     private static ConditionTrace EvaluateAll(
@@ -243,6 +245,141 @@ public sealed class RuleEvaluator
             condition.EvidenceRequirementId, status);
     }
 
+    private static (CaseValue Value, NumericExpressionTrace? Trace) ResolveNumericInput(
+        ConditionDefinition condition,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        if (condition.NumericExpression is null)
+        {
+            return (GetActualValue(condition, facts), null);
+        }
+
+        var trace = EvaluateNumericExpression(condition.NumericExpression, facts);
+        return (trace.Value, trace);
+    }
+
+    private static NumericExpressionTrace EvaluateNumericExpression(
+        NumericExpressionDefinition expression,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        return expression.Kind switch
+        {
+            "field" => EvaluateNumericFieldExpression(expression, facts),
+            "range_lookup" => EvaluateNumericRangeLookup(expression, facts),
+            "sum" => EvaluateNumericSum(expression, facts),
+            "max" => EvaluateNumericMax(expression, facts),
+            _ => throw new InvalidOperationException(
+                $"Knowledge validation should reject unknown numeric expression kind '{expression.Kind}'.")
+        };
+    }
+
+    private static NumericExpressionTrace EvaluateNumericFieldExpression(
+        NumericExpressionDefinition expression,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        var value = facts.TryGetValue(expression.Field!, out var supplied)
+            ? supplied
+            : CaseValue.Unknown;
+
+        return new(
+            expression.Kind,
+            value,
+            expression.Field,
+            null,
+            null,
+            null,
+            []);
+    }
+
+    private static NumericExpressionTrace EvaluateNumericRangeLookup(
+        NumericExpressionDefinition expression,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        var input = EvaluateNumericExpression(expression.Input!, facts);
+        if (input.Value.IsUnknown)
+        {
+            return new(
+                expression.Kind,
+                CaseValue.Unknown,
+                null,
+                null,
+                null,
+                null,
+                [input]);
+        }
+
+        var number = input.Value.Number!.Value;
+        var band = expression.Bands.FirstOrDefault(item =>
+            item.Minimum!.Value <= number
+            && number <= item.Maximum!.Value);
+
+        if (band is null)
+        {
+            return new(
+                expression.Kind,
+                CaseValue.Unknown,
+                null,
+                null,
+                null,
+                null,
+                [input]);
+        }
+
+        var value = CaseValue.FromNumber(band.Value!.Value);
+        return new(
+            expression.Kind,
+            value,
+            null,
+            band.Minimum,
+            band.Maximum,
+            band.Value,
+            [input]);
+    }
+
+    private static NumericExpressionTrace EvaluateNumericSum(
+        NumericExpressionDefinition expression,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        var children = expression.Operands
+            .Select(operand => EvaluateNumericExpression(operand, facts))
+            .ToArray();
+
+        var value = children.Any(child => child.Value.IsUnknown)
+            ? CaseValue.Unknown
+            : CaseValue.FromNumber(children.Sum(child => child.Value.Number!.Value));
+
+        return new(
+            expression.Kind,
+            value,
+            null,
+            null,
+            null,
+            null,
+            children);
+    }
+
+    private static NumericExpressionTrace EvaluateNumericMax(
+        NumericExpressionDefinition expression,
+        IReadOnlyDictionary<string, CaseValue> facts)
+    {
+        var children = expression.Operands
+            .Select(operand => EvaluateNumericExpression(operand, facts))
+            .ToArray();
+
+        var value = children.Any(child => child.Value.IsUnknown)
+            ? CaseValue.Unknown
+            : CaseValue.FromNumber(children.Max(child => child.Value.Number!.Value));
+
+        return new(
+            expression.Kind,
+            value,
+            null,
+            null,
+            null,
+            null,
+            children);
+    }
+
     private static bool HasConflictingEvidence(ConditionTrace trace)
         => trace.EvidenceStatus == EvidenceStatus.Conflicting
             || trace.Children.Any(HasConflictingEvidence);
@@ -261,9 +398,10 @@ public sealed class RuleEvaluator
     private static ConditionTrace LeafTrace(
         string kind,
         ConditionResult result,
-        string field,
+        string? field,
         CaseValue expected,
-        CaseValue actual)
+        CaseValue actual,
+        NumericExpressionTrace? numericExpression = null)
         => new(
             kind,
             result,
@@ -272,7 +410,8 @@ public sealed class RuleEvaluator
             actual,
             null,
             null,
-            []);
+            [],
+            NumericExpression: numericExpression);
 
     private static ConditionTrace GroupTrace(
         string kind,

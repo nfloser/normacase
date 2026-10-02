@@ -16,6 +16,15 @@ public sealed class KnowledgePackValidator
             "requires_evidence"
         };
 
+    private static readonly HashSet<string> AllowedNumericExpressionKinds =
+        new(StringComparer.Ordinal)
+        {
+            "field",
+            "range_lookup",
+            "sum",
+            "max"
+        };
+
     private static readonly HashSet<string> AllowedFieldTypes =
         new(StringComparer.Ordinal)
         {
@@ -280,7 +289,8 @@ public sealed class KnowledgePackValidator
         if (condition.Kind == "requires_evidence")
         {
             if (condition.Field is not null || condition.Expected is not null
-                || condition.Threshold is not null || condition.Minimum is not null || condition.Maximum is not null)
+                || condition.Threshold is not null || condition.Minimum is not null || condition.Maximum is not null
+                || condition.NumericExpression is not null)
             {
                 errors.Add(new("ambiguous_evidence_dependency", "Evidence gates cannot also declare field comparisons.", path));
             }
@@ -311,6 +321,14 @@ public sealed class KnowledgePackValidator
 
         if (condition.Kind is "all" or "any")
         {
+            if (condition.NumericExpression is not null)
+            {
+                errors.Add(new(
+                    "unexpected_numeric_expression",
+                    "Condition groups cannot consume a numeric expression.",
+                    $"{path}.numericExpression"));
+            }
+
             if (condition.Conditions.Count == 0)
             {
                 errors.Add(new(
@@ -333,16 +351,6 @@ public sealed class KnowledgePackValidator
             return;
         }
 
-        FieldDefinition? field = null;
-        if (string.IsNullOrWhiteSpace(condition.Field)
-            || !fields.TryGetValue(condition.Field, out field))
-        {
-            errors.Add(new(
-                "missing_field",
-                $"Condition references unknown field '{condition.Field}'.",
-                $"{path}.field"));
-        }
-
         if (condition.Conditions.Count > 0)
         {
             errors.Add(new(
@@ -354,16 +362,254 @@ public sealed class KnowledgePackValidator
         switch (condition.Kind)
         {
             case "field_equals":
+            {
+                if (condition.NumericExpression is not null)
+                {
+                    errors.Add(new(
+                        "unexpected_numeric_expression",
+                        "field_equals cannot consume a numeric expression.",
+                        $"{path}.numericExpression"));
+                }
+
+                var field = ResolveConditionField(condition.Field, fields, errors, path);
                 ValidateTruthEquality(condition, field, errors, path);
                 break;
+            }
 
             case "number_gte":
+            {
+                var field = ValidateNumericConditionInput(condition, fields, errors, path);
                 ValidateNumericThreshold(condition, field, errors, path);
                 break;
+            }
 
             case "number_in_range":
+            {
+                var field = ValidateNumericConditionInput(condition, fields, errors, path);
                 ValidateNumericRange(condition, field, errors, path);
                 break;
+            }
+        }
+    }
+
+    private static FieldDefinition? ResolveConditionField(
+        string? fieldId,
+        IReadOnlyDictionary<string, FieldDefinition> fields,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (string.IsNullOrWhiteSpace(fieldId)
+            || !fields.TryGetValue(fieldId, out var field))
+        {
+            errors.Add(new(
+                "missing_field",
+                $"Condition references unknown field '{fieldId}'.",
+                $"{path}.field"));
+            return null;
+        }
+
+        return field;
+    }
+
+    private static FieldDefinition? ValidateNumericConditionInput(
+        ConditionDefinition condition,
+        IReadOnlyDictionary<string, FieldDefinition> fields,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        var hasField = !string.IsNullOrWhiteSpace(condition.Field);
+        var hasExpression = condition.NumericExpression is not null;
+
+        if (hasField && hasExpression)
+        {
+            errors.Add(new(
+                "ambiguous_numeric_input",
+                "Numeric conditions must declare either field or numericExpression, not both.",
+                path));
+        }
+        else if (!hasField && !hasExpression)
+        {
+            errors.Add(new(
+                "missing_numeric_input",
+                "Numeric conditions require either field or numericExpression.",
+                path));
+        }
+
+        FieldDefinition? field = null;
+        if (hasField)
+        {
+            field = ResolveConditionField(condition.Field, fields, errors, path);
+        }
+
+        if (condition.NumericExpression is not null)
+        {
+            ValidateNumericExpression(
+                condition.NumericExpression,
+                fields,
+                errors,
+                $"{path}.numericExpression");
+        }
+
+        return field;
+    }
+
+    private static void ValidateNumericExpression(
+        NumericExpressionDefinition expression,
+        IReadOnlyDictionary<string, FieldDefinition> fields,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (!AllowedNumericExpressionKinds.Contains(expression.Kind))
+        {
+            errors.Add(new(
+                "unknown_numeric_expression_kind",
+                $"Unknown numeric expression kind '{expression.Kind}'.",
+                $"{path}.kind"));
+            return;
+        }
+
+        switch (expression.Kind)
+        {
+            case "field":
+            {
+                if (expression.Input is not null || expression.Operands.Count > 0 || expression.Bands.Count > 0)
+                {
+                    errors.Add(new(
+                        "invalid_numeric_expression_shape",
+                        "A field expression cannot declare input, operands or bands.",
+                        path));
+                }
+
+                if (string.IsNullOrWhiteSpace(expression.Field)
+                    || !fields.TryGetValue(expression.Field, out var field))
+                {
+                    errors.Add(new(
+                        "missing_numeric_expression_field",
+                        $"Numeric expression references unknown field '{expression.Field}'.",
+                        $"{path}.field"));
+                    return;
+                }
+
+                if (!string.Equals(field.Type, "number", StringComparison.Ordinal))
+                {
+                    errors.Add(new(
+                        "numeric_expression_field_type_mismatch",
+                        $"Numeric expression requires a number field, but '{field.Id}' is '{field.Type}'.",
+                        $"{path}.field"));
+                }
+
+                return;
+            }
+
+            case "range_lookup":
+            {
+                if (expression.Field is not null || expression.Operands.Count > 0)
+                {
+                    errors.Add(new(
+                        "invalid_numeric_expression_shape",
+                        "A range_lookup expression uses input and bands only.",
+                        path));
+                }
+
+                if (expression.Input is null)
+                {
+                    errors.Add(new(
+                        "missing_numeric_expression_input",
+                        "range_lookup requires an input expression.",
+                        $"{path}.input"));
+                }
+                else
+                {
+                    ValidateNumericExpression(expression.Input, fields, errors, $"{path}.input");
+                }
+
+                ValidateNumericBands(expression.Bands, errors, $"{path}.bands");
+                return;
+            }
+
+            case "sum":
+            case "max":
+            {
+                if (expression.Field is not null || expression.Input is not null || expression.Bands.Count > 0)
+                {
+                    errors.Add(new(
+                        "invalid_numeric_expression_shape",
+                        $"{expression.Kind} uses operands only.",
+                        path));
+                }
+
+                if (expression.Operands.Count == 0)
+                {
+                    errors.Add(new(
+                        "empty_numeric_operands",
+                        $"{expression.Kind} requires at least one operand.",
+                        $"{path}.operands"));
+                }
+
+                for (var index = 0; index < expression.Operands.Count; index++)
+                {
+                    ValidateNumericExpression(
+                        expression.Operands[index],
+                        fields,
+                        errors,
+                        $"{path}.operands[{index}]");
+                }
+
+                return;
+            }
+        }
+    }
+
+    private static void ValidateNumericBands(
+        IReadOnlyList<NumericRangeBandDefinition> bands,
+        ICollection<KnowledgeValidationError> errors,
+        string path)
+    {
+        if (bands.Count == 0)
+        {
+            errors.Add(new(
+                "empty_numeric_bands",
+                "range_lookup requires at least one band.",
+                path));
+            return;
+        }
+
+        NumericRangeBandDefinition? previous = null;
+        for (var index = 0; index < bands.Count; index++)
+        {
+            var band = bands[index];
+            var bandPath = $"{path}[{index}]";
+
+            if (band.Minimum is null || band.Maximum is null || band.Value is null)
+            {
+                errors.Add(new(
+                    "incomplete_numeric_band",
+                    "Every range_lookup band requires minimum, maximum and value.",
+                    bandPath));
+                previous = band;
+                continue;
+            }
+
+            if (band.Minimum.Value > band.Maximum.Value)
+            {
+                errors.Add(new(
+                    "invalid_numeric_band",
+                    "A range_lookup band minimum cannot exceed its maximum.",
+                    bandPath));
+            }
+
+            if (previous is not null
+                && previous.Minimum is not null
+                && previous.Maximum is not null
+                && band.Minimum.Value <= previous.Maximum.Value)
+            {
+                errors.Add(new(
+                    "invalid_numeric_band_order",
+                    "range_lookup bands must be ordered by ascending, non-overlapping inclusive ranges.",
+                    bandPath));
+            }
+
+            previous = band;
         }
     }
 
