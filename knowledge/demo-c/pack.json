@@ -1,5 +1,6 @@
 {
   "manifest": {
+    "formatVersion": 1,
     "packId": "synthetic.demo-c",
     "releaseId": "demo-c-2026.1",
     "validationLevel": "SYNTHETIC",
@@ -32,7 +33,9 @@
       "id": "SYNTH-DEMO-C-001",
       "authority": "NormaCase synthetic test suite",
       "title": "Synthetic evidence dependency example",
-      "documentType": "SYNTHETIC"
+      "documentType": "SYNTHETIC",
+      "version": "synthetic-v1",
+      "location": "synthetic://demo-c/source-001"
     }
   ],
   "rules": [
