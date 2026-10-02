@@ -76,7 +76,14 @@ public static class DemoHost
                         description = presentation.Description,
                         outputs = presentation.Outputs
                             .OrderBy(item => item.Key, StringComparer.Ordinal)
-                            .Select(item => new { id = item.Key, label = item.Value.Label })
+                            .Select(item => new
+                            {
+                                id = item.Key,
+                                label = item.Value.Label,
+                                choices = item.Value.Choices
+                                    .OrderBy(choice => choice.Key, StringComparer.Ordinal)
+                                    .ToDictionary(choice => choice.Key, choice => choice.Value, StringComparer.Ordinal)
+                            })
                             .ToArray(),
                         examples = presentation.Examples
                             .Select(item => new { id = item.Id, label = item.Label })
