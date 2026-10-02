@@ -1,0 +1,30 @@
+using NormaCase.Domain.Decision;
+using Xunit;
+
+namespace NormaCase.Domain.Tests.Decision;
+
+public sealed class DecisionSemanticsTests
+{
+    [Fact]
+    public void TruthValue_has_a_distinct_unknown_state()
+    {
+        Assert.NotEqual(TruthValue.Yes, TruthValue.Unknown);
+        Assert.NotEqual(TruthValue.No, TruthValue.Unknown);
+        Assert.NotEqual(TruthValue.NotApplicable, TruthValue.Unknown);
+    }
+
+    [Fact]
+    public void AssessmentOutcome_exposes_safe_abstention_states()
+    {
+        var outcomes = Enum.GetValues<AssessmentOutcome>();
+
+        Assert.Contains(AssessmentOutcome.Incomplete, outcomes);
+        Assert.Contains(AssessmentOutcome.HumanReview, outcomes);
+    }
+
+    [Fact]
+    public void Default_assessment_outcome_is_fail_closed()
+    {
+        Assert.Equal(AssessmentOutcome.Incomplete, default);
+    }
+}
