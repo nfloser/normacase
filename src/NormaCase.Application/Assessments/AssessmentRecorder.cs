@@ -66,6 +66,6 @@ public sealed class AssessmentRecorder
             context.PlatformVersion,
             context.RecordedAtUtc,
             input,
-            result);
+            AssessmentResultSnapshot.Copy(result));
     }
 }
