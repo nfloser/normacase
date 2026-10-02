@@ -1,0 +1,101 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "packId": "synthetic.demo-e",
+    "releaseId": "demo-e-2026.1",
+    "lifecycleStatus": "ACTIVE",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-E-MULTI-OUTPUT"
+  },
+  "fields": [
+    { "id": "overall_ready", "type": "truth", "required": true },
+    { "id": "segment_a_ready", "type": "truth", "required": false },
+    { "id": "segment_b_ready", "type": "truth", "required": false },
+    { "id": "external_clearance", "type": "truth", "required": false }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-E-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic independent output source",
+      "documentType": "SYNTHETIC",
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-e/pack.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-E-MULTI-OUTPUT",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "sourceId": "SYNTH-DEMO-E-001",
+      "condition": {
+        "kind": "field_equals",
+        "field": "overall_ready",
+        "expected": "YES"
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED",
+      "onUnknown": "INCOMPLETE",
+      "outputs": [
+        {
+          "id": "primary_result",
+          "role": "DECISION",
+          "type": "code",
+          "allowedCodes": ["READY", "BLOCKED"],
+          "condition": {
+            "kind": "field_equals",
+            "field": "overall_ready",
+            "expected": "YES"
+          },
+          "onMatch": { "kind": "CODE", "code": "READY" },
+          "onNoMatch": { "kind": "CODE", "code": "BLOCKED" },
+          "onUnknown": { "kind": "UNKNOWN" }
+        },
+        {
+          "id": "next_step",
+          "role": "WORKFLOW",
+          "type": "code",
+          "allowedCodes": ["NONE", "EXTERNAL_REVIEW"],
+          "condition": {
+            "kind": "field_equals",
+            "field": "external_clearance",
+            "expected": "YES"
+          },
+          "onMatch": { "kind": "CODE", "code": "NONE" },
+          "onNoMatch": { "kind": "CODE", "code": "EXTERNAL_REVIEW" },
+          "onUnknown": { "kind": "CODE", "code": "EXTERNAL_REVIEW" }
+        },
+        {
+          "id": "segment_state",
+          "scope": "segment_a",
+          "role": "INFORMATION",
+          "type": "truth",
+          "condition": {
+            "kind": "field_equals",
+            "field": "segment_a_ready",
+            "expected": "YES"
+          },
+          "onMatch": { "kind": "TRUTH", "truth": "YES" },
+          "onNoMatch": { "kind": "TRUTH", "truth": "NO" },
+          "onUnknown": { "kind": "UNKNOWN" }
+        },
+        {
+          "id": "segment_state",
+          "scope": "segment_b",
+          "role": "INFORMATION",
+          "type": "truth",
+          "condition": {
+            "kind": "field_equals",
+            "field": "segment_b_ready",
+            "expected": "YES"
+          },
+          "onMatch": { "kind": "TRUTH", "truth": "YES" },
+          "onNoMatch": { "kind": "TRUTH", "truth": "NO" },
+          "onUnknown": { "kind": "UNKNOWN" }
+        }
+      ]
+    }
+  ]
+}
