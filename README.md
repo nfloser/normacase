@@ -38,6 +38,7 @@ knowledge/
   demo-b/                 numeric/range/temporal-version synthetic pack
   demo-c/                 evidence dependency and review synthetic pack
   demo-d/                 derived numeric expression synthetic pack
+  demo-e/                 independent domain-output synthetic pack
 
 docs/
   project/
@@ -61,7 +62,8 @@ The current core can:
 - gate criteria on structured evidence availability and escalate conflicts,
 - configure safe unknown outcomes as INCOMPLETE or HUMAN_REVIEW,
 - select a rule version from an explicit assessment date,
-- return source-backed recursive Decision Trace data.
+- return source-backed recursive Decision Trace data,
+- emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output.
 
 ## Local verification
 
