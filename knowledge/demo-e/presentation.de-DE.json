@@ -5,22 +5,75 @@
   "name": "Demo E – Mehrere Ergebnisse",
   "description": "Synthetisches Beispiel für unabhängige, quellengebundene Fachausgaben.",
   "fields": {
-    "gate_primary": { "label": "Hauptkriterium", "helpText": "Synthetische Ja/Nein-Angabe." },
-    "metric": { "label": "Kennzahl", "helpText": "Synthetischer Dezimalwert." },
-    "segment_alpha_ready": { "label": "Segment Alpha bereit", "helpText": "Optionaler Teilstatus." },
-    "segment_beta_ready": { "label": "Segment Beta bereit", "helpText": "Optionaler Teilstatus; kann unbekannt bleiben." },
-    "external_check_complete": { "label": "Externe Prüfung abgeschlossen", "helpText": "Bekanntes Nein führt zu einem expliziten extern offenen Zustand." }
+    "gate_primary": {
+      "label": "Hauptkriterium",
+      "helpText": "Synthetische Ja/Nein-Angabe."
+    },
+    "metric": {
+      "label": "Kennzahl",
+      "helpText": "Synthetischer Dezimalwert."
+    },
+    "segment_alpha_ready": {
+      "label": "Segment Alpha bereit",
+      "helpText": "Optionaler Teilstatus."
+    },
+    "segment_beta_ready": {
+      "label": "Segment Beta bereit",
+      "helpText": "Optionaler Teilstatus; kann unbekannt bleiben."
+    },
+    "external_check_complete": {
+      "label": "Externe Prüfung abgeschlossen",
+      "helpText": "Bekanntes Nein führt zu einem expliziten extern offenen Zustand."
+    }
   },
   "evidenceRequirements": {},
   "outputs": {
-    "decision_state": { "label": "Entscheidungsstatus" },
-    "selection_state": { "label": "Auswahlstatus" },
-    "segment_alpha": { "label": "Segment Alpha" },
-    "segment_beta": { "label": "Segment Beta" },
-    "external_state": { "label": "Externer Status" }
+    "decision_state": {
+      "label": "Entscheidungsstatus",
+      "choices": {
+        "ELIGIBLE": "Voraussetzungen erfüllt",
+        "NOT_ELIGIBLE": "Voraussetzungen nicht erfüllt"
+      }
+    },
+    "selection_state": {
+      "label": "Auswahlstatus",
+      "choices": {
+        "MODE_RED": "Modus Rot",
+        "MODE_BLUE": "Modus Blau"
+      }
+    },
+    "segment_alpha": {
+      "label": "Segment Alpha",
+      "choices": {
+        "OPEN": "Offen",
+        "CLOSED": "Geschlossen"
+      }
+    },
+    "segment_beta": {
+      "label": "Segment Beta",
+      "choices": {
+        "OPEN": "Offen",
+        "CLOSED": "Geschlossen"
+      }
+    },
+    "external_state": {
+      "label": "Externer Status",
+      "choices": {
+        "COMPLETE": "Abgeschlossen",
+        "PENDING_EXTERNAL": "Extern ausstehend"
+      }
+    }
   },
   "examples": [
-    { "id": "mixed", "label": "Bekannte und unbekannte Ausgaben", "caseFile": "demo-e-mixed.json" },
-    { "id": "partial", "label": "Teilweise Angaben", "caseFile": "demo-e-partial.json" }
+    {
+      "id": "mixed",
+      "label": "Bekannte und unbekannte Ausgaben",
+      "caseFile": "demo-e-mixed.json"
+    },
+    {
+      "id": "partial",
+      "label": "Teilweise Angaben",
+      "caseFile": "demo-e-partial.json"
+    }
   ]
 }
