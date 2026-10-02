@@ -32,6 +32,15 @@ NormaCase is a deterministic, auditable and modular decision-support platform fo
 - Do not introduce microservices, secondary databases or other infrastructure without demonstrated need.
 - Preferred baseline: .NET / ASP.NET Core, React + TypeScript, PostgreSQL and Docker.
 
+## Language and localization
+
+- All end-user-facing product surfaces default to German (`de-DE`). This includes navigation, buttons, forms, status and error messages, help text, review guidance, outcome presentation, human-readable audit views, reports and exports.
+- Use correct German MD/domain terminology. Do not introduce literal translations when an established German technical term exists; uncertain domain terminology requires review rather than invention.
+- Keep user-visible text localizable. Do not scatter hard-coded display strings through UI components or bind platform semantics to German labels.
+- Code, technical identifiers, APIs, core domain models and internal architecture names remain English.
+- Knowledge Packs use the language appropriate to their domain. MD-related packs are authored in German; source titles and citations remain in their authoritative/original language where appropriate.
+- Localization must not change deterministic rule semantics. Persist stable language-neutral identifiers and localize only their human-readable presentation.
+
 ## Knowledge governance
 
 Knowledge is versioned, source-bound, testable, reviewable and historically reproducible.
