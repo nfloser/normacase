@@ -49,12 +49,19 @@ test('the browser preserves decimal precision all the way into the trace',async(
  await page.goto('/');
  await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-b');
  await page.getByLabel('Prüfdatum').fill('2026-10-02');
+ await page.getByRole('combobox',{name:'Synthetischer Wert – Eingabestatus'}).selectOption('VALUE');
+ await page.getByRole('combobox',{name:'Bereichswert – Eingabestatus'}).selectOption('VALUE');
  await page.getByRole('textbox',{name:/Synthetischer Wert/}).fill('123456789,1234567890123456789');
  await page.getByRole('textbox',{name:/Bereichswert/}).fill('30');
  await page.getByRole('button',{name:'Jetzt prüfen'}).click();
  await expect(page.getByRole('heading',{name:'Voraussetzungen erfüllt'})).toBeVisible();
  await page.getByText('Technische Prüfspur anzeigen').click();
  await expect(page.locator('pre')).toContainText('123456789.1234567890123456789');
+ await page.getByRole('combobox',{name:'Synthetischer Wert – Eingabestatus'}).selectOption('UNKNOWN');
+ await expect(page.getByRole('textbox',{name:/Synthetischer Wert/})).toHaveCount(0);
+ await expect(page.getByRole('heading',{name:'Bereit für die erste Prüfung'})).toBeVisible();
+ await page.getByRole('button',{name:'Jetzt prüfen'}).click();
+ await expect(page.getByRole('heading',{name:'Angaben unvollständig'})).toBeVisible();
 });
 
 test('independent outputs keep UNKNOWN and the external pending state distinct',async({page})=>{
