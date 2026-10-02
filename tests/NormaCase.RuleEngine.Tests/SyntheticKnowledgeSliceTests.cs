@@ -122,6 +122,42 @@ public sealed class SyntheticKnowledgeSliceTests
     }
 
     [Fact]
+    public void Any_without_a_match_remains_unknown_when_one_branch_is_unknown()
+    {
+        var pack = LoadDemoPack();
+        var facts = new Dictionary<string, TruthValue>
+        {
+            ["criterion_a"] = TruthValue.Yes,
+            ["criterion_b"] = TruthValue.No
+        };
+
+        var result = _evaluator.Evaluate(
+            pack,
+            facts,
+            new DateOnly(2026, 10, 2));
+
+        Assert.Equal(AssessmentOutcome.Incomplete, result.Outcome);
+        Assert.Equal(ConditionResult.Unknown, result.RuleTrace!.ConditionResult);
+    }
+
+    [Fact]
+    public void Pack_with_missing_outcome_branch_is_rejected()
+    {
+        var json = File.ReadAllText(DemoPackPath())
+            .Replace(
+                "      \"onMatch\": \"SUPPORTED\",\n",
+                string.Empty,
+                StringComparison.Ordinal);
+
+        var exception = Assert.Throws<KnowledgeValidationException>(
+            () => _loader.LoadFromJson(json));
+
+        Assert.Contains(
+            exception.Errors,
+            error => error.Code == "missing_on_match");
+    }
+
+    [Fact]
     public void Assessment_date_is_explicit_and_no_rule_means_human_review()
     {
         var pack = LoadDemoPack();
