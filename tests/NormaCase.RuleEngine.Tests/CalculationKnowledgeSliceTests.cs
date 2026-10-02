@@ -53,6 +53,25 @@ public sealed class CalculationKnowledgeSliceTests
     }
 
     [Fact]
+    public void Lookup_input_outside_declared_coverage_fails_closed()
+    {
+        var result = Evaluate(
+            baseValue: 10m,
+            comparisonValue: 5m,
+            bandInput: 101m);
+
+        Assert.Equal(AssessmentOutcome.Incomplete, result.Outcome);
+
+        var band = result.Calculations.Single(item => item.Id == "band_score");
+        Assert.True(band.Result.IsUnknown);
+        Assert.Null(band.SelectedRange);
+
+        var total = result.Calculations.Single(item => item.Id == "combined_total");
+        Assert.True(total.Result.IsUnknown);
+        Assert.Equal(ConditionResult.Unknown, result.RuleTrace!.ConditionResult);
+    }
+
+    [Fact]
     public void Unknown_optional_input_propagates_through_max_and_rule()
     {
         var pack = LoadDemoPack();
