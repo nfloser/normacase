@@ -12,7 +12,8 @@ public sealed class KnowledgePackValidator
             "any",
             "field_equals",
             "number_gte",
-            "number_in_range"
+            "number_in_range",
+            "evidence_present"
         };
 
     private static readonly HashSet<string> AllowedFieldTypes =
@@ -56,6 +57,36 @@ public sealed class KnowledgePackValidator
             }
         }
 
+        var evidenceRequirements = ValidateUniqueIds(
+            pack.EvidenceRequirements,
+            evidence => evidence.Id,
+            "evidence_requirement",
+            errors);
+
+        foreach (var evidence in pack.EvidenceRequirements)
+        {
+            Require(
+                evidence.Description,
+                $"evidenceRequirements.{evidence.Id}.description",
+                errors);
+
+            if (evidence.MissingOutcome is null)
+            {
+                errors.Add(new(
+                    "missing_evidence_outcome",
+                    $"Evidence requirement '{evidence.Id}' must define missingOutcome.",
+                    $"evidenceRequirements.{evidence.Id}.missingOutcome"));
+            }
+            else if (evidence.MissingOutcome is not AssessmentOutcome.Incomplete
+                and not AssessmentOutcome.HumanReview)
+            {
+                errors.Add(new(
+                    "invalid_missing_evidence_outcome",
+                    $"Evidence requirement '{evidence.Id}' may only use INCOMPLETE or HUMAN_REVIEW when evidence is missing.",
+                    $"evidenceRequirements.{evidence.Id}.missingOutcome"));
+            }
+        }
+
         var sources = ValidateUniqueIds(
             pack.Sources,
             source => source.Id,
@@ -69,7 +100,12 @@ public sealed class KnowledgePackValidator
             Require(source.DocumentType, $"sources.{source.Id}.documentType", errors);
         }
 
-        var rules = ValidateRules(pack, fields, sources, errors);
+        var rules = ValidateRules(
+            pack,
+            fields,
+            evidenceRequirements,
+            sources,
+            errors);
 
         if (!string.IsNullOrWhiteSpace(pack.Manifest.EntryRuleId)
             && !rules.Any(rule => string.Equals(
@@ -151,6 +187,7 @@ public sealed class KnowledgePackValidator
     private static List<RuleDefinition> ValidateRules(
         KnowledgePack pack,
         IReadOnlyDictionary<string, FieldDefinition> fields,
+        IReadOnlyDictionary<string, EvidenceRequirementDefinition> evidenceRequirements,
         IReadOnlyDictionary<string, SourceDefinition> sources,
         ICollection<KnowledgeValidationError> errors)
     {
@@ -214,7 +251,12 @@ public sealed class KnowledgePackValidator
                     $"{path}.onNoMatch"));
             }
 
-            ValidateCondition(rule.Condition, fields, errors, $"{path}.condition");
+            ValidateCondition(
+                rule.Condition,
+                fields,
+                evidenceRequirements,
+                errors,
+                $"{path}.condition");
         }
 
         return rules;
@@ -223,6 +265,7 @@ public sealed class KnowledgePackValidator
     private static void ValidateCondition(
         ConditionDefinition condition,
         IReadOnlyDictionary<string, FieldDefinition> fields,
+        IReadOnlyDictionary<string, EvidenceRequirementDefinition> evidenceRequirements,
         ICollection<KnowledgeValidationError> errors,
         string path)
     {
@@ -251,8 +294,39 @@ public sealed class KnowledgePackValidator
                 ValidateCondition(
                     condition.Conditions[index],
                     fields,
+                    evidenceRequirements,
                     errors,
                     $"{path}.conditions[{index}]");
+            }
+
+            return;
+        }
+
+        if (condition.Kind == "evidence_present")
+        {
+            if (string.IsNullOrWhiteSpace(condition.EvidenceId)
+                || !evidenceRequirements.ContainsKey(condition.EvidenceId))
+            {
+                errors.Add(new(
+                    "missing_evidence_requirement",
+                    $"Condition references unknown evidence requirement '{condition.EvidenceId}'.",
+                    $"{path}.evidenceId"));
+            }
+
+            if (!string.IsNullOrWhiteSpace(condition.Field))
+            {
+                errors.Add(new(
+                    "evidence_condition_has_field",
+                    "evidence_present cannot reference a case field.",
+                    $"{path}.field"));
+            }
+
+            if (condition.Conditions.Count > 0)
+            {
+                errors.Add(new(
+                    "leaf_has_children",
+                    "evidence_present cannot contain child conditions.",
+                    $"{path}.conditions"));
             }
 
             return;
