@@ -118,7 +118,7 @@ The first supported output type is `choice`. Each output version declares:
 
 Active output versions are selected using the same explicit assessment date as the entry rule. Outputs are evaluated independently, so one unknown output does not erase known sibling outputs. There is deliberately no output precedence, override mechanism or output-to-output dependency.
 
-Every `DomainOutputTrace` records output id/version, selected value, condition result/tree and a detached snapshot of the exact source revision. Demo E proves four independent synthetic outputs, including sibling segment states where one can remain UNKNOWN while the assessment and other outputs are known.
+Every `DomainOutputTrace` records output id/version, selected value, condition result/tree and a detached snapshot of the exact source revision. Demo E proves five independent synthetic outputs: bounded decision/selection states, sibling segment states where one can remain UNKNOWN, and an explicit `PENDING_EXTERNAL` state that remains distinct from UNKNOWN.
 
 ## Temporal rule versions
 
