@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <ProjectReference Include="../NormaCase.Application/NormaCase.Application.csproj" />
     <ProjectReference Include="../NormaCase.Domain/NormaCase.Domain.csproj" />
     <ProjectReference Include="../NormaCase.RuleEngine/NormaCase.RuleEngine.csproj" />
   </ItemGroup>
