@@ -105,6 +105,65 @@ public sealed class CliRunnerTests
         Assert.Equal(first.ToString(), second.ToString());
     }
 
+    [Theory]
+    [InlineData("manifest")]
+    [InlineData("fields")]
+    [InlineData("sources")]
+    [InlineData("rules")]
+    public void Null_required_pack_sections_fail_as_input_errors(string property)
+    {
+        var node = JsonNode.Parse(File.ReadAllText(PackPath("demo-a")))!;
+        node[property] = null;
+        AssertPackRejected(node.ToJsonString());
+    }
+
+    [Fact]
+    public void Null_nested_pack_entries_are_rejected()
+    {
+        var node = JsonNode.Parse(File.ReadAllText(PackPath("demo-a")))!;
+        node["rules"]![0]!["condition"]!["conditions"]!.AsArray().Add((JsonNode?)null);
+        AssertPackRejected(node.ToJsonString());
+    }
+
+    [Fact]
+    public void Unknown_pack_members_and_numeric_outcomes_are_rejected()
+    {
+        var node = JsonNode.Parse(File.ReadAllText(PackPath("demo-a")))!;
+        node["secret_synthetic_marker"] = true;
+        AssertPackRejected(node.ToJsonString());
+        node.AsObject().Remove("secret_synthetic_marker");
+        node["rules"]![0]!["onMatch"] = 0;
+        AssertPackRejected(node.ToJsonString());
+    }
+
+    [Fact]
+    public void Case_insensitive_duplicate_pack_properties_are_rejected()
+    {
+        var json = File.ReadAllText(PackPath("demo-a"));
+        AssertPackRejected(json.Replace("\"formatVersion\": 1", "\"formatVersion\": 1, \"FormatVersion\": 1"));
+    }
+
+    private static void AssertPackRejected(string json)
+    {
+        var path = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllText(path, json);
+            using var output = new StringWriter();
+            using var error = new StringWriter();
+            var args = Args("demo-a", CasePath("demo-a-supported"));
+            args[2] = path;
+            Assert.Equal(2, CliRunner.Run(args, output, error));
+            Assert.Equal("", output.ToString());
+            Assert.Contains("ungültig", error.ToString());
+            Assert.DoesNotContain("secret_synthetic_marker", error.ToString());
+            Assert.DoesNotContain(path, error.ToString());
+        }
+        finally { File.Delete(path); }
+    }
+
+    private static string PackPath(string demo) => Path.Combine(AppContext.BaseDirectory, "Fixtures", demo + "-pack.json");
+
     private static void AssertRejected(string json)
     {
         var path = Path.GetTempFileName();

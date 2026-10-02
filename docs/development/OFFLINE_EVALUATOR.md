@@ -50,3 +50,9 @@ Tests:
 dotnet test tests/NormaCase.Cli.Tests --configuration Release
 dotnet test tests/NormaCase.Serialization.Tests --configuration Release
 ```
+
+Der Knowledge-Pack-Import weist unbekannte oder doppelte JSON-Eigenschaften,
+numerische Enum-Werte sowie Null-Einträge in Arrays und erforderlichen Objekten
+ab. Doppelte Namen sind auch bei abweichender Groß-/Kleinschreibung ungültig.
+Optionale skalare Quellenmetadaten dürfen weiterhin null sein. JSON-Importfehler
+werden als Eingabefehler gemeldet, ohne Parser-/Validator-Inhalte zu protokollieren.
