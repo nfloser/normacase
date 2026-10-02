@@ -143,3 +143,13 @@ jobs:
           name: workbench-browser-results
           path: frontend/test-results
           retention-days: 7
+
+  assessments:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet test tests/NormaCase.Assessments.Tests --configuration Release
