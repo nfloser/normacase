@@ -1,5 +1,6 @@
 using NormaCase.Domain.Decision;
 using NormaCase.Knowledge.Model;
+using NormaCase.Knowledge.Workflow;
 
 namespace NormaCase.Knowledge.Validation;
 
@@ -102,6 +103,7 @@ public sealed class KnowledgePackValidator
         var evidence = ValidateUniqueIds(pack.EvidenceRequirements, item => item.Id, "evidence_requirement", errors);
         var rules = ValidateRules(pack, fields, sources, evidence, errors);
         var outputs = ValidateDomainOutputs(pack.Outputs, fields, sources, evidence, errors);
+        ValidateWorkflows(pack.Workflows, sources, errors);
 
         if (!string.IsNullOrWhiteSpace(pack.Manifest.EntryRuleId)
             && !rules.Any(rule => string.Equals(
@@ -197,6 +199,44 @@ public sealed class KnowledgePackValidator
         }
 
         return result;
+    }
+
+    private static void ValidateWorkflows(
+        IReadOnlyList<KnowledgeWorkflowDefinition> workflows,
+        IReadOnlyDictionary<string, SourceDefinition> sources,
+        ICollection<KnowledgeValidationError> errors)
+    {
+        ValidateUniqueIds(
+            workflows,
+            workflow => workflow.Id,
+            "workflow",
+            errors);
+
+        foreach (var workflow in workflows)
+        {
+            var path = $"workflows.{workflow.Id}";
+
+            if (string.IsNullOrWhiteSpace(workflow.SourceId)
+                || !sources.ContainsKey(workflow.SourceId))
+            {
+                errors.Add(new(
+                    "missing_workflow_source",
+                    $"Workflow '{workflow.Id}' references unknown source '{workflow.SourceId}'.",
+                    $"{path}.sourceId"));
+            }
+
+            try
+            {
+                _ = KnowledgeWorkflowMaterializer.Materialize(workflow);
+            }
+            catch (ArgumentException)
+            {
+                errors.Add(new(
+                    "invalid_workflow_definition",
+                    $"Workflow '{workflow.Id}' has an invalid state/transition definition.",
+                    path));
+            }
+        }
     }
 
     private static List<DomainOutputDefinition> ValidateDomainOutputs(

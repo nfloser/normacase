@@ -125,6 +125,64 @@ Active output versions are selected using the same explicit assessment date as t
 
 Every `DomainOutputTrace` records output id/version, selected value, condition result/tree and a detached snapshot of the exact source revision. Demo E proves five independent synthetic outputs: bounded decision/selection states, sibling segment states where one can remain UNKNOWN, and an explicit `PENDING_EXTERNAL` state that remains distinct from UNKNOWN.
 
+
+## Workflow definitions
+
+A Knowledge Pack may optionally declare source-bound generic workflow definitions.
+Workflow data configures the platform lifecycle mechanics; it does not add executable
+code and it does not automatically react to assessment outcomes.
+
+Example:
+
+```json
+{
+  "workflows": [
+    {
+      "id": "synthetic.review-flow",
+      "version": 1,
+      "sourceId": "SYNTH-SOURCE-001",
+      "initialStateId": "submitted",
+      "states": [
+        { "id": "submitted", "terminal": false },
+        { "id": "review", "terminal": false },
+        { "id": "complete", "terminal": true }
+      ],
+      "transitions": [
+        {
+          "id": "request_review",
+          "fromStateId": "submitted",
+          "toStateId": "review"
+        },
+        {
+          "id": "complete_review",
+          "fromStateId": "review",
+          "toStateId": "complete"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Each workflow requires:
+- a stable id unique within the Knowledge Release,
+- a positive version,
+- a `sourceId` that resolves to a declared pack source,
+- one declared initial state,
+- declared state ids with an explicit terminal flag,
+- declared transition ids with explicit from/to states.
+
+The Knowledge validator materializes each definition through the same
+`NormaCase.Domain.Workflow.WorkflowDefinition` contract used at runtime. Invalid
+graphs therefore fail pack loading rather than being partially accepted. This covers
+duplicate state/transition ids, undeclared state references, missing initial states
+and outgoing transitions from terminal states.
+
+State and transition ids remain opaque technical identifiers. User-facing labels
+belong in presentation metadata. A later slice may connect workflow definitions to
+workflow instances, persistence and UI, but no transition is inferred or triggered
+by an assessment outcome in the current format.
+
 ## Temporal rule versions
 
 Rules carry `validFrom` and optional `validUntil`.
