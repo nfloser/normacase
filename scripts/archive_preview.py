@@ -42,9 +42,9 @@ def main() -> None:
     digest = hashlib.sha256(archive.read_bytes()).hexdigest()
     sidecar = archive.with_name(archive.name + ".sha256")
     sidecar.write_text(
-        f"{digest}  {archive.name}\\n",
+        f"{digest}  {archive.name}\n",
         encoding="utf-8",
-        newline="\\n",
+        newline="\n",
     )
 
 
