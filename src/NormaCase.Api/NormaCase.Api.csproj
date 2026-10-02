@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../NormaCase.Serialization/NormaCase.Serialization.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../knowledge/demo-a/pack.json" Link="Knowledge/demo-a.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../knowledge/demo-b/pack.json" Link="Knowledge/demo-b.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../knowledge/demo-c/pack.json" Link="Knowledge/demo-c.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../knowledge/demo-d/pack.json" Link="Knowledge/demo-d.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
