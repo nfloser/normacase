@@ -15,7 +15,10 @@ evaluation in an `AssessmentRecord` containing:
 
 ## Canonical input snapshot
 
-Before the record is returned, mutable caller dictionaries are copied. Every field
+Before the record is returned, mutable caller dictionaries are copied. The evaluator
+result is also detached recursively: missing-field lists, domain-output lists and
+nested condition/expression children are copied into read-only collections so an
+engine-owned array cannot become mutable historical state. Every field
 declared by the Knowledge Pack is represented in the snapshot. An omitted field is
 stored as explicit `UNKNOWN`; an omitted evidence requirement is stored as
 `MISSING`.
