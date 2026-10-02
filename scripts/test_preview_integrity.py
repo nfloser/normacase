@@ -18,7 +18,11 @@ class PreviewIntegrityTests(unittest.TestCase):
             bundle.writestr("preview.json", json.dumps(manifest))
             bundle.writestr("api/fixture", content)
             if extra is not None:
-                bundle.writestr(extra, "synthetic addition")
+                # ZipInfo normalizes the native Windows separator at construction.
+                # Preserve malicious bytes as they would arrive in an imported ZIP.
+                entry = zipfile.ZipInfo(extra)
+                entry.filename = extra
+                bundle.writestr(entry, "synthetic addition")
         target = directory / "target"
         target.mkdir()
         return archive, target
