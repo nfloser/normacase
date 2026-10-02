@@ -35,6 +35,8 @@ Knowledge Packs are data, not executable extensions. They may define schemas, de
 
 The platform interprets a bounded declarative rule model.
 
+Deterministic derived values are also Knowledge-defined data, not application preprocessing. Numeric transformations are intentionally limited to validated operations such as range lookup, sum and max. Calculations execute in explicit dependency order, propagate UNKNOWN, and are recorded in the assessment trace before rule evaluation.
+
 ## Versioning
 
 Evaluation receives the assessment date and Knowledge Release explicitly. Temporal rule selection is deterministic and testable.
