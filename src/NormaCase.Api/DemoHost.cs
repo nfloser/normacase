@@ -28,6 +28,7 @@ public static class DemoHost
             .ToDictionary(pack => pack.Manifest.PackId, StringComparer.Ordinal);
         if (packs.Count == 0 || packs.Values.Any(pack => pack.Manifest.ValidationLevel != "SYNTHETIC"))
             throw new InvalidOperationException("Local demo catalog must contain synthetic knowledge only.");
+        var presentations = PresentationCatalog.Load(packs);
         var platformVersion = typeof(DemoHost).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         var app = builder.Build();
 
@@ -56,14 +57,58 @@ public static class DemoHost
         });
 
         app.MapGet("/api/packs", () => packs.Values.OrderBy(pack => pack.Manifest.PackId, StringComparer.Ordinal)
-            .Select(pack => new
+            .Select(pack =>
             {
-                packId = pack.Manifest.PackId,
-                releaseId = pack.Manifest.ReleaseId,
-                validationLevel = pack.Manifest.ValidationLevel,
-                fields = pack.Fields.Select(field => new { id = field.Id, type = field.Type, required = field.Required }).ToArray(),
-                evidenceRequirements = pack.EvidenceRequirements.Select(item => item.Id).ToArray()
+                var presentation = presentations[pack.Manifest.PackId];
+                return new
+                {
+                    packId = pack.Manifest.PackId,
+                    releaseId = pack.Manifest.ReleaseId,
+                    validationLevel = pack.Manifest.ValidationLevel,
+                    presentation = new
+                    {
+                        locale = presentation.Locale,
+                        name = presentation.Name,
+                        description = presentation.Description,
+                        outputs = presentation.Outputs
+                            .OrderBy(item => item.Key, StringComparer.Ordinal)
+                            .Select(item => new { id = item.Key, label = item.Value.Label })
+                            .ToArray(),
+                        examples = presentation.Examples
+                            .Select(item => new { id = item.Id, label = item.Label })
+                            .ToArray()
+                    },
+                    fields = pack.Fields.Select(field =>
+                    {
+                        var text = presentation.Fields[field.Id];
+                        return new
+                        {
+                            id = field.Id,
+                            type = field.Type,
+                            required = field.Required,
+                            label = text.Label,
+                            helpText = text.HelpText
+                        };
+                    }).ToArray(),
+                    evidenceRequirements = pack.EvidenceRequirements.Select(item =>
+                    {
+                        var text = presentation.EvidenceRequirements[item.Id];
+                        return new { id = item.Id, label = text.Label, helpText = text.HelpText };
+                    }).ToArray()
+                };
             }).ToArray());
+
+        app.MapGet("/api/packs/{packId}/examples/{exampleId}", (string packId, string exampleId) =>
+        {
+            if (!presentations.TryGetValue(packId, out var presentation))
+                return Error("unknown_pack", 404);
+
+            var example = presentation.Examples.SingleOrDefault(
+                item => string.Equals(item.Id, exampleId, StringComparison.Ordinal));
+            return example is null
+                ? Error("unknown_example", 404)
+                : Results.Content(example.Json, "application/json", Encoding.UTF8);
+        });
 
         app.MapPost("/api/assessments/{packId}", async (string packId, HttpRequest request) =>
         {
