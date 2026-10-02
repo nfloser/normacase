@@ -6,9 +6,9 @@ namespace NormaCase.Domain.Decision;
 /// </summary>
 public enum AssessmentOutcome
 {
-    Supported = 0,
-    NotSupported = 1,
-    Incomplete = 2,
-    HumanReview = 3,
+    Incomplete = 0,
+    HumanReview = 1,
+    Supported = 2,
+    NotSupported = 3,
     NotApplicable = 4
 }
