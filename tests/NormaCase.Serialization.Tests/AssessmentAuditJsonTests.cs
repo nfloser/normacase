@@ -48,6 +48,10 @@ public sealed class AssessmentAuditJsonTests
     [InlineData("unknown")]
     [InlineData("missing")]
     [InlineData("null")]
+    [InlineData("missing-optional")]
+    [InlineData("event-offset")]
+    [InlineData("first-kind")]
+    [InlineData("zero-time")]
     public void Inconsistent_or_ambiguous_history_is_rejected(string mutation)
     {
         var node = JsonNode.Parse(AssessmentAuditJson.Serialize(Sample()))!;
@@ -77,6 +81,10 @@ public sealed class AssessmentAuditJsonTests
             case "unknown": review["extra"] = true; break;
             case "missing": review.AsObject().Remove("reason"); break;
             case "null": node["events"] = null; break;
+            case "missing-optional": review.AsObject().Remove("reference"); break;
+            case "event-offset": events[2]!["occurredAt"] = "2026-10-03T00:02:00+02:00"; break;
+            case "first-kind": events.RemoveAt(0); events[0]!["sequence"] = 1; break;
+            case "zero-time": events[0]!["occurredAt"] = "0001-01-01T00:00:00+00:00"; break;
         }
         Assert.Throws<JsonException>(() => AssessmentAuditJson.Deserialize(node.ToJsonString()));
     }
@@ -89,6 +97,15 @@ public sealed class AssessmentAuditJsonTests
             json.Replace("\"formatVersion\":1", "\"formatVersion\":1,\"formatVersion\":1")));
         Assert.Throws<JsonException>(() => AssessmentAuditJson.Deserialize(
             "{\"formatVersion\":1,\"events\":[null]}"));
+    }
+
+    [Fact]
+    public void Creation_only_history_is_valid()
+    {
+        var trail = AssessmentAuditTrail.Start(Sample().Events[0]);
+        var json = AssessmentAuditJson.Serialize(trail);
+        Assert.Equal(json, AssessmentAuditJson.Serialize(AssessmentAuditJson.Deserialize(json)));
+        Assert.Single(trail.Events);
     }
 
     private static AssessmentAuditTrail Sample()
