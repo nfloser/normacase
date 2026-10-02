@@ -48,7 +48,7 @@ export function buildCaseJson(
 
 export function emptyValues(pack: PackCatalogItem): Record<string, string> {
   return Object.fromEntries(
-    pack.fields.map((field) => [field.id, field.type === "truth" ? "UNKNOWN" : ""])
+    pack.fields.map((field) => [field.id, "UNKNOWN"])
   );
 }
 
