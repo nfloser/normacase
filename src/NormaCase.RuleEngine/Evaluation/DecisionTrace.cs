@@ -11,6 +11,8 @@ public sealed record ConditionTrace(
     CaseValue? Actual,
     decimal? Minimum,
     decimal? Maximum,
+    string? EvidenceId,
+    AssessmentOutcome? MissingEvidenceOutcome,
     IReadOnlyList<ConditionTrace> Children);
 
 public sealed record RuleTrace(
