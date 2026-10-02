@@ -23,6 +23,8 @@ Ein unvollständiges Ergebnis ist kein technischer Programmfehler.</value></data
   <data name="Rule" xml:space="preserve"><value>Regelreferenz</value></data>
   <data name="Source" xml:space="preserve"><value>Quellenreferenz</value></data>
   <data name="Missing" xml:space="preserve"><value>Feldreferenzen fehlender Pflichtangaben</value></data>
+  <data name="DomainOutputs" xml:space="preserve"><value>Fachliche Ausgaben</value></data>
+  <data name="UnknownOutput" xml:space="preserve"><value>Nicht ausreichend beurteilbar</value></data>
   <data name="Supported" xml:space="preserve"><value>Voraussetzungen erfüllt</value></data>
   <data name="NotSupported" xml:space="preserve"><value>Voraussetzungen nicht erfüllt</value></data>
   <data name="Incomplete" xml:space="preserve"><value>Angaben unvollständig</value></data>
