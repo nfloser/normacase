@@ -188,6 +188,22 @@ public sealed class KnowledgePackValidator
                     $"{path}.sourceId"));
             }
 
+            if (rule.OnMatch is null)
+            {
+                errors.Add(new(
+                    "missing_on_match",
+                    $"Rule '{identity}' must define onMatch.",
+                    $"{path}.onMatch"));
+            }
+
+            if (rule.OnNoMatch is null)
+            {
+                errors.Add(new(
+                    "missing_on_no_match",
+                    $"Rule '{identity}' must define onNoMatch.",
+                    $"{path}.onNoMatch"));
+            }
+
             ValidateCondition(rule.Condition, fields, errors, $"{path}.condition");
         }
 
