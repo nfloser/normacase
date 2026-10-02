@@ -16,6 +16,7 @@ public sealed class AssessmentJsonTests
     [InlineData("demo-a")]
     [InlineData("demo-b")]
     [InlineData("demo-c")]
+    [InlineData("demo-e")]
     public void Entire_evaluated_assessment_roundtrips_without_changing_values(string demo)
     {
         var result = Evaluate(demo);
@@ -26,6 +27,17 @@ public sealed class AssessmentJsonTests
         Assert.Equal(json, AssessmentJson.Serialize(restored.Assessment, restored.PlatformVersion));
         Assert.Equal(result.RuleTrace!.Source, restored.Assessment.RuleTrace!.Source);
         Assert.Equal(result.RuleTrace.Condition.Children[0].Actual, restored.Assessment.RuleTrace.Condition.Children[0].Actual);
+        Assert.Equal(result.Outputs, restored.Assessment.Outputs);
+    }
+
+    [Fact]
+    public void Structured_output_value_shapes_are_strictly_validated()
+    {
+        var result = Evaluate("demo-e");
+        var node = JsonNode.Parse(AssessmentJson.Serialize(result, "1"))!;
+        node["assessment"]!["outputs"]![0]!["value"]!["unexpected"] = true;
+
+        Assert.Throws<JsonException>(() => AssessmentJson.Deserialize(node.ToJsonString()));
     }
 
     [Theory]
@@ -139,7 +151,15 @@ public sealed class AssessmentJsonTests
         {
             "demo-a" => new Dictionary<string, CaseValue> { ["criterion_a"] = TruthValue.Yes, ["criterion_b"] = TruthValue.No },
             "demo-b" => new Dictionary<string, CaseValue> { ["score"] = 12.123456789m, ["band_value"] = 30m },
-            _ => new Dictionary<string, CaseValue> { ["request_confirmed"] = TruthValue.Yes, ["measurement"] = 15m }
+            "demo-c" => new Dictionary<string, CaseValue> { ["request_confirmed"] = TruthValue.Yes, ["measurement"] = 15m },
+            "demo-e" => new Dictionary<string, CaseValue>
+            {
+                ["overall_ready"] = TruthValue.Yes,
+                ["segment_a_ready"] = TruthValue.Yes,
+                ["segment_b_ready"] = CaseValue.Unknown,
+                ["external_clearance"] = CaseValue.Unknown
+            },
+            _ => throw new ArgumentOutOfRangeException(nameof(demo))
         };
         var evidence = demo == "demo-c"
             ? new Dictionary<string, EvidenceStatus> { ["verification"] = EvidenceStatus.Present }
