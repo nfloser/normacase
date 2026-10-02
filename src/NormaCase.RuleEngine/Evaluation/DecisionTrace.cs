@@ -26,6 +26,14 @@ public sealed record NumericExpressionTrace(
     decimal? SelectedValue,
     IReadOnlyList<NumericExpressionTrace> Children);
 
+public sealed record DomainOutputTrace(
+    string OutputId,
+    int OutputVersion,
+    DomainOutputValue Value,
+    ConditionResult ConditionResult,
+    ConditionTrace Condition,
+    SourceTrace Source);
+
 public sealed record RuleTrace(
     string RuleId,
     int RuleVersion,
