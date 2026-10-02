@@ -1,4 +1,5 @@
 using NormaCase.Domain.Decision;
+using Xunit;
 
 namespace NormaCase.Domain.Tests.Decision;
 
