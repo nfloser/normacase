@@ -11,8 +11,9 @@ Current repository examples:
 - `knowledge/demo-b/pack.json`: numeric thresholds, inclusive ranges and temporal rule versions.
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
 - `knowledge/demo-d/pack.json`: derived numeric expressions with range lookup, sum, max and UNKNOWN propagation.
+- `knowledge/demo-e/pack.json`: independent typed assessment outputs with scoped UNKNOWN values and workflow actions.
 
-All four packs are `SYNTHETIC`.
+All five packs are `SYNTHETIC`.
 
 ## Manifest
 
@@ -102,6 +103,25 @@ Demo D proves this capability with synthetic scoring data only; it does not enco
 - `any`: any matched child -> matched; otherwise any unknown -> unknown; otherwise not matched.
 - unknown final condition -> `INCOMPLETE`.
 
+## Structured assessment outputs
+
+Rules may optionally emit multiple structured outputs in addition to the platform-level `AssessmentOutcome`. Outputs do not replace `SUPPORTED`, `NOT_SUPPORTED`, `INCOMPLETE` or `HUMAN_REVIEW`; they carry separate bounded domain/workflow information.
+
+Each output declares:
+- a stable `id` and optional `scope`; the pair is unique within a rule,
+- one generic role: `DECISION`, `WORKFLOW` or `INFORMATION`,
+- one value type: `truth`, `number` or `code`,
+- its own bounded condition,
+- explicit `onMatch`, `onNoMatch` and `onUnknown` values.
+
+Output values use `UNKNOWN`, `TRUTH`, `NUMBER` or `CODE`. A code output must declare a finite non-empty `allowedCodes` set, and every emitted code must belong to it. Truth/number outputs may not declare code lists. Invalid or ambiguous value shapes fail Knowledge Pack validation.
+
+`UNKNOWN` is a first-class value for each output. An unknown output condition is never converted to a negative value unless the Knowledge Pack explicitly maps that branch to a bounded non-unknown workflow value. This allows, for example, a deterministic workflow output to request external review while another independently scoped informational output remains unknown.
+
+Every emitted output trace contains the producing rule id/version, its evaluated condition trace and the same detached source-revision snapshot used by the rule trace. The core contains no domain-specific output names.
+
+Demo E proves that one assessment can simultaneously produce a decision code, a workflow action and two independently scoped values with the same output id, one known and one UNKNOWN.
+
 ## Temporal rule versions
 
 Rules carry `validFrom` and optional `validUntil`.
@@ -121,7 +141,8 @@ An evaluation result records:
 - recursive condition trace,
 - typed actual/expected values or numeric range bounds,
 - recursive derived numeric-expression traces where used,
-- final outcome.
+- final outcome,
+- zero or more independent structured outputs, each with its own condition trace and source/rule provenance.
 
 This is the current base for Source -> Rule -> Test traceability.
 
