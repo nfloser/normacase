@@ -15,7 +15,7 @@ namespace NormaCase.Api;
 
 internal static class ReviewDemoEndpoints
 {
-    private sealed record Submission(string AssessmentId, string ReviewId, string CaseRevision, string ProcessRevision,
+    private sealed record Submission(string AssessmentId, string CaseRevision, string ProcessRevision,
         string AuditRevision, string Disposition, string Reason, string? OverrideOutcome = null);
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -27,8 +27,6 @@ internal static class ReviewDemoEndpoints
     {
         var workload = SyntheticWorkload.Create(packs, platformVersion, review: true);
         var repository = app.Services.GetRequiredService<IReviewDemoRepository>();
-        app.UseAuthentication();
-        app.UseAuthorization();
         app.MapGet("/api/work-queues", async (CancellationToken token) =>
         {
             try
@@ -89,7 +87,7 @@ internal static class ReviewDemoEndpoints
                 var seed = workload.Cases.SingleOrDefault(item => item.Process.CaseId.Value == caseId);
                 if (seed?.Assessment is null) return DemoHost.Error("review_denied", 403);
                 await repository.GetAsync(seed, workload, token);
-                var actor = new AuthenticatedReviewActor(principal.FindFirstValue(ClaimTypes.NameIdentifier)!, principal.FindFirstValue("review_authority")!);
+                var actor = SyntheticReviewAuthentication.ResolveActor(principal);
                 var disposition = submission.Disposition switch
                 {
                     "ACCEPT_SYSTEM_RESULT" => HumanReviewDisposition.AcceptSystemResult,
@@ -102,7 +100,7 @@ internal static class ReviewDemoEndpoints
                     
                     "NOT_APPLICABLE" => AssessmentOutcome.NotApplicable, _ => throw new JsonException("Unknown outcome.")
                 };
-                if (submission.Reason.Length > 2000 || submission.ReviewId.Length > 100 || submission.AssessmentId.Length > 100)
+                if (submission.Reason.Length > 2000 || submission.AssessmentId.Length > 100)
                     throw new JsonException("Submission exceeds limits.");
                 var current = await repository.GetAsync(seed, workload, token);
                 var transitions = new Dictionary<HumanReviewDisposition, string>();
@@ -110,7 +108,7 @@ internal static class ReviewDemoEndpoints
                 { transitions[HumanReviewDisposition.AcceptSystemResult] = "accept-result"; transitions[HumanReviewDisposition.Override] = "override-ready"; }
                 if (current.Process.StateId == "manual-review") transitions[HumanReviewDisposition.Override] = "override-review";
                 var policy = new CaseReviewPolicy("synthetic-local-review-" + current.Process.StateId, 1, workload.Workflow.Id, workload.Workflow.Version, transitions);
-                var command = new CaseReviewCommand(new(caseId), new(submission.AssessmentId), new(submission.ReviewId),
+                var command = new CaseReviewCommand(new(caseId), new(submission.AssessmentId), new(Guid.NewGuid().ToString("D")),
                     Revision(submission.CaseRevision), Revision(submission.ProcessRevision), Revision(submission.AuditRevision),
                     app.Services.GetRequiredService<TimeProvider>().GetUtcNow(), disposition, submission.Reason, outcome);
                 await new CaseReviewService(repository, new Authorizer(workload)).ReviewAsync(actor, command, workload.Workflow, policy, token);

@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 async function login(page){
   await page.goto('/');
   const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
-  await queues.getByLabel('Lokaler Demo-Zugangsschlüssel').fill('a'.repeat(64));
+  await queues.getByLabel('Lokaler Demo-Zugangsschlüssel').fill(Buffer.alloc(32,0xaa).toString('base64'));
   await queues.getByRole('button',{name:'Demo-Zugang öffnen',exact:true}).click();
   await expect(queues.getByRole('button',{name:'Demo-Zugang schließen',exact:true})).toBeVisible();
   await expect(queues.getByLabel('Lokaler Demo-Zugangsschlüssel')).toHaveCount(0);

@@ -27,13 +27,14 @@ die native Vorschau enthält ihre .NET-Laufzeit bereits.
 
 ## Linux oder manuelle Konfiguration
 
-Erzeuge zwei verschiedene 256-Bit-Hexwerte mit einem lokalen kryptografischen Generator.
-Setze `NORMACASE_REVIEW_DB_PASSWORD` und `NORMACASE_REVIEW_DEMO_KEY` in deiner lokalen
+Erzeuge zwei verschiedene 256-Bit-Werte mit einem lokalen kryptografischen Generator.
+Setze `NORMACASE_REVIEW_DB_PASSWORD` (Hex) und `SyntheticReview__Credential`
+(kanonisches Base64, 44 Zeichen inklusive Padding) in deiner lokalen
 Umgebung außerhalb von Git und behalte das Datenbankkennwort für Folgestarts bei.
 
 ```bash
 docker compose -f compose.review-demo.yml up -d --wait
-export NORMACASE_REVIEW_DEMO=1
+export SyntheticReview__Enabled=true
 export NORMACASE_REVIEW_DEMO_CONNECTION="Host=127.0.0.1;Port=54329;Database=normacase_review_demo;Username=normacase_demo;Password=$NORMACASE_REVIEW_DB_PASSWORD"
 ./api/NormaCase.Api
 ```

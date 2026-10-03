@@ -15,14 +15,14 @@ namespace NormaCase.Api.Tests;
 
 public sealed class ReviewDemoTests
 {
-    private const string Key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    private static readonly string Key = Convert.ToBase64String(Enumerable.Repeat((byte)0xaa, 32).ToArray());
     [Fact]
     public async Task Missing_invalid_and_query_credentials_do_not_authenticate()
     {
         await using var app = Build(); await app.StartAsync(); using var client = app.GetTestClient();
         foreach (var path in new[] { "/api/work-queues", "/api/work-cases/demo-g-supported", "/api/work-queues?key=" + Key })
             Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(path)).StatusCode);
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", new string('b', 64));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Convert.ToBase64String(Enumerable.Repeat((byte)0xbb, 32).ToArray()));
         Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/work-queues")).StatusCode);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Key);
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/work-queues")).StatusCode);
@@ -62,7 +62,7 @@ public sealed class ReviewDemoTests
     }
     private static string Body(JsonElement detail) => JsonSerializer.Serialize(new
     {
-        assessmentId = detail.GetProperty("assessmentId").GetString(), reviewId = "synthetic-http-review",
+        assessmentId = detail.GetProperty("assessmentId").GetString(),
         caseRevision = detail.GetProperty("caseRevision").GetString(), processRevision = detail.GetProperty("processRevision").GetString(),
         auditRevision = detail.GetProperty("auditRevision").GetString(), disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetic HTTP review"
     });
@@ -71,7 +71,7 @@ public sealed class ReviewDemoTests
         builder.WebHost.UseTestServer();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string,string?>
         {
-            ["NORMACASE_REVIEW_DEMO"] = "1", ["NORMACASE_REVIEW_DEMO_KEY"] = Key,
+            ["SyntheticReview:Enabled"] = "true", ["SyntheticReview:Credential"] = Key,
             ["NORMACASE_REVIEW_DEMO_CONNECTION"] = "Host=localhost;Database=synthetic-unused"
         });
         builder.Services.AddSingleton<IReviewDemoRepository, ReferenceRepository>();

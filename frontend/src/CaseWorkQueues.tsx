@@ -69,7 +69,7 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
     const target=detail;const controller=new AbortController();mutation.current=controller;
     setBusy(true);setError('');setSaved(false);
     try {
-      const body=JSON.stringify({assessmentId:target.assessmentId,reviewId:crypto.randomUUID(),caseRevision:target.caseRevision,
+      const body=JSON.stringify({assessmentId:target.assessmentId,caseRevision:target.caseRevision,
         processRevision:target.processRevision,auditRevision:target.auditRevision,disposition,reason,
         overrideOutcome:disposition==='OVERRIDE'?override:null});
       const response=await fetch('/api/work-cases/'+encodeURIComponent(target.caseId)+'/reviews',{method:'POST',headers:{...headers(),'Content-Type':'application/json'},body,signal:controller.signal});
@@ -86,7 +86,7 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
   const statuses:Record<string,string>={PRESENT:de.present,MISSING:de.missing,CONFLICTING:de.conflicting};
   return <section className="card work-queues" aria-label={text.heading}>
     <h2>{text.heading}</h2><p>{mode?text.reviewHelp:text.help}</p>
-    {mode&&!token&&<form onSubmit={login}><p>{text.loginHelp}</p><label className="field">{text.key}<input type="password" autoComplete="off" minLength={64} maxLength={64} pattern="[a-fA-F0-9]{64}" value={credential} onChange={event=>setCredential(event.target.value)} required/></label><button type="submit" className="primary" disabled={busy}>{text.login}</button></form>}
+    {mode&&!token&&<form onSubmit={login}><p>{text.loginHelp}</p><label className="field">{text.key}<input type="password" autoComplete="off" minLength={44} maxLength={44} pattern="[A-Za-z0-9+/]{43}=" value={credential} onChange={event=>setCredential(event.target.value)} required/></label><button type="submit" className="primary" disabled={busy}>{text.login}</button></form>}
     {mode&&token&&<button type="button" className="secondary" onClick={logout}>{text.logout}</button>}
     <div className="queue-grid">{queues.map(queue=><section key={queue.queueId}>
       <h3>{(text.queues as Record<string,string>)[queue.queueId]??de.unknown} ({queue.items.length})</h3>

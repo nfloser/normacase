@@ -5,8 +5,10 @@ separate reviewed authorization/privacy deployment design replaces this demo hos
 Use the existing RuleEngine and strict Serialization adapter; do not fork semantics.
 German error strings belong in resources. Reject cross-origin/non-local requests.
 Bound body size; never log input content or expose exception text. No runtime network
-requests, CORS, forwarded headers, persistence or external cloud dependencies.
+requests, CORS, forwarded headers or external cloud dependencies.
 
-The explicit local synthetic review mode follows docs/security/SYNTHETIC_REVIEW_HOST.md.
-That separately reviewed mode may use PostgreSQL and authenticated bearer commands
-for its fixed synthetic fixtures only; default demo operation remains stateless.
+The separately reviewed opt-in synthetic review mode follows
+`docs/security/SYNTHETIC_REVIEW_HOST.md`. It may use PostgreSQL and authenticated
+review commands for fixed synthetic fixtures only. Actor identity must come only
+from its verified ASP.NET Core principal. Preserve case-scoped authorization and
+atomic revision/audit checks; keep the anonymous preview stateless by default.
