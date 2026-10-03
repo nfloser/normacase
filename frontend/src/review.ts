@@ -72,10 +72,9 @@ export async function reviewFetch<T>(
   init: RequestInit = {}
 ): Promise<ReviewApiResult<T>> {
   try {
-    const response = await fetch(path, {
-      ...init,
-      headers: { ...bearerHeaders(credential), ...(init.headers ?? {}) }
-    });
+    const headers = new Headers(init.headers);
+    headers.set('Authorization', `Bearer ${credential}`);
+    const response = await fetch(path, { ...init, headers });
     if (response.status === 401) return { kind: 'unauthorized' };
     if (response.status === 403) return { kind: 'forbidden' };
     if (response.status === 409) return { kind: 'conflict' };
