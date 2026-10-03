@@ -192,3 +192,7 @@ For a repeatable product presentation, use the
 [German synthetic pitch runbook](docs/development/PITCH_DEMO.de.md). It walks the
 same four case states exercised by CI and keeps the demonstration explicitly
 separate from public-reference or production domain knowledge.
+
+The optional [local synthetic review demo](docs/development/FREIGABE_DEMO.de.md) connects
+a server-authenticated demo actor to PostgreSQL case/audit state. The normal preview
+remains read-only. Productive institutional authentication/privacy validation is separate.

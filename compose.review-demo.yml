@@ -1,0 +1,19 @@
+name: normacase-review-demo
+services:
+  postgres:
+    image: postgres:18.6
+    environment:
+      POSTGRES_DB: normacase_review_demo
+      POSTGRES_USER: normacase_demo
+      POSTGRES_PASSWORD: ${NORMACASE_REVIEW_DB_PASSWORD:?Lokales Demo-Datenbankkennwort setzen}
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - review-demo-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U normacase_demo -d normacase_review_demo"]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+volumes:
+  review-demo-data:

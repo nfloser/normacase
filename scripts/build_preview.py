@@ -47,6 +47,9 @@ def build(rid, commit, output):
             instructions.unlink()
         shutil.copy2(ROOT / "docs/development/PREVIEW_START.de.md", bundle / "START.de.md")
         shutil.copy2(ROOT / "docs/development/PITCH_DEMO.de.md", bundle / "PITCH-DEMO.de.md")
+        shutil.copy2(ROOT / "docs/development/FREIGABE_DEMO.de.md", bundle / "FREIGABE-DEMO.de.md")
+        shutil.copy2(ROOT / "compose.review-demo.yml", bundle / "compose.review-demo.yml")
+        shutil.copy2(ROOT / "scripts/start_review_demo.ps1", bundle / "Freigabe-Demo-starten.ps1")
         if rid == "win-x64":
             launcher = '@echo off\r\nchcp 65001 >nul\r\ncd /d "%~dp0api"\r\necho NormaCase - synthetische Pruefwerkstatt\r\necho Browser: http://localhost:5080\r\necho Beenden: Strg+C. Nur synthetische Daten verwenden.\r\nNormaCase.Api.exe\r\nset "exitCode=%errorlevel%"\r\nif not "%exitCode%"=="0" (\r\n  echo Der lokale Dienst konnte nicht gestartet werden. Ist Port 5080 bereits belegt?\r\n  pause\r\n)\r\nexit /b %exitCode%\r\n'
             (bundle / "Pruefwerkstatt-starten.cmd").write_bytes(launcher.encode("utf-8"))
