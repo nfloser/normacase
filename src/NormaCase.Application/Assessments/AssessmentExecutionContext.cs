@@ -1,4 +1,5 @@
 using NormaCase.Domain.Audit;
+using NormaCase.Domain.Cases;
 
 namespace NormaCase.Application.Assessments;
 
