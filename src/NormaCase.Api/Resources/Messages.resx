@@ -18,4 +18,6 @@
   <data name="workflow_transition" xml:space="preserve"><value>Dieser Übergang ist im aktuellen Vorgangsstand nicht verfügbar.</value></data>
   <data name="workflow_mismatch" xml:space="preserve"><value>Der Vorgang passt nicht zum installierten synthetischen Wissens- oder Plattformstand.</value></data>
   <data name="unknown_work_case" xml:space="preserve"><value>Der synthetische Fall wurde nicht gefunden.</value></data>
+  <data name="review_authentication_required" xml:space="preserve"><value>Für die synthetische Fallprüfung ist eine gültige Anmeldung erforderlich.</value></data>
+  <data name="review_forbidden" xml:space="preserve"><value>Diese Aktion ist für die angemeldete Person nicht erlaubt.</value></data>
 </root>
