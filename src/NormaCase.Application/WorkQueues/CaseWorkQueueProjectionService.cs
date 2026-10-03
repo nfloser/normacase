@@ -10,23 +10,12 @@ namespace NormaCase.Application.WorkQueues;
 /// </summary>
 public sealed class CaseWorkQueueProjectionService
 {
-    public CaseWorkItemProjection Project(
-        AssessmentRecord assessment,
-        AssessmentRouting routing,
+    public CaseWorkQueueMembership Project(
         CaseProcessingInstance process,
         CaseWorkQueueConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(assessment);
-        ArgumentNullException.ThrowIfNull(routing);
         ArgumentNullException.ThrowIfNull(process);
         ArgumentNullException.ThrowIfNull(configuration);
-
-        if (assessment.CaseId != routing.CaseId
-            || assessment.CaseId != process.CaseId
-            || assessment.AssessmentId != routing.AssessmentId)
-        {
-            throw new CaseWorkQueueIdentityMismatchException();
-        }
 
         var matches = configuration.Queues
             .Where(queue =>
@@ -41,10 +30,32 @@ public sealed class CaseWorkQueueProjectionService
         return new(
             configuration,
             process,
+            matches.SingleOrDefault()?.QueueId);
+    }
+
+    public CaseWorkItemProjection Project(
+        AssessmentRecord assessment,
+        AssessmentRouting routing,
+        CaseProcessingInstance process,
+        CaseWorkQueueConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(assessment);
+        ArgumentNullException.ThrowIfNull(routing);
+
+        var membership = Project(process, configuration);
+
+        if (assessment.CaseId != routing.CaseId
+            || assessment.CaseId != membership.CaseId
+            || assessment.AssessmentId != routing.AssessmentId)
+        {
+            throw new CaseWorkQueueIdentityMismatchException();
+        }
+
+        return new(
+            membership,
             assessment.AssessmentId,
             assessment.Result.Outcome,
-            routing,
-            matches.SingleOrDefault()?.QueueId);
+            routing);
     }
 }
 
