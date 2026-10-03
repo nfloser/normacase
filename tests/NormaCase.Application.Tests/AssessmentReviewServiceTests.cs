@@ -360,7 +360,7 @@ public sealed class AssessmentReviewServiceTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId(id),
-                "case-" + id,
+                new CaseId("case-" + id),
                 "platform-synth-1",
                 RecordedAt));
 

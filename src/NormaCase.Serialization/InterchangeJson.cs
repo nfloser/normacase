@@ -48,6 +48,7 @@ internal static class InterchangeJson
         };
         options.Converters.Add(new CaseValueJsonConverter());
         options.Converters.Add(new AssessmentIdJsonConverter());
+        options.Converters.Add(new CaseIdJsonConverter());
         options.Converters.Add(new ConditionTraceJsonConverter());
         options.Converters.Add(new DomainOutputValueJsonConverter());
         options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper, allowIntegerValues: false));

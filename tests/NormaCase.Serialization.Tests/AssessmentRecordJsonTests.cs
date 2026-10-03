@@ -26,7 +26,7 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-001"),
-                "case-json-001",
+                new CaseId("case-json-001"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 30, 0, TimeSpan.Zero)));
 
@@ -40,6 +40,8 @@ public sealed class AssessmentRecordJsonTests
         Assert.Equal(CaseValue.Unknown, restored.Input.Facts["band_value"]);
         Assert.Equal(record.Result.RuleTrace!.Source, restored.Result.RuleTrace!.Source);
         Assert.Equal("assessment-json-001", restored.AssessmentId.Value);
+        Assert.Equal(new CaseId("case-json-001"), restored.CaseId);
+        Assert.Contains("\"caseId\":\"case-json-001\"", json, StringComparison.Ordinal);
         Assert.Contains("\"assessmentId\":\"assessment-json-001\"", json, StringComparison.Ordinal);
         Assert.Equal("synthetic.demo-b", restored.KnowledgePackId);
         Assert.Equal("test-platform-2", restored.PlatformVersion);
@@ -63,7 +65,7 @@ public sealed class AssessmentRecordJsonTests
             },
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-002"),
-                "case-json-002",
+                new CaseId("case-json-002"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 31, 0, TimeSpan.Zero)));
 
@@ -92,7 +94,7 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-default-time"),
-                "case-json-default-time",
+                new CaseId("case-json-default-time"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
 
@@ -118,7 +120,7 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-id"),
-                "case-json-id",
+                new CaseId("case-json-id"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
 
@@ -144,7 +146,7 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-003"),
-                "case-json-003",
+                new CaseId("case-json-003"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
 
@@ -154,6 +156,32 @@ public sealed class AssessmentRecordJsonTests
             json.Replace("\"formatVersion\":1", "\"formatVersion\":2")));
         Assert.Throws<JsonException>(() => AssessmentRecordJson.Deserialize(
             json.Replace("\"formatVersion\":1", "\"formatVersion\":1,\"formatVersion\":1")));
+    }
+
+    [Theory]
+    [InlineData("null")]
+    [InlineData("123")]
+    [InlineData("{}")]
+    [InlineData("[]")]
+    [InlineData("true")]
+    [InlineData("\"\"")]
+    [InlineData("\"   \"")]
+    public void Invalid_case_identity_is_rejected(string token)
+    {
+        var record = new AssessmentRecorder().Evaluate(
+            Load("demo-a"), new Dictionary<string, CaseValue>(),
+            new DateOnly(2026, 10, 3), null,
+            new AssessmentExecutionContext(
+                new AssessmentId("assessment-case-json"), new CaseId("case-json"),
+                "test-platform", new DateTimeOffset(2026, 10, 3, 12, 0, 0, TimeSpan.Zero)));
+        var json = AssessmentRecordJson.Serialize(record);
+        Assert.Throws<JsonException>(() => AssessmentRecordJson.Deserialize(
+            json.Replace("\"caseId\":\"case-json\"", "\"caseId\":" + token)));
+        Assert.Throws<JsonException>(() => AssessmentRecordJson.Deserialize(
+            json.Replace("\"caseId\":\"case-json\",", "")));
+        Assert.Throws<ArgumentException>(() => new AssessmentRecord(
+            record.AssessmentId, default, record.KnowledgePackId,
+            record.PlatformVersion, record.RecordedAtUtc, record.Input, record.Result));
     }
 
     private static NormaCase.Knowledge.Model.KnowledgePack Load(string demo)

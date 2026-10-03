@@ -525,7 +525,7 @@ public sealed class PostgresAssessmentAuditTrailStoreTests
             },
             new AssessmentExecutionContext(
                 id,
-                "case-audit-" + suffix,
+                new CaseId("case-audit-" + suffix),
                 "postgres-audit-test",
                 UtcTime().AddTicks(7)));
     }

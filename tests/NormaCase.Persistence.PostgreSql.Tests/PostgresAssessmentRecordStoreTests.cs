@@ -154,8 +154,10 @@ public sealed class PostgresAssessmentRecordStoreTests
         Assert.NotNull(await store.LoadAsync(record.AssessmentId));
     }
 
-    [Fact]
-    public async Task Invalid_fingerprint_is_rejected_before_deserialization()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Invalid_fingerprint_or_case_metadata_is_rejected(bool mismatchCase)
     {
         await using var dataSource = CreateDataSource();
         await new PostgresMigrationRunner(dataSource).MigrateAsync();
@@ -189,7 +191,7 @@ public sealed class PostgresAssessmentRecordStoreTests
         {
             command.Parameters.AddWithValue(
                 record.AssessmentId.Value);
-            command.Parameters.AddWithValue(record.CaseId);
+            command.Parameters.AddWithValue(mismatchCase ? "different-case" : record.CaseId.Value);
             command.Parameters.AddWithValue(
                 record.KnowledgePackId);
             command.Parameters.AddWithValue(
@@ -210,7 +212,9 @@ public sealed class PostgresAssessmentRecordStoreTests
                 NpgsqlDbType.Json,
                 json);
             command.Parameters.AddWithValue(
-                new string('0', 64));
+                mismatchCase
+                    ? Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(json))).ToLowerInvariant()
+                    : new string('0', 64));
             await command.ExecuteNonQueryAsync();
         }
 
@@ -302,7 +306,7 @@ public sealed class PostgresAssessmentRecordStoreTests
             },
             new AssessmentExecutionContext(
                 id,
-                "case-" + suffix + "-" + Guid.NewGuid().ToString("N"),
+                new CaseId("case-" + suffix + "-" + Guid.NewGuid().ToString("N")),
                 "postgres-test-platform",
                 new DateTimeOffset(
                     2026,

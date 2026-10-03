@@ -26,7 +26,7 @@ public sealed class AssessmentRecorderTests
         };
         var context = new AssessmentExecutionContext(
             new AssessmentId("assessment-001"),
-            "case-001",
+            new CaseId("case-001"),
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 20, 15, 0, TimeSpan.Zero));
 
@@ -41,7 +41,7 @@ public sealed class AssessmentRecorderTests
         evidence["verification"] = EvidenceStatus.Missing;
 
         Assert.Equal("assessment-001", record.AssessmentId.Value);
-        Assert.Equal("case-001", record.CaseId);
+        Assert.Equal("case-001", record.CaseId.Value);
         Assert.Equal("synthetic.demo-c", record.KnowledgePackId);
         Assert.Equal("test-platform-1", record.PlatformVersion);
         Assert.Equal(context.RecordedAtUtc, record.RecordedAtUtc);
@@ -63,7 +63,7 @@ public sealed class AssessmentRecorderTests
         };
         var context = new AssessmentExecutionContext(
             new AssessmentId("assessment-002"),
-            "case-002",
+            new CaseId("case-002"),
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 20, 16, 0, TimeSpan.Zero));
 
@@ -95,7 +95,7 @@ public sealed class AssessmentRecorderTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-003"),
-                "case-003",
+                new CaseId("case-003"),
                 "test-platform-1",
                 new DateTimeOffset(2026, 10, 2, 20, 17, 0, TimeSpan.Zero)));
         var mismatchedInput = new AssessmentInputSnapshot(
@@ -130,7 +130,7 @@ public sealed class AssessmentRecorderTests
             },
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-immutable-001"),
-                "case-immutable-001",
+                new CaseId("case-immutable-001"),
                 "test-platform-1",
                 new DateTimeOffset(2026, 10, 2, 20, 18, 0, TimeSpan.Zero)));
 
@@ -145,21 +145,30 @@ public sealed class AssessmentRecorderTests
     {
         Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
             default,
-            "case-003",
+            new CaseId("case-003"),
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 20, 17, 0, TimeSpan.Zero)));
 
         Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
             new AssessmentId("assessment-003"),
-            "case-003",
+            new CaseId("case-003"),
             "test-platform-1",
             new DateTimeOffset(2026, 10, 2, 22, 17, 0, TimeSpan.FromHours(2))));
 
         Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
             new AssessmentId("assessment-003"),
-            "case-003",
+            new CaseId("case-003"),
             "test-platform-1",
             default));
+    }
+
+    [Fact]
+    public void Default_case_identity_is_rejected()
+    {
+        Assert.Throws<ArgumentException>(() => new AssessmentExecutionContext(
+            new AssessmentId("assessment-case-guard"), default,
+            "test-platform-1",
+            new DateTimeOffset(2026, 10, 3, 12, 0, 0, TimeSpan.Zero)));
     }
 
     private static NormaCase.Knowledge.Model.KnowledgePack Load(string demo)

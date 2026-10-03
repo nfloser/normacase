@@ -137,3 +137,16 @@ SHA-256 still provides corruption/inconsistency detection only. It does not prov
 who created or reviewed a record. Actor ids imported from audit JSON remain
 unauthenticated claims until authentication/authorization and operator identity
 controls are implemented.
+
+## Explicit case identity
+
+`CaseId` is an immutable, domain-neutral identity value in `NormaCase.Domain.Cases`.
+Assessment execution and records require it explicitly; blank construction and the
+default value are rejected. Equality is ordinal and values are preserved without
+trimming or normalization. JSON format version 1 still uses a string `caseId`, and
+PostgreSQL still stores `case_id` as text. The adapter compares its exact value
+against the stored record metadata; no migration is needed.
+
+This contract supplies identity only. It is not a patient identifier, case lifecycle,
+authorization mechanism or data-retention policy. Use opaque synthetic identifiers
+in development.
