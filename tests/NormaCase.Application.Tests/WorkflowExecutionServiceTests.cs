@@ -276,6 +276,44 @@ public sealed class WorkflowExecutionServiceTests
             () => _service.Restore(invalid));
     }
 
+    [Fact]
+    public void Source_snapshot_rejects_missing_required_metadata()
+    {
+        Assert.Throws<ArgumentException>(
+            () => new WorkflowSourceSnapshot(
+                "source-1",
+                "authority",
+                " ",
+                "SYNTHETIC",
+                "ACTIVE",
+                "1",
+                "repository:synthetic",
+                null,
+                null,
+                null,
+                null,
+                null));
+    }
+
+    [Fact]
+    public void Source_snapshot_rejects_inverted_validity_interval()
+    {
+        Assert.Throws<ArgumentException>(
+            () => new WorkflowSourceSnapshot(
+                "source-1",
+                "authority",
+                "Synthetic source",
+                "SYNTHETIC",
+                "ACTIVE",
+                "1",
+                "repository:synthetic",
+                null,
+                new DateOnly(2026, 10, 3),
+                new DateOnly(2026, 10, 2),
+                null,
+                null));
+    }
+
     private static WorkflowExecutionSnapshot CopySnapshot(
         WorkflowExecutionSnapshot source,
         IReadOnlyList<WorkflowStateSnapshot>? states = null,
