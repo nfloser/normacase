@@ -3,7 +3,6 @@ using NormaCase.Application.Outbound;
 using NormaCase.Domain.Audit;
 using NormaCase.Domain.Decision;
 using NormaCase.Persistence.PostgreSql;
-using NormaCase.SyntheticIntegration.Outbound;
 using Xunit;
 
 namespace NormaCase.Persistence.PostgreSql.Tests;
@@ -23,7 +22,7 @@ public sealed class PostgresOutboundDeliveryReceiptStoreTests
             destinationId,
             Sample(deliveryId));
 
-        var firstSink = new InMemoryReviewedCaseResultSink(destinationId);
+        var firstSink = new CountingSink(destinationId);
         var firstService = new ReviewedCaseDeliveryService(
             new PostgresOutboundDeliveryReceiptStore(source));
 
@@ -31,9 +30,9 @@ public sealed class PostgresOutboundDeliveryReceiptStoreTests
 
         Assert.Equal(OutboundDeliveryStatus.Delivered, first.Status);
         Assert.True(first.IsCommitted);
-        Assert.Single(firstSink.Deliveries);
+        Assert.Equal(1, firstSink.Attempts);
 
-        var restartedSink = new InMemoryReviewedCaseResultSink(destinationId);
+        var restartedSink = new CountingSink(destinationId);
         var restartedService = new ReviewedCaseDeliveryService(
             new PostgresOutboundDeliveryReceiptStore(source));
 
@@ -42,7 +41,7 @@ public sealed class PostgresOutboundDeliveryReceiptStoreTests
             restartedSink);
 
         Assert.Equal(first, replayed);
-        Assert.Empty(restartedSink.Deliveries);
+        Assert.Equal(0, restartedSink.Attempts);
     }
 
     [Fact]
@@ -180,6 +179,25 @@ public sealed class PostgresOutboundDeliveryReceiptStoreTests
             HumanReviewDisposition.AcceptSystemResult,
             AssessmentOutcome.Supported,
             AssessmentOutcome.Supported);
+
+    private sealed class CountingSink(string destinationId)
+        : IReviewedCaseResultSink
+    {
+        public string DestinationId { get; } = destinationId;
+        public int Attempts { get; private set; }
+
+        public Task<OutboundSinkDeliveryResult> DeliverAsync(
+            OutboundDeliveryRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Attempts++;
+            return Task.FromResult(
+                new OutboundSinkDeliveryResult(
+                    OutboundSinkDeliveryStatus.Delivered,
+                    "transport-" + request.DeliveryId));
+        }
+    }
 
     private static NpgsqlDataSource Source() =>
         NpgsqlDataSource.Create(
