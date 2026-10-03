@@ -97,6 +97,25 @@ reconstruction.
 
 No assessment outcome triggers a transition automatically.
 
+## Storage-neutral execution snapshots
+
+`WorkflowExecutionService.Capture` converts an in-memory execution into a detached
+`WorkflowExecutionSnapshot`. The snapshot contains the Knowledge Pack and Release
+identity, the complete source revision, the full materialized workflow graph and the
+current state/revision.
+
+State and transition collections are copied into read-only collections. Restoring an
+execution rebuilds a new immutable Domain `WorkflowDefinition` and restores the
+`WorkflowInstance` from the snapshot only; it does not reload or resolve a current
+Knowledge Pack. Invalid graph references, undeclared current states and negative
+revisions therefore fail closed through the same Domain invariants used at runtime.
+
+This snapshot is a storage-neutral in-memory contract. It is not yet a JSON format,
+database schema, authenticated provenance record or tamper-evident artifact. Those
+boundaries remain separate reviewed slices.
+
+No assessment outcome triggers a transition automatically.
+
 ## Determinism and audit boundary
 
 The lifecycle:
