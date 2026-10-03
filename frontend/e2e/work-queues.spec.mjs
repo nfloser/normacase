@@ -7,10 +7,14 @@ test('German queues expose recorded assessments and pre-assessment technical fai
   await expect(queues.getByRole('heading',{name:/Prüfergebnis:/})).toBeVisible();
   await queues.getByText('Prüfweg nachvollziehen', {exact:true}).click();
   await expect(queues.getByText('Wartet auf menschliche Freigabe', {exact:true})).toBeVisible();
+  await queues.getByRole('button',{name:'Fall öffnen: demo-g-supported',exact:true}).click();
+  await expect(queues.getByText('Wartet auf menschliche Freigabe', {exact:true})).toBeVisible();
+  await queues.screenshot({path:'test-results/work-queues-assessment-desktop.png'});
   await queues.getByRole('button',{name:'Fall öffnen: demo-technical',exact:true}).click();
   await expect(queues.getByText(/Für diesen technischen Fehler liegt keine Bewertung vor/)).toBeVisible();
   await expect(queues.getByText('Prüfweg nachvollziehen',{exact:true})).toHaveCount(0);
   await page.setViewportSize({width:390,height:844});
   await expect(queues.getByRole('heading',{name:'Technische Klärung (1)'})).toBeVisible();
+  await queues.screenshot({path:'test-results/work-queues-technical-mobile.png'});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
 });
