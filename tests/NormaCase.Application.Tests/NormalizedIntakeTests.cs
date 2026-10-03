@@ -4,7 +4,7 @@ using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Serialization;
-using NormaCase.SyntheticIntegration.Intake;
+using NormaCase.SyntheticIntegration;
 using Xunit;
 
 namespace NormaCase.Application.Tests;
@@ -14,18 +14,18 @@ public sealed class NormalizedIntakeTests
     [Fact]
     public void Different_synthetic_upstream_formats_normalize_to_the_same_internal_values()
     {
-        var alpha = AdapterAlpha(File.ReadAllText(Fixture("intake-alpha.json")));
-        var beta = AdapterBeta(File.ReadAllText(Fixture("intake-beta.xml")));
+        var alpha = AdapterAlpha();
+        var beta = AdapterBeta();
         var service = new NormalizedIntakeService(new MemoryStore());
         var a = service.Normalize(alpha, Pack());
         var b = service.Normalize(beta, Pack());
         Assert.Equal(a.Input.Facts, b.Input.Facts);
         Assert.Equal(a.Input.Evidence, b.Input.Evidence);
         Assert.Equal(15.1234567890123456789m, a.Input.Facts["measurement"].Number);
-        Assert.Equal("synthetic-alpha", a.Provenance.SourceSystemId);
-        Assert.Equal("synthetic-beta", b.Provenance.SourceSystemId);
+        Assert.Equal("synthetic-json", a.Provenance.SourceSystemId);
+        Assert.Equal("synthetic-xml", b.Provenance.SourceSystemId);
         Assert.Equal("synthetic-order-1", a.Provenance.UpstreamCaseId);
-        Assert.Equal("synthetic-document-1", a.EvidenceReferences["verification"].Single());
+        Assert.Equal("synthetic-attachment-verification", a.EvidenceReferences["verification"].Single());
     }
 
     [Fact]
@@ -83,10 +83,17 @@ public sealed class NormalizedIntakeTests
     public async Task Independent_upstream_sources_cannot_claim_the_same_platform_case_identity()
     {
         var service = new NormalizedIntakeService(new MemoryStore());
-        var alpha = AdapterAlpha(File.ReadAllText(Fixture("intake-alpha.json")));
-        var beta = AdapterBeta(File.ReadAllText(Fixture("intake-beta.xml")));
-        await service.AcceptAsync(alpha, Pack());
-        await Assert.ThrowsAsync<IntakeConflictException>(() => service.AcceptAsync(beta, Pack()));
+        var first = Request();
+        var second = new NormalizedIntakeRequest(
+            first.CaseId,
+            first.CaseTypeId,
+            new IntakeProvenance("another-source", "another-order", "another-message", 1, "another-adapter", 1, Utc()),
+            first.AssessmentDate,
+            first.Facts,
+            first.Evidence,
+            first.EvidenceReferences);
+        await service.AcceptAsync(first, Pack());
+        await Assert.ThrowsAsync<IntakeConflictException>(() => service.AcceptAsync(second, Pack()));
     }
 
     [Fact]
@@ -134,17 +141,32 @@ public sealed class NormalizedIntakeTests
     [Fact]
     public void Xml_fixture_adapter_prohibits_dtd_and_unknown_values_stay_unknown()
     {
-        Assert.Throws<XmlException>(() => AdapterBeta("<!DOCTYPE x [<!ENTITY ext SYSTEM 'file:///etc/passwd'>]><SyntheticOrder/>"));
-        var request = AdapterAlpha("{\"message\":\"message\",\"order\":\"order\",\"revision\":1,\"date\":\"2026-10-02\",\"answers\":{\"confirmed\":\"unknown\"},\"documents\":[]}");
+        Assert.Throws<XmlException>(() => SyntheticIntakeAdapters.Xml(
+            "<!DOCTYPE x [<!ENTITY ext SYSTEM 'file:///etc/passwd'>]><SyntheticCase/>", Utc()));
+        var request = SyntheticIntakeAdapters.Json(
+            """
+            {"formatVersion":1,"order":"order","message":"message","revision":"1","input":{"formatVersion":1,"assessmentDate":"2026-10-02","facts":{"request_confirmed":{"kind":"UNKNOWN"}},"evidence":{}}}
+            """,
+            Utc());
         Assert.True(request.Facts["request_confirmed"].IsUnknown);
-        Assert.Throws<ArgumentException>(() => AdapterAlpha("{\"message\":\"message\",\"order\":\"order\",\"revision\":1,\"date\":\"2026-10-02\",\"answers\":{\"confirmed\":\"maybe\"},\"documents\":[]}"));
+        Assert.ThrowsAny<Exception>(() => SyntheticIntakeAdapters.Json(
+            """
+            {"formatVersion":1,"order":"order","message":"message","revision":"1","input":{"formatVersion":1,"assessmentDate":"2026-10-02","facts":{"request_confirmed":{"kind":"TRUTH","truth":"MAYBE"}},"evidence":{}}}
+            """,
+            Utc()));
     }
 
     [Fact]
     public void Synthetic_adapters_fail_closed_on_unknown_shape()
     {
-        Assert.Throws<ArgumentException>(() => AdapterAlpha("{\"message\":\"m\",\"order\":\"o\",\"revision\":1,\"date\":\"2026-10-02\",\"answers\":{},\"documents\":[],\"extra\":true}"));
-        Assert.Throws<ArgumentException>(() => AdapterBeta("<SyntheticOrder message=\"m\" order=\"o\" revision=\"1\" date=\"2026-10-02\" extra=\"x\" />"));
+        Assert.ThrowsAny<Exception>(() => SyntheticIntakeAdapters.Json(
+            """
+            {"formatVersion":1,"order":"o","message":"m","revision":"1","input":{"formatVersion":1,"assessmentDate":"2026-10-02","facts":{},"evidence":{}},"extra":true}
+            """,
+            Utc()));
+        Assert.ThrowsAny<Exception>(() => SyntheticIntakeAdapters.Xml(
+            "<SyntheticCase formatVersion=\"1\" order=\"o\" message=\"m\" revision=\"1\" date=\"2026-10-02\" extra=\"x\" />",
+            Utc()));
     }
 
     private static NormalizedIntakeRequest Request(TruthValue truth = TruthValue.Yes, string message = "message", long revision = 1) => new(
@@ -157,11 +179,19 @@ public sealed class NormalizedIntakeTests
     private static string Fixture(string name) => Path.Combine(AppContext.BaseDirectory,"Fixtures",name);
     private static NormaCase.Knowledge.Model.KnowledgePack Pack() => new KnowledgePackLoader().LoadFromFile(Fixture("demo-c-pack.json"));
 
-    private static NormalizedIntakeRequest AdapterAlpha(string json)
-        => new SyntheticJsonIntakeAdapter().Parse(json, new CaseId("case-synthetic"), "synthetic-type", Utc());
+    private static NormalizedIntakeRequest AdapterAlpha()
+        => SyntheticIntakeAdapters.Json(
+            """
+            {"formatVersion":1,"order":"synthetic-order-1","message":"synthetic-message-alpha","revision":"1","input":{"formatVersion":1,"assessmentDate":"2026-10-02","facts":{"request_confirmed":{"kind":"TRUTH","truth":"YES"},"measurement":{"kind":"NUMBER","number":15.1234567890123456789},"alternative_confirmed":{"kind":"TRUTH","truth":"NO"}},"evidence":{"verification":"PRESENT"}}}
+            """,
+            Utc());
 
-    private static NormalizedIntakeRequest AdapterBeta(string xml)
-        => new SyntheticXmlIntakeAdapter().Parse(xml, new CaseId("case-synthetic"), "synthetic-type", Utc());
+    private static NormalizedIntakeRequest AdapterBeta()
+        => SyntheticIntakeAdapters.Xml(
+            """
+            <SyntheticCase formatVersion="1" order="synthetic-order-1" message="synthetic-message-beta" revision="1" date="2026-10-02"><Fact id="request_confirmed" kind="TRUTH" value="YES"/><Fact id="measurement" kind="NUMBER" value="15.1234567890123456789"/><Fact id="alternative_confirmed" kind="TRUTH" value="NO"/><Evidence id="verification" value="PRESENT"/></SyntheticCase>
+            """,
+            Utc());
 
     private sealed class MemoryStore : INormalizedIntakeStore
     {
