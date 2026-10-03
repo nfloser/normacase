@@ -20,6 +20,8 @@ produktive Entscheidungsvorgabe verstanden werden.
 - abgerufen: 02.10.2026
 - SHA-256 des gepinnten PDF-Artefakts:
   `114a9ca2dd4ef1b49433898abfffb62570911a58e756c01f5e0f3329c9f93dd6`
+- offizieller Richtlinienstand am 03.10.2026 erneut geprüft: weiterhin Änderung
+  15.05.2025 / Inkrafttreten 06.08.2025
 
 Die ausführliche Quellenanalyse liegt unter
 `docs/knowledge/research/KRANKENTRANSPORT_2025_SOURCE_ANALYSIS.md`.
