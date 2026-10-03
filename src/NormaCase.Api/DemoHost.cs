@@ -29,18 +29,16 @@ public static class DemoHost
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
         builder.Logging.ClearProviders();
-        var reviewCredential = SyntheticReviewCredential.Load(builder.Configuration);
-        builder.Services.AddSingleton(reviewCredential);
-        var persistentReviewEnabled = builder.Configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled");
-        if (persistentReviewEnabled)
+        builder.Services.AddSingleton(services => SyntheticReviewCredential.Load(
+            services.GetRequiredService<IConfiguration>()));
+        builder.Services.AddSingleton(services =>
         {
-            if (!reviewCredential.Enabled)
-                throw new InvalidOperationException("Persistent synthetic review requires the verified review identity boundary.");
-            var reviewConnection = builder.Configuration.GetConnectionString("SyntheticReview");
+            var reviewConnection = services.GetRequiredService<IConfiguration>()
+                .GetConnectionString("SyntheticReview");
             if (string.IsNullOrWhiteSpace(reviewConnection))
                 throw new InvalidOperationException("Persistent synthetic review requires an explicit PostgreSQL connection.");
-            builder.Services.AddSingleton(Npgsql.NpgsqlDataSource.Create(reviewConnection));
-        }
+            return Npgsql.NpgsqlDataSource.Create(reviewConnection);
+        });
         builder.Services.AddAuthentication(SyntheticReviewAuthentication.SchemeName)
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
@@ -55,6 +53,10 @@ public static class DemoHost
         var presentations = PresentationCatalog.Load(packs);
         var platformVersion = typeof(DemoHost).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         var app = builder.Build();
+        var reviewCredential = app.Services.GetRequiredService<SyntheticReviewCredential>();
+        var persistentReviewEnabled = app.Configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled");
+        if (persistentReviewEnabled && !reviewCredential.Enabled)
+            throw new InvalidOperationException("Persistent synthetic review requires the verified review identity boundary.");
 
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
