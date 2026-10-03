@@ -33,3 +33,16 @@ Use synthetic data only.
 - no mandatory external cloud or AI runtime dependency.
 
 See `docs/security/THREAT_MODEL.md` for the evolving threat model.
+
+## Static source analysis
+
+Pull requests and changes to `main` that touch source/tooling paths run CodeQL over
+C#, JavaScript/TypeScript and Python. The workflow uses the supported no-build mode
+and one analysis job so it complements, rather than duplicates, the normal build/test
+matrix. Findings are source-level security signals only: a green scan does not approve
+an operational deployment, privacy design, medical rule set, identity model or target
+institution configuration.
+
+CodeQL runs in GitHub Actions against the public repository during development. It is
+not a NormaCase runtime dependency and no real patient or claimant data may be supplied
+to the workflow.
