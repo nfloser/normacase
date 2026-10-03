@@ -5,6 +5,7 @@ import de from './de.json';
 import { exampleValues, normalizeCatalog, requestJson, type Pack } from './model';
 import './style.css';
 import { WorkflowWorkbench } from './WorkflowWorkbench';
+import { WorkQueueWorkbench } from './WorkQueueWorkbench';
 import { DecisionTrace } from './DecisionTrace';
 import type { RuleTrace, OutputTrace } from './trace';
 
@@ -150,6 +151,6 @@ function App() {
         <details><summary>{de.replayTrace}</summary><pre>{replayRaw}</pre></details>
         <button className="secondary export" onClick={()=>saveFile(replayRaw,'normacase-replayed-assessment.json')}>{de.replayExport}</button>
       </>}
-    </section>{pack && <WorkflowWorkbench key={pack.packId} pack={pack} />}<footer>{de.foot}</footer></main></>;
+    </section><WorkQueueWorkbench packs={packs}/>{pack && <WorkflowWorkbench key={pack.packId} pack={pack} />}<footer>{de.foot}</footer></main></>;
 }
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);
