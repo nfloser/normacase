@@ -143,7 +143,9 @@ public sealed class ReviewedOutboundResultBuilder
         ArgumentNullException.ThrowIfNull(command);
 
         if (intake.CaseId != state.Assessment.CaseId || state.Process.CaseId != state.Assessment.CaseId
+            || state.AssessmentCaseRevision != state.Process.CaseRevision
             || state.Audit.AssessmentId != state.Assessment.AssessmentId
+            || state.Audit.Events[0].OccurredAt != state.Assessment.RecordedAtUtc
             || intake.KnowledgePackId != state.Assessment.KnowledgePackId
             || intake.KnowledgeRelease != state.Assessment.Result.KnowledgeRelease
             || !SameInput(intake.Input, state.Assessment.Input))
