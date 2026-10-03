@@ -151,6 +151,15 @@ no-store headers remain mandatory. The default preview exposes no review session
 no mutation endpoint or permissive case authorizer is added. This is not productive
 organizational identity. See [synthetic review host](SYNTHETIC_REVIEW_HOST.md).
 
+In multi-user persistent mode, an independent externally configured synthetic
+administrator may suspend or reactivate exact configured users. Current state and every
+change are retained as revision-checked append-only PostgreSQL audit. Authentication
+checks current state on every protected request, so restart is not needed for suspension.
+This does not revoke a credential outside NormaCase, provide productive session/token
+revocation or establish institutional administrator roles. Case/action grant changes and
+administrative separation of duties remain open. See
+[identity access administration](../architecture/IDENTITY_ACCESS_ADMINISTRATION.md).
+
 ### Delayed authenticated browser responses
 
 Review credentials exist only in React memory; no cookies or browser storage are

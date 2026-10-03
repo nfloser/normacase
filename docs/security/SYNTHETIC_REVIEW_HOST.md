@@ -24,6 +24,15 @@ Issue-Texte oder CI-Ausgaben übernehmen. Keine Vorgabe und kein eingebauter Sch
 Ungültige aktive Konfiguration verhindert den Hoststart ohne den Wert auszugeben.
 Zum Sperren/Rotieren den Schlüssel ersetzen bzw. den Modus deaktivieren und neu starten.
 
+Der getrennte Mehrbenutzermodus verwendet stattdessen mehrere unabhängige Schlüssel
+und genaue Fall-/Aktionszuweisungen. Im persistenten Modus kann zusätzlich eine
+separate synthetische Verwaltungsidentität konfiguriert werden, die einzelne
+Testpersonen live sperrt oder reaktiviert. Der Zustand und jede Änderung werden
+revisionsgeprüft und append-only gespeichert. Konfiguration und Grenzen stehen unter
+[Getrennte lokale Testidentitäten](LOCAL_SYNTHETIC_IDENTITIES.de.md); die technische
+Grenze ist in [Identity access administration](../architecture/IDENTITY_ACCESS_ADMINISTRATION.md)
+dokumentiert.
+
 ## Vertrauensgrenze
 
 ASP.NET Core authentifiziert ausschließlich einen einzelnen Authorization-Header.
@@ -84,7 +93,9 @@ Berechtigungs- und Datenschutzkonzeption (#119).
 HTTP-Integrationstests prüfen deaktivierten Standardmodus, gültige Anmeldung,
 fehlende/falsche/ungültige Schlüssel, doppelte Header, ignorierte Query-Schlüssel,
 serverseitige Identitätsbindung, Fremd-Origin-Abweisung, no-store und ungültige
-Startkonfiguration. Die unveränderten Vorschau-Tests laufen ebenfalls weiter.
+Startkonfiguration. PostgreSQL-/HTTP-Tests prüfen außerdem konkurrierende
+Revisionsänderungen, append-only Audit, Live-Sperrung, Neustart und Reaktivierung.
+Die unveränderten Vorschau-Tests laufen ebenfalls weiter.
 
 
 ## Frische Testeingänge und Rückgabe
