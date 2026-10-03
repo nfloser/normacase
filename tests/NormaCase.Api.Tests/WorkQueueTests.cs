@@ -61,5 +61,6 @@ public sealed class WorkQueueTests : IClassFixture<WebApplicationFactory<Program
         using var request = new HttpRequestMessage(HttpMethod.Get, "/api/work-queues");
         request.Headers.Add("Origin", "https://example.org");
         Assert.Equal(HttpStatusCode.Forbidden, (await client.SendAsync(request)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-queues")).StatusCode);
     }
 }
