@@ -92,6 +92,7 @@ The current core can:
 - bind workflow runs to typed case identities and retain immutable actor/time/reason transition history with strict replay-checked JSON interchange,
 - persist workflow run revisions append-only in PostgreSQL with transactional conflict checks and explicit historical reads,
 - start, advance, export and resume synthetic workflow runs through the German loopback workbench without automatic transitions or database exposure,
+- project recorded process states into explicit versioned work queues and expose a German read-only synthetic queue/drill-down view, including a technical pre-assessment exception without fabricating a decision,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
 - persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
