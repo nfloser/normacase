@@ -24,3 +24,6 @@
 .work-queues article { border-top:1px solid #d8dee5; margin-top:1rem; padding-top:1rem; overflow-wrap:anywhere; }
 @media(max-width:650px) { .queue-grid { grid-template-columns:1fr; } }
 .work-queues { margin:22px 0; }
+.work-queues form { margin:1rem 0; }
+.work-queues textarea { font:inherit; width:100%; min-height:90px; resize:vertical; border:1px solid #cad7cf; padding:10px; border-radius:6px; }
+.work-queues h5 { font-size:.9rem; margin-bottom:.5rem; }

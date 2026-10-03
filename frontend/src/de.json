@@ -137,13 +137,15 @@
       "approval": "Zur Freigabe vorbereitet",
       "clarification": "Informationen nachfordern",
       "review": "Gegenprüfung erforderlich",
-      "technical": "Technische Klärung"
+      "technical": "Technische Klärung",
+      "completed": "Abgeschlossene Prüfungen"
     },
     "states": {
       "awaiting-approval": "Wartet auf menschliche Freigabe",
       "waiting-information": "Informationen fehlen",
       "manual-review": "Menschliche Gegenprüfung erforderlich",
-      "integration-error": "Technischer Fehler vor der Bewertung"
+      "integration-error": "Technischer Fehler vor der Bewertung",
+      "reviewed": "Menschlich geprüft – synthetische Demo"
     },
     "select": "Fall öffnen",
     "detail": "Aufgezeichneter Fall",
@@ -151,6 +153,24 @@
     "processRevision": "Prozessrevision",
     "noAssessment": "Für diesen technischen Fehler liegt keine Bewertung vor. Ergebnis, Entscheidungsweg und Nachweise wurden nicht erzeugt.",
     "recorded": "Aufgezeichnet am",
-    "loading": "Fall wird geladen …"
+    "loading": "Fall wird geladen …",
+    "reviewHelp": "Lokale synthetische Freigabe-Demo mit dauerhafter Fallhistorie. Nur serverseitig erlaubte Prüfaktionen sind verfügbar.",
+    "login": "Demo-Zugang öffnen",
+    "key": "Lokaler Demo-Zugangsschlüssel",
+    "loginHelp": "Der Schlüssel wird nur während dieser Sitzung im Arbeitsspeicher gehalten. Er stammt aus deiner lokalen Startkonfiguration.",
+    "logout": "Demo-Zugang schließen",
+    "reason": "Begründung der menschlichen Prüfung",
+    "accept": "Systemergebnis annehmen",
+    "override": "Ergebnis übersteuern",
+    "overrideOutcome": "Menschlich festgelegtes Ergebnis",
+    "saving": "Prüfung wird gespeichert …",
+    "saved": "Prüfung und Fallstand wurden gemeinsam gespeichert.",
+    "audit": "Menschliche Prüfung und Fallhistorie",
+    "actor": "Aufgezeichneter Prüfer",
+    "intake": "Systembewertung aufgezeichnet",
+    "accepted": "Systemergebnis angenommen",
+    "overridden": "Ergebnis übersteuert",
+    "sequence": "Audit-Revision",
+    "refresh": "Aktuellen Fallstand öffnen"
   }
 }
