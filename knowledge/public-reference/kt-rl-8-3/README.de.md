@@ -37,11 +37,14 @@ Explizit modelliert sind:
 - zwingende medizinische Notwendigkeit als vom Aufrufer bereits festgestellte
   Voraussetzung;
 - Schwerbehindertenausweis mit Merkzeichen `aG`, `Bl` oder `H`;
-- Pflegegrad 4 oder 5;
+- Pflegegrad 4 oder 5 als diskrete, exakt geprüfte Werte;
 - Pflegegrad 3 zusammen mit ausdrücklich festgestelltem dauerhaftem
   mobilitätsbedingtem Beförderungsbedarf;
-- die Übergangsregel für bis 31.12.2016 bestehende Pflegestufe 2 und seit 01.01.2017
-  mindestens Pflegegrad 3.
+- die Übergangsregel mit zwei getrennten historischen Tatsachen: Einstufung in
+  Pflegestufe 2 am 31.12.2016 und seit 01.01.2017 durchgehend mindestens Pflegegrad 3.
+
+Zwischenwerte wie `4,5` werden nicht als Pflegegrad interpretiert. Die historischen
+Übergangstatsachen werden ebenfalls nicht aus einem aktuellen Pflegegrad abgeleitet.
 
 Die Nachweise werden getrennt von den fachlichen Fakten als Evidence-Status geführt.
 Ein fehlender oder widersprüchlicher Nachweis wird nicht in ein Nein umgedeutet.
