@@ -91,7 +91,7 @@
       "type": "choice",
       "choices": [
         "DEEMED_GRANTED",
-        "NOT_DETERMINED_BY_THIS_PACK"
+        "SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE"
       ],
       "condition": {
         "kind": "all",
@@ -200,7 +200,7 @@
         ]
       },
       "onMatch": "DEEMED_GRANTED",
-      "onNoMatch": "NOT_DETERMINED_BY_THIS_PACK"
+      "onNoMatch": "SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE"
     }
   ],
   "rules": [
