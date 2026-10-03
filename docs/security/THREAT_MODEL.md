@@ -62,6 +62,16 @@ inputs change. Do not persist files or log their contents. Existing loopback, Or
 CSP and no-store restrictions also cover capture and replay. These safeguards do not
 provide productive authorization or authentic provenance.
 
+### Workflow history substitution
+
+Workflow run histories contain caller-supplied actor ids and free-text reasons.
+Successful history replay proves internal graph/revision consistency only: an
+unauthorized producer can supply a different internally consistent history. Import
+does not authenticate actors, authorize transitions or confer domain approval.
+Run JSON remains under operator control, uses bounded strict parsing and must not
+be logged. Productive exposure needs authentication, case-level authorization,
+transactional concurrency and suitable provenance/retention controls.
+
 ### Sensitive logging
 Medical or identity data could leak through logs and CI.
 
