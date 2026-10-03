@@ -1,0 +1,137 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "packId": "public-reference.gba-kt-rl-8-3",
+    "releaseId": "kt-rl-8-3-2025-08-06-public-reference.1",
+    "lifecycleStatus": "IN_REVIEW",
+    "validationLevel": "PUBLIC_REFERENCE",
+    "entryRuleId": "GBA-KT-RL-8-3-EXCEPTION-PATH"
+  },
+  "fields": [
+    {
+      "id": "ambulatory_treatment",
+      "type": "truth",
+      "required": true
+    },
+    {
+      "id": "strict_medical_necessity",
+      "type": "truth",
+      "required": true
+    },
+    {
+      "id": "qualifying_disability_marker_ag_bl_h",
+      "type": "truth",
+      "required": false
+    },
+    {
+      "id": "care_grade",
+      "type": "number",
+      "required": false
+    },
+    {
+      "id": "care_grade_3_permanent_mobility_transport_need",
+      "type": "truth",
+      "required": false
+    }
+  ],
+  "evidenceRequirements": [
+    {
+      "id": "severe_disability_card"
+    },
+    {
+      "id": "care_grade_notice"
+    }
+  ],
+  "sources": [
+    {
+      "id": "GBA-KT-RL-2025-05-15",
+      "authority": "Gemeinsamer Bundesausschuss (G-BA)",
+      "title": "Richtlinie über die Verordnung von Krankenfahrten, Krankentransportleistungen und Rettungsfahrten nach § 92 Absatz 1 Satz 2 Nummer 12 SGB V (Krankentransport-Richtlinie/KT-RL)",
+      "documentType": "RICHTLINIE",
+      "publicationDate": "2025-08-05",
+      "validFrom": "2025-08-06",
+      "validUntil": null,
+      "version": "2025-05-15",
+      "sourceLocation": "https://www.g-ba.de/downloads/62-492-3867/KT-RL_2025-05-15_iK-2025-08-06.pdf",
+      "retrievedAt": "2026-10-02",
+      "contentHash": "sha256:114a9ca2dd4ef1b49433898abfffb62570911a58e756c01f5e0f3329c9f93dd6",
+      "status": "ACTIVE"
+    }
+  ],
+  "rules": [
+    {
+      "id": "GBA-KT-RL-8-3-EXCEPTION-PATH",
+      "version": 1,
+      "validFrom": "2025-08-06",
+      "validUntil": null,
+      "sourceId": "GBA-KT-RL-2025-05-15",
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "field_equals",
+            "field": "ambulatory_treatment",
+            "expected": "YES"
+          },
+          {
+            "kind": "field_equals",
+            "field": "strict_medical_necessity",
+            "expected": "YES"
+          },
+          {
+            "kind": "any",
+            "conditions": [
+              {
+                "kind": "requires_evidence",
+                "evidenceRequirementId": "severe_disability_card",
+                "conditions": [
+                  {
+                    "kind": "field_equals",
+                    "field": "qualifying_disability_marker_ag_bl_h",
+                    "expected": "YES"
+                  }
+                ]
+              },
+              {
+                "kind": "requires_evidence",
+                "evidenceRequirementId": "care_grade_notice",
+                "conditions": [
+                  {
+                    "kind": "any",
+                    "conditions": [
+                      {
+                        "kind": "number_in_range",
+                        "field": "care_grade",
+                        "minimum": 4,
+                        "maximum": 5
+                      },
+                      {
+                        "kind": "all",
+                        "conditions": [
+                          {
+                            "kind": "number_in_range",
+                            "field": "care_grade",
+                            "minimum": 3,
+                            "maximum": 3
+                          },
+                          {
+                            "kind": "field_equals",
+                            "field": "care_grade_3_permanent_mobility_transport_need",
+                            "expected": "YES"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED",
+      "onUnknown": "HUMAN_REVIEW"
+    }
+  ]
+}
