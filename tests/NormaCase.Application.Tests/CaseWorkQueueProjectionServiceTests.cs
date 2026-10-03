@@ -72,6 +72,26 @@ public sealed class CaseWorkQueueProjectionServiceTests
     }
 
     [Fact]
+    public void Technical_exception_can_be_queued_before_any_assessment_exists()
+    {
+        var definition = Process();
+        var process = CaseProcessingInstance
+            .Start(new("case-technical"), 1, definition)
+            .Apply(definition, 0, "technical-error");
+
+        var membership = new CaseWorkQueueProjectionService().Project(
+            process,
+            Configuration(definition));
+
+        Assert.Equal(CaseWorkQueueProjectionStatus.Assigned, membership.Status);
+        Assert.Equal("technical", membership.QueueId);
+        Assert.Equal("integration-error", membership.StateId);
+        Assert.Equal(new CaseId("case-technical"), membership.CaseId);
+        Assert.Equal(1, membership.CaseRevision);
+        Assert.Equal(1, membership.ProcessRevision);
+    }
+
+    [Fact]
     public void Assessment_or_triage_semantics_do_not_recalculate_queue_membership()
     {
         var record = Record(TruthValue.Yes, EvidenceStatus.Missing);
@@ -218,12 +238,14 @@ public sealed class CaseWorkQueueProjectionServiceTests
                 new("received", false),
                 new("awaiting-approval", false),
                 new("waiting-information", false),
-                new("manual-review", false)
+                new("manual-review", false),
+                new("integration-error", false)
             ],
             [
                 new("prepare-approval", "received", "awaiting-approval"),
                 new("request-information", "received", "waiting-information"),
                 new("request-review", "received", "manual-review"),
+                new("technical-error", "received", "integration-error"),
                 new("escalate-review", "awaiting-approval", "manual-review")
             ]);
 
@@ -235,6 +257,7 @@ public sealed class CaseWorkQueueProjectionServiceTests
             [
                 new("approval", definition.Id, definition.Version, ["awaiting-approval"]),
                 new("clarification", definition.Id, definition.Version, ["waiting-information"]),
-                new("review", definition.Id, definition.Version, ["manual-review"])
+                new("review", definition.Id, definition.Version, ["manual-review"]),
+                new("technical", definition.Id, definition.Version, ["integration-error"])
             ]);
 }

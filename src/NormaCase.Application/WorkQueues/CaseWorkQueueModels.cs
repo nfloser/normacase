@@ -91,25 +91,17 @@ public enum CaseWorkQueueProjectionStatus
     Unassigned
 }
 
-public sealed class CaseWorkItemProjection
+public sealed class CaseWorkQueueMembership
 {
-    internal CaseWorkItemProjection(
+    internal CaseWorkQueueMembership(
         CaseWorkQueueConfiguration configuration,
         CaseProcessingInstance process,
-        AssessmentId assessmentId,
-        AssessmentOutcome assessmentOutcome,
-        AssessmentRouting routing,
         string? queueId)
     {
         ConfigurationId = configuration.Id;
         ConfigurationVersion = configuration.Version;
         CaseId = process.CaseId;
         CaseRevision = process.CaseRevision;
-        AssessmentId = assessmentId;
-        AssessmentOutcome = assessmentOutcome;
-        RoutingDisposition = routing.Disposition;
-        AssessmentRoutingPolicyId = routing.PolicyId;
-        AssessmentRoutingPolicyVersion = routing.PolicyVersion;
         WorkflowId = process.WorkflowId;
         WorkflowVersion = process.WorkflowVersion;
         StateId = process.StateId;
@@ -124,15 +116,45 @@ public sealed class CaseWorkItemProjection
     public int ConfigurationVersion { get; }
     public CaseId CaseId { get; }
     public long CaseRevision { get; }
-    public AssessmentId AssessmentId { get; }
-    public AssessmentOutcome AssessmentOutcome { get; }
-    public AssessmentRoutingDisposition RoutingDisposition { get; }
-    public string AssessmentRoutingPolicyId { get; }
-    public int AssessmentRoutingPolicyVersion { get; }
     public string WorkflowId { get; }
     public int WorkflowVersion { get; }
     public string StateId { get; }
     public long ProcessRevision { get; }
     public string? QueueId { get; }
     public CaseWorkQueueProjectionStatus Status { get; }
+}
+
+public sealed class CaseWorkItemProjection
+{
+    internal CaseWorkItemProjection(
+        CaseWorkQueueMembership membership,
+        AssessmentId assessmentId,
+        AssessmentOutcome assessmentOutcome,
+        AssessmentRouting routing)
+    {
+        Membership = membership;
+        AssessmentId = assessmentId;
+        AssessmentOutcome = assessmentOutcome;
+        RoutingDisposition = routing.Disposition;
+        AssessmentRoutingPolicyId = routing.PolicyId;
+        AssessmentRoutingPolicyVersion = routing.PolicyVersion;
+    }
+
+    public CaseWorkQueueMembership Membership { get; }
+    public string ConfigurationId => Membership.ConfigurationId;
+    public int ConfigurationVersion => Membership.ConfigurationVersion;
+    public CaseId CaseId => Membership.CaseId;
+    public long CaseRevision => Membership.CaseRevision;
+    public string WorkflowId => Membership.WorkflowId;
+    public int WorkflowVersion => Membership.WorkflowVersion;
+    public string StateId => Membership.StateId;
+    public long ProcessRevision => Membership.ProcessRevision;
+    public string? QueueId => Membership.QueueId;
+    public CaseWorkQueueProjectionStatus Status => Membership.Status;
+
+    public AssessmentId AssessmentId { get; }
+    public AssessmentOutcome AssessmentOutcome { get; }
+    public AssessmentRoutingDisposition RoutingDisposition { get; }
+    public string AssessmentRoutingPolicyId { get; }
+    public int AssessmentRoutingPolicyVersion { get; }
 }
