@@ -236,10 +236,11 @@ jobs:
         shell: bash
         run: echo "NORMACASE_REVIEW_TEST_CREDENTIAL=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
       - name: Persistent review browser flow
-        run: npm run test:e2e:review
+        shell: bash
+        run: |
+          export SyntheticReview__Enabled=true
+          export SyntheticReview__PersistenceEnabled=true
+          export SyntheticReview__Credential="$NORMACASE_REVIEW_TEST_CREDENTIAL"
+          export ConnectionStrings__SyntheticReview="$NORMACASE_POSTGRES_TEST_CONNECTION"
+          npm run test:e2e:review
         working-directory: frontend
-        env:
-          SyntheticReview__Enabled: "true"
-          SyntheticReview__PersistenceEnabled: "true"
-          SyntheticReview__Credential: ${{ env.NORMACASE_REVIEW_TEST_CREDENTIAL }}
-          ConnectionStrings__SyntheticReview: ${{ env.NORMACASE_POSTGRES_TEST_CONNECTION }}
