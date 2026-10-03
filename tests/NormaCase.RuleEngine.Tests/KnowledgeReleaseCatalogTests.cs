@@ -98,6 +98,18 @@ public sealed class KnowledgeReleaseCatalogTests
     }
 
     [Fact]
+    public void Same_release_identity_with_only_byte_formatting_changes_is_still_a_conflict()
+    {
+        var catalog = new KnowledgeReleaseCatalog();
+        var original = DemoAJson();
+
+        catalog.Register(original);
+
+        Assert.Throws<KnowledgeReleaseIdentityConflictException>(
+            () => catalog.Register(original + Environment.NewLine));
+    }
+
+    [Fact]
     public void Invalid_pack_is_rejected_before_it_can_enter_the_catalog()
     {
         var invalid = JsonNode.Parse(DemoAJson())!;
