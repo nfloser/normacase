@@ -134,6 +134,8 @@ public static class WorkflowExecutionSnapshotJson
         WorkflowExecutionSnapshotData data)
     {
         ArgumentNullException.ThrowIfNull(data);
+        ArgumentNullException.ThrowIfNull(data.States);
+        ArgumentNullException.ThrowIfNull(data.Transitions);
 
         if (data.States.Any(state => state is null)
             || data.Transitions.Any(
