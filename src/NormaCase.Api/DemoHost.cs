@@ -192,6 +192,7 @@ public static class DemoHost
         }));
 
         WorkflowEndpoints.Map(app, packs, presentations, platformVersion);
+        SyntheticWorkQueueEndpoints.Map(app, packs, platformVersion);
         return app;
     }
 
