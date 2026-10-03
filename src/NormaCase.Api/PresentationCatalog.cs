@@ -1,162 +1,98 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using NormaCase.Knowledge.Model;
+using NormaCase.Knowledge.Presentation;
 using NormaCase.RuleEngine.Evaluation;
 using NormaCase.Serialization;
 
 namespace NormaCase.Api;
 
-internal sealed record PresentationText(string Label, string? HelpText = null);
-internal sealed record PresentationOutputText(string Label, Dictionary<string, string> Choices);
-internal sealed record PresentationExample(string Id, string Label, string CaseFile);
-internal sealed record PresentationDocument(
-    int FormatVersion,
-    string Locale,
-    string PackId,
-    string Name,
-    string Description,
-    Dictionary<string, PresentationText> Fields,
-    Dictionary<string, PresentationText> EvidenceRequirements,
-    Dictionary<string, PresentationOutputText> Outputs,
-    List<PresentationExample> Examples);
+internal sealed record LoadedExample(
+    string Id,
+    string Label,
+    CaseInput Input);
 
-internal sealed record LoadedExample(string Id, string Label, CaseInput Input);
 internal sealed record LoadedPresentation(
     string Locale,
     string Name,
     string Description,
-    IReadOnlyDictionary<string, PresentationText> Fields,
-    IReadOnlyDictionary<string, PresentationText> EvidenceRequirements,
-    IReadOnlyDictionary<string, PresentationOutputText> Outputs,
+    IReadOnlyDictionary<string, KnowledgePresentationText> Fields,
+    IReadOnlyDictionary<string, KnowledgePresentationText>
+        EvidenceRequirements,
+    IReadOnlyDictionary<string, KnowledgePresentationOutput> Outputs,
     IReadOnlyList<LoadedExample> Examples);
 
 internal static class PresentationCatalog
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = false,
-        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
-        RespectNullableAnnotations = true,
-        RespectRequiredConstructorParameters = true,
-        MaxDepth = 32
-    };
-
     public static IReadOnlyDictionary<string, LoadedPresentation> Load(
         IReadOnlyDictionary<string, KnowledgePack> packs)
     {
-        var directory = Path.Combine(AppContext.BaseDirectory, "Presentation");
-        var exampleDirectory = Path.Combine(AppContext.BaseDirectory, "Examples");
-        var result = new Dictionary<string, LoadedPresentation>(StringComparer.Ordinal);
+        var directory = Path.Combine(
+            AppContext.BaseDirectory,
+            "Presentation");
+        var exampleDirectory = Path.Combine(
+            AppContext.BaseDirectory,
+            "Examples");
+        var result = new Dictionary<string, LoadedPresentation>(
+            StringComparer.Ordinal);
+        var loader = new KnowledgePresentationLoader();
 
-        foreach (var path in Directory.GetFiles(directory, "*.json", SearchOption.AllDirectories))
+        foreach (var path in Directory.GetFiles(
+                     directory,
+                     "*.json",
+                     SearchOption.AllDirectories))
         {
-            var json = File.ReadAllText(path);
-            RejectDuplicateProperties(json);
-            var document = JsonSerializer.Deserialize<PresentationDocument>(json, JsonOptions)
-                ?? throw new InvalidOperationException("Presentation metadata is required.");
+            var metadata = loader.LoadFromJson(
+                packs,
+                File.ReadAllText(path),
+                "de-DE");
 
-            if (document.FormatVersion != 1
-                || !string.Equals(document.Locale, "de-DE", StringComparison.Ordinal)
-                || string.IsNullOrWhiteSpace(document.Name)
-                || string.IsNullOrWhiteSpace(document.Description)
-                || !packs.TryGetValue(document.PackId, out var pack)
-                || !result.TryAdd(document.PackId, null!))
+            if (!result.TryAdd(metadata.PackId, null!))
             {
-                throw new InvalidOperationException("Invalid synthetic presentation metadata.");
+                throw new InvalidOperationException(
+                    "Duplicate presentation metadata for Knowledge Pack.");
             }
 
-            ValidateKeys(pack.Fields.Select(field => field.Id), document.Fields.Keys);
-            ValidateKeys(pack.EvidenceRequirements.Select(item => item.Id), document.EvidenceRequirements.Keys);
-            ValidateKeys(pack.Outputs.Select(item => item.Id).Distinct(StringComparer.Ordinal), document.Outputs.Keys);
-
-            foreach (var item in document.Fields.Values.Concat(document.EvidenceRequirements.Values))
-            {
-                if (string.IsNullOrWhiteSpace(item.Label))
-                    throw new InvalidOperationException("Presentation labels must not be empty.");
-            }
-
-            foreach (var item in document.Outputs)
-            {
-                if (string.IsNullOrWhiteSpace(item.Value.Label)
-                    || item.Value.Choices.Any(choice => string.IsNullOrWhiteSpace(choice.Value)))
-                {
-                    throw new InvalidOperationException("Output presentation labels must not be empty.");
-                }
-
-                var expectedChoices = pack.Outputs
-                    .Where(output => string.Equals(output.Id, item.Key, StringComparison.Ordinal))
-                    .SelectMany(output => output.Choices)
-                    .ToHashSet(StringComparer.Ordinal);
-                if (!expectedChoices.SetEquals(item.Value.Choices.Keys))
-                    throw new InvalidOperationException("Output presentation choices must match the synthetic pack.");
-            }
-
+            var pack = packs[metadata.PackId];
             var examples = new List<LoadedExample>();
-            var exampleIds = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var example in document.Examples)
-            {
-                if (string.IsNullOrWhiteSpace(example.Id)
-                    || string.IsNullOrWhiteSpace(example.Label)
-                    || !exampleIds.Add(example.Id)
-                    || Path.GetFileName(example.CaseFile) != example.CaseFile)
-                {
-                    throw new InvalidOperationException("Invalid synthetic example metadata.");
-                }
 
-                var examplePath = Path.Combine(exampleDirectory, example.CaseFile);
+            foreach (var example in metadata.Examples)
+            {
+                var examplePath = Path.Combine(
+                    exampleDirectory,
+                    example.CaseFile);
                 var exampleJson = File.ReadAllText(examplePath);
                 var input = CaseInputJson.Deserialize(exampleJson);
-                _ = new RuleEvaluator().Evaluate(pack, input.Facts, input.AssessmentDate, input.Evidence);
-                examples.Add(new(example.Id, example.Label, input));
+
+                _ = new RuleEvaluator().Evaluate(
+                    pack,
+                    input.Facts,
+                    input.AssessmentDate,
+                    input.Evidence);
+
+                examples.Add(
+                    new(
+                        example.Id,
+                        example.Label,
+                        input));
             }
 
-            result[document.PackId] = new(
-                document.Locale,
-                document.Name,
-                document.Description,
-                new Dictionary<string, PresentationText>(document.Fields, StringComparer.Ordinal),
-                new Dictionary<string, PresentationText>(document.EvidenceRequirements, StringComparer.Ordinal),
-                new Dictionary<string, PresentationOutputText>(document.Outputs, StringComparer.Ordinal),
+            result[metadata.PackId] = new(
+                metadata.Locale,
+                metadata.Name,
+                metadata.Description,
+                metadata.Fields,
+                metadata.EvidenceRequirements,
+                metadata.Outputs,
                 examples);
         }
 
-        if (result.Count != packs.Count || packs.Keys.Any(packId => !result.ContainsKey(packId)))
-            throw new InvalidOperationException("Every synthetic pack requires de-DE presentation metadata.");
+        if (result.Count != packs.Count
+            || packs.Keys.Any(
+                packId => !result.ContainsKey(packId)))
+        {
+            throw new InvalidOperationException(
+                "Every synthetic pack requires de-DE presentation metadata.");
+        }
 
         return result;
-    }
-
-    private static void ValidateKeys(IEnumerable<string> expected, IEnumerable<string> actual)
-    {
-        var expectedSet = expected.ToHashSet(StringComparer.Ordinal);
-        var actualSet = actual.ToHashSet(StringComparer.Ordinal);
-        if (!expectedSet.SetEquals(actualSet))
-            throw new InvalidOperationException("Presentation metadata ids must match the synthetic pack.");
-    }
-
-    private static void RejectDuplicateProperties(string json)
-    {
-        using var document = JsonDocument.Parse(json, new JsonDocumentOptions { MaxDepth = 32 });
-        Visit(document.RootElement);
-    }
-
-    private static void Visit(JsonElement element)
-    {
-        if (element.ValueKind == JsonValueKind.Object)
-        {
-            var names = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var property in element.EnumerateObject())
-            {
-                if (!names.Add(property.Name))
-                    throw new JsonException("Duplicate presentation property.");
-                Visit(property.Value);
-            }
-        }
-        else if (element.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var item in element.EnumerateArray())
-                Visit(item);
-        }
     }
 }
