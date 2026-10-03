@@ -183,5 +183,9 @@ Snapshots repeat the graph in each revision deliberately to preserve independent
 historical entries. This initial contract is intended for bounded workflows; compact
 large-history storage and query paging require a separate reviewed design.
 
-Database persistence, authorization, association with actual case records,
+Append-only PostgreSQL run persistence is available through `IWorkflowRunStore`.
+See [POSTGRESQL_WORKFLOW_STORAGE.md](POSTGRESQL_WORKFLOW_STORAGE.md) for transaction,
+historical read and integrity guarantees. It is not exposed by the synthetic API.
+
+Authorization, association with actual case records,
 assessment-driven transitions and user-facing process controls remain separate slices.
