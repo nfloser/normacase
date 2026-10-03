@@ -100,6 +100,15 @@ public sealed class SyntheticReviewHostTests
 
             using var client = factory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+            await using (var knowledge = NpgsqlDataSource.Create(connection))
+            {
+                await using var count = knowledge.CreateCommand("SELECT count(*) FROM normacase.knowledge_release_artifacts");
+                Assert.Equal(7L, await count.ExecuteScalarAsync());
+                var retained = await new NormaCase.Persistence.PostgreSql.PostgresKnowledgeReleaseStore(knowledge)
+                    .LoadAsync("synthetic.demo-g", "demo-g-2026.1");
+                Assert.NotNull(retained);
+                Assert.Equal("SYNTHETIC", retained.ValidationLevel);
+            }
             var seen = new List<string>();
             string? cursor = null;
             do

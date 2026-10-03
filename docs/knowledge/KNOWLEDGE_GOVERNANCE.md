@@ -71,10 +71,14 @@ identity for different JSON is rejected instead of silently replacing history. L
 an artifact reparses the retained JSON and returns a fresh validated `KnowledgePack`,
 so mutation by one caller cannot alter the registered release seen by another caller.
 
-This catalog is in-memory only. Its SHA-256 fingerprint distinguishes registered
+The `KnowledgeReleaseCatalog` implementation is in-memory. A durable Application
+store and PostgreSQL adapter retain the exact same artifacts across restart; the
+opt-in persistent host registers and loads its installed synthetic releases through
+that adapter. See [durable releases](../architecture/POSTGRESQL_KNOWLEDGE_RELEASES.md).
+Its SHA-256 fingerprint distinguishes registered
 content and detects accidental substitution; it is not a signature, authenticity
-proof, approval record or persistent tamper-evident store. Activation policy,
-persistence, signatures and key management remain separate reviewed boundaries.
+proof, approval record or tamper-evident store. Activation policy,
+approval administration, signatures and key management remain separate boundaries.
 
 ## Tests and releases
 

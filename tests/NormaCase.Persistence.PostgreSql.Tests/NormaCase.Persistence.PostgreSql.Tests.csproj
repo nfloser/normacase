@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="../../knowledge/demo-a/pack.json"
+          Link="Fixtures/demo-a-pack.json"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../knowledge/demo-c/pack.json"
           Link="Fixtures/demo-c-pack.json"
           CopyToOutputDirectory="PreserveNewest" />

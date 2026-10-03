@@ -36,6 +36,8 @@ public sealed class KnowledgeReleaseArtifact
 
     public string Sha256 { get; }
 
+    public string KnowledgePackJson => _knowledgePackJson;
+
     public KnowledgePack LoadPack()
         => new KnowledgePackLoader().LoadFromJson(
             _knowledgePackJson);

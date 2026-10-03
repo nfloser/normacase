@@ -67,6 +67,20 @@ public static class DemoHost
         if (persistentReviewEnabled && !reviewCredential.Enabled)
             throw new InvalidOperationException("Persistent synthetic review requires the verified review identity boundary.");
 
+        if (persistentReviewEnabled)
+        {
+            var source = app.Services.GetRequiredService<Npgsql.NpgsqlDataSource>();
+            new NormaCase.Persistence.PostgreSql.PostgresMigrationRunner(source).MigrateAsync().GetAwaiter().GetResult();
+            var releases = new NormaCase.Persistence.PostgreSql.PostgresKnowledgeReleaseStore(source);
+            foreach (var entry in catalog)
+            {
+                var retained = releases.RegisterAsync(entry.Value.Json).GetAwaiter().GetResult();
+                var restored = releases.LoadAsync(retained.PackId, retained.ReleaseId).GetAwaiter().GetResult()
+                    ?? throw new NormaCase.Persistence.PostgreSql.KnowledgeReleaseIntegrityException();
+                packs[entry.Key] = restored.LoadPack();
+            }
+        }
+
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
             context.Response.StatusCode = 500;
