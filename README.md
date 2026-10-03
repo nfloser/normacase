@@ -173,6 +173,15 @@ The German workbench also downloads complete snapshots after evaluation and veri
 uploaded synthetic snapshot files locally. Imported results remain read-only; see
 [the workbench guide](docs/development/WORKBENCH.md).
 
+## Opt-in persistent synthetic review host
+
+The default preview stays anonymous and read-only. An explicitly configured local
+synthetic mode can connect the reviewed ASP.NET Core principal to the existing
+PostgreSQL case-review aggregate for persistent demo-g review actions. See
+[the German security design](docs/security/SYNTHETIC_REVIEW_HOST.md) and
+[the local setup guide](docs/development/SYNTHETIC_REVIEW_HOST.de.md). This is not
+productive identity or domain approval.
+
 ## Downloadable synthetic preview
 
 Native Windows x64 and Linux x64 preview packages are built and smoke-tested by
