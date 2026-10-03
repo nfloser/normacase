@@ -18,3 +18,9 @@
 .decision-trace p { margin: .4rem 0; }
 .decision-trace dl { margin: .5rem 0; }
 .trace-result, .trace-source { font-size: .85rem; }
+.queue-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.queue-grid ul { list-style:none; padding:0; }
+.queue-grid button { max-width:100%; overflow-wrap:anywhere; margin-bottom:.5rem; white-space:normal; }
+.work-queues article { border-top:1px solid #d8dee5; margin-top:1rem; padding-top:1rem; overflow-wrap:anywhere; }
+@media(max-width:650px) { .queue-grid { grid-template-columns:1fr; } }
+.work-queues { margin:22px 0; }

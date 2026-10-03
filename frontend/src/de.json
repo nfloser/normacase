@@ -129,5 +129,28 @@
       "sum": "Summe",
       "max": "Maximum"
     }
+  },
+  "workQueues": {
+    "heading": "Fallwarteschlangen",
+    "help": "Fünf synthetische Fälle durchlaufen Prüfung und Routing automatisch. Diese Ansicht ist schreibgeschützt und wird bei jedem Neustart neu aufgebaut. Eine Freigabe wurde noch nicht erteilt.",
+    "queues": {
+      "approval": "Zur Freigabe vorbereitet",
+      "clarification": "Informationen nachfordern",
+      "review": "Gegenprüfung erforderlich",
+      "technical": "Technische Klärung"
+    },
+    "states": {
+      "awaiting-approval": "Wartet auf menschliche Freigabe",
+      "waiting-information": "Informationen fehlen",
+      "manual-review": "Menschliche Gegenprüfung erforderlich",
+      "integration-error": "Technischer Fehler vor der Bewertung"
+    },
+    "select": "Fall öffnen",
+    "detail": "Aufgezeichneter Fall",
+    "caseRevision": "Fallrevision",
+    "processRevision": "Prozessrevision",
+    "noAssessment": "Für diesen technischen Fehler liegt keine Bewertung vor. Ergebnis, Entscheidungsweg und Nachweise wurden nicht erzeugt.",
+    "recorded": "Aufgezeichnet am",
+    "loading": "Fall wird geladen …"
   }
 }
