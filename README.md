@@ -60,6 +60,15 @@ docs/
 
 The system grows as a modular monolith. ASP.NET Core, React + TypeScript, PostgreSQL and Docker remain the preferred product stack, while the domain/rule core stays independent from framework and storage details.
 
+
+## Product direction
+
+The production target is an integration-first case flow rather than manual per-case imports. External case sources feed explicit adapters, NormaCase normalizes and evaluates the case deterministically, and routing places complete routine cases into an approval-oriented work queue while `INCOMPLETE`, conflicting or `HUMAN_REVIEW` cases are surfaced for focused human work.
+
+Assessment outcomes stay separate from workflow/case-processing states. External systems such as future MDconnect, MEDIKOS or standards-based SPV-MD integrations belong behind adapters and must not shape the generic core. Manual import remains a useful synthetic/test/fallback path.
+
+See [the target operating model](docs/project/TARGET_OPERATING_MODEL.md) for the durable product-flow constraints.
+
 ## Current deterministic slice
 
 The current core can:
