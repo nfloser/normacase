@@ -1,1 +1,47 @@
-name: Actions runner diagnostic\n\non:\n  pull_request:\n    paths:\n      - ".github/workflows/actions-diagnostic.yml"\n  workflow_dispatch:\n\npermissions:\n  contents: read\n\njobs:\n  runner-only:\n    name: Runner only (${{ matrix.os }})\n    strategy:\n      fail-fast: false\n      matrix:\n        os:\n          - ubuntu-latest\n          - windows-latest\n    runs-on: ${{ matrix.os }}\n    timeout-minutes: 5\n    steps:\n      - name: Confirm runner shell starts\n        run: echo "runner-started"\n\n  checkout:\n    name: Checkout action\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - name: Checkout\n        uses: actions/checkout@v7\n      - name: Confirm checkout\n        run: git rev-parse --verify HEAD\n\n  setup-dotnet:\n    name: Setup .NET action\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - name: Setup .NET\n        uses: actions/setup-dotnet@v6\n        with:\n          dotnet-version: 10.0.x\n      - name: Confirm SDK\n        run: dotnet --version\n
+name: Actions runner diagnostic
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/actions-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runner-only:
+    name: Runner only (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - name: Confirm runner shell starts
+        run: echo "runner-started"
+
+  checkout:
+    name: Checkout action
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Confirm checkout
+        run: git rev-parse --verify HEAD
+
+  setup-dotnet:
+    name: Setup .NET action
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Confirm SDK
+        run: dotnet --version
