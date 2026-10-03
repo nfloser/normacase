@@ -100,7 +100,7 @@
     "caseRevision": "Fallrevision",
     "processRevision": "Prozessrevision",
     "assessment": "Aufgezeichnete Prüfung",
-    "routing": "Weiterleitung",
+    "routingLabel": "Weiterleitung",
     "noAssessment": "Noch keine fachliche Prüfung aufgezeichnet",
     "noAssessmentHelp": "Dieser synthetische Fall liegt wegen eines technischen Vorgangsstands im Arbeitsvorrat. Es wurde dafür kein Prüfergebnis erfunden."
   },
