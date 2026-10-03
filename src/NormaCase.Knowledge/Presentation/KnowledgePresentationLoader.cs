@@ -221,6 +221,21 @@ public sealed class KnowledgePresentationLoader
                 "Invalid Knowledge presentation metadata.");
         }
 
+        if (document.Examples.Any(example => example is null)
+            || document.Fields.Any(item => item.Value is null)
+            || document.EvidenceRequirements.Any(
+                item => item.Value is null)
+            || document.Outputs.Any(item => item.Value is null)
+            || document.Outputs.Values.Any(
+                output => output is not null
+                    && (output.Choices is null
+                        || output.Choices.Any(
+                            choice => choice.Value is null))))
+        {
+            throw new JsonException(
+                "Presentation collections cannot contain null entries.");
+        }
+
         ValidateKeys(
             pack.Fields.Select(field => field.Id),
             document.Fields.Keys);
@@ -270,19 +285,6 @@ public sealed class KnowledgePresentationLoader
                 throw new InvalidOperationException(
                     "Output presentation choices must match the Knowledge Pack.");
             }
-        }
-
-        if (document.Examples.Any(example => example is null)
-            || document.Fields.Any(item => item.Value is null)
-            || document.EvidenceRequirements.Any(
-                item => item.Value is null)
-            || document.Outputs.Any(item => item.Value is null)
-            || document.Outputs.Values.Any(
-                output => output.Choices.Any(
-                    choice => choice.Value is null)))
-        {
-            throw new JsonException(
-                "Presentation collections cannot contain null entries.");
         }
 
         var exampleIds = new HashSet<string>(
