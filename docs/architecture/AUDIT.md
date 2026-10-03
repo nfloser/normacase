@@ -50,6 +50,32 @@ The review reason is mandatory. An optional `ReviewReference` carries a typed ex
 
 Authorization remains outside the domain contract. An application layer must verify that the authenticated actor is allowed to review or override an assessment before constructing and storing a review record.
 
+## Application orchestration
+
+`NormaCase.Application.Audit.AssessmentReviewService` binds the existing immutable
+assessment-record and append-only audit-store contracts without changing either
+domain model.
+
+Initialization requires an already persisted `AssessmentRecord`. The service creates
+sequence 1 from that record's exact assessment id and `RecordedAtUtc`; callers only
+supply the explicit actor id. It refuses duplicate initialization and does not invent
+a timestamp, id or fallback history.
+
+Recording a human review first constructs the existing `HumanReviewRecord`, so
+invalid actor, timestamp, disposition, reason or override combinations fail before
+storage is touched. It then requires both the immutable assessment and its initialized
+audit history, verifies that the history's creation event is bound to the persisted
+assessment id and recording timestamp, appends exactly one event and asks the audit
+store to persist that new history.
+
+The service never re-evaluates the assessment, resolves current Knowledge or changes
+the persisted input/result. Store conflicts and integrity failures are propagated; it
+does not silently retry with a different sequence or payload.
+
+Authentication and authorization remain outside this service. An actor id supplied to
+the application contract is still only a claimed identity until a later authenticated
+application boundary verifies permission before invoking the review service.
+
 ## Persistence boundary
 
 This slice is deliberately not an audit database.
