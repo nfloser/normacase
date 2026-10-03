@@ -87,6 +87,7 @@ public static class DemoHost
                         locale = presentation.Locale,
                         name = presentation.Name,
                         description = presentation.Description,
+                        workflows = presentation.Workflows,
                         outputs = presentation.Outputs
                             .OrderBy(item => item.Key, StringComparer.Ordinal)
                             .Select(item => new
@@ -190,10 +191,11 @@ public static class DemoHost
             return Results.Json(new { assessmentJson = AssessmentJson.Serialize(result.Assessment, result.PlatformVersion) });
         }));
 
+        WorkflowEndpoints.Map(app, packs, presentations, platformVersion);
         return app;
     }
 
-    private static async Task<IResult> HandleJson(HttpRequest request, Func<string, IResult> process)
+    internal static async Task<IResult> HandleJson(HttpRequest request, Func<string, IResult> process)
     {
         if (!request.HasJsonContentType())
             return Error("json_required", 415);
@@ -220,6 +222,18 @@ public static class DemoHost
         catch (SnapshotReplayException)
         {
             return Error("replay_mismatch", 409);
+        }
+        catch (NormaCase.Application.Workflows.WorkflowRunConcurrencyException)
+        {
+            return Error("workflow_revision", 409);
+        }
+        catch (NormaCase.Domain.Workflow.WorkflowTransitionNotAllowedException)
+        {
+            return Error("workflow_transition", 409);
+        }
+        catch (WorkflowCatalogMismatchException)
+        {
+            return Error("workflow_mismatch", 409);
         }
         catch (Exception exception) when (exception is JsonException or KnowledgeValidationException or ArgumentException or OverflowException)
         {
@@ -256,6 +270,6 @@ public static class DemoHost
             && string.IsNullOrEmpty(origin.Fragment) && string.IsNullOrEmpty(origin.UserInfo);
     }
 
-    private static IResult Error(string code, int status)
+    internal static IResult Error(string code, int status)
         => Results.Json(new { code, message = ApiMessages.Get(code) }, statusCode: status);
 }

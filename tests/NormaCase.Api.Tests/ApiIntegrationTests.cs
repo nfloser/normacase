@@ -22,7 +22,7 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         var response = await _client.GetAsync("/api/packs");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        Assert.Equal(5, json.RootElement.GetArrayLength());
+        Assert.Equal(6, json.RootElement.GetArrayLength());
         foreach (var pack in json.RootElement.EnumerateArray())
         {
             Assert.Equal("SYNTHETIC", pack.GetProperty("validationLevel").GetString());

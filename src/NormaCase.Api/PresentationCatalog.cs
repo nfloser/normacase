@@ -18,7 +18,8 @@ internal sealed record LoadedPresentation(
     IReadOnlyDictionary<string, KnowledgePresentationText>
         EvidenceRequirements,
     IReadOnlyDictionary<string, KnowledgePresentationOutput> Outputs,
-    IReadOnlyList<LoadedExample> Examples);
+    IReadOnlyList<LoadedExample> Examples,
+    IReadOnlyList<KnowledgePresentationWorkflow> Workflows);
 
 internal static class PresentationCatalog
 {
@@ -82,7 +83,8 @@ internal static class PresentationCatalog
                 metadata.Fields,
                 metadata.EvidenceRequirements,
                 metadata.Outputs,
-                examples);
+                examples,
+                metadata.Workflows);
         }
 
         if (result.Count != packs.Count

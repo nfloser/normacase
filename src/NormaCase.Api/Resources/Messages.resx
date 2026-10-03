@@ -13,4 +13,8 @@
   <data name="invalid_input" xml:space="preserve"><value>Die Eingabe ist ungültig. Prüfe Format, Datentypen und Referenzen.</value></data>
   <data name="synthetic_only" xml:space="preserve"><value>Dieser Dienst akzeptiert ausschließlich synthetische Prüfsnapshots.</value></data>
   <data name="replay_mismatch" xml:space="preserve"><value>Die Wiederholung konnte nicht bestätigt werden. Plattformstand, Wissensstand oder gespeichertes Ergebnis stimmt nicht überein.</value></data>
+  <data name="workflow_created" xml:space="preserve"><value>Vorgang gestartet</value></data>
+  <data name="workflow_revision" xml:space="preserve"><value>Der Vorgangsstand hat sich geändert. Prüfe die erwartete Revision.</value></data>
+  <data name="workflow_transition" xml:space="preserve"><value>Dieser Übergang ist im aktuellen Vorgangsstand nicht verfügbar.</value></data>
+  <data name="workflow_mismatch" xml:space="preserve"><value>Der Vorgang passt nicht zum installierten synthetischen Wissens- oder Plattformstand.</value></data>
 </root>

@@ -8,6 +8,7 @@
     <Content Include="../../knowledge/demo-b/pack.json" Link="Knowledge/demo-b.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../knowledge/demo-c/pack.json" Link="Knowledge/demo-c.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../knowledge/demo-d/pack.json" Link="Knowledge/demo-d.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../knowledge/demo-f/pack.json" Link="Knowledge/demo-f.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../knowledge/demo-e/pack.json" Link="Knowledge/demo-e.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../knowledge/demo-*/presentation.de-DE.json" Link="Presentation/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../examples/cases/*.json" Link="Examples/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
