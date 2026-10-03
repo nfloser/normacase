@@ -30,6 +30,24 @@ public sealed class KnowledgePresentationLoaderTests
         Assert.Equal(2, presentation.Examples.Count);
     }
 
+    [Fact]
+    public void Loader_accepts_an_alternate_locale_when_the_caller_requests_it()
+    {
+        var node = JsonNode.Parse(
+            PresentationJson("demo-a"))!;
+        node["locale"] = "en-US";
+        node["name"] = "Demo A";
+        node["description"] = "Synthetic alternate-locale metadata.";
+
+        var presentation = _presentationLoader.LoadFromJson(
+            LoadPack("demo-a"),
+            node.ToJsonString(),
+            "en-US");
+
+        Assert.Equal("en-US", presentation.Locale);
+        Assert.Equal("Demo A", presentation.Name);
+    }
+
     [Theory]
     [InlineData("formatVersion", "2")]
     [InlineData("locale", "\"en-US\"")]
@@ -83,6 +101,30 @@ public sealed class KnowledgePresentationLoaderTests
     {
         var node = JsonNode.Parse(PresentationJson("demo-a"))!;
         node[property] = " ";
+
+        Assert.Throws<InvalidOperationException>(
+            () => _presentationLoader.LoadFromJson(
+                LoadPack("demo-a"),
+                node.ToJsonString(),
+                "de-DE"));
+    }
+
+    [Fact]
+    public void Optional_help_text_may_be_null_but_not_blank()
+    {
+        var node = JsonNode.Parse(
+            PresentationJson("demo-a"))!;
+        node["fields"]!["criterion_a"]!["helpText"] = null;
+
+        var valid = _presentationLoader.LoadFromJson(
+            LoadPack("demo-a"),
+            node.ToJsonString(),
+            "de-DE");
+        Assert.Null(valid.Fields["criterion_a"].HelpText);
+
+        node = JsonNode.Parse(
+            PresentationJson("demo-a"))!;
+        node["fields"]!["criterion_a"]!["helpText"] = " ";
 
         Assert.Throws<InvalidOperationException>(
             () => _presentationLoader.LoadFromJson(
