@@ -125,6 +125,22 @@ jobs:
     name: German workbench integration
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: normacase_browser
+          POSTGRES_USER: normacase_browser
+          POSTGRES_PASSWORD: synthetic-browser-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U normacase_browser -d normacase_browser"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NORMACASE_REVIEW_E2E_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_browser;Username=normacase_browser;Password=synthetic-browser-password;Pooling=true
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -143,6 +159,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
       - run: npm run test:e2e
+        working-directory: frontend
+      - run: npm run test:e2e:review
         working-directory: frontend
       - uses: actions/upload-artifact@v7
         if: always()

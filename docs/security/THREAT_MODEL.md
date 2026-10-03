@@ -130,3 +130,15 @@ Authorization header. Query/body actor claims are ignored. Local/origin guards a
 no-store headers remain mandatory. The default preview exposes no review session;
 no mutation endpoint or permissive case authorizer is added. This is not productive
 organizational identity. See [synthetic review host](SYNTHETIC_REVIEW_HOST.md).
+
+### Delayed authenticated browser responses
+
+Review credentials exist only in React memory; no cookies or browser storage are
+used. Logout and unmount abort outstanding requests. Every response is checked
+against the active request controller after asynchronous work, so an old session
+cannot restore case data or controls. A selected case clears previous detail; review
+commands carry exact server revisions. A 409 invalidates the stale detail and reloads
+committed queues/case without automatic retry. A 401 clears identity, credential,
+forms and case data. German status messages are locally bounded, rather than echoing
+arbitrary server text that could expose credentials. The browser controls are not
+an authorization boundary: the server remains responsible for every case action.
