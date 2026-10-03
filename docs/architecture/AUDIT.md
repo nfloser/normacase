@@ -77,6 +77,50 @@ Authentication and authorization remain outside this service. An actor id suppli
 the application contract is still only a claimed identity until a later authenticated
 application boundary verifies permission before invoking the review service.
 
+
+## Atomic case-review commit boundary
+
+`CaseReviewCommitService` adds the storage-neutral boundary between an authenticated
+human review and committed case-processing/audit state.
+
+The request model deliberately contains no actor id. A trusted authentication adapter
+supplies an `AuthenticatedReviewActor` separately. Inside the store transaction
+callback, the service binds the command to the exact case, assessment, input revision,
+workflow id/version, process revision and audit sequence, then asks an
+`ICaseReviewAuthorizer` for a case-scoped authorization decision. Authorization is
+therefore checked against the current locked snapshot before any append is prepared.
+
+Accepting the recorded system result and overriding it are mapped through
+`CaseReviewTransitionPolicy` to explicit opaque workflow transitions. Review
+dispositions are not process-state names and no transition is inferred from an outcome.
+
+`ICaseReviewTransactionStore` exposes one callback contract over:
+
+```text
+immutable AssessmentRecord
++ immutable input revision
++ current CaseProcessingInstance
++ current AssessmentAuditTrail
+```
+
+If the callback succeeds, the store must atomically commit the returned new
+`CaseProcessingInstance` and `AssessmentAuditTrail`. If authorization, binding,
+revision, duplicate-id, transition or storage checks fail, neither state may change.
+The assessment itself is never part of the mutation and remains immutable.
+
+The command carries expected input, process and audit revisions. Competing commands
+against the same snapshot therefore produce one winner; a later contender observes
+the committed revisions and fails stale instead of being silently replayed. Review ids
+are checked against the committed audit history so a caller cannot append the same
+review twice under fresh revisions.
+
+This slice intentionally defines no HTTP mutation endpoint, identity provider or
+durable combined PostgreSQL store. Authentication remains a trusted adapter
+responsibility, while productive persistence must implement the transaction contract
+on-premises and prove equivalent rollback/concurrency behavior. Repository tests use
+a synthetic reference store to exercise the contract, including rollback and queue
+projection after the committed process transition.
+
 ## Persistence boundary
 
 This slice is deliberately not an audit database.
