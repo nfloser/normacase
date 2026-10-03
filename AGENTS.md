@@ -42,6 +42,10 @@ NormaCase is a deterministic, auditable and modular decision-support platform fo
 - `INCOMPLETE`, `UNKNOWN`, conflicting evidence and `HUMAN_REVIEW` must route to focused human work rather than be guessed or coerced.
 - Product UI development should optimize for work queues, triage, batch review/approval where policy allows, and detailed case drill-down with append-only review history rather than requiring users to start every case manually.
 - Future AI/document-extraction capabilities are optional upstream adapters. They may propose structured data or draft text, but they must not become the deterministic decision authority and must preserve source/provenance and review boundaries.
+- NormaCase must support both a first-party workbench and headless integration. An upstream product may remain the primary UI while calling NormaCase through versioned application/API/event contracts.
+- Integration contracts are versioned, explicit and replaceable. Preserve external message identity, correlation/idempotency metadata and provenance at the boundary; do not make transport-specific concepts part of Domain.
+- Support synchronous API, asynchronous event/message and bounded file/import transports through adapters where a real use case requires them. Do not force one transport model into the core.
+- Never implement or reverse-engineer a vendor-specific production adapter from assumptions. Build the generic contract and synthetic contract fixtures first; add a concrete adapter only from an authoritative specification and approved access.
 
 ## Knowledge governance
 
@@ -73,6 +77,21 @@ Use:
 - Update docs with code.
 - Perform an independent technical review before merge and fix findings in the same PR.
 - Commit, issue and PR text should be concrete and natural, not repetitive templates.
+
+### Execution priority
+
+Optimize for the shortest verified path to the target operating model, not for the largest amount of code.
+
+1. Work the current product critical path before optional polish: intake -> normalized case/evidence -> deterministic assessment -> routing -> work queue -> human review/approval -> outbound integration.
+2. Prefer thin vertical slices that connect real layers end-to-end over isolated speculative frameworks.
+3. Reuse and extend existing contracts before introducing a new abstraction. A generic integration abstraction should normally be demonstrated by at least two materially different synthetic adapters or use cases.
+4. Make dependencies between issues explicit. Parallelize only genuinely independent work; do not create competing branches that solve the same boundary differently.
+5. Keep vendor/institution-specific adapters off the critical path until authoritative interface contracts are available. Use synthetic fixtures and contract tests to make the connection point ready meanwhile.
+6. Avoid broad refactors unless they remove a demonstrated blocker on the critical path. Do not redesign stable modules merely for aesthetic consistency.
+7. Every product slice should end in executable behavior or a verifiable contract, tests, docs and an integration point for the next slice.
+8. Prefer headless/application contracts before UI-specific coupling so the same capability can be used from the NormaCase workbench or an external host system.
+9. Treat security, privacy, determinism, provenance and historical replay as acceptance criteria of each slice, not a later hardening phase.
+10. When external process details are unknown, record the question and keep the boundary replaceable rather than guessing.
 
 ## Product language
 
