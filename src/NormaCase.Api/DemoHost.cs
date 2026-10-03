@@ -29,6 +29,21 @@ public static class DemoHost
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
         builder.Logging.ClearProviders();
+
+        var reviewOptions = SyntheticReviewHostOptions.FromConfiguration(builder.Configuration);
+        if (reviewOptions.Enabled)
+        {
+            _ = reviewOptions.ValidateAndDecodeCredential();
+            builder.Services.AddSingleton(reviewOptions);
+            builder.Services.AddSingleton<SyntheticReviewCredential>();
+            builder.Services
+                .AddAuthentication(SyntheticReviewAuthenticationHandler.Scheme)
+                .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, SyntheticReviewAuthenticationHandler>(
+                    SyntheticReviewAuthenticationHandler.Scheme,
+                    _ => { });
+            builder.Services.AddAuthorization();
+        }
+
         var catalog = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Knowledge"), "*.json")
             .Select(path => File.ReadAllText(path, new UTF8Encoding(false, true)))
             .Select(json => (Json: json, Pack: new KnowledgePackLoader().LoadFromJson(json)))
@@ -70,8 +85,28 @@ public static class DemoHost
             await next(context);
         });
 
+        if (reviewOptions.Enabled)
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
+        }
+
         app.UseDefaultFiles();
         app.UseStaticFiles();
+
+        if (reviewOptions.Enabled)
+        {
+            app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal principal) =>
+            {
+                var actorId = principal.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                return Results.Json(new
+                {
+                    mode = "SYNTHETIC_REVIEW",
+                    actorId,
+                    storage = "POSTGRESQL"
+                });
+            }).RequireAuthorization();
+        }
 
         app.MapGet("/api/packs", () => packs.Values.OrderBy(pack => pack.Manifest.PackId, StringComparer.Ordinal)
             .Select(pack =>
