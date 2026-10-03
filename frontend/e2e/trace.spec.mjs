@@ -22,7 +22,7 @@ test('German AND/OR trace preserves unknown and not-applicable truth values',asy
   await expect(trace).toContainText('Mindestens eine Bedingung');
   await expect(trace).toContainText('Nicht ausreichend beurteilbar');
   await expect(trace).toContainText('Unbekannt');
-  await page.getByRole('combobox',{name:/Kriterium B/}).selectOption('NOT_APPLICABLE');
+  await page.getByRole('combobox',{name:/Pflichtkriterium B/}).selectOption('NOT_APPLICABLE');
   trace=await evaluate(page);
   await expect(trace).toContainText('Nicht anwendbar');
   await expect(trace).not.toContainText('NOT_APPLICABLE');
