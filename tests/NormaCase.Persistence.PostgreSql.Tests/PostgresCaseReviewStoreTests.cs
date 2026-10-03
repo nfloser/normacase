@@ -18,7 +18,7 @@ public sealed class PostgresCaseReviewStoreTests
         [new("pending", false), new("accepted", true), new("corrected", true)],
         [new("accept", "pending", "accepted"), new("correct", "pending", "corrected")]);
     private static readonly CaseReviewPolicy Policy = new("synthetic-pg-policy", 1, Workflow.Id, 1,
-        new Dictionary<HumanReviewDisposition,string> { [HumanReviewDisposition.AcceptSystemResult] = "accept", [HumanReviewDisposition.Override] = "correct" });
+        new Dictionary<HumanReviewDisposition, string> { [HumanReviewDisposition.AcceptSystemResult] = "accept", [HumanReviewDisposition.Override] = "correct" });
     private static readonly DateTimeOffset Time = new(2026, 10, 3, 14, 0, 0, TimeSpan.Zero);
     private static readonly AuthenticatedReviewActor Actor = new("synthetic-local:assessor", "synthetic-local");
 
@@ -48,8 +48,11 @@ public sealed class PostgresCaseReviewStoreTests
         var initial = await Seed(source);
         async Task<bool> Attempt(string suffix)
         {
-            try { await new CaseReviewService(Store(source), new Authorizer(true)).ReviewAsync(Actor,
-                Command(initial) with { ReviewId = new("synthetic-review-" + suffix) }, Workflow, Policy); return true; }
+            try
+            {
+                await new CaseReviewService(Store(source), new Authorizer(true)).ReviewAsync(Actor,
+                Command(initial) with { ReviewId = new("synthetic-review-" + suffix) }, Workflow, Policy); return true;
+            }
             catch (CaseReviewConflictException) { return false; }
         }
         var results = await Task.WhenAll(Attempt("one"), Attempt("two"));
@@ -172,6 +175,37 @@ public sealed class PostgresCaseReviewStoreTests
             "synthetic-other-platform", changed.RecordedAtUtc, changed.Input, changed.Result);
         await Assert.ThrowsAsync<CaseReviewIntegrityException>(() => Store(source).InitializeAsync(initial with { Assessment = bad }));
         Assert.Null(await Store(source).LoadAsync(initial.Process.CaseId));
+    }
+
+    [Fact]
+    public async Task Fresh_assessment_and_aggregate_initialize_atomically_and_concurrently()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var initial = Initial();
+        var store = Store(source);
+        var results = await Task.WhenAll(Enumerable.Range(0, 5).Select(_ => store.InitializeRecordedAsync(initial)));
+        Assert.All(results, result => Assert.Equal(CaseReviewStateJson.Serialize(initial), CaseReviewStateJson.Serialize(result)));
+        Assert.NotNull(await new PostgresAssessmentRecordStore(source).LoadAsync(initial.Assessment.AssessmentId));
+        var reviewed = await new CaseReviewService(store, new Authorizer(true)).ReviewAsync(Actor, Command(initial), Workflow, Policy);
+        Assert.Equal(CaseReviewStateJson.Serialize(reviewed), CaseReviewStateJson.Serialize(await store.InitializeRecordedAsync(initial)));
+        var failed = Initial();
+        var name = "synthetic_init_failure_" + Guid.NewGuid().ToString("N");
+        await using var connection = await source.OpenConnectionAsync();
+        await using var add = new NpgsqlCommand($"ALTER TABLE normacase.case_review_versions ADD CONSTRAINT {name} CHECK (case_id <> '{failed.Process.CaseId.Value}')", connection);
+        await add.ExecuteNonQueryAsync();
+        try
+        {
+            await Assert.ThrowsAsync<CaseReviewStorageException>(() => store.InitializeRecordedAsync(failed));
+            Assert.Null(await new PostgresAssessmentRecordStore(source).LoadAsync(failed.Assessment.AssessmentId));
+            Assert.Null(await store.LoadAsync(failed.Process.CaseId));
+        }
+        finally
+        {
+            await using var drop = new NpgsqlCommand($"ALTER TABLE normacase.case_review_versions DROP CONSTRAINT {name}", connection);
+            await drop.ExecuteNonQueryAsync();
+        }
+        Assert.NotNull(await store.InitializeRecordedAsync(failed));
     }
 
     private static PostgresCaseReviewStore Store(NpgsqlDataSource source) => new(source, (id, version) =>

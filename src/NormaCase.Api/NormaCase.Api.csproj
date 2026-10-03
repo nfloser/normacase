@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
     <Content Update="wwwroot/**" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="../NormaCase.SyntheticIntegration/NormaCase.SyntheticIntegration.csproj" />
     <ProjectReference Include="../NormaCase.Replay/NormaCase.Replay.csproj" />
     <ProjectReference Include="../NormaCase.Persistence.PostgreSql/NormaCase.Persistence.PostgreSql.csproj" />
   </ItemGroup>

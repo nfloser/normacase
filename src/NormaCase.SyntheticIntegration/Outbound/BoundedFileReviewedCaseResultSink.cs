@@ -27,6 +27,8 @@ public sealed class BoundedFileReviewedCaseResultSink : IReviewedCaseResultSink
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        request.Validate();
+        if (request.DestinationId != DestinationId) throw new OutboundDeliveryDestinationMismatchException();
         cancellationToken.ThrowIfCancellationRequested();
 
         var payload = ReviewedCaseResultJson.Serialize(request.Result);
@@ -46,16 +48,27 @@ public sealed class BoundedFileReviewedCaseResultSink : IReviewedCaseResultSink
                 return new(OutboundSinkDeliveryStatus.Delivered, "file:" + fileName);
             }
 
-            await using var stream = new FileStream(
-                path,
-                FileMode.CreateNew,
-                FileAccess.Write,
-                FileShare.None,
-                4096,
-                FileOptions.Asynchronous);
-            await stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
-            await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
-            return new(OutboundSinkDeliveryStatus.Delivered, "file:" + fileName);
+            var temporary = Path.Combine(rootDirectory, ".pending-" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                await using (var stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous))
+                {
+                    await stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
+                    await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
+                    stream.Flush(flushToDisk: true);
+                }
+                cancellationToken.ThrowIfCancellationRequested();
+                try { File.Move(temporary, path, overwrite: false); }
+                catch (IOException) when (File.Exists(path))
+                {
+                    await EnsureSameExistingPayload(path, request.Result, cancellationToken).ConfigureAwait(false);
+                }
+                return new(OutboundSinkDeliveryStatus.Delivered, "file:" + fileName);
+            }
+            finally
+            {
+                if (File.Exists(temporary)) File.Delete(temporary);
+            }
         }
         finally
         {
@@ -68,14 +81,15 @@ public sealed class BoundedFileReviewedCaseResultSink : IReviewedCaseResultSink
         ReviewedCaseResult expected,
         CancellationToken cancellationToken)
     {
-        var existing = await File.ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
-            .ConfigureAwait(false);
+        if (new FileInfo(path).Length > MaximumPayloadBytes) throw new OutboundDeliveryConflictException();
         ReviewedCaseResult restored;
         try
         {
+            var existing = await File.ReadAllTextAsync(path, new UTF8Encoding(false, true), cancellationToken)
+                .ConfigureAwait(false);
             restored = ReviewedCaseResultJson.Deserialize(existing);
         }
-        catch
+        catch (Exception exception) when (exception is System.Text.Json.JsonException or DecoderFallbackException)
         {
             throw new OutboundDeliveryConflictException();
         }

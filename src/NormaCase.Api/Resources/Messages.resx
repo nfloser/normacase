@@ -21,4 +21,5 @@
   <data name="review_authentication_required" xml:space="preserve"><value>Für die synthetische Fallprüfung ist eine gültige Anmeldung erforderlich.</value></data>
   <data name="review_forbidden" xml:space="preserve"><value>Diese Aktion ist für die angemeldete Person nicht erlaubt.</value></data>
   <data name="review_conflict" xml:space="preserve"><value>Der Fall wurde zwischenzeitlich geändert. Lade den aktuellen Stand neu.</value></data>
+  <data name="outbound_retryable" xml:space="preserve"><value>Die Rückgabe konnte nicht abgeschlossen werden. Bitte dieselbe Nachricht erneut übertragen.</value></data>
 </root>

@@ -44,6 +44,47 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
         catch (NpgsqlException) { throw new CaseReviewStorageException(); }
     }
 
+    // Fresh aggregate and its original assessment commit together. A duplicate initialization
+    // returns committed history, including subsequent human review, without overwriting it.
+    public async Task<CaseReviewState> InitializeRecordedAsync(CaseReviewState state, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        if (state.Audit.Events.Count != 1) throw new CaseReviewBindingException();
+        try
+        {
+            await using var connection = await source.OpenConnectionAsync(token);
+            await using var transaction = await connection.BeginTransactionAsync(token);
+            await Lock(connection, transaction, state.Process.CaseId, token);
+            var existing = await Read(connection, transaction, state.Process.CaseId, token);
+            if (existing is not null)
+            {
+                if (AssessmentRecordJson.Serialize(existing.Value.State.Assessment) != AssessmentRecordJson.Serialize(state.Assessment))
+                    throw new CaseReviewConflictException();
+                return existing.Value.State;
+            }
+            await PostgresAssessmentRecordStore.AppendOnConnectionAsync(state.Assessment, connection, transaction, token);
+            await Insert(connection, transaction, state, 0, CaseReviewStateJson.Serialize(state), token);
+            await transaction.CommitAsync(token);
+            return state;
+        }
+        catch (NpgsqlException) { throw new CaseReviewStorageException(); }
+    }
+
+    public async Task<IReadOnlyList<CaseId>> ListCaseIdsAsync(CancellationToken token = default)
+    {
+        try
+        {
+            await using var connection = await source.OpenConnectionAsync(token);
+            await using var command = new NpgsqlCommand("SELECT DISTINCT case_id FROM normacase.case_review_versions ORDER BY case_id LIMIT 501", connection);
+            await using var reader = await command.ExecuteReaderAsync(token);
+            var ids = new List<CaseId>();
+            while (await reader.ReadAsync(token)) ids.Add(new(reader.GetString(0)));
+            if (ids.Count > 500) throw new CaseReviewStorageException();
+            return ids.AsReadOnly();
+        }
+        catch (NpgsqlException) { throw new CaseReviewStorageException(); }
+    }
+
     public async Task<CaseReviewState> ExecuteAsync(CaseId caseId, Func<CaseReviewState, CaseReviewState> update,
         CancellationToken cancellationToken = default)
     {

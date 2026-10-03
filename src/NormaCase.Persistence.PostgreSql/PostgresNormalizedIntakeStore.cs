@@ -67,6 +67,24 @@ public sealed class PostgresNormalizedIntakeStore(NpgsqlDataSource source) : INo
         try { await using var connection = await source.OpenConnectionAsync(token); return await Read(connection, null, sourceSystemId, upstreamCaseId, upstreamRevision, token); }
         catch (NpgsqlException) { throw new IntakeStorageException(); }
     }
+    public async Task<NormalizedIntakeRecord?> LoadForCaseAsync(NormaCase.Domain.Cases.CaseId caseId, CancellationToken token = default)
+    {
+        if (caseId.IsEmpty) throw new ArgumentException("Explicit case identity required.");
+        try
+        {
+            await using var connection = await source.OpenConnectionAsync(token);
+            string system; string upstream; long revision;
+            await using (var command = new NpgsqlCommand("SELECT s.source_system_id,s.upstream_case_id,max(r.upstream_revision) FROM normacase.intake_streams s JOIN normacase.intake_records r USING(source_system_id,upstream_case_id) WHERE s.case_id=$1 GROUP BY s.source_system_id,s.upstream_case_id", connection))
+            {
+                command.Parameters.AddWithValue(caseId.Value);
+                await using var reader = await command.ExecuteReaderAsync(token);
+                if (!await reader.ReadAsync(token)) return null;
+                system = reader.GetString(0); upstream = reader.GetString(1); revision = reader.GetInt64(2);
+            }
+            return await Read(connection, null, system, upstream, revision, token);
+        }
+        catch (NpgsqlException) { throw new IntakeStorageException(); }
+    }
     private static async Task<NormalizedIntakeRecord?> Read(NpgsqlConnection connection, NpgsqlTransaction? transaction, string system, string upstream, long revision, CancellationToken token)
     {
         await using var command = new NpgsqlCommand("SELECT r.record_json::text,r.record_sha256,s.case_id,s.case_type_id FROM normacase.intake_records r JOIN normacase.intake_streams s USING(source_system_id,upstream_case_id) WHERE r.source_system_id=$1 AND r.upstream_case_id=$2 AND r.upstream_revision=$3", connection, transaction);

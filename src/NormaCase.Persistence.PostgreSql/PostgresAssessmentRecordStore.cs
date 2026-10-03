@@ -26,15 +26,32 @@ public sealed class PostgresAssessmentRecordStore
     {
         ArgumentNullException.ThrowIfNull(record);
 
-        var json = AssessmentRecordJson.Serialize(record);
-        var checksum = Sha256(json);
-
         try
         {
             await using var connection =
                 await _dataSource.OpenConnectionAsync(cancellationToken);
-            await using var command = new NpgsqlCommand(
-                """
+            await AppendOnConnectionAsync(record, connection, null, cancellationToken);
+        }
+        catch (PostgresException exception)
+            when (exception.SqlState
+                == PostgresErrorCodes.UniqueViolation)
+        {
+            throw new AssessmentRecordAlreadyExistsException(
+                record.AssessmentId);
+        }
+        catch (NpgsqlException)
+        {
+            throw new AssessmentRecordStorageException();
+        }
+    }
+
+    internal static async Task AppendOnConnectionAsync(AssessmentRecord record, NpgsqlConnection connection,
+        NpgsqlTransaction? transaction, CancellationToken cancellationToken)
+    {
+        var json = AssessmentRecordJson.Serialize(record);
+        var checksum = Sha256(json);
+        await using var command = new NpgsqlCommand(
+            """
                 INSERT INTO normacase.assessment_records (
                     assessment_id,
                     case_id,
@@ -53,41 +70,29 @@ public sealed class PostgresAssessmentRecordStore
                     $6, $7, $8, $9, $10, $11
                 );
                 """,
-                connection);
+            connection, transaction);
 
-            command.Parameters.AddWithValue(record.AssessmentId.Value);
-            command.Parameters.AddWithValue(record.CaseId.Value);
-            command.Parameters.AddWithValue(record.KnowledgePackId);
-            command.Parameters.AddWithValue(record.Result.KnowledgeRelease);
-            command.Parameters.AddWithValue(record.PlatformVersion);
-            command.Parameters.AddWithValue(
-                NpgsqlDbType.Date,
-                record.Result.AssessmentDate);
-            command.Parameters.AddWithValue(
-                NpgsqlDbType.TimestampTz,
-                record.RecordedAtUtc.UtcDateTime);
-            command.Parameters.AddWithValue(
-                record.RecordedAtUtc.Ticks);
-            command.Parameters.AddWithValue(
-                AssessmentRecordJson.CurrentFormatVersion);
-            command.Parameters.AddWithValue(
-                NpgsqlDbType.Json,
-                json);
-            command.Parameters.AddWithValue(checksum);
+        command.Parameters.AddWithValue(record.AssessmentId.Value);
+        command.Parameters.AddWithValue(record.CaseId.Value);
+        command.Parameters.AddWithValue(record.KnowledgePackId);
+        command.Parameters.AddWithValue(record.Result.KnowledgeRelease);
+        command.Parameters.AddWithValue(record.PlatformVersion);
+        command.Parameters.AddWithValue(
+            NpgsqlDbType.Date,
+            record.Result.AssessmentDate);
+        command.Parameters.AddWithValue(
+            NpgsqlDbType.TimestampTz,
+            record.RecordedAtUtc.UtcDateTime);
+        command.Parameters.AddWithValue(
+            record.RecordedAtUtc.Ticks);
+        command.Parameters.AddWithValue(
+            AssessmentRecordJson.CurrentFormatVersion);
+        command.Parameters.AddWithValue(
+            NpgsqlDbType.Json,
+            json);
+        command.Parameters.AddWithValue(checksum);
 
-            await command.ExecuteNonQueryAsync(cancellationToken);
-        }
-        catch (PostgresException exception)
-            when (exception.SqlState
-                == PostgresErrorCodes.UniqueViolation)
-        {
-            throw new AssessmentRecordAlreadyExistsException(
-                record.AssessmentId);
-        }
-        catch (NpgsqlException)
-        {
-            throw new AssessmentRecordStorageException();
-        }
+        await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
     public async Task<AssessmentRecord?> LoadAsync(

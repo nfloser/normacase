@@ -93,13 +93,18 @@ message broker adapter or governed file exchange can implement the same sink con
 later without entering Domain or RuleEngine. Authentication, authorization, bounded
 retry/outbox policy and vendor-specific protocol details remain host/adapter concerns.
 
-## Remaining roundtrip work (#156 / #120)
+## Executable synthetic roundtrip
 
-The durable receipt ledger is in place, but the host still needs the access-independent
-roundtrip slice from authenticated synthetic intake through assessment/process
-initialization, persistent review and explicit revision-checked outbound export.
-That host must load authoritative persisted records on export, preserve the original
-intake/correlation identity, reject stale or incomplete state and prove restart without
-re-evaluating already recorded history.
+The authenticated local synthetic host connects JSON/XML intake, immutable normalized
+receipts, atomic assessment/process initialization, persisted queues and human review
+to this delivery boundary. It uses the durable PostgreSQL receipt store for both a
+synthetic inbox (one atomic committed row) and bounded atomic file delivery. Message
+id plus destination is the host delivery key. Stale or unreviewed exports fail before
+delivery; repeated identical exports preserve correlation and original receipt.
 
-No MDconnect, MEDIKOS, SAP or other vendor API is invented.
+Real PostgreSQL host tests cover restart and both destinations. CI also runs the real
+executable on a clean database, compares exact historical state on restart, restores
+a pg_dump into a second clean database and compares it again. See
+`docs/development/SYNTHETIC_ROUNDTRIP.de.md`. Productive permissions, domain/process
+approval and actual vendor adapters require authoritative specifications and approved
+access. No MDconnect, MEDIKOS, SAP or other vendor API is invented.

@@ -235,3 +235,30 @@ jobs:
         run: dotnet test tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-build
       - name: Persistent synthetic review API
         run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --filter FullyQualifiedName~SyntheticReviewHostTests
+
+      - name: Create clean synthetic rehearsal databases
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_roundtrip
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_restored
+      - name: Clean install and exact restart replay
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_roundtrip;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+        run: |
+          python scripts/smoke_synthetic_roundtrip.py create /tmp/normacase-rehearsal.json
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-rehearsal.json
+      - name: Back up and restore immutable synthetic history to a fresh database
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U normacase_test --format=custom --no-owner --no-acl normacase_roundtrip > /tmp/normacase-rehearsal.dump
+          tar -cf /tmp/normacase-outbound.tar -C /tmp/synthetic-outbound .
+          mv /tmp/synthetic-outbound /tmp/normacase-outbound-before-restore
+          mkdir /tmp/synthetic-outbound
+          tar -xf /tmp/normacase-outbound.tar -C /tmp/synthetic-outbound
+          docker exec -i "$POSTGRES_CONTAINER" pg_restore -U normacase_test --dbname=normacase_restored --no-owner --no-acl --exit-on-error < /tmp/normacase-rehearsal.dump
+      - name: Verify original cases and delivery receipts after restore
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_restored;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+        run: python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-rehearsal.json

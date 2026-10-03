@@ -154,6 +154,19 @@ def check(archive, rid, commit):
                 with urlopen(request, timeout=10) as response:
                     return response.read().decode("utf-8")
 
+            scenario = json.loads((root / "examples/scenarios/pitch-demo-v1.json").read_text(encoding="utf-8"))
+            for step in scenario["steps"]:
+                pitch_case = root / "examples/cases" / step["caseFile"]
+                pitch_text = pitch_case.read_text(encoding="utf-8")
+                api_result = json.loads(post("/api/assessments/" + scenario["packId"], pitch_text))
+                cli_result = json.loads(run("evaluate", "--pack", root / "knowledge/demo-g/pack.json",
+                                            "--case", pitch_case, "--platform-version", platform, "--json"))
+                assert api_result == cli_result, "Named preview pitch CLI/API result mismatch"
+                assert api_result["platformVersion"] == platform
+                assert api_result["assessment"]["outcome"] == step["expectedOutcome"]
+                assert api_result["assessment"]["missingRequiredFields"] == step["expectedMissingRequiredFields"]
+                assert api_result["assessment"]["knowledgeRelease"] == scenario["releaseId"]
+
             api_capture = json.loads(post("/api/snapshots/synthetic.demo-b", precise))
             api_snapshot = json.loads(api_capture["snapshotJson"], parse_float=Decimal)
             assert api_snapshot["assessment"]["platformVersion"] == platform
