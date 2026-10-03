@@ -8,7 +8,7 @@ dotnet run --project src/NormaCase.Api
 
 Der Dienst lauscht ausschließlich auf Loopback-Port 5080. Aufrufparameter oder
 ASPNETCORE_URLS ändern diese Bindung nicht. Es gibt keine Runtime-Netzwerkabfragen.
-Alle sechs mitgelieferten synthetischen Packs werden lokal geladen und validiert.
+Alle sieben mitgelieferten synthetischen Packs werden lokal geladen und validiert.
 
 - `GET http://localhost:5080/api/packs`: Pack-/Release-IDs, Felder, Evidenzreferenzen sowie externe deutsche Präsentationsmetadaten und Beispiel-IDs.
 - `GET http://localhost:5080/api/packs/{packId}/examples/{exampleId}`: synthetische UI-Vorlage mit explizitem Prüfdatum; numerische Werte werden als verlustfreie Strings ausgeliefert.
@@ -48,6 +48,28 @@ Programm: Pack-Katalog, Demo-E-Assessment-JSON v2 einschließlich UNKNOWN-Fachau
 Sicherheitsheader und Origin-Ablehnung. Der separate Workbench-Job baut die lokal
 gebündelten React-/TypeScript-Assets und prüft reale Chromium-Szenarien gegen den
 gleichen .NET-Prozess. Das Smoke-Skript gibt keine Fallinhalte aus.
+
+
+## Synthetische Arbeitsvorräte
+
+- `GET /api/work-queues` liefert die versionierte synthetische Queue-Konfiguration
+  und die aktuell projizierten read-only Fälle mit Fall-/Prozessrevisionen.
+- `GET /api/work-items/{caseId}` liefert den Drill-down für eine synthetische
+  Fall-ID. Assessment-basierte Fälle enthalten den unveränderten Assessment-JSON-Text
+  mit Decision Trace sowie Evidenz- und Routing-Metadaten. Ein technischer
+  Integrationsfehler liefert ausdrücklich `assessmentStatus: NOT_RECORDED` und
+  `assessment: null`.
+
+Die drei fachlich ausgewerteten Demo-Fälle werden beim Host-Start über die realen
+Application-Verträge Recorder, Triage, Prozess-Routing und Queue-Projektion aufgebaut.
+Der technische Fall wird nur aus dem aufgezeichneten Prozesszustand projiziert; die API
+erfindet dafür kein Assessment. Queue- und State-IDs sind technische Verträge, deutsche
+Labels werden ausschließlich in der Workbench präsentiert.
+
+Diese Endpunkte sind read-only, rein synthetisch und in-memory. Sie führen keine
+Freigabe, Ablehnung, Korrektur oder Batch-Aktion aus und besitzen keine
+Authentifizierung oder produktive Persistenz. Loopback-, Origin-, no-store- und
+Sicherheitsheader-Regeln des Hosts gelten unverändert.
 
 ## Snapshot-Adapter
 
