@@ -47,12 +47,15 @@ public sealed class PublicReferenceKtrL83Tests
             source.ContentHash);
     }
 
-    [Fact]
-    public void Qualifying_disability_marker_with_present_card_supports_the_section_8_3_path()
+    [Theory]
+    [InlineData("disability_marker_ag")]
+    [InlineData("disability_marker_bl")]
+    [InlineData("disability_marker_h")]
+    public void Each_named_disability_marker_with_present_card_supports_the_path(
+        string markerField)
     {
         var facts = CompleteNegativeFacts();
-        facts["qualifying_disability_marker_ag_bl_h"] =
-            TruthValue.Yes;
+        facts[markerField] = TruthValue.Yes;
 
         var result = Evaluate(
             facts,
@@ -73,9 +76,7 @@ public sealed class PublicReferenceKtrL83Tests
             "2025-05-15",
             result.RuleTrace.Source.Version);
 
-        var approval = Assert.Single(
-            result.DomainOutputs,
-            output => output.OutputId == "approval_state");
+        var approval = Approval(result);
         Assert.Equal(
             DomainOutputValueKind.Choice,
             approval.Value.Kind);
@@ -102,6 +103,25 @@ public sealed class PublicReferenceKtrL83Tests
             });
 
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
+        Assert.Equal("DEEMED_GRANTED", Approval(result).Value.Choice);
+    }
+
+    [Fact]
+    public void Non_integer_value_between_pflegegrad_four_and_five_does_not_match()
+    {
+        var facts = CompleteNegativeFacts();
+        facts["care_grade"] = 4.5m;
+
+        var result = Evaluate(
+            facts,
+            CompleteEvidence());
+
+        Assert.Equal(
+            AssessmentOutcome.NotSupported,
+            result.Outcome);
+        Assert.Equal(
+            "NOT_DETERMINED_BY_THIS_PACK",
+            Approval(result).Value.Choice);
     }
 
     [Fact]
@@ -125,28 +145,45 @@ public sealed class PublicReferenceKtrL83Tests
     }
 
     [Fact]
-    public void Legacy_care_level_two_transition_with_current_grade_three_or_higher_supports_the_path()
+    public void Legacy_transition_requires_both_historical_classification_facts()
     {
         var facts = CompleteNegativeFacts();
-        facts["legacy_care_level_2_until_2016"] =
+        facts["care_level_2_on_2016_12_31"] =
             TruthValue.Yes;
-        facts["care_grade"] = 3;
+        facts[
+            "care_grade_3_or_higher_since_2017_01_01"] =
+            TruthValue.Yes;
 
         var result = Evaluate(
             facts,
             new()
             {
-                ["legacy_care_level_2_proof"] =
-                    EvidenceStatus.Present,
-                ["care_grade_notice"] =
+                ["care_transition_classification_proof"] =
                     EvidenceStatus.Present
             });
 
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
-        var approval = Assert.Single(
-            result.DomainOutputs,
-            output => output.OutputId == "approval_state");
-        Assert.Equal("DEEMED_GRANTED", approval.Value.Choice);
+        Assert.Equal("DEEMED_GRANTED", Approval(result).Value.Choice);
+    }
+
+    [Fact]
+    public void Current_pflegegrad_alone_does_not_satisfy_the_legacy_transition()
+    {
+        var facts = CompleteNegativeFacts();
+        facts["care_grade"] = 3;
+        facts["care_level_2_on_2016_12_31"] =
+            TruthValue.Yes;
+        facts[
+            "care_grade_3_or_higher_since_2017_01_01"] =
+            TruthValue.No;
+
+        var result = Evaluate(
+            facts,
+            CompleteEvidence());
+
+        Assert.Equal(
+            AssessmentOutcome.NotSupported,
+            result.Outcome);
     }
 
     [Theory]
@@ -174,13 +211,9 @@ public sealed class PublicReferenceKtrL83Tests
         Assert.Equal(
             ConditionResult.NotMatched,
             result.RuleTrace!.ConditionResult);
-
-        var approval = Assert.Single(
-            result.DomainOutputs,
-            output => output.OutputId == "approval_state");
         Assert.Equal(
             "NOT_DETERMINED_BY_THIS_PACK",
-            approval.Value.Choice);
+            Approval(result).Value.Choice);
     }
 
     [Theory]
@@ -192,28 +225,45 @@ public sealed class PublicReferenceKtrL83Tests
         var facts = CompleteNegativeFacts();
         facts["care_grade"] = 4;
 
-        var result = Evaluate(
-            facts,
-            new()
-            {
-                ["severe_disability_card"] =
-                    EvidenceStatus.Present,
-                ["care_grade_notice"] = status
-            });
+        var evidence = CompleteEvidence();
+        evidence["care_grade_notice"] = status;
+
+        var result = Evaluate(facts, evidence);
 
         Assert.Equal(
             AssessmentOutcome.HumanReview,
             result.Outcome);
-        var approval = Assert.Single(
-            result.DomainOutputs,
-            output => output.OutputId == "approval_state");
         Assert.Equal(
             DomainOutputValueKind.Unknown,
-            approval.Value.Kind);
+            Approval(result).Value.Kind);
     }
 
     [Fact]
-    public void Missing_both_branch_evidence_sources_requires_human_review()
+    public void Missing_transition_proof_requires_human_review_when_that_is_the_only_possible_branch()
+    {
+        var facts = CompleteNegativeFacts();
+        facts["care_level_2_on_2016_12_31"] =
+            TruthValue.Yes;
+        facts[
+            "care_grade_3_or_higher_since_2017_01_01"] =
+            TruthValue.Yes;
+
+        var evidence = CompleteEvidence();
+        evidence["care_transition_classification_proof"] =
+            EvidenceStatus.Missing;
+
+        var result = Evaluate(facts, evidence);
+
+        Assert.Equal(
+            AssessmentOutcome.HumanReview,
+            result.Outcome);
+        Assert.Equal(
+            DomainOutputValueKind.Unknown,
+            Approval(result).Value.Kind);
+    }
+
+    [Fact]
+    public void Missing_all_branch_evidence_requires_human_review()
     {
         var result = Evaluate(
             CompleteNegativeFacts(),
@@ -229,7 +279,7 @@ public sealed class PublicReferenceKtrL83Tests
     {
         var facts = CompleteNegativeFacts();
         facts.Remove("strict_medical_necessity");
-        facts["qualifying_disability_marker_ag_bl_h"] =
+        facts["disability_marker_ag"] =
             TruthValue.Yes;
 
         var result = Evaluate(
@@ -253,7 +303,7 @@ public sealed class PublicReferenceKtrL83Tests
     {
         var facts = CompleteNegativeFacts();
         facts["strict_medical_necessity"] = TruthValue.No;
-        facts["qualifying_disability_marker_ag_bl_h"] =
+        facts["disability_marker_ag"] =
             TruthValue.Yes;
 
         var result = Evaluate(
@@ -282,13 +332,14 @@ public sealed class PublicReferenceKtrL83Tests
             AssessmentOutcome.HumanReview,
             result.Outcome);
         Assert.Null(result.RuleTrace);
+        Assert.Empty(result.DomainOutputs);
     }
 
     [Fact]
-    public void Exact_effective_date_activates_the_reference_rule()
+    public void Exact_effective_date_activates_the_reference_rule_and_output()
     {
         var facts = CompleteNegativeFacts();
-        facts["qualifying_disability_marker_ag_bl_h"] =
+        facts["disability_marker_ag"] =
             TruthValue.Yes;
 
         var result = _evaluator.Evaluate(
@@ -302,6 +353,7 @@ public sealed class PublicReferenceKtrL83Tests
             });
 
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
+        Assert.Equal("DEEMED_GRANTED", Approval(result).Value.Choice);
     }
 
     private AssessmentResult Evaluate(
@@ -312,6 +364,12 @@ public sealed class PublicReferenceKtrL83Tests
             facts,
             new DateOnly(2026, 10, 3),
             evidence);
+
+    private static DomainOutputTrace Approval(
+        AssessmentResult result)
+        => Assert.Single(
+            result.DomainOutputs,
+            output => output.OutputId == "approval_state");
 
     private NormaCase.Knowledge.Model.KnowledgePack Load()
         => _loader.LoadFromFile(
@@ -326,12 +384,15 @@ public sealed class PublicReferenceKtrL83Tests
         {
             ["ambulatory_treatment"] = TruthValue.Yes,
             ["strict_medical_necessity"] = TruthValue.Yes,
-            ["qualifying_disability_marker_ag_bl_h"] =
-                TruthValue.No,
+            ["disability_marker_ag"] = TruthValue.No,
+            ["disability_marker_bl"] = TruthValue.No,
+            ["disability_marker_h"] = TruthValue.No,
             ["care_grade"] = 2m,
             ["care_grade_3_permanent_mobility_transport_need"] =
                 TruthValue.No,
-            ["legacy_care_level_2_until_2016"] =
+            ["care_level_2_on_2016_12_31"] =
+                TruthValue.No,
+            ["care_grade_3_or_higher_since_2017_01_01"] =
                 TruthValue.No
         };
 
@@ -343,7 +404,7 @@ public sealed class PublicReferenceKtrL83Tests
                 EvidenceStatus.Present,
             ["care_grade_notice"] =
                 EvidenceStatus.Present,
-            ["legacy_care_level_2_proof"] =
+            ["care_transition_classification_proof"] =
                 EvidenceStatus.Present
         };
 }
