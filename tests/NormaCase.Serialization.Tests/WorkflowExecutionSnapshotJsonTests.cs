@@ -45,6 +45,9 @@ public sealed class WorkflowExecutionSnapshotJsonTests
     [InlineData("source-hash")]
     [InlineData("missing-optional")]
     [InlineData("null-snapshot")]
+    [InlineData("null-source")]
+    [InlineData("null-state")]
+    [InlineData("null-transition")]
     public void Malformed_or_semantically_invalid_documents_are_rejected(
         string mutation)
     {
@@ -94,6 +97,15 @@ public sealed class WorkflowExecutionSnapshotJsonTests
                 break;
             case "null-snapshot":
                 node["snapshot"] = null;
+                break;
+            case "null-source":
+                snapshot["source"] = null;
+                break;
+            case "null-state":
+                snapshot["states"]![0] = null;
+                break;
+            case "null-transition":
+                snapshot["transitions"]![0] = null;
                 break;
         }
 
