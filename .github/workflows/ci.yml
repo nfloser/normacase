@@ -217,3 +217,29 @@ jobs:
         run: dotnet test tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-build
       - name: Persistent synthetic review API
         run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --filter FullyQualifiedName~SyntheticReviewHostTests
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Install workbench dependencies
+        run: npm ci
+        working-directory: frontend
+      - name: Build reviewed workbench
+        run: npm run build
+        working-directory: frontend
+      - name: Build local API host
+        run: dotnet build src/NormaCase.Api --configuration Release
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Generate ephemeral synthetic review credential
+        shell: bash
+        run: echo "NORMACASE_REVIEW_TEST_CREDENTIAL=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+      - name: Persistent review browser flow
+        run: npm run test:e2e:review
+        working-directory: frontend
+        env:
+          SyntheticReview__Enabled: "true"
+          SyntheticReview__PersistenceEnabled: "true"
+          SyntheticReview__Credential: ${{ env.NORMACASE_REVIEW_TEST_CREDENTIAL }}
+          ConnectionStrings__SyntheticReview: ${{ env.NORMACASE_POSTGRES_TEST_CONNECTION }}
