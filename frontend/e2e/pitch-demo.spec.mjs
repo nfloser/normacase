@@ -14,12 +14,12 @@ test('the synthetic pitch story is repeatable from incomplete through explicit o
 
   await loadAndEvaluate(page, 'incomplete');
   await expect(page.getByRole('heading', { name: 'Angaben unvollständig' })).toBeVisible();
-  await expect(page.getByText('Pflichtangaben vollständig', { exact: true })).toBeVisible();
+  await expect(page.locator('.missing').getByText('Pflichtangaben vollständig', { exact: true })).toBeVisible();
 
   await loadAndEvaluate(page, 'review');
   await expect(page.getByRole('heading', { name: 'Manuelle Prüfung erforderlich' })).toBeVisible();
   await expect(page.getByText('Fiktive Regelquelle für die NormaCase Pitch-Demo', { exact: true })).toBeVisible();
-  await expect(page.getByText('DEMO-G-DECISION', { exact: true })).toBeVisible();
+  await expect(page.locator('.source').getByText('DEMO-G-DECISION', { exact: true })).toBeVisible();
 
   await loadAndEvaluate(page, 'supported');
   await expect(page.getByRole('heading', { name: 'Voraussetzungen erfüllt' })).toBeVisible();
