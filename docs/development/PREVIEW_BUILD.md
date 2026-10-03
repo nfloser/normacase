@@ -28,12 +28,19 @@ removing merge-relevant checks.
 
 Verification extracts into a path with spaces, validates the complete file
 inventory and SHA-256 digests, confirms included runtime configuration and starts
-both executable hosts with shared runtime lookup disabled. It checks all five
-German catalogs, local browser assets and security headers, cross-origin rejection,
-exact decimal CLI/API capture and bidirectional snapshot replay. Test output
-contains technical summaries only. Separate integrity tests cover corruption,
-unlisted files, traversal and symlinks. This is real process integration on both
-operating systems, not a mocked publish test.
+both executable hosts with shared runtime lookup disabled. Before any extraction,
+ZIP entry paths must already be canonical POSIX relative paths: repeated or dot
+segments, traversal, native separators, Windows drive/ADS syntax, trailing dots or
+spaces, reserved Windows device names, symlinks, case-insensitive aliases and
+file/directory prefix collisions are rejected. This prevents two separately hashed
+entries from resolving to the same extraction target on supported platforms.
+
+The runtime check covers all seven German synthetic catalogs, local browser assets
+and security headers, cross-origin rejection, exact decimal CLI/API capture and
+bidirectional snapshot replay. Test output contains technical summaries only.
+Separate integrity tests cover corruption, unlisted files, traversal, symlinks and
+cross-platform path aliasing. This is real process integration on both operating
+systems, not a mocked publish test.
 
 Only successful native checks upload ZIP/checksum artifacts. Artifacts expire after
 14 days and are not signed releases. Download from the trusted project; checksums
