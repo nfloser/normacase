@@ -65,7 +65,7 @@ public sealed class PostgresIdentityAccessAdministrationStoreTests
             new DateTimeOffset(2026, 10, 3, 20, 0, 0, TimeSpan.Zero),
             "Gleichzeitige synthetische Sperre")))).ToArray();
         var results = await Task.WhenAll(tasks);
-        Assert.Single(results.Where(result => result.State is not null));
+        Assert.Single(results, result => result.State is not null);
         Assert.Equal(3, results.Count(result => result.Error is IdentityAccessConflictException));
     }
 
