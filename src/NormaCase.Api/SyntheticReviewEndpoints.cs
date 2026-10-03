@@ -321,6 +321,8 @@ internal static class SyntheticReviewEndpoints
             if (root.TryGetProperty("overrideOutcome", out var overrideElement)
                 && overrideElement.ValueKind != JsonValueKind.Null)
             {
+                if (overrideElement.ValueKind != JsonValueKind.String)
+                    return (null, DemoHost.Error("invalid_input", 400));
                 overrideOutcome = ParseOutcome(overrideElement.GetString());
                 if (overrideOutcome is null)
                     return (null, DemoHost.Error("invalid_input", 400));
