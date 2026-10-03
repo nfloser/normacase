@@ -45,6 +45,8 @@ knowledge/
   demo-c/                 evidence dependency and review synthetic pack
   demo-d/                 derived numeric expression synthetic pack
   demo-e/                 independent domain-output synthetic pack
+  public-reference/
+    kt-rl-8-3/             narrow G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack
 
 docs/
   project/
@@ -73,7 +75,8 @@ The current core can:
 - advance generic immutable workflow instances through explicitly declared deterministic transitions,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
-- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint.
+- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
+- evaluate a narrowly scoped, source-pinned G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack without treating it as domain approval.
 
 ## Local verification
 
