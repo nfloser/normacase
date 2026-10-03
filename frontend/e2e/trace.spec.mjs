@@ -93,3 +93,26 @@ test('historical snapshot replay never gets current presentation labels',async({
   await expect(page.locator('.decision-trace')).toHaveCount(0);
   await expect(page.locator('.snapshot-tools')).not.toContainText('Basiswert');
 });
+
+test('a recorded negation is presented explicitly without changing its child',async({page})=>{
+  await page.goto('/');
+  const input=await readFile('../examples/cases/demo-a-supported.json','utf8');
+  const response=await page.request.post('/api/snapshots/synthetic.demo-a',{headers:{'Content-Type':'application/json'},data:input});
+  expect(response.ok()).toBe(true);
+  const recorded=await response.json();
+  // A synthetic presentation fixture exercises NOT, which the installed demo packs
+  // do not use. This checks the renderer; engine negation has separate core tests.
+  const assessment=JSON.parse(recorded.assessmentJson);
+  const child=assessment.assessment.ruleTrace.condition;
+  assessment.assessment.ruleTrace.condition={kind:'not',result:'NOT_MATCHED',field:null,expected:null,actual:null,minimum:null,maximum:null,children:[child]};
+  assessment.assessment.ruleTrace.conditionResult='NOT_MATCHED';
+  assessment.assessment.ruleTrace.outcome='NOT_SUPPORTED';
+  assessment.assessment.outcome='NOT_SUPPORTED';
+  await page.route('**/api/snapshots/synthetic.demo-a',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({...recorded,assessmentJson:JSON.stringify(assessment)})}));
+  await page.getByLabel('Prüfdatum',{exact:true}).fill('2026-10-02');
+  const trace=await evaluate(page);
+  await expect(trace).toContainText('Bedingung negiert');
+  await expect(trace).toContainText('Bedingung nicht erfüllt');
+  await expect(trace).toContainText('Bedingung erfüllt');
+  await expect(page.getByRole('heading',{name:'Voraussetzungen nicht erfüllt',exact:true})).toBeVisible();
+});
