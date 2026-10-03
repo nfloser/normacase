@@ -77,6 +77,30 @@ geprüft. Sie wird nicht serverseitig oder im Browser-Speicher persistiert.
 Dateiauswahl oder Änderungen der Prüfangaben entfernen vorherige Ergebnisse und
 brechen veraltete Anfragen ab. Ausschließlich synthetische Daten verwenden.
 
+
+## Synthetische Arbeitsvorräte
+
+Die Prüfwerkstatt zeigt zusätzlich vier read-only Arbeitsvorräte: zur Freigabe,
+Angaben nachfordern, manuelle Prüfung und technische Klärung. Die drei
+assessment-basierten Fälle werden beim Start des lokalen Dienstes vollständig über
+`AssessmentRecorder -> AssessmentTriageService -> CaseProcessingRoutingService
+-> CaseWorkQueueProjectionService` aufgebaut. Die technische Ausnahme wird
+ausschließlich aus einem expliziten Prozesszustand projiziert und besitzt absichtlich
+kein Assessment.
+
+Ein Klick auf eine synthetische Fall-ID öffnet den aktuellen Fall-/Prozessstand.
+Wenn ein Assessment existiert, zeigt die Ansicht das aufgezeichnete Ergebnis,
+Weiterleitungsdisposition, Evidenzstatus, Wissensstand, Quelle und Decision Trace.
+Beim technischen Ausnahmefall steht ausdrücklich, dass noch keine fachliche Prüfung
+aufgezeichnet wurde.
+
+Die Queue- und State-IDs bleiben technische Verträge; deutsche Bezeichnungen liegen
+in `frontend/src/de.json`. React leitet weder Queue-Mitgliedschaft noch Routing aus
+Assessment-Ergebnissen ab. Die Demo erzeugt keine Freigabe-, Ablehnungs-, Override-
+oder Batch-Aktionen und speichert nichts in localStorage oder einer Datenbank.
+Sie ist ein synthetischer In-Memory-Produktslice, keine authentifizierte produktive
+Fallverwaltung.
+
 ## Synthetische Vorgänge bearbeiten
 
 Wähle „Demo F – Vorgang und Prüfung“. Unter „Vorgang bearbeiten“ kannst du
