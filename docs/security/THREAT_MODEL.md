@@ -90,6 +90,21 @@ matching do not prove who created the file. Productive multi-user case/workflow
 operation must bind authenticated actors and case authorization to a transactional
 store and suitable audit/provenance controls.
 
+### Local synthetic review credential
+
+The optional review-host mode is disabled by default. Enabling it requires a 256-bit
+base64url bearer credential supplied through external configuration, a server-owned
+actor id and PostgreSQL configuration. The credential is compared in constant time
+after strict decoding and is never accepted from query parameters or persisted by the
+browser. Successful authentication creates the application principal; actor identity
+must not be copied from a review DTO. Missing or invalid credentials fail closed.
+
+This bootstrap credential is suitable only for the loopback synthetic review host. It
+does not provide organizational identity lifecycle, MFA, revocation, role governance
+or domain approval. Productive deployments still require a separately reviewed
+identity/privacy design. Future mutation endpoints must additionally apply explicit
+case-scoped authorization and optimistic revision checks before the atomic store write.
+
 ### Sensitive logging
 Medical or identity data could leak through logs and CI.
 
