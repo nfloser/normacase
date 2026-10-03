@@ -27,14 +27,27 @@ test('persistent review accepts, detects stale concurrency and overrides without
   const secondReview=await login(secondPage);
   await secondReview.getByRole('button',{name:'Persistenten Fall öffnen: demo-g-supported',exact:true}).click();
 
+  let forcedConflict=false;
+  await page.route('**/api/review/work-cases/demo-g-supported/reviews',async route=>{
+    if(forcedConflict){await route.continue();return;}
+    forcedConflict=true;
+    const body=JSON.parse(route.request().postData()??'{}');
+    await route.continue({postData:JSON.stringify({...body,expectedAuditRevision:'999'})});
+  });
+  await review.getByLabel('Begründung').fill('Absichtlich veraltete Browser-Revision');
+  await review.getByRole('button',{name:'Systemergebnis bestätigen'}).click();
+  await expect(review.getByRole('status')).toContainText('zwischenzeitlich geändert');
+  await expect(review.getByRole('button',{name:'Systemergebnis bestätigen'})).toHaveCount(1);
+  await page.unroute('**/api/review/work-cases/demo-g-supported/reviews');
+
   await review.getByLabel('Begründung').fill('Synthetischer Browser-Accept');
   await review.getByRole('button',{name:'Systemergebnis bestätigen'}).click();
   await expect(review.getByText('Systemergebnis bestätigt',{exact:true})).toBeVisible();
   await expect(review.getByRole('button',{name:'Systemergebnis bestätigen'})).toHaveCount(0);
 
-  await secondReview.getByLabel('Begründung').fill('Veralteter synthetischer Browserstand');
+  await secondReview.getByLabel('Begründung').fill('Konkurrierender synthetischer Browserstand');
   await secondReview.getByRole('button',{name:'Systemergebnis bestätigen'}).click();
-  await expect(secondReview.getByRole('status')).toContainText('zwischenzeitlich geändert');
+  await expect(secondReview.getByRole('status')).toContainText('nicht erlaubt');
   await expect(secondReview.getByRole('button',{name:'Systemergebnis bestätigen'})).toHaveCount(0);
   await secondContext.close();
 
