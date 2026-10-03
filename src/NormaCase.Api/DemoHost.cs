@@ -29,8 +29,15 @@ public static class DemoHost
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
         builder.Logging.ClearProviders();
-        builder.Services.AddSingleton(services => SyntheticReviewCredential.Load(
-            services.GetRequiredService<IConfiguration>()));
+        var reviewCredential = SyntheticReviewCredential.Load(builder.Configuration);
+        builder.Services.AddSingleton(reviewCredential);
+        if (reviewCredential.Enabled)
+        {
+            var reviewConnection = builder.Configuration.GetConnectionString("SyntheticReview");
+            if (string.IsNullOrWhiteSpace(reviewConnection))
+                throw new InvalidOperationException("Synthetic review mode requires an explicit PostgreSQL connection.");
+            builder.Services.AddSingleton(Npgsql.NpgsqlDataSource.Create(reviewConnection));
+        }
         builder.Services.AddAuthentication(SyntheticReviewAuthentication.SchemeName)
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
@@ -45,7 +52,6 @@ public static class DemoHost
         var presentations = PresentationCatalog.Load(packs);
         var platformVersion = typeof(DemoHost).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         var app = builder.Build();
-        var reviewCredential = app.Services.GetRequiredService<SyntheticReviewCredential>();
 
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
@@ -80,9 +86,12 @@ public static class DemoHost
         app.UseAuthentication();
         app.UseAuthorization();
         if (reviewCredential.Enabled)
+        {
             app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal user) =>
                 Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId }))
                 .RequireAuthorization();
+            SyntheticReviewEndpoints.Map(app, packs, platformVersion);
+        }
 
         app.UseDefaultFiles();
         app.UseStaticFiles();
