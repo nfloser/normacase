@@ -9,3 +9,12 @@
 .file-button{align-self:flex-start}
 
 .workflow-tools{margin-top:22px}.workflow-tools h2{font-size:19px;margin:0 0 10px}.workflow-tools>p,.workflow-help{font-size:13px;color:#60756a}.workflow-tools form{margin-top:20px}.workflow-tools textarea{font:inherit;min-height:85px;resize:vertical;border:1px solid #cad7cf;background:#fcfdfc;border-radius:6px;padding:10px 11px;width:100%;color:#244238}.workflow-tools textarea:focus-visible{outline:3px solid #57b4a1;outline-offset:3px}.workflow-tools .actions{flex-wrap:wrap}.workflow-history{padding-left:22px}.workflow-history li{padding:0 0 8px 10px;overflow-wrap:anywhere}.workflow-history h4{margin:16px 0 4px;font-size:14px}.workflow-history p{margin:0 0 12px;font-size:12px;color:#60756a}.workflow-history dl{grid-template-columns:minmax(100px,150px) minmax(0,1fr)}
+
+.decision-trace section { margin-top: 1.5rem; border-top: 1px solid var(--border, #dce3e5); padding-top: 1rem; }
+.decision-trace ol { padding-left: 1.25rem; }
+.decision-trace li { padding: .6rem 0; overflow-wrap: anywhere; }
+.decision-trace li > ol { border-left: 2px solid #dce3e5; margin-left: .15rem; }
+.decision-trace h5 { font-size: .9rem; margin: .75rem 0; }
+.decision-trace p { margin: .4rem 0; }
+.decision-trace dl { margin: .5rem 0; }
+.trace-result, .trace-source { font-size: .85rem; }

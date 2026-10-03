@@ -5,8 +5,10 @@ import de from './de.json';
 import { exampleValues, normalizeCatalog, requestJson, type Pack } from './model';
 import './style.css';
 import { WorkflowWorkbench } from './WorkflowWorkbench';
+import { DecisionTrace } from './DecisionTrace';
+import type { RuleTrace, OutputTrace } from './trace';
 
-type Result = {platformVersion:string; assessment:{outcome:string; assessmentDate:string; knowledgeRelease:string; missingRequiredFields:string[]; domainOutputs?:{outputId:string;value:{kind:string;choice?:string};source:{title:string;version?:string}}[]; ruleTrace?:{ruleId:string; ruleVersion:unknown; source:{title:string; authority:string; version?:string; sourceLocation?:string}}}};
+type Result = {platformVersion:string; assessment:{outcome:string; assessmentDate:string; knowledgeRelease:string; missingRequiredFields:string[]; domainOutputs?:OutputTrace[]; ruleTrace?:RuleTrace}};
 const outcomes: Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 
 function App() {
@@ -129,7 +131,7 @@ function App() {
         {!!result.assessment.missingRequiredFields.length&&<div className="missing"><h4>{de.missingFields}</h4><ul>{result.assessment.missingRequiredFields.map(id=><li key={id}>{pack?.presentation?.fields[id]??de.fieldReference}</li>)}</ul></div>}
         {!!result.assessment.domainOutputs?.length&&<div className="domain-outputs"><h4>{de.domainOutputs}</h4><dl>{result.assessment.domainOutputs.map(output=><React.Fragment key={output.outputId}><dt>{pack?.presentation?.outputs?.[output.outputId]?.label??de.outputReference}</dt><dd>{output.value.kind==='UNKNOWN'?de.unknown:(pack?.presentation?.outputs?.[output.outputId]?.choices[output.value.choice??'']??de.unknown)}<small>{output.source.title} · {output.source.version??'—'}</small></dd></React.Fragment>)}</dl></div>}
         {result.assessment.ruleTrace?<div className="source"><h4>{de.source}</h4><p>{result.assessment.ruleTrace.source.title}</p><span>{result.assessment.ruleTrace.source.authority}</span><dl><dt>{de.sourceRevision}</dt><dd>{result.assessment.ruleTrace.source.version??'—'}</dd><dt>{de.rule}</dt><dd>{result.assessment.ruleTrace.ruleId}</dd><dt>{de.sourceLocation}</dt><dd>{result.assessment.ruleTrace.source.sourceLocation??'—'}</dd></dl></div>:<p>{de.noSource}</p>}
-        <details><summary>{de.trace}</summary><pre>{raw}</pre></details><button className="secondary export" onClick={download}>{de.export}</button><button className="secondary export" onClick={()=>saveFile(snapshot,'normacase-snapshot.json')} disabled={!snapshot}>{de.snapshotExport}</button>
+        <DecisionTrace rule={result.assessment.ruleTrace} outputs={result.assessment.domainOutputs} presentation={pack?.presentation}/><details><summary>{de.trace}</summary><pre>{raw}</pre></details><button className="secondary export" onClick={download}>{de.export}</button><button className="secondary export" onClick={()=>saveFile(snapshot,'normacase-snapshot.json')} disabled={!snapshot}>{de.snapshotExport}</button>
       </>}
     </section></div>
     <section className="card snapshot-tools" aria-live="polite">
