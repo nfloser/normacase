@@ -103,7 +103,16 @@ Baseline: framework protections, validation at boundaries, safe output handling,
 ### Supply-chain compromise
 Dependencies or CI actions could be compromised.
 
-Baseline: dependency review/scanning, Dependabot, minimal dependencies and progressively pinned CI actions.
+Baseline: dependency review/scanning, minimal dependencies and immutable CI action
+references. Repository workflows pin every external GitHub Action to an exact commit
+SHA while retaining the reviewed major-version comment for readability. Dependabot
+continues to check GitHub Actions weekly, so moving a pin remains an explicit reviewed
+repository change rather than an implicit tag movement.
+
+A commit pin prevents a mutable release tag from silently changing already reviewed
+workflow code; it does not make the pinned action, GitHub-hosted runner, package
+registry or upstream repository trustworthy by itself. Action-update pull requests
+still require normal review and CI before merge.
 
 ## Open work
 
