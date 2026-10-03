@@ -7,7 +7,7 @@ using NormaCase.RuleEngine.Evaluation;
 
 namespace NormaCase.Application.Triage;
 
-public enum CaseProcessingState { ReadyForApproval, Incomplete, HumanReview }
+public enum AssessmentRoutingDisposition { ReadyForApproval, Incomplete, HumanReview }
 public enum TriageReasonCode
 {
     MissingRequiredField, IncompleteAssessment, AssessmentRequiresReview,
@@ -19,20 +19,20 @@ public sealed record TriageReason(TriageReasonCode Code, string Reference);
 public sealed class AssessmentRouting
 {
     internal AssessmentRouting(AssessmentRecord record, ApprovalRoutingPolicy policy,
-        CaseProcessingState state, IEnumerable<TriageReason> reasons)
+        AssessmentRoutingDisposition state, IEnumerable<TriageReason> reasons)
     {
         CaseId = record.CaseId;
         AssessmentId = record.AssessmentId;
         PolicyId = policy.Id;
         PolicyVersion = policy.Version;
-        State = state;
+        Disposition = state;
         Reasons = Array.AsReadOnly(reasons.Distinct().ToArray());
     }
     public CaseId CaseId { get; }
     public AssessmentId AssessmentId { get; }
     public string PolicyId { get; }
     public int PolicyVersion { get; }
-    public CaseProcessingState State { get; }
+    public AssessmentRoutingDisposition Disposition { get; }
     public IReadOnlyList<TriageReason> Reasons { get; }
 }
 
@@ -69,8 +69,8 @@ public sealed class AssessmentTriageService
         var incomplete = result.MissingRequiredFields.Count > 0 || result.Outcome == AssessmentOutcome.Incomplete;
         if (!incomplete && !policy.Allows(result.Outcome))
             reasons.Add(new(TriageReasonCode.PolicyRequiresReview, policy.Id));
-        var state = incomplete ? CaseProcessingState.Incomplete
-            : reasons.Count > 0 ? CaseProcessingState.HumanReview : CaseProcessingState.ReadyForApproval;
+        var state = incomplete ? AssessmentRoutingDisposition.Incomplete
+            : reasons.Count > 0 ? AssessmentRoutingDisposition.HumanReview : AssessmentRoutingDisposition.ReadyForApproval;
         return new(record, policy, state, reasons);
     }
 

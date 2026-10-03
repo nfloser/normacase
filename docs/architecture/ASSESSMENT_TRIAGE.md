@@ -5,7 +5,7 @@ assessment. It does not change the original input, result, trace, release or dat
 re-evaluate rules, approve a case, authenticate a reviewer or infer medical facts.
 Upstream normalization and assessment capture precede this boundary.
 
-| Processing state | Meaning |
+| Routing disposition | Meaning |
 | --- | --- |
 | `ReadyForApproval` | Complete, known recorded result allowed by the explicit routing policy; still requires human approval. |
 | `Incomplete` | Recorded assessment is incomplete or required fields are missing; request clarification. |
@@ -28,6 +28,10 @@ Required-field incompleteness takes precedence over human-review queue placement
 all other reasons remain attached so conflicts cannot disappear from the record.
 Reasons contain technical codes and field/output/path references, not patient values.
 Human interfaces translate these codes separately from Knowledge-owned field labels.
+
+These three dispositions describe routing policy output, not the case lifecycle.
+They do not define workflow states or cause transitions. Configured opaque lifecycle
+states and explicit revisioned transitions remain owned by the workflow/case layer.
 
 The detached routing result retains case id, assessment id and policy identity. It is
 a projection of a trusted recorded result, not an authenticity check or a substitute

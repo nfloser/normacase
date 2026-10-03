@@ -23,7 +23,7 @@ public sealed class AssessmentTriageServiceTests
         var record = Record(confirmed ? TruthValue.Yes : TruthValue.No);
         var route = new AssessmentTriageService().Route(record, Policy);
         Assert.Equal(outcome, record.Result.Outcome);
-        Assert.Equal(CaseProcessingState.ReadyForApproval, route.State);
+        Assert.Equal(AssessmentRoutingDisposition.ReadyForApproval, route.Disposition);
         Assert.Equal(record.CaseId, route.CaseId);
         Assert.Equal(record.AssessmentId, route.AssessmentId);
         Assert.Equal(Policy.Id, route.PolicyId);
@@ -36,7 +36,7 @@ public sealed class AssessmentTriageServiceTests
     {
         var record = Record(TruthValue.Unknown);
         var route = new AssessmentTriageService().Route(record, Policy);
-        Assert.Equal(CaseProcessingState.Incomplete, route.State);
+        Assert.Equal(AssessmentRoutingDisposition.Incomplete, route.Disposition);
         Assert.Contains(route.Reasons, reason => reason.Code == TriageReasonCode.MissingRequiredField);
         Assert.Equal(AssessmentOutcome.Incomplete, record.Result.Outcome);
     }
@@ -47,7 +47,7 @@ public sealed class AssessmentTriageServiceTests
     public void Evidence_uncertainty_requires_human_work(EvidenceStatus status)
     {
         var route = new AssessmentTriageService().Route(Record(TruthValue.Yes, status), Policy);
-        Assert.Equal(CaseProcessingState.HumanReview, route.State);
+        Assert.Equal(AssessmentRoutingDisposition.HumanReview, route.Disposition);
         Assert.Contains(route.Reasons, reason => reason.Code == TriageReasonCode.UnresolvedEvidence);
     }
 
@@ -61,7 +61,7 @@ public sealed class AssessmentTriageServiceTests
             { Condition = rule.Condition with { Children = [unknown] } } });
         var route = new AssessmentTriageService().Route(changed, Policy);
         Assert.Equal(AssessmentOutcome.Supported, changed.Result.Outcome);
-        Assert.Equal(CaseProcessingState.HumanReview, route.State);
+        Assert.Equal(AssessmentRoutingDisposition.HumanReview, route.Disposition);
         Assert.Contains(route.Reasons, reason => reason.Code == TriageReasonCode.UnknownCondition);
     }
 
@@ -74,7 +74,7 @@ public sealed class AssessmentTriageServiceTests
             DomainOutputValue.Unknown, ConditionResult.Unknown,
             trace.Condition with { Result = ConditionResult.Unknown }, trace.Source)] });
         var route = new AssessmentTriageService().Route(changed, Policy);
-        Assert.Equal(CaseProcessingState.HumanReview, route.State);
+        Assert.Equal(AssessmentRoutingDisposition.HumanReview, route.Disposition);
         Assert.Contains(route.Reasons, reason => reason.Code == TriageReasonCode.UnknownOutput
             && reason.Reference == "synthetic-output");
         Assert.Equal(AssessmentOutcome.Supported, changed.Result.Outcome);
@@ -90,7 +90,7 @@ public sealed class AssessmentTriageServiceTests
         var changed = Copy(record, record.Result with { RuleTrace = trace with
             { Condition = trace.Condition with { NumericExpression = expression } } });
         var route = new AssessmentTriageService().Route(changed, Policy);
-        Assert.Equal(CaseProcessingState.HumanReview, route.State);
+        Assert.Equal(AssessmentRoutingDisposition.HumanReview, route.Disposition);
         Assert.Contains(route.Reasons, reason => reason.Code == TriageReasonCode.UnknownNumericValue);
     }
 
@@ -98,10 +98,10 @@ public sealed class AssessmentTriageServiceTests
     public void Missing_trace_and_restricted_policy_fail_closed()
     {
         var record = Record(TruthValue.Yes);
-        Assert.Equal(CaseProcessingState.HumanReview,
-            new AssessmentTriageService().Route(Copy(record, record.Result with { RuleTrace = null }), Policy).State);
+        Assert.Equal(AssessmentRoutingDisposition.HumanReview,
+            new AssessmentTriageService().Route(Copy(record, record.Result with { RuleTrace = null }), Policy).Disposition);
         var route = new AssessmentTriageService().Route(record, new("deny-all", 1, []));
-        Assert.Equal(CaseProcessingState.HumanReview, route.State);
+        Assert.Equal(AssessmentRoutingDisposition.HumanReview, route.Disposition);
         Assert.Contains(route.Reasons, reason => reason.Code == TriageReasonCode.PolicyRequiresReview);
     }
 
@@ -126,7 +126,7 @@ public sealed class AssessmentTriageServiceTests
         var original = record.Result;
         var first = new AssessmentTriageService().Route(record, Policy);
         var second = new AssessmentTriageService().Route(record, Policy);
-        Assert.Equal(first.State, second.State);
+        Assert.Equal(first.Disposition, second.Disposition);
         Assert.Equal(first.Reasons, second.Reasons);
         Assert.Same(original, record.Result);
         Assert.Throws<NotSupportedException>(() => ((IList<TriageReason>)first.Reasons).Clear());
