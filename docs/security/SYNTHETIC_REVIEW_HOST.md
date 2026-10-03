@@ -1,21 +1,25 @@
 # Lokale Authentifizierung für synthetische Fallprüfung
 
-Status: Authentifizierungsgrenze implementiert; persistente HTTP-Fallprüfung und
-Oberflächenanbindung folgen in #138. Ausschließlich synthetische Daten.
+Status: Authentifizierungsgrenze und persistente synthetische HTTP-Fallprüfung
+implementiert; Oberflächenanbindung folgt in #138. Ausschließlich synthetische Daten.
 
 ## Betriebsmodi
 
 Ohne `SyntheticReview:Enabled=true` bleibt die lokale Vorschau anonym und ohne
 Review-Session-Endpunkt. Die bestehenden Vorschau-Endpunkte bleiben unverändert.
-Der opt-in Modus fügt `GET /api/review-session` hinzu; er benötigt
-`Authorization: Bearer <Schlüssel>` und liefert ausschließlich die bestätigte
-technische Identität `synthetic-local:reviewer`. Er erlaubt noch keine Falländerung.
+Der opt-in Modus fügt `GET /api/review-session` sowie authentifizierte
+`/api/review/work-queues`, `/api/review/work-cases/{id}` und Review-POSTs hinzu.
+Er benötigt `Authorization: Bearer <Schlüssel>`; die technische Identität bleibt
+fest `synthetic-local:reviewer`. Persistente Änderungen laufen ausschließlich über
+die fallbezogene Review-Policy und den atomaren PostgreSQL-Aggregatstore.
 
 Konfiguration über die Betreiberumgebung:
 
 - `SyntheticReview__Enabled=true`
 - `SyntheticReview__Credential`: kanonische Base64-Kodierung von 32 kryptografisch
   zufälligen Bytes (44 Zeichen einschließlich Padding).
+- `SyntheticReview__ConnectionString`: lokale PostgreSQL-Verbindung; nur im
+  aktivierten Modus erforderlich.
 
 Schlüssel außerhalb des Repositorys erzeugen, beispielsweise mit einem lokalen
 Passwort-/Secret-Werkzeug. Nicht in Kommandozeilenargumente, Git, URLs, Screenshots,
@@ -48,9 +52,10 @@ Loopback schützt nicht vor kompromittierten lokalen Prozessen oder Browsern.
 Dieser HTTP-Demohost ist kein produktiver Identity Provider und darf nicht ins
 Netzwerk veröffentlicht werden. Keine echten Patientendaten verwenden.
 
-#138 verbindet danach PostgreSQL-Aggregate, explizite Fall-/Prozessberechtigungen,
-Revisionsprüfung und append-only Review-Audit mit der deutschen Oberfläche.
-Dafür bleibt ein gesonderter Review erforderlich. Produktiver Betrieb benötigt eine
+Der Host verbindet die vorhandenen PostgreSQL-Aggregate bereits mit expliziter
+Fall-/Prozessberechtigung, Revisionsprüfung und append-only Review-Audit. #138 bindet
+als nächsten Schritt eine flüchtige, maskierte Credential-Eingabe und die deutschen
+Review-Aktionen an die Oberfläche. Dafür bleibt ein gesonderter Review erforderlich. Produktiver Betrieb benötigt eine
 institutionell geprüfte Identitäts-, Berechtigungs- und Datenschutzkonzeption (#119).
 
 ## Verifikation
@@ -58,4 +63,6 @@ institutionell geprüfte Identitäts-, Berechtigungs- und Datenschutzkonzeption 
 HTTP-Integrationstests prüfen deaktivierten Standardmodus, gültige Anmeldung,
 fehlende/falsche/ungültige Schlüssel, doppelte Header, ignorierte Query-Schlüssel,
 serverseitige Identitätsbindung, Fremd-Origin-Abweisung, no-store und ungültige
-Startkonfiguration. Die unveränderten Vorschau-Tests laufen ebenfalls weiter.
+Startkonfiguration. Zusätzlich laufen Accept/Override, verbotene Zustände, stale
+Revisionen und Neustart-Persistenz gegen echtes PostgreSQL. Die unveränderten
+Vorschau-Tests laufen ebenfalls weiter.
