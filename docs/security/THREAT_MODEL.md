@@ -108,3 +108,14 @@ Baseline: dependency review/scanning, Dependabot, minimal dependencies and progr
 ## Open work
 
 Future slices must refine this model when authentication, persistence, document upload/import, exports and Knowledge Bundle signatures are introduced.
+
+### Atomic human-review boundary
+
+The Application case-review service requires a trusted authentication-adapter actor
+and an explicit case-scoped authorizer. These types do not authenticate a caller by
+themselves. Future HTTP adapters must never bind actor identity from request DTOs.
+Review commands check case/input/process/audit revisions under one aggregate
+transaction and preserve the original assessment. A store implementation must commit
+process and audit together or roll back both; separate successful writes are unsafe.
+The synthetic contract tests do not replace durable-store or identity-provider review.
+See [CASE_REVIEW.md](../architecture/CASE_REVIEW.md).
