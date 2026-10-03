@@ -396,17 +396,17 @@ internal static class SyntheticReviewEndpoints
             CaseReviewState state,
             CaseReviewCommand command,
             CaseReviewPolicy policy)
-            => string.Equals(actor.ActorId, "synthetic-local:reviewer", StringComparison.Ordinal)
-                && string.Equals(actor.AuthenticationAuthority, "synthetic-local", StringComparison.Ordinal)
-                && string.Equals(policy.Id, ReviewPolicy.Id, StringComparison.Ordinal)
-                && policy.Version == ReviewPolicy.Version
-                // Case entitlement is separate from revision and transition checks.
-                // The service rejects stale commands before checking the reviewed
-                // workflow edge; an up-to-date closed case still has no valid edge.
-                && PermittedCaseId(state.Process.CaseId.Value)
-                && state.Process.WorkflowId == Workflow.Id
-                && state.Process.WorkflowVersion == Workflow.Version
-                && (command.Disposition == HumanReviewDisposition.AcceptSystemResult
-                    || command.Disposition == HumanReviewDisposition.Override);
+        {
+            if (!PermittedCaseId(state.Process.CaseId.Value)) return false;
+            // This adapter's synthetic entitlement remains explicitly local.
+            // An organizational adapter must load authoritative grants, never
+            // manufacture one from the request actor or caller-supplied case claims.
+            var entitlement = new CaseReviewGrant(
+                new("synthetic-local:reviewer", "synthetic-local"),
+                state.Process.CaseId, ReviewPolicy,
+                [HumanReviewDisposition.AcceptSystemResult, HumanReviewDisposition.Override]);
+            return new GrantedCaseReviewAuthorizer([entitlement])
+                .Authorize(actor, state, command, policy);
+        }
     }
 }

@@ -217,6 +217,58 @@ public sealed class CaseReviewServiceTests
     }
 
     private static CaseReviewService Service(ReferenceStore store) => new(store, new Authorizer(true));
+
+    [Fact]
+    public async Task Scoped_grants_allow_only_the_bound_actor_case_policy_and_action()
+    {
+        var store = new ReferenceStore(Initial());
+        var authorizer = new GrantedCaseReviewAuthorizer([
+            new CaseReviewGrant(Actor, store.State.Process.CaseId, Policy,
+                [HumanReviewDisposition.AcceptSystemResult])]);
+        var service = new CaseReviewService(store, authorizer);
+        var original = store.State;
+        foreach (var actor in new[] {
+            new AuthenticatedReviewActor("another-reviewer", Actor.AuthenticationAuthority),
+            new AuthenticatedReviewActor(Actor.ActorId, "another-authority") })
+        {
+            await Assert.ThrowsAsync<CaseReviewDeniedException>(() =>
+                service.ReviewAsync(actor, Command(), Workflow, Policy));
+            Assert.Same(original, store.State);
+        }
+        await Assert.ThrowsAsync<CaseReviewDeniedException>(() =>
+            service.ReviewAsync(Actor, Command(HumanReviewDisposition.Override), Workflow, Policy));
+        var changedPolicy = new CaseReviewPolicy(Policy.Id, 2, Workflow.Id, 1,
+            new Dictionary<HumanReviewDisposition, string> { [HumanReviewDisposition.AcceptSystemResult] = "accept" });
+        await Assert.ThrowsAsync<CaseReviewDeniedException>(() =>
+            service.ReviewAsync(Actor, Command(), Workflow, changedPolicy));
+        Assert.Same(original, store.State);
+        var result = await service.ReviewAsync(Actor, Command(), Workflow, Policy);
+        Assert.Equal("accepted", result.Process.StateId);
+        Assert.Equal(Actor.ActorId, result.Audit.Events[^1].Review!.ActorId);
+    }
+
+    [Fact]
+    public void Scoped_grants_detach_input_and_deny_missing_or_wrong_case_scopes()
+    {
+        var state = Initial();
+        var actions = new List<HumanReviewDisposition> { HumanReviewDisposition.AcceptSystemResult };
+        var grant = new CaseReviewGrant(Actor, state.Process.CaseId, Policy, actions);
+        var grants = new List<CaseReviewGrant> { grant };
+        var authorizer = new GrantedCaseReviewAuthorizer(grants);
+        actions.Clear();
+        actions.Add(HumanReviewDisposition.Override);
+        grants.Clear();
+        Assert.True(authorizer.Authorize(Actor, state, Command(), Policy));
+        Assert.False(authorizer.Authorize(Actor, state, Command(HumanReviewDisposition.Override), Policy));
+        Assert.False(authorizer.Authorize(Actor, state, Command() with { CaseId = new("other-case") }, Policy));
+        Assert.False(new GrantedCaseReviewAuthorizer([]).Authorize(Actor, state, Command(), Policy));
+        var wrongCase = new GrantedCaseReviewAuthorizer([
+            new CaseReviewGrant(Actor, new("other-case"), Policy, [HumanReviewDisposition.AcceptSystemResult])]);
+        Assert.False(wrongCase.Authorize(Actor, state, Command(), Policy));
+        Assert.Throws<ArgumentException>(() => new CaseReviewGrant(Actor, default, Policy, actions));
+        Assert.Throws<ArgumentException>(() => new CaseReviewGrant(Actor, state.Process.CaseId, Policy,
+            [(HumanReviewDisposition)999]));
+    }
     private static CaseReviewCommand Command(HumanReviewDisposition disposition = HumanReviewDisposition.AcceptSystemResult)
         => new(new("case-review"), new("assessment-review"), new("review-one"), 1, 0, 1,
             Time.AddMinutes(1), disposition, "Synthetic review reason", disposition == HumanReviewDisposition.Override ? AssessmentOutcome.NotSupported : null);

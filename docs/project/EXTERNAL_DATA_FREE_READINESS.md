@@ -26,6 +26,27 @@ real process/role mapping, legally/medically authoritative knowledge approval an
 controlled pilot with approved sensitive data. Generic contracts, synthetic tests,
 offline operation and developer/security preparation remain possible without them.
 
+## Platform completion beyond the demo
+
+The synthetic demonstration milestone is complete; the full institution-independent
+platform is not. The following technical work does **not** require internal MD data
+and must not be classified as externally blocked. Track completion in
+[platform follow-up #180](https://github.com/nfloser/normacase/issues/180).
+
+| Technical scope | Current limitation | Required completion evidence |
+|---|---|---|
+| Distinct identities and case/action permissions | Fixed synthetic identity; exact review grants are a first reusable boundary | Multiple identities, permission administration/revocation, audited separation of duties, integrated authorized reads/writes/exports |
+| Knowledge governance | Exact in-memory catalog and immutable snapshots; no durable change/approval/activation administration | Persistent source/change/review/release history, authorized activation, historical replay and synthetic separation-of-duties tests |
+| Corrections and clarification | Intake accepts only revision 1; incomplete/manual-review paths are not complete work cycles | Append-only corrected revisions/reassessment, configurable synthetic clarification and review policy, preserved historical inputs/results |
+| Batch review | Individual review only | Explicit opt-in policy, bounded commands, per-case authorization/revision checks, audited results and German UI |
+| Operational scale and installation | Local host, bounded queue, native previews and restore rehearsal | Paginated authorized queues, documented reproducible deployment/update, rollback/recovery and failure-path validation |
+
+Institutional role mappings, actual medical/process policies, vendor contracts and
+external approvals remain external. Their generic configurable mechanisms remain
+engineering work. An empty issue list or a green demo is not evidence that this
+larger scope is finished. Optional AI extraction remains outside the deterministic
+platform scope and is not introduced as a requirement for completion.
+
 
 ## Access-independent completion boundary
 
