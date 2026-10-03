@@ -105,3 +105,23 @@ own verified authentication scheme, never from command bodies or caller actor
 headers. The preview remains anonymous/read-only by default. This seam provides no
 case permissions or review mutations; persistent API/UI integration remains #138.
 See [synthetic host security design](../security/SYNTHETIC_REVIEW_HOST.md).
+
+
+## Persistent synthetic HTTP review adapter
+
+The reviewed local host binds the existing ASP.NET Core synthetic principal to
+`CaseReviewService` and `PostgresCaseReviewStore`. The four demo-g assessments are
+recorded and routed once; subsequent host restarts load their committed aggregate
+versions instead of rebuilding review state.
+
+The HTTP command accepts only expected case/process/audit revisions, disposition,
+reason and an optional generic override outcome. Assessment identity is loaded from
+the authoritative aggregate. Actor identity comes from
+`SyntheticReviewAuthentication.ResolveActor`; review id and UTC recording time are
+server-owned. No actor id, timestamp or review id is accepted from request JSON.
+
+The explicit synthetic policy permits Accept/Override only from
+`awaiting-approval`. Incomplete/manual-review cases remain visible but mutation is
+denied. Successful commands atomically append process and audit; stale revisions
+return HTTP 409 without retry. This remains a local synthetic bootstrap and does not
+close productive identity/privacy work in #119.
