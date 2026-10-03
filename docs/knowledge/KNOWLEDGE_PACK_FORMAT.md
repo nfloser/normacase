@@ -12,8 +12,10 @@ Current repository examples:
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
 - `knowledge/demo-d/pack.json`: derived numeric expressions with range lookup, sum, max and UNKNOWN propagation.
 - `knowledge/demo-e/pack.json`: independent, source-backed categorical domain outputs with per-output UNKNOWN.
+- `knowledge/public-reference/kt-rl-8-3/pack.json`: narrow G-BA KT-RL § 8 Absatz 3 public-reference path with explicit evidence gating and a source-backed approval-state output.
 
-All five packs are `SYNTHETIC`.
+The five demo packs are `SYNTHETIC`. The KT-RL pack is `PUBLIC_REFERENCE` and
+remains explicitly non-domain-approved.
 
 ## Manifest
 
