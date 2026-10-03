@@ -56,15 +56,7 @@ public sealed class KnowledgeReleaseCatalogTests
         var first = artifact.LoadPack();
         first.Fields.Clear();
         first.Sources.Clear();
-        first.Manifest = new()
-        {
-            FormatVersion = 1,
-            PackId = "mutated",
-            ReleaseId = "mutated",
-            LifecycleStatus = "DRAFT",
-            ValidationLevel = "SYNTHETIC",
-            EntryRuleId = "mutated"
-        };
+        first.Rules.Clear();
 
         var second = artifact.LoadPack();
 
