@@ -30,8 +30,11 @@ Reasons contain technical codes and field/output/path references, not patient va
 Human interfaces translate these codes separately from Knowledge-owned field labels.
 
 These three dispositions describe routing policy output, not the case lifecycle.
-They do not define workflow states or cause transitions. Configured opaque lifecycle
-states and explicit revisioned transitions remain owned by the workflow/case layer.
+They do not define workflow states. `CaseProcessingRoutingService` may consume this
+recorded routing decision and map it through a separately versioned process-routing
+policy to one explicit opaque transition. It does not re-inspect assessment facts or
+invent a fallback transition; missing/unavailable mappings fail closed. Configured
+lifecycle states and revisioned transitions remain owned by the workflow/case layer.
 
 The detached routing result retains case id, assessment id and policy identity. It is
 a projection of a trusted recorded result, not an authenticity check or a substitute
