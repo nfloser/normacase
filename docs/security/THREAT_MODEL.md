@@ -69,8 +69,11 @@ Successful history replay proves internal graph/revision consistency only: an
 unauthorized producer can supply a different internally consistent history. Import
 does not authenticate actors, authorize transitions or confer domain approval.
 Run JSON remains under operator control, uses bounded strict parsing and must not
-be logged. Productive exposure needs authentication, case-level authorization,
-transactional concurrency and suitable provenance/retention controls.
+be logged. The optional PostgreSQL adapter serializes run appends transactionally,
+checks the unchanged historical prefix and rejects UPDATE/DELETE at the row boundary.
+Its checksums detect inconsistency but do not authenticate authors; privileged direct
+INSERT/schema access can bypass application guarantees. Productive exposure needs
+authentication, case-level authorization and suitable provenance/retention controls.
 
 ### Sensitive logging
 Medical or identity data could leak through logs and CI.

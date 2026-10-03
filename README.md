@@ -79,6 +79,7 @@ The current core can:
 - capture and restore detached workflow execution snapshots without re-reading current Knowledge,
 - serialize workflow execution snapshots through a strict versioned JSON interchange contract,
 - bind workflow runs to typed case identities and retain immutable actor/time/reason transition history with strict replay-checked JSON interchange,
+- persist workflow run revisions append-only in PostgreSQL with transactional conflict checks and explicit historical reads,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
 - persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
