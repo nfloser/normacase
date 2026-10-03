@@ -4,6 +4,7 @@ import { parse } from 'lossless-json';
 import de from './de.json';
 import { exampleValues, normalizeCatalog, requestJson, type Pack } from './model';
 import './style.css';
+import { CaseWorkQueues } from './CaseWorkQueues';
 import { WorkflowWorkbench } from './WorkflowWorkbench';
 import { DecisionTrace } from './DecisionTrace';
 import type { RuleTrace, OutputTrace } from './trace';
@@ -134,7 +135,7 @@ function App() {
         <DecisionTrace rule={result.assessment.ruleTrace} outputs={result.assessment.domainOutputs} presentation={pack?.presentation}/><details><summary>{de.trace}</summary><pre>{raw}</pre></details><button className="secondary export" onClick={download}>{de.export}</button><button className="secondary export" onClick={()=>saveFile(snapshot,'normacase-snapshot.json')} disabled={!snapshot}>{de.snapshotExport}</button>
       </>}
     </section></div>
-    <section className="card snapshot-tools" aria-live="polite">
+    <CaseWorkQueues packs={packs}/><section className="card snapshot-tools" aria-live="polite">
       <h2>{de.snapshotHeading}</h2><p>{de.snapshotHelp}</p>
       <div className="field"><span>{de.snapshotSelect}</span>
         <input ref={snapshotFile} aria-label={de.snapshotSelect} type="file" hidden accept=".json,application/json" onChange={verifySnapshot} disabled={busy}/>

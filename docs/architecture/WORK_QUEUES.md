@@ -57,3 +57,23 @@ Productive authorization and human approval remain separate slices.
 
 All current examples are synthetic and make no claim about MD-specific queue names,
 roles or operational process states.
+
+## Read-only synthetic workbench
+
+The loopback API exposes `GET /api/work-queues` and `GET /api/work-cases/{caseId}`.
+The fixed demo-g examples run through AssessmentRecorder, AssessmentTriageService,
+CaseProcessingRoutingService and CaseWorkQueueProjectionService at host startup.
+Both complete positive and negative results await human approval. Missing input and
+human-review results enter separate queues. A fifth technical case uses process-only
+membership and has null assessment identity/JSON and no evidence.
+
+Case and process revisions are invariant decimal strings at the HTTP boundary.
+The detail contains the original serialized immutable assessment and recorded evidence
+statuses; the frontend parses assessment decimals losslessly and reuses DecisionTrace.
+Queue/state labels are German translation resources; React never chooses membership.
+Unknown case ids return a bounded generic 404. Existing origin, loopback and no-store
+protections cover both endpoints.
+
+This is deterministic in-memory synthetic demonstration data, recreated on restart.
+It has no authenticated productive case management, persistence, human approval,
+overrides or batch actions. Issue #116 remains open for those subsequent slices.

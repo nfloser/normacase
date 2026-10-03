@@ -191,6 +191,7 @@ public static class DemoHost
             return Results.Json(new { assessmentJson = AssessmentJson.Serialize(result.Assessment, result.PlatformVersion) });
         }));
 
+        WorkQueueEndpoints.Map(app, packs, platformVersion);
         WorkflowEndpoints.Map(app, packs, presentations, platformVersion);
         return app;
     }
