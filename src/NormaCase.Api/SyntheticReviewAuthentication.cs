@@ -11,7 +11,8 @@ namespace NormaCase.Api;
 internal sealed class SyntheticReviewCredential
 {
     internal bool Enabled { get; }
-    private sealed record Entry(string ActorId, byte[] Credential, HashSet<string> Actions, HashSet<string> Cases);
+    private const string AdministratorActorId = "synthetic-local:administrator";
+    private sealed record Entry(string ActorId, byte[] Credential, HashSet<string> Actions, HashSet<string> Cases, bool Administrator = false);
     private readonly Entry[] entries;
     private readonly bool legacy;
     private static readonly HashSet<string> ValidActions = ["READ", "ACCEPT", "OVERRIDE", "EXPORT", "INTAKE"];
@@ -27,8 +28,11 @@ internal sealed class SyntheticReviewCredential
         var enabled = bool.TryParse(mode, out var parsed) && parsed;
         if (!enabled) return new(false, []);
         var users = configuration.GetSection("SyntheticReview:Users").GetChildren().ToArray();
+        var administrator = configuration["SyntheticReview:Administrator:Credential"];
         if (users.Length == 0)
         {
+            if (administrator is not null)
+                throw new InvalidOperationException("Identity administration requires separate synthetic users.");
             if (!TryDecode(configuration["SyntheticReview:Credential"], out var bytes))
                 throw new InvalidOperationException("Synthetic review requires an external canonical 256-bit credential.");
             return new(true, [new("synthetic-local:reviewer", bytes, [], [])], true);
@@ -50,6 +54,14 @@ internal sealed class SyntheticReviewCredential
                 || entries.Any(entry => CryptographicOperations.FixedTimeEquals(entry.Credential, bytes)))
                 throw new InvalidOperationException("Invalid synthetic entitlement configuration.");
             entries.Add(new("synthetic-local:user-" + user.Key, bytes, actions, cases));
+        }
+        if (administrator is not null)
+        {
+            if (!configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled")
+                || !TryDecode(administrator, out var bytes)
+                || entries.Any(entry => CryptographicOperations.FixedTimeEquals(entry.Credential, bytes)))
+                throw new InvalidOperationException("Invalid synthetic administrator configuration.");
+            entries.Add(new(AdministratorActorId, bytes, [], [], true));
         }
         return new(true, entries.ToArray());
     }
@@ -73,6 +85,19 @@ internal sealed class SyntheticReviewCredential
             && entries.Any(entry => entry.ActorId == actor.ActorId
                 && (legacy || entry.Actions.Contains(action) && entry.Cases.Contains(caseId)));
 
+    internal bool IsAdministrator(AuthenticatedReviewActor actor)
+        => actor.AuthenticationAuthority == "synthetic-local"
+            && actor.ActorId == AdministratorActorId
+            && entries.Any(entry => entry.ActorId == actor.ActorId && entry.Administrator);
+
+    internal bool IsConfiguredUser(string actorId)
+        => entries.Any(entry => entry.ActorId == actorId && !entry.Administrator)
+            && actorId != "synthetic-local:reviewer";
+
+    internal IReadOnlyList<string> ConfiguredUsers()
+        => entries.Where(entry => !entry.Administrator && entry.ActorId != "synthetic-local:reviewer")
+            .Select(entry => entry.ActorId).OrderBy(id => id, StringComparer.Ordinal).ToArray();
+
     internal IReadOnlyCollection<NormaCase.Domain.Cases.CaseId>? ReadScope(AuthenticatedReviewActor actor)
     {
         var entry = entries.SingleOrDefault(item => item.ActorId == actor.ActorId);
@@ -92,24 +117,27 @@ internal sealed class SyntheticReviewCredential
 
 internal sealed class SyntheticReviewAuthentication(
     IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger,
-    UrlEncoder encoder, SyntheticReviewCredential credential)
+    UrlEncoder encoder, SyntheticReviewCredential credential,
+    SyntheticIdentityAccessGate accessGate)
     : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     internal const string SchemeName = "SyntheticLocalReview";
     private const string Authority = "synthetic-local";
 
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var headers = Request.Headers.Authorization;
-        if (headers.Count == 0) return Task.FromResult(AuthenticateResult.NoResult());
+        if (headers.Count == 0) return AuthenticateResult.NoResult();
         var value = headers.Count == 1 ? headers[0] : null;
         if (value is null || !value.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
             || !credential.TryAuthenticate(value[7..], out var actorId))
-            return Task.FromResult(AuthenticateResult.Fail("Invalid synthetic credential."));
+            return AuthenticateResult.Fail("Invalid synthetic credential.");
+        if (!await accessGate.IsActiveAsync(actorId, Context.RequestAborted))
+            return AuthenticateResult.Fail("Synthetic identity is suspended.");
         var identity = new ClaimsIdentity(
             [new(ClaimTypes.NameIdentifier, actorId, ClaimValueTypes.String, Authority)], SchemeName);
-        return Task.FromResult(AuthenticateResult.Success(
-            new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName)));
+        return AuthenticateResult.Success(
+            new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName));
     }
 
     // Only claims issued by this verified scheme can cross the Application boundary.

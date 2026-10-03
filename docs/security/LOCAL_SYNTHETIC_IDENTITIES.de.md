@@ -43,12 +43,23 @@ Die Historie enthält die individuelle serverseitige Identität.
 Bei neuen Eingängen muss deren deterministisch abgeleitete interne Fall-ID
 vorab zugewiesen sein; allgemeine Eingangspools sind nicht implizit freigegeben.
 
-Die Konfiguration wird beim Start übernommen. Für eine Änderung oder Sperrung
-stoppe den Host, ändere die geschützte Konfiguration und starte ihn neu.
-Entfernte Schlüssel werden danach mit 401 abgelehnt. Das ist keine Live-Sperrung,
-keine administrative Berechtigungsoberfläche und kein revisionssicherer
-Verwaltungs-Audit. Diese technischen Aufgaben bleiben in
-[Issue #183](https://github.com/nfloser/normacase/issues/183) offen.
+Die Fall- und Aktionszuweisungen werden weiterhin beim Start aus geschützter
+Konfiguration übernommen. Eine optionale, separat konfigurierte synthetische
+Verwaltungsidentität kann einzelne konfigurierte Testpersonen jedoch zur Laufzeit
+sperren und reaktivieren. Setze dafür
+`SyntheticReview__Administrator__Credential` auf einen dritten, unabhängigen
+kanonischen 256-Bit-Schlüssel. Die Verwaltungs-API liegt unter
+`/api/review/administration/identities`; Änderungen benötigen die erwartete Revision
+und einen Grund. Ziel, Zustand, Verwaltungsidentität, UTC-Zeit und Grund werden
+append-only in PostgreSQL gespeichert. Eine Sperre gilt ab der nächsten geschützten
+Serveranfrage und bleibt nach einem Neustart erhalten.
+
+Normale Testpersonen erhalten auf diesen Endpunkten 403. Unbekannte Ziele liefern
+404, veraltete Revisionen 409. Schlüsselwerte werden weder gespeichert noch
+zurückgegeben. Das ist eine geprüfte Live-Sperre mit Verwaltungs-Audit, aber noch
+keine vollständige Berechtigungsoberfläche: Änderungen der Fall-/Aktionszuweisung,
+eine konfigurierbare Trennung administrativer Aufgaben und die deutsche Admin-UI
+bleiben in [Issue #183](https://github.com/nfloser/normacase/issues/183) offen.
 Auch konkrete institutionelle Rollen und ein produktiver Identity Provider sind
 dadurch nicht festgelegt.
 
