@@ -19,7 +19,17 @@
       "required": true
     },
     {
-      "id": "qualifying_disability_marker_ag_bl_h",
+      "id": "disability_marker_ag",
+      "type": "truth",
+      "required": false
+    },
+    {
+      "id": "disability_marker_bl",
+      "type": "truth",
+      "required": false
+    },
+    {
+      "id": "disability_marker_h",
       "type": "truth",
       "required": false
     },
@@ -34,7 +44,12 @@
       "required": false
     },
     {
-      "id": "legacy_care_level_2_until_2016",
+      "id": "care_level_2_on_2016_12_31",
+      "type": "truth",
+      "required": false
+    },
+    {
+      "id": "care_grade_3_or_higher_since_2017_01_01",
       "type": "truth",
       "required": false
     }
@@ -47,7 +62,7 @@
       "id": "care_grade_notice"
     },
     {
-      "id": "legacy_care_level_2_proof"
+      "id": "care_transition_classification_proof"
     }
   ],
   "sources": [
@@ -99,9 +114,24 @@
                 "evidenceRequirementId": "severe_disability_card",
                 "conditions": [
                   {
-                    "kind": "field_equals",
-                    "field": "qualifying_disability_marker_ag_bl_h",
-                    "expected": "YES"
+                    "kind": "any",
+                    "conditions": [
+                      {
+                        "kind": "field_equals",
+                        "field": "disability_marker_ag",
+                        "expected": "YES"
+                      },
+                      {
+                        "kind": "field_equals",
+                        "field": "disability_marker_bl",
+                        "expected": "YES"
+                      },
+                      {
+                        "kind": "field_equals",
+                        "field": "disability_marker_h",
+                        "expected": "YES"
+                      }
+                    ]
                   }
                 ]
               },
@@ -116,6 +146,12 @@
                         "kind": "number_in_range",
                         "field": "care_grade",
                         "minimum": 4,
+                        "maximum": 4
+                      },
+                      {
+                        "kind": "number_in_range",
+                        "field": "care_grade",
+                        "minimum": 5,
                         "maximum": 5
                       },
                       {
@@ -139,28 +175,21 @@
                 ]
               },
               {
-                "kind": "all",
+                "kind": "requires_evidence",
+                "evidenceRequirementId": "care_transition_classification_proof",
                 "conditions": [
                   {
-                    "kind": "requires_evidence",
-                    "evidenceRequirementId": "legacy_care_level_2_proof",
+                    "kind": "all",
                     "conditions": [
                       {
                         "kind": "field_equals",
-                        "field": "legacy_care_level_2_until_2016",
+                        "field": "care_level_2_on_2016_12_31",
                         "expected": "YES"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "requires_evidence",
-                    "evidenceRequirementId": "care_grade_notice",
-                    "conditions": [
+                      },
                       {
-                        "kind": "number_in_range",
-                        "field": "care_grade",
-                        "minimum": 3,
-                        "maximum": 5
+                        "kind": "field_equals",
+                        "field": "care_grade_3_or_higher_since_2017_01_01",
+                        "expected": "YES"
                       }
                     ]
                   }
@@ -202,9 +231,24 @@
                 "evidenceRequirementId": "severe_disability_card",
                 "conditions": [
                   {
-                    "kind": "field_equals",
-                    "field": "qualifying_disability_marker_ag_bl_h",
-                    "expected": "YES"
+                    "kind": "any",
+                    "conditions": [
+                      {
+                        "kind": "field_equals",
+                        "field": "disability_marker_ag",
+                        "expected": "YES"
+                      },
+                      {
+                        "kind": "field_equals",
+                        "field": "disability_marker_bl",
+                        "expected": "YES"
+                      },
+                      {
+                        "kind": "field_equals",
+                        "field": "disability_marker_h",
+                        "expected": "YES"
+                      }
+                    ]
                   }
                 ]
               },
@@ -219,6 +263,12 @@
                         "kind": "number_in_range",
                         "field": "care_grade",
                         "minimum": 4,
+                        "maximum": 4
+                      },
+                      {
+                        "kind": "number_in_range",
+                        "field": "care_grade",
+                        "minimum": 5,
                         "maximum": 5
                       },
                       {
@@ -242,28 +292,21 @@
                 ]
               },
               {
-                "kind": "all",
+                "kind": "requires_evidence",
+                "evidenceRequirementId": "care_transition_classification_proof",
                 "conditions": [
                   {
-                    "kind": "requires_evidence",
-                    "evidenceRequirementId": "legacy_care_level_2_proof",
+                    "kind": "all",
                     "conditions": [
                       {
                         "kind": "field_equals",
-                        "field": "legacy_care_level_2_until_2016",
+                        "field": "care_level_2_on_2016_12_31",
                         "expected": "YES"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "requires_evidence",
-                    "evidenceRequirementId": "care_grade_notice",
-                    "conditions": [
+                      },
                       {
-                        "kind": "number_in_range",
-                        "field": "care_grade",
-                        "minimum": 3,
-                        "maximum": 5
+                        "kind": "field_equals",
+                        "field": "care_grade_3_or_higher_since_2017_01_01",
+                        "expected": "YES"
                       }
                     ]
                   }
