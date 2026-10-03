@@ -31,6 +31,16 @@ public static class DemoHost
         builder.Logging.ClearProviders();
         builder.Services.AddSingleton(services => SyntheticReviewCredential.Load(
             services.GetRequiredService<IConfiguration>()));
+        builder.Services.AddSingleton(services =>
+        {
+            var credential = services.GetRequiredService<SyntheticReviewCredential>();
+            if (!credential.Enabled)
+                throw new InvalidOperationException("Synthetic review persistence is disabled.");
+            var connection = services.GetRequiredService<IConfiguration>()["SyntheticReview:ConnectionString"];
+            if (string.IsNullOrWhiteSpace(connection))
+                throw new InvalidOperationException("Synthetic review mode requires an explicit PostgreSQL connection.");
+            return Npgsql.NpgsqlDataSource.Create(connection);
+        });
         builder.Services.AddAuthentication(SyntheticReviewAuthentication.SchemeName)
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
@@ -207,6 +217,8 @@ public static class DemoHost
 
         WorkQueueEndpoints.Map(app, packs, platformVersion);
         WorkflowEndpoints.Map(app, packs, presentations, platformVersion);
+        if (reviewCredential.Enabled)
+            SyntheticReviewEndpoints.Map(app, packs, platformVersion);
         return app;
     }
 
