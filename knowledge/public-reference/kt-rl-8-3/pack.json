@@ -32,6 +32,11 @@
       "id": "care_grade_3_permanent_mobility_transport_need",
       "type": "truth",
       "required": false
+    },
+    {
+      "id": "legacy_care_level_2_until_2016",
+      "type": "truth",
+      "required": false
     }
   ],
   "evidenceRequirements": [
@@ -40,6 +45,9 @@
     },
     {
       "id": "care_grade_notice"
+    },
+    {
+      "id": "legacy_care_level_2_proof"
     }
   ],
   "sources": [
@@ -129,6 +137,34 @@
                     ]
                   }
                 ]
+              },
+              {
+                "kind": "all",
+                "conditions": [
+                  {
+                    "kind": "requires_evidence",
+                    "evidenceRequirementId": "legacy_care_level_2_proof",
+                    "conditions": [
+                      {
+                        "kind": "field_equals",
+                        "field": "legacy_care_level_2_until_2016",
+                        "expected": "YES"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "requires_evidence",
+                    "evidenceRequirementId": "care_grade_notice",
+                    "conditions": [
+                      {
+                        "kind": "number_in_range",
+                        "field": "care_grade",
+                        "minimum": 3,
+                        "maximum": 5
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -200,6 +236,34 @@
                             "expected": "YES"
                           }
                         ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "conditions": [
+                  {
+                    "kind": "requires_evidence",
+                    "evidenceRequirementId": "legacy_care_level_2_proof",
+                    "conditions": [
+                      {
+                        "kind": "field_equals",
+                        "field": "legacy_care_level_2_until_2016",
+                        "expected": "YES"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "requires_evidence",
+                    "evidenceRequirementId": "care_grade_notice",
+                    "conditions": [
+                      {
+                        "kind": "number_in_range",
+                        "field": "care_grade",
+                        "minimum": 3,
+                        "maximum": 5
                       }
                     ]
                   }
