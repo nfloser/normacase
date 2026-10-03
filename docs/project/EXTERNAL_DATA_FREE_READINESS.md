@@ -12,14 +12,14 @@ CI are the acceptance evidence; completing a checkbox requires integration and r
 | Recorded assessment, routing and queue projections | Immutable assessment/process contracts and separate workflow states | Atomic fresh assessment/process initialization and persisted queues (#156) |
 | Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review remains #119; missing-information/correction workflows need explicit policy |
 | Versioned reviewed outbound result | Exact intake/assessment/review binding and strict JSON contract (#150) | Two synthetic sinks (#152), durable receipts and authenticated full roundtrip (#156) |
-| Local review operation | Opt-in database configuration, loopback Compose and German start/demo guide | Measured backup/restore, clean-install/update and failure-recovery rehearsal |
+| Local review operation | Opt-in database configuration, loopback Compose and German start/demo guide | Clean database install, exact restart replay and pg_dump/pg_restore rehearsal (#160); target-specific deployment/update approval remains external |
 | Independent security/deployment assessment | Fail-closed guards, tests and evolving threat model | Operational/security/privacy review is required beyond software unit/integration success |
 
-The shortest remaining access-independent path is: persist fresh normalized intake,
-connect it to recorded assessment/routing, deliver reviewed results to two synthetic
-sinks, then rehearse the complete local product flow and recovery on a clean install.
-The queue browser already exercises real ASP.NET/PostgreSQL review; the seeded demo
-must not be described as a complete live external integration.
+The executable synthetic path now connects fresh normalized intake to recorded
+assessment/routing, persisted work queues, authenticated human review and two
+synthetic outbound sinks. CI rehearses a clean install, exact restart replay and
+restoration into a second fresh database. This is a complete synthetic integration
+exercise; no actual institutional integration or productive authorization is claimed.
 
 Internal MD data/specifications are required only for concrete institutional adapters,
 real process/role mapping, legally/medically authoritative knowledge approval and a

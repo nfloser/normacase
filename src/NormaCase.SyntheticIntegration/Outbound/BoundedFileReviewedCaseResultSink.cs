@@ -82,14 +82,14 @@ public sealed class BoundedFileReviewedCaseResultSink : IReviewedCaseResultSink
         CancellationToken cancellationToken)
     {
         if (new FileInfo(path).Length > MaximumPayloadBytes) throw new OutboundDeliveryConflictException();
-        var existing = await File.ReadAllTextAsync(path, new UTF8Encoding(false, true), cancellationToken)
-            .ConfigureAwait(false);
         ReviewedCaseResult restored;
         try
         {
+            var existing = await File.ReadAllTextAsync(path, new UTF8Encoding(false, true), cancellationToken)
+                .ConfigureAwait(false);
             restored = ReviewedCaseResultJson.Deserialize(existing);
         }
-        catch (System.Text.Json.JsonException)
+        catch (Exception exception) when (exception is System.Text.Json.JsonException or DecoderFallbackException)
         {
             throw new OutboundDeliveryConflictException();
         }

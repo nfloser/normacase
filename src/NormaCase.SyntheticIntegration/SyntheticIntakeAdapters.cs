@@ -22,10 +22,10 @@ public static class SyntheticIntakeAdapters
         using var doc = JsonDocument.Parse(text, new JsonDocumentOptions { MaxDepth = 16 });
         var root = doc.RootElement;
         Properties(root, ["formatVersion", "order", "message", "revision", "input"]);
-        if (root.GetProperty("formatVersion").GetInt32() != 1) throw new FormatException();
+        if (root.GetProperty("formatVersion").ValueKind != JsonValueKind.Number || !root.GetProperty("formatVersion").TryGetInt32(out var version) || version != 1) throw new FormatException();
         var input = CaseInputJson.Deserialize(root.GetProperty("input").GetRawText());
-        return Map("synthetic-json", root.GetProperty("order").GetString()!, root.GetProperty("message").GetString()!,
-            Revision(root.GetProperty("revision").GetString()!), input.AssessmentDate, input.Facts, input.Evidence ?? new Dictionary<string, EvidenceStatus>(), receivedAtUtc);
+        return Map("synthetic-json", String(root, "order"), String(root, "message"),
+            Revision(String(root, "revision")), input.AssessmentDate, input.Facts, input.Evidence ?? new Dictionary<string, EvidenceStatus>(), receivedAtUtc);
     }
     public static NormalizedIntakeRequest Xml(string text, DateTimeOffset receivedAtUtc)
     {
@@ -81,6 +81,11 @@ public static class SyntheticIntakeAdapters
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(text);
         if (Encoding.UTF8.GetByteCount(text) > MaximumBytes) throw new FormatException();
+    }
+    private static string String(JsonElement root, string property)
+    {
+        var value = root.GetProperty(property);
+        return value.ValueKind == JsonValueKind.String ? value.GetString() ?? throw new FormatException() : throw new FormatException();
     }
     private static void Properties(JsonElement element, string[] names)
     {

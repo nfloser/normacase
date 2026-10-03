@@ -62,3 +62,27 @@ Arbeitsliste begrenzt sich auf 500 gespeicherte Fälle und schlägt bei Übersch
 fehl, statt Fälle still auszublenden. Produktive Pagination, Rollen-/Mandantengrenzen
 und Korrekturpolitik sind eigene Anforderungen. Geheimnisse niemals in URLs,
 Screenshots, Shell-Historie oder Repository ablegen.
+
+## Wiederherstellungsprobe
+
+`scripts/smoke_synthetic_roundtrip.py create <manifest.json>` startet den gebauten
+lokalen Host gegen `NORMACASE_POSTGRES_TEST_CONNECTION` (ausschließlich eine eigene
+synthetische Datenbank). Es erzeugt vier frische Fälle für Freigabe, Abweichung,
+Unvollständigkeit und manuelle Prüfung. Zwei freigegebene Ergebnisse gehen an beide
+Ziele. Das Manifest enthält nur synthetische Erwartungsdaten; Geheimnisse werden
+nicht gespeichert. Die Prüfung beendet den Host wieder.
+
+`verify <manifest.json>` startet ihn erneut und vergleicht dieselben Eingänge,
+Bewertungen, Review-Historien und Zustellbelege exakt. CI führt anschließend
+`pg_dump` mit dem PostgreSQL-18-Client im selben Container aus, stellt den Dump in
+einer zweiten frisch angelegten Datenbank wieder her und führt `verify` dort erneut
+aus. Das Dateiverzeichnis wird dabei ebenfalls geprüft. Migrationen sind beim
+Neustart checksum-geprüft und werden nicht erneut angewendet.
+
+Im Zielbetrieb gehören Datenbank, freigegebene Knowledge-Versionen, Plattform-Build,
+Dateiausgang und externe Konfiguration zusammen zur Wiederherstellung. Geheimnisse
+separat geschützt bereitstellen. Die CI-Probe ersetzt keine institutionell genehmigte
+Backup-Verschlüsselung, Aufbewahrung, RPO/RTO-Messung oder Notfallübung. Änderungen
+werden nur vorwärts migriert; ein Downgrade auf einen älteren Build wird nicht
+behauptet. Vor Updates ein überprüftes Backup anlegen und Wiederherstellung mit dem
+freigegebenen Build in einer separaten Umgebung proben.

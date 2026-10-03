@@ -82,7 +82,9 @@ public sealed class PostgresOutboundDeliveryStore(NpgsqlDataSource dataSource)
             var result = ReviewedCaseResultJson.Deserialize(json);
             new OutboundDeliveryRequest(key.DeliveryId, key.DestinationId, result).Validate();
             var status = reader.GetString(2) switch { "Delivered" => OutboundDeliveryStatus.Delivered, "Rejected" => OutboundDeliveryStatus.Rejected, _ => throw new OutboundIntegrityException() };
-            return new(key, result, status, true, reader.IsDBNull(3) ? null : reader.GetString(3));
+            var reference = reader.IsDBNull(3) ? null : reader.GetString(3);
+            if (reference is not null && (string.IsNullOrWhiteSpace(reference) || reference.Length > 512 || reference.Any(char.IsControl))) throw new OutboundIntegrityException();
+            return new(key, result, status, true, reference);
         }
         catch (Exception exception) when (exception is JsonException or ArgumentException) { throw new OutboundIntegrityException(); }
     }
