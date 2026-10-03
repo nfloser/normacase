@@ -132,6 +132,28 @@ public sealed class AssessmentReviewServiceTests
     }
 
     [Fact]
+    public async Task Initialization_rejects_a_store_record_for_a_different_assessment()
+    {
+        var returned = Assessment("assessment-returned-other");
+        var requested =
+            new AssessmentId("assessment-requested");
+        var audits = new MemoryAuditStore();
+        var service = new AssessmentReviewService(
+            new AlwaysRecordStore(returned),
+            audits);
+
+        var exception = await Assert.ThrowsAsync<
+            AssessmentReviewAssessmentBindingException>(
+            () => service.InitializeAsync(
+                requested,
+                "system:assessment-recorder"));
+
+        Assert.Equal(requested, exception.AssessmentId);
+        Assert.Equal(0, audits.LoadCalls);
+        Assert.Equal(0, audits.AppendCalls);
+    }
+
+    [Fact]
     public async Task Duplicate_initialization_is_rejected_before_append()
     {
         var record = Assessment("assessment-review-004");
@@ -341,6 +363,25 @@ public sealed class AssessmentReviewServiceTests
                 "case-" + id,
                 "platform-synth-1",
                 RecordedAt));
+
+    private sealed class AlwaysRecordStore
+        : IAssessmentRecordStore
+    {
+        private readonly AssessmentRecord _record;
+
+        public AlwaysRecordStore(AssessmentRecord record)
+            => _record = record;
+
+        public Task AppendAsync(
+            AssessmentRecord record,
+            CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+
+        public Task<AssessmentRecord?> LoadAsync(
+            AssessmentId assessmentId,
+            CancellationToken cancellationToken = default)
+            => Task.FromResult<AssessmentRecord?>(_record);
+    }
 
     private sealed class MemoryRecordStore
         : IAssessmentRecordStore
