@@ -136,3 +136,42 @@ Die technische Prüfspur und beide Downloads bleiben unverändert. Importierte
 historische Snapshots erhalten diese aktuelle Präsentation nicht: historische
 Beschriftungen sind bislang nicht Teil des Snapshotvertrags. Ihre bestätigte
 originale Prüfspur ist weiterhin als JSON verfügbar.
+
+
+## Authentifizierte synthetische Fallprüfung
+
+Wenn der lokale Host mit `SyntheticReview__Enabled=true` und
+`SyntheticReview__PersistenceEnabled=true` gestartet wurde, erscheint zusätzlich
+„Authentifizierte synthetische Fallprüfung“. Ohne diese Konfiguration bleibt die
+bestehende Vorschau unverändert schreibgeschützt; die neue Sektion wird nicht
+angeboten.
+
+Der Zugangsschlüssel wird ausschließlich in einem maskierten React-Feld gehalten.
+Er wird nicht in `localStorage`, `sessionStorage`, Cookies, URLs, Exporte oder
+Fehlertexte geschrieben und kann mit „Abmelden“ sofort aus dem Browserzustand
+entfernt werden. Die technische Identität wird nicht vom Browser vorgegeben, sondern
+über `GET /api/review-session` serverseitig bestätigt.
+
+Nach erfolgreicher Anmeldung lädt die Oberfläche Warteschlangen und Falldetails nur
+über `/api/review/*`. Das unveränderte deterministische Systemergebnis wird getrennt
+von der append-only Review-Historie angezeigt. Review-Schaltflächen entstehen
+ausschließlich aus den vom Server gelieferten `allowedActions`. Jede Aktion benötigt
+eine ausdrückliche Begründung; ein Override zusätzlich ein generisches Zielergebnis.
+
+Bei einer Review-Anfrage sendet der Browser genau die angezeigten Case-, Process- und
+Audit-Revisionen. Nach Erfolg wird kein lokaler Workflowzustand optimistisch
+fortgeschrieben: Warteschlangen und Detail werden erneut aus dem committed
+PostgreSQL-Zustand geladen. Ein 401 verwirft die aktive Anmeldung, ein 403 erhält den
+committed Falldetailstand und zeigt eine begrenzte deutsche Meldung, ein 409 verwirft
+den veralteten Stand und lädt den aktuellen Fall neu.
+
+Für den Browser-Test wird ein echter lokaler ASP.NET-Host gegen PostgreSQL gestartet.
+Das CI erzeugt dafür einen flüchtigen zufälligen Schlüssel außerhalb des Repositorys:
+
+```bash
+npm --prefix frontend run test:e2e:review
+```
+
+Der Modus ist ausschließlich eine synthetische Integrationsdemonstration. Der feste
+Akteur `synthetic-local:reviewer` ist keine produktive Person, Rollen- oder
+Freigabeidentität. Keine echten Patientendaten verwenden.
