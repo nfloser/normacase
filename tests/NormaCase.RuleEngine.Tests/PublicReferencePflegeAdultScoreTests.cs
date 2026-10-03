@@ -61,7 +61,7 @@ public sealed class PublicReferencePflegeAdultScoreTests
     public void Modules_two_and_three_contribute_only_the_higher_weighted_value()
     {
         var facts = ZeroFacts();
-        facts["module_2_sum"] = 17m;
+        facts["module_2_sum"] = 2m;
         facts["module_3_sum"] = 7m;
 
         var result = Evaluate(facts);
@@ -69,7 +69,7 @@ public sealed class PublicReferencePflegeAdultScoreTests
 
         Assert.Equal(15m, expression.Value.Number);
         Assert.Equal("max", expression.Children[1].Kind);
-        Assert.Equal(15m, expression.Children[1].Children[0].Value.Number);
+        Assert.Equal(3.75m, expression.Children[1].Children[0].Value.Number);
         Assert.Equal(15m, expression.Children[1].Children[1].Value.Number);
         Assert.Equal(
             "NOT_REACHED",
@@ -202,6 +202,10 @@ public sealed class PublicReferencePflegeAdultScoreTests
 
         Assert.Equal(12.5m, result.RuleTrace!.Condition.Actual!.Value.Number);
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
+        Assert.Equal(
+            "MD-BUND-PFLEGE-BRI-2026-08-26",
+            result.RuleTrace.SourceId);
+        Assert.Equal("2026-08-26", result.RuleTrace.Source.Version);
     }
 
     public static IEnumerable<object[]> ModuleBandCases()
