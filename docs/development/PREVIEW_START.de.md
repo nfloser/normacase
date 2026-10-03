@@ -1,7 +1,7 @@
 # NormaCase lokal ausprobieren
 
 Dieses Testpaket enthält die deutsche Prüfwerkstatt, den Offline-Evaluator und
-fünf synthetische Wissenspakete. Es benötigt weder Node.js, Python, Docker noch
+sieben synthetische Wissenspakete. Es benötigt weder Node.js, Python, Docker noch
 eine installierte .NET-Laufzeit. Es verbindet sich nicht mit PostgreSQL.
 Die aktuelle Funktionalität ist eine synthetische Demonstration ohne fachliche
 Freigabe, Patientenverwaltung oder produktive Berechtigungsverwaltung.
@@ -33,6 +33,10 @@ chmod +x pruefwerkstatt-starten.sh api/NormaCase.Api cli/NormaCase.Cli
 Öffne anschließend <http://localhost:5080>. Beenden: Strg+C.
 
 ## Erste Prüfung
+
+Für eine reproduzierbare Präsentation liegt im Paket zusätzlich
+`PITCH-DEMO.de.md`. Sie beschreibt die feste Reihenfolge der Pitch-Beispiele
+und die erwarteten Ergebnisse.
 
 Wähle einen Prüfbereich und ein Beispiel. Klicke auf „Beispiel laden“ und danach
 auf „Jetzt prüfen“. Ändere anschließend Angaben oder Evidenzzustände, um

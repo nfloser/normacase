@@ -14,7 +14,7 @@ python scripts/check_preview.py --archive artifacts/normacase-synthetic-preview-
 
 Use `win-x64` on Windows. Existing output archives are never silently replaced.
 The archive contains independent API/CLI runtime directories, bundled assets,
-synthetic knowledge/examples, a platform-specific launcher, German instructions
+synthetic knowledge/examples, a platform-specific launcher, German start and pitch instructions
 and a manifest. InformationalVersion is explicitly `0.1.0-preview+<full SHA>`.
 The workflow checks out that exact SHA; previews of PR heads and merged main are
 distinct builds. Archive identities are independent of Knowledge Release ids.

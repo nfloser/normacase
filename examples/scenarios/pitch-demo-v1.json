@@ -1,0 +1,37 @@
+{
+  "formatVersion": 1,
+  "scenarioId": "synthetic.pitch-demo.v1",
+  "title": "NormaCase synthetische Pitch-Demo",
+  "validationLevel": "SYNTHETIC",
+  "disclaimer": "Vollständig fiktive Testdaten und Regeln. Keine fachlich freigegebene Begutachtung.",
+  "packId": "synthetic.demo-g",
+  "releaseId": "demo-g-2026.1",
+  "ruleId": "DEMO-G-DECISION",
+  "sourceId": "SYNTH-DEMO-G-001",
+  "steps": [
+    {
+      "id": "incomplete",
+      "caseFile": "demo-g-incomplete.json",
+      "expectedOutcome": "INCOMPLETE",
+      "expectedMissingRequiredFields": ["request_complete"]
+    },
+    {
+      "id": "review",
+      "caseFile": "demo-g-review.json",
+      "expectedOutcome": "HUMAN_REVIEW",
+      "expectedMissingRequiredFields": []
+    },
+    {
+      "id": "supported",
+      "caseFile": "demo-g-supported.json",
+      "expectedOutcome": "SUPPORTED",
+      "expectedMissingRequiredFields": []
+    },
+    {
+      "id": "not-supported",
+      "caseFile": "demo-g-not-supported.json",
+      "expectedOutcome": "NOT_SUPPORTED",
+      "expectedMissingRequiredFields": []
+    }
+  ]
+}
