@@ -1,0 +1,46 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "synthetic.demo-g",
+  "name": "Pitch-Demo – Synthetische Fallprüfung",
+  "description": "Vollständig fiktives Showcase ohne medizinische oder sozialmedizinische Aussagekraft. Zeigt Unvollständigkeit, Evidenzprüfung, deterministische Entscheidung und Quellenbezug.",
+  "fields": {
+    "request_complete": {
+      "label": "Pflichtangaben vollständig",
+      "helpText": "Fiktive Ja/Nein-Angabe für die Demo. Keine fachliche Regel."
+    },
+    "criteria_confirmed": {
+      "label": "Synthetisches Prüfkriterium bestätigt",
+      "helpText": "Fiktive Ja/Nein-Angabe ohne medizinische Bedeutung."
+    }
+  },
+  "evidenceRequirements": {
+    "supporting_document": {
+      "label": "Synthetischer Nachweis",
+      "helpText": "Nur der strukturierte Nachweisstatus wird ausgewertet; es findet keine Dokumentinterpretation statt."
+    }
+  },
+  "outputs": {},
+  "examples": [
+    {
+      "id": "incomplete",
+      "label": "1 · Pflichtangabe fehlt",
+      "caseFile": "demo-g-incomplete.json"
+    },
+    {
+      "id": "review",
+      "label": "2 · Nachweis fehlt – manuelle Prüfung",
+      "caseFile": "demo-g-review.json"
+    },
+    {
+      "id": "supported",
+      "label": "3 · Vollständig – Voraussetzungen erfüllt",
+      "caseFile": "demo-g-supported.json"
+    },
+    {
+      "id": "not-supported",
+      "label": "4 · Kriterium ausdrücklich nicht erfüllt",
+      "caseFile": "demo-g-not-supported.json"
+    }
+  ]
+}
