@@ -7,7 +7,7 @@ CI are the acceptance evidence; completing a checkbox requires integration and r
 | Capability | Verified state | Remaining work |
 |---|---|---|
 | Deterministic rule/knowledge core | Multiple structurally different synthetic packs, UNKNOWN/evidence semantics, exact decimals, versioned source traces and offline replay | Continue rule/domain regression coverage as new packs arrive |
-| German preview and pitch examples | Local workbench and Windows/Linux self-contained preview builds | Final pitch rehearsal against a named build |
+| German preview and pitch examples | German browser pitch E2E and exact-commit Windows/Linux archive CLI/API pitch rehearsal | Live presentation in the target environment |
 | Normalized upstream boundary | Strict synthetic JSON/XML host intake and append-only PostgreSQL original receipts (#153, #158) | Real institutional adapter specifications and approved access |
 | Recorded assessment, routing and queue projections | Atomic fresh assessment/process initialization, immutable original and persisted queues (#158) | Institutionally approved correction/clarification policy |
 | Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review and explicit missing-information/correction policies remain external |

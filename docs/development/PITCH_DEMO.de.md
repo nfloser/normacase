@@ -83,16 +83,31 @@ Erwartet:
 
 Dieser Schritt grenzt „bekanntes Nein“ sichtbar von „fehlender Information“ ab.
 
-## Workflow separat zeigen
+## Gespeicherten Gesamtablauf zeigen
 
-Der generische Vorgangsablauf befindet sich derzeit im Prüfbereich
-**„Demo F – Vorgang und Prüfung“**. Er zeigt manuelle Übergänge und eine
-nachvollziehbare Historie.
+Der optionale persistente Review-Modus verbindet jetzt neue synthetische Eingänge,
+Bewertung, Routing, Arbeitsliste, menschliche Freigabe und Rückgabe. Die lokale
+PostgreSQL-Konfiguration und das externe Anmeldegeheimnis sind in
+[Synthetische Fallprüfung](SYNTHETIC_REVIEW.de.md) beschrieben.
 
-Die Pitch-Demo darf Assessment und Vorgangsfreigabe nicht als bereits automatisch
-gekoppelt darstellen. Routing, persistente Arbeitswarteschlange, authentifizierte
-Freigabe und Outbound-Integration werden entlang des Produkt-Critical-Paths
-separat vervollständigt.
+Für die Vorführung neue JSON-/XML-Testfälle gemäß
+[Synthetischer Gesamtablauf](SYNTHETIC_ROUNDTRIP.de.md) übertragen und anschließend
+in der deutschen Arbeitsliste öffnen. Einen vollständigen Fall mit ausdrücklich
+angegebenem Grund freigeben; beim negativen Fall eine begründete menschliche
+Abweichung zeigen. Die ursprüngliche Bewertung bleibt in beiden Fällen erhalten.
+Unvollständige Fälle bleiben in der Klärung, fehlende Evidenz in manueller Prüfung.
+Eine automatische fachliche Freigabe oder erfundene Korrekturregel wird nicht gezeigt.
+
+Die geprüften Ergebnisse gehen an den synthetischen Nachrichten-Posteingang und
+optional eine lokale Datei. Die ausführbare Wiederherstellungsprobe zeigt, dass
+Neustart und Backup/Restore dieselben Eingänge, Bewertungen, Historien und
+Zustellbelege zurückliefern. Demo F bleibt als separate generische Workflow-Demo
+verfügbar.
+
+Die Windows-/Linux-Preview-CI prüft das entpackte, durch Commit und Prüfsumme genau
+benannte Paket ohne gemeinsame .NET-Runtime: sämtliche vier Pitch-Ergebnisse stimmen
+zwischen CLI und lokaler API überein. Der Browsertest prüft die deutschen Ergebnis-
+und Quellenanzeigen. Zur Vorführung den Buildstand aus `preview.json` nennen.
 
 ## CLI-Fallback
 
