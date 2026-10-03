@@ -44,6 +44,10 @@ public sealed class SyntheticReviewHostTests
             .SelectMany(queue => queue.GetProperty("items").EnumerateArray())
             .Select(item => item.GetProperty("caseId").GetString()).ToArray();
         Assert.Equal(new[] { "demo-g-supported" }, cases);
+        using var scopedPage = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues?pageSize=1"));
+        Assert.Equal(JsonValueKind.Null, scopedPage.RootElement.GetProperty("nextPageCursor").ValueKind);
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.GetAsync("/api/review/work-queues?pageSize=101")).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await client.GetAsync("/api/review/work-queues?afterCaseId=invalid")).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-cases/demo-g-not-supported")).StatusCode);
         using var detail = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-cases/demo-g-supported"));
         Assert.Equal(new[] { "ACCEPT_SYSTEM_RESULT" }, detail.RootElement.GetProperty("allowedActions").EnumerateArray().Select(item => item.GetString()));
@@ -96,6 +100,19 @@ public sealed class SyntheticReviewHostTests
 
             using var client = factory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+            var seen = new List<string>();
+            string? cursor = null;
+            do
+            {
+                using var page = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues?pageSize=1"
+                    + (cursor is null ? "" : "&afterCaseId=" + Uri.EscapeDataString(cursor))));
+                seen.AddRange(page.RootElement.GetProperty("queues").EnumerateArray()
+                    .SelectMany(queue => queue.GetProperty("items").EnumerateArray())
+                    .Select(item => item.GetProperty("caseId").GetString()!));
+                cursor = page.RootElement.GetProperty("nextPageCursor").GetString();
+                Assert.True(seen.Count <= 4);
+            } while (cursor is not null);
+            Assert.Equal(new[] { "demo-g-incomplete", "demo-g-not-supported", "demo-g-review", "demo-g-supported" }, seen);
             using var queues = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues"));
             Assert.Equal(new[] { 2, 1, 1, 0 },
                 queues.RootElement.GetProperty("queues").EnumerateArray()

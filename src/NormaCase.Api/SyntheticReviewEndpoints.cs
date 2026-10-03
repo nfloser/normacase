@@ -77,12 +77,28 @@ internal static class SyntheticReviewEndpoints
         group.MapGet("/work-queues", async (HttpContext context, CancellationToken token) =>
         {
             var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
-            var states = (await LoadAll(store, token)).Where(state => credential.Allows(actor, state.Process.CaseId.Value, "READ")).ToArray();
+            var sizeText = context.Request.Query["pageSize"];
+            var cursorText = context.Request.Query["afterCaseId"];
+            if (sizeText.Count > 1 || cursorText.Count > 1) return DemoHost.Error("invalid_input", 400);
+            var size = 100;
+            if (sizeText.Count != 0 && (!int.TryParse(sizeText[0], NumberStyles.None, CultureInfo.InvariantCulture, out size) || size is < 1 or > 100))
+                return DemoHost.Error("invalid_input", 400);
+            var cursor = cursorText.Count == 0 ? null : cursorText[0];
+            if (cursor is not null && !PermittedCaseId(cursor)) return DemoHost.Error("invalid_input", 400);
+            var ids = await store.ListCasePageAsync(size, cursor, credential.ReadScope(actor), token);
+            var page = ids.Take(size).ToArray();
+            var states = new List<CaseReviewState>();
+            foreach (var id in page)
+            {
+                if (!PermittedCaseId(id.Value) || !credential.Allows(actor, id.Value, "READ")) continue;
+                states.Add(await store.LoadAsync(id, token) ?? throw new CaseReviewIntegrityException());
+            }
             var projection = new CaseWorkQueueProjectionService();
             return Results.Json(new
             {
                 configurationId = QueueConfiguration.Id,
                 configurationVersion = QueueConfiguration.Version,
+                nextPageCursor = ids.Count > size ? page[^1].Value : null,
                 queues = QueueConfiguration.Queues.Select(queue => new
                 {
                     queueId = queue.QueueId,
@@ -233,19 +249,6 @@ internal static class SyntheticReviewEndpoints
 
             await store.InitializeAsync(expected);
         }
-    }
-
-    private static async Task<CaseReviewState[]> LoadAll(PostgresCaseReviewStore store, CancellationToken token)
-    {
-        var result = new List<CaseReviewState>();
-        foreach (var id in await store.ListCaseIdsAsync(token))
-        {
-            if (!PermittedCaseId(id.Value)) continue;
-            var state = await store.LoadAsync(id, token)
-                ?? throw new CaseReviewIntegrityException();
-            result.Add(state);
-        }
-        return result.ToArray();
     }
 
     internal static object Detail(CaseReviewState state, SyntheticReviewCredential? credential = null, AuthenticatedReviewActor? actor = null)

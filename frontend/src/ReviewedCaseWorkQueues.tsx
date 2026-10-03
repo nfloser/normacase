@@ -9,6 +9,7 @@ import type { RuleTrace, OutputTrace } from './trace';
 const text = de.reviewedWorkQueues;
 type Item = {caseId:string;caseRevision:string;processRevision:string;stateId:string;assessmentId:string};
 type Queue = {queueId:string;items:Item[]};
+type QueuePage = {queues:Queue[];nextPageCursor?:string|null};
 type AuditItem = {sequence:string;kind:string;occurredAtUtc:string;actorId:string;disposition:string|null;reason:string|null;overrideOutcome:string|null};
 type Detail = Item & {
   packId:string;
@@ -30,6 +31,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   const [credential,setCredential]=useState('');
   const [actorId,setActorId]=useState('');
   const [queues,setQueues]=useState<Queue[]>([]);
+  const [nextCursor,setNextCursor]=useState<string|null>(null);
   const [selected,setSelected]=useState('');
   const [detail,setDetail]=useState<Detail|null>(null);
   const [reason,setReason]=useState('');
@@ -46,7 +48,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   function clearReviewForm(){setReason('');setOverrideOutcome('');}
   function clearSession(message=''){
     pending.current?.abort();pending.current=null;setBusy(false);
-    setCredential('');setCredentialInput('');setActorId('');setQueues([]);
+    setCredential('');setCredentialInput('');setActorId('');setQueues([]);setNextCursor(null);
     setSelected('');setDetail(null);clearReviewForm();setNotice('');setError(message);
   }
   async function request(path:string,token:string,controller:AbortController,body?:string){
@@ -65,10 +67,19 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   }
   async function refresh(caseId:string,token:string,controller:AbortController){
     const queueResponse=await request('/api/review/work-queues',token,controller);
-    const nextQueues=await queueResponse.json() as {queues:Queue[]};
+    const nextQueues=await queueResponse.json() as QueuePage;
     const caseResponse=await request('/api/review/work-cases/'+encodeURIComponent(caseId),token,controller);
     const nextDetail=await caseResponse.json() as Detail;
-    if(active(controller)){setQueues(nextQueues.queues);setDetail(nextDetail);setSelected(caseId);clearReviewForm();}
+    if(active(controller)){setQueues(nextQueues.queues);setNextCursor(nextQueues.nextPageCursor??null);setDetail(nextDetail);setSelected(caseId);clearReviewForm();}
+  }
+  async function loadPage(cursor:string|null){
+    const controller=begin();setDetail(null);setSelected('');clearReviewForm();
+    try{
+      const response=await request('/api/review/work-queues'+(cursor?'?afterCaseId='+encodeURIComponent(cursor):''),credential,controller);
+      const page=await response.json() as QueuePage;
+      if(active(controller)){setQueues(page.queues);setNextCursor(page.nextPageCursor??null);}
+    }catch(exception){failure(exception,controller);}
+    finally{finish(controller);}
   }
   async function loadDetail(caseId:string){
     const controller=begin();setDetail(null);setSelected(caseId);clearReviewForm();
@@ -87,9 +98,9 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       const response=await request('/api/review-session',candidate,controller);
       const data=await response.json() as {actorId:string};
       const queueResponse=await request('/api/review/work-queues',candidate,controller);
-      const next=await queueResponse.json() as {queues:Queue[]};
+      const next=await queueResponse.json() as QueuePage;
       if(active(controller)){
-        setCredential(candidate);setActorId(data.actorId);setQueues(next.queues);
+        setCredential(candidate);setActorId(data.actorId);setQueues(next.queues);setNextCursor(next.nextPageCursor??null);
         setSelected('');setDetail(null);clearReviewForm();setNotice(text.authenticated);
       }
     }catch(exception){failure(exception,controller);}
@@ -138,6 +149,10 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       </div>
       {notice&&<p className="review-notice" role="status">{notice}</p>}
       {error&&<div className="error" role="alert"><strong>{de.errorHeading}</strong><p>{error}</p></div>}
+      <div className="actions"><button type="button" className="secondary" disabled={busy} onClick={()=>loadPage(null)}>{text.refreshQueues}</button>
+        {nextCursor&&<button type="button" className="secondary" disabled={busy} onClick={()=>loadPage(nextCursor)}>{text.nextPage}</button>}
+      </div>
+      <p>{text.pageHelp}</p>
       <div className="queue-grid">{queues.map(queue=><section key={queue.queueId}>
         <h3>{(text.queues as Record<string,string>)[queue.queueId]??de.unknown} ({queue.items.length})</h3>
         <ul>{queue.items.map(item=><li key={item.caseId}><button type="button" className="secondary"

@@ -154,6 +154,9 @@
     "loading": "Fall wird geladen …"
   },
   "reviewedWorkQueues": {
+    "refreshQueues": "Arbeitsliste aktualisieren",
+    "nextPage": "Weitere Fälle anzeigen",
+    "pageHelp": "Angezeigt wird eine Seite mit bis zu 100 Fällen. Neue Fälle vor dem aktuellen Seitenstand erscheinen nach dem Aktualisieren.",
     "heading": "Persistente synthetische Fallprüfung",
     "help": "Optionaler lokaler Review-Modus mit PostgreSQL. Nur synthetische Fälle. Ein gemeinsamer Demo-Akteur ersetzt keine produktive Identitäts- oder Berechtigungsverwaltung.",
     "credential": "Lokaler Review-Schlüssel",

@@ -14,6 +14,25 @@ async function noStoredSession(page){
  expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length,document.cookie])).toEqual([0,0,'']);
  expect(await page.context().cookies()).toEqual([]);
 }
+test('bounded queue pages use the real API and refresh without retaining a session',async({page})=>{
+ await page.route('**/api/review/work-queues**',route=>{
+  const url=new URL(route.request().url());url.searchParams.set('pageSize','1');
+  return route.continue({url:url.toString()});
+ });
+ const region=await login(page);
+ const ids=['demo-g-incomplete','demo-g-not-supported','demo-g-review','demo-g-supported'];
+ for(let index=0;index<ids.length;index++){
+  await expect(region.getByRole('button',{name:'Fall öffnen: '+ids[index],exact:true})).toBeVisible();
+  await expect(region.getByRole('button',{name:/^Fall öffnen:/})).toHaveCount(1);
+  if(index<ids.length-1)await region.getByRole('button',{name:'Weitere Fälle anzeigen',exact:true}).click();
+ }
+ await expect(region.getByRole('button',{name:'Weitere Fälle anzeigen',exact:true})).toHaveCount(0);
+ await region.getByRole('button',{name:'Arbeitsliste aktualisieren',exact:true}).click();
+ await expect(region.getByRole('button',{name:'Fall öffnen: demo-g-incomplete',exact:true})).toBeVisible();
+ await region.getByRole('button',{name:'Review-Modus abmelden',exact:true}).click();
+ await expect(region.getByRole('button',{name:/^Fall öffnen:/})).toHaveCount(0);
+ await noStoredSession(page);
+});
 test('two browsers review, recover a real stale conflict and preserve immutable assessment',async({page,browser})=>{
  const region=await login(page);await noStoredSession(page);
  await expect(region.getByRole('heading',{name:'Zur Freigabe vorbereitet (2)'})).toBeVisible();

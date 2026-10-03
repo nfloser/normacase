@@ -22,6 +22,24 @@ public sealed class PostgresCaseReviewStoreTests
     private static readonly DateTimeOffset Time = new(2026, 10, 3, 14, 0, 0, TimeSpan.Zero);
     private static readonly AuthenticatedReviewActor Actor = new("synthetic-local:assessor", "synthetic-local");
 
+    [Fact]
+    public async Task Keyset_pages_filter_authorized_scope_before_limit_and_retain_order()
+    {
+        await using var source = Source();
+        var states = new[] { await Seed(source), await Seed(source), await Seed(source) };
+        var scope = states.Select(state => state.Process.CaseId).OrderBy(id => id.Value, StringComparer.Ordinal).ToArray();
+        var store = Store(source);
+        var first = await store.ListCasePageAsync(1, null, scope);
+        Assert.Equal(scope.Take(2), first);
+        var next = await store.ListCasePageAsync(1, first[0].Value, scope);
+        Assert.Equal(scope.Skip(1), next);
+        Assert.Equal(new[] { scope[2] }, await store.ListCasePageAsync(1, next[0].Value, scope));
+        Assert.Empty(await store.ListCasePageAsync(1, scope[2].Value, scope));
+        Assert.Empty(await store.ListCasePageAsync(1, null, []));
+        Assert.Equal(new[] { scope[2] }, await store.ListCasePageAsync(1, null, [scope[2]]));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => store.ListCasePageAsync(101, null, scope));
+    }
+
     [Theory]
     [InlineData(HumanReviewDisposition.AcceptSystemResult, "accepted")]
     [InlineData(HumanReviewDisposition.Override, "corrected")]

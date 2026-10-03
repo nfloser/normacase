@@ -85,6 +85,29 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
         catch (NpgsqlException) { throw new CaseReviewStorageException(); }
     }
 
+    public async Task<IReadOnlyList<CaseId>> ListCasePageAsync(int pageSize, string? afterCaseId,
+        IReadOnlyCollection<CaseId>? permittedCases, CancellationToken token = default)
+    {
+        if (pageSize is < 1 or > 100) throw new ArgumentOutOfRangeException(nameof(pageSize));
+        if (afterCaseId is { Length: > 128 } || afterCaseId is "") throw new ArgumentException("Invalid case cursor.", nameof(afterCaseId));
+        var scope = permittedCases?.Select(id => id.IsEmpty ? throw new ArgumentException("Empty case scope.", nameof(permittedCases)) : id.Value).ToArray();
+        if (scope?.Length > 500) throw new ArgumentException("Case scope exceeds limit.", nameof(permittedCases));
+        try
+        {
+            await using var connection = await source.OpenConnectionAsync(token);
+            await using var command = new NpgsqlCommand(
+                "SELECT DISTINCT case_id COLLATE \"C\" FROM normacase.case_review_versions WHERE ($1::text IS NULL OR case_id COLLATE \"C\" > $1 COLLATE \"C\") AND ($2::text[] IS NULL OR case_id = ANY($2)) ORDER BY case_id COLLATE \"C\" LIMIT $3", connection);
+            command.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Text, Value = (object?)afterCaseId ?? DBNull.Value });
+            command.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = (object?)scope ?? DBNull.Value });
+            command.Parameters.AddWithValue(pageSize + 1);
+            await using var reader = await command.ExecuteReaderAsync(token);
+            var ids = new List<CaseId>();
+            while (await reader.ReadAsync(token)) ids.Add(new(reader.GetString(0)));
+            return ids.AsReadOnly();
+        }
+        catch (NpgsqlException) { throw new CaseReviewStorageException(); }
+    }
+
     public async Task<CaseReviewState> ExecuteAsync(CaseId caseId, Func<CaseReviewState, CaseReviewState> update,
         CancellationToken cancellationToken = default)
     {
