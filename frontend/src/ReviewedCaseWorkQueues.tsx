@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { parse } from 'lossless-json';
 import de from './de.json';
 import type { Pack } from './model';
@@ -62,7 +62,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     setDetail(result.value);setSelected(caseId);setReason('');setOverrideOutcome('');return true;
   }
 
-  async function login(event:React.FormEvent) {
+  async function login(event:FormEvent) {
     event.preventDefault();setMessage('');setBusy(true);
     const activeCredential=credential;
     const result=await reviewFetch<ReviewSession>('/api/review-session',activeCredential);
