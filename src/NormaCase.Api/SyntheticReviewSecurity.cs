@@ -83,7 +83,7 @@ public sealed class SyntheticReviewHostOptions
     }
 }
 
-internal sealed class SyntheticReviewCredential
+internal sealed class SyntheticReviewCredential : IDisposable
 {
     public SyntheticReviewCredential(SyntheticReviewHostOptions options)
     {
@@ -93,6 +93,8 @@ internal sealed class SyntheticReviewCredential
 
     public string ActorId { get; }
     public byte[] Bytes { get; }
+
+    public void Dispose() => CryptographicOperations.ZeroMemory(Bytes);
 }
 
 internal sealed class SyntheticReviewAuthenticationHandler
