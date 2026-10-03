@@ -35,7 +35,7 @@ and must not be classified as externally blocked. Track completion in
 
 | Technical scope | Current limitation | Required completion evidence |
 |---|---|---|
-| Distinct identities and case/action permissions | Fixed synthetic identity; exact review grants are a first reusable boundary | Multiple identities, permission administration/revocation, audited separation of duties, integrated authorized reads/writes/exports |
+| Distinct identities and case/action permissions | Multiple exact case/action-scoped synthetic identities, authorized reads/writes/exports, persistent audited live suspension/reactivation | General grant administration, German admin UI and configurable administrative separation of duties |
 | Knowledge governance | Exact in-memory catalog and immutable snapshots; no durable change/approval/activation administration | Persistent source/change/review/release history, authorized activation, historical replay and synthetic separation-of-duties tests |
 | Corrections and clarification | Intake accepts only revision 1; incomplete/manual-review paths are not complete work cycles | Append-only corrected revisions/reassessment, configurable synthetic clarification and review policy, preserved historical inputs/results |
 | Batch review | Individual review only | Explicit opt-in policy, bounded commands, per-case authorization/revision checks, audited results and German UI |
