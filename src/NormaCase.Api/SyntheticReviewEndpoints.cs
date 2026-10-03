@@ -22,7 +22,7 @@ internal static class SyntheticReviewEndpoints
     private static readonly string[] CaseIds =
         ["demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review"];
 
-    private static readonly WorkflowDefinition Workflow = new(
+    internal static readonly WorkflowDefinition Workflow = new(
         "synthetic-reviewed-queue-process", 1, "received",
         [new("received", false), new("awaiting-approval", false), new("waiting-information", false),
          new("manual-review", false), new("accepted", true), new("overridden", true)],
@@ -32,11 +32,11 @@ internal static class SyntheticReviewEndpoints
          new("accept-review", "awaiting-approval", "accepted"),
          new("override-review", "awaiting-approval", "overridden")]);
 
-    private static readonly ApprovalRoutingPolicy TriagePolicy = new(
+    internal static readonly ApprovalRoutingPolicy TriagePolicy = new(
         "synthetic-reviewed-triage", 1,
         [AssessmentOutcome.Supported, AssessmentOutcome.NotSupported]);
 
-    private static readonly CaseProcessingRoutingPolicy RoutingPolicy = new(
+    internal static readonly CaseProcessingRoutingPolicy RoutingPolicy = new(
         "synthetic-reviewed-routing", 1,
         TriagePolicy.Id, TriagePolicy.Version, Workflow.Id, Workflow.Version,
         new Dictionary<AssessmentRoutingDisposition, string>
@@ -69,6 +69,7 @@ internal static class SyntheticReviewEndpoints
         var source = app.Services.GetRequiredService<NpgsqlDataSource>();
         var store = new PostgresCaseReviewStore(source, ResolveWorkflow);
         Seed(source, store, packs, platformVersion).GetAwaiter().GetResult();
+        SyntheticRoundtripEndpoints.Map(app, source, store, packs["synthetic.demo-g"], platformVersion);
 
         var group = app.MapGroup("/api/review").RequireAuthorization();
 
@@ -100,7 +101,7 @@ internal static class SyntheticReviewEndpoints
 
         group.MapGet("/work-cases/{caseId}", async (string caseId, CancellationToken token) =>
         {
-            if (!CaseIds.Contains(caseId, StringComparer.Ordinal))
+            if (!PermittedCaseId(caseId))
                 return DemoHost.Error("unknown_work_case", 404);
 
             var state = await store.LoadAsync(new(caseId), token);
@@ -111,7 +112,7 @@ internal static class SyntheticReviewEndpoints
 
         group.MapPost("/work-cases/{caseId}/reviews", async (string caseId, HttpContext context, CancellationToken token) =>
         {
-            if (!CaseIds.Contains(caseId, StringComparer.Ordinal))
+            if (!PermittedCaseId(caseId))
                 return DemoHost.Error("unknown_work_case", 404);
 
             var parsed = await ReadReviewRequest(context.Request, token);
@@ -235,16 +236,17 @@ internal static class SyntheticReviewEndpoints
     private static async Task<CaseReviewState[]> LoadAll(PostgresCaseReviewStore store, CancellationToken token)
     {
         var result = new List<CaseReviewState>();
-        foreach (var id in CaseIds)
+        foreach (var id in await store.ListCaseIdsAsync(token))
         {
-            var state = await store.LoadAsync(new(id), token)
+            if (!PermittedCaseId(id.Value)) continue;
+            var state = await store.LoadAsync(id, token)
                 ?? throw new CaseReviewIntegrityException();
             result.Add(state);
         }
         return result.ToArray();
     }
 
-    private static object Detail(CaseReviewState state)
+    internal static object Detail(CaseReviewState state)
         => new
         {
             caseId = state.Process.CaseId.Value,
@@ -270,6 +272,10 @@ internal static class SyntheticReviewEndpoints
             }).ToArray()
         };
 
+    internal static bool PermittedCaseId(string id)
+        => CaseIds.Contains(id, StringComparer.Ordinal)
+            || System.Text.RegularExpressions.Regex.IsMatch(id, "\\Asynthetic-intake-[0-9a-f]{64}\\z", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     private static string[] AllowedActions(CaseReviewState state)
     {
         if (state.Process.StateId != "awaiting-approval") return [];
@@ -279,7 +285,7 @@ internal static class SyntheticReviewEndpoints
     private static string DispositionText(HumanReviewDisposition disposition)
         => disposition == HumanReviewDisposition.AcceptSystemResult ? "ACCEPT_SYSTEM_RESULT" : "OVERRIDE";
 
-    private static WorkflowDefinition ResolveWorkflow(string id, int version)
+    internal static WorkflowDefinition ResolveWorkflow(string id, int version)
         => id == Workflow.Id && version == Workflow.Version
             ? Workflow
             : throw new ArgumentException("Unknown synthetic reviewed workflow.");
@@ -397,7 +403,7 @@ internal static class SyntheticReviewEndpoints
                 // Case entitlement is separate from revision and transition checks.
                 // The service rejects stale commands before checking the reviewed
                 // workflow edge; an up-to-date closed case still has no valid edge.
-                && CaseIds.Contains(state.Process.CaseId.Value, StringComparer.Ordinal)
+                && PermittedCaseId(state.Process.CaseId.Value)
                 && state.Process.WorkflowId == Workflow.Id
                 && state.Process.WorkflowVersion == Workflow.Version
                 && (command.Disposition == HumanReviewDisposition.AcceptSystemResult

@@ -8,10 +8,10 @@ CI are the acceptance evidence; completing a checkbox requires integration and r
 |---|---|---|
 | Deterministic rule/knowledge core | Multiple structurally different synthetic packs, UNKNOWN/evidence semantics, exact decimals, versioned source traces and offline replay | Continue rule/domain regression coverage as new packs arrive |
 | German preview and pitch examples | Local workbench and Windows/Linux self-contained preview builds | Final pitch rehearsal against a named build |
-| Normalized upstream boundary | Two different synthetic upstream formats, application idempotency contract and append-only PostgreSQL intake storage (#153) | Runnable adapter-driven host flow; no invented MD format |
-| Recorded assessment, routing and queue projections | Immutable assessment/process contracts and separate workflow states | Connect fresh normalized intake to persistent host cases beyond seeded fixtures |
+| Normalized upstream boundary | Two different synthetic upstream formats, application idempotency contract and append-only PostgreSQL intake storage (#153) | Authenticated JSON/XML host intake (#156); no invented MD format |
+| Recorded assessment, routing and queue projections | Immutable assessment/process contracts and separate workflow states | Atomic fresh assessment/process initialization and persisted queues (#156) |
 | Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review remains #119; missing-information/correction workflows need explicit policy |
-| Versioned reviewed outbound result | Exact intake/assessment/review binding and strict JSON contract (#150) | Two synthetic sinks, duplicate/retry receipts and runnable full roundtrip (#120) |
+| Versioned reviewed outbound result | Exact intake/assessment/review binding and strict JSON contract (#150) | Two synthetic sinks (#152), durable receipts and authenticated full roundtrip (#156) |
 | Local review operation | Opt-in database configuration, loopback Compose and German start/demo guide | Measured backup/restore, clean-install/update and failure-recovery rehearsal |
 | Independent security/deployment assessment | Fail-closed guards, tests and evolving threat model | Operational/security/privacy review is required beyond software unit/integration success |
 
