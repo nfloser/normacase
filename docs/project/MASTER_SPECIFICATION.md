@@ -20,6 +20,36 @@ Platform concepts are generic: Case, CaseType, Field, Value, Criterion, Requirem
 
 Domain-specific rules are external Knowledge Packs. A new domain should normally not require a platform-core change.
 
+
+## Target operating model
+
+NormaCase is intended to sit in an automated case-processing flow, not require assessors to manually import and start every routine case.
+
+The target flow is:
+
+```text
+Upstream case source
+-> integration adapter
+-> normalized NormaCase case/evidence
+-> completeness and evidence checks
+-> deterministic assessment
+-> routing / work queue
+-> human approval, review or correction
+-> outbound integration
+```
+
+Routine, complete and unambiguous cases can be prepared for efficient human approval. Missing information, conflicting evidence, unresolved rules or other explicit uncertainty are routed to focused human work. The platform never turns `UNKNOWN` into a positive or negative domain conclusion.
+
+Assessment semantics and process semantics remain separate. A domain result such as `SUPPORTED`, `INCOMPLETE` or `HUMAN_REVIEW` is not itself a case lifecycle state. Workflow states such as a future `READY_FOR_APPROVAL` or `WAITING_FOR_INFORMATION` belong to versioned process configuration and must not be hard-coded as medical conclusions.
+
+Production intake should normally be adapter-driven and continuous. Manual file import remains useful for synthetic previews, testing, administration and exceptional fallback workflows, but it is not the primary target operating model.
+
+External systems remain outside the platform core. Future adapters may connect to institution-specific systems or standardized exchange formats, including MDconnect, MEDIKOS or SPV-MD interfaces where suitable access and authoritative interface specifications are available. NormaCase must not invent undocumented APIs or couple the Domain/RuleEngine to a specific vendor contract.
+
+The primary product interface should therefore evolve toward work queues and exception-focused review: operators see cases grouped by processing state, can inspect the complete Decision Trace and evidence, approve eligible cases individually or in batches where organizational policy permits, and explicitly correct/override through append-only audited human review.
+
+Future AI-assisted transcription, document extraction or drafting may be introduced behind optional adapter/application boundaries. AI output is treated as proposed or derived input with explicit provenance and validation; it does not replace the deterministic decision core.
+
 ## Determinism
 
 The decision core is not AI-based.
@@ -107,8 +137,12 @@ Rule tests must exercise unknown paths and boundaries, not just code coverage.
 4. Generic case/evidence/workflow/audit platform.
 5. At least three materially different synthetic Knowledge Packs.
 6. Public-reference packs based on official sources.
-7. Domain-expert validation.
-8. Controlled pilot only after security, privacy and domain review.
+7. Generic intake/normalization boundary and case lifecycle separated from assessment outcomes.
+8. Work-queue and approval/review product flow using synthetic data.
+9. Standards-based or institution-specific integration adapters only from authoritative interface contracts.
+10. Authentication, authorization, operational persistence and security/privacy hardening.
+11. Domain-expert validation.
+12. Controlled pilot only after security, privacy, integration and domain review.
 
 The first functional slice is synthetic: Knowledge Pack -> schema -> structured case -> rule evaluation -> outcome -> Decision Trace -> source reference.
 
