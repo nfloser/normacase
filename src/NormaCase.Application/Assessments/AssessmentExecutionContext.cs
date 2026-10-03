@@ -1,4 +1,5 @@
 using NormaCase.Domain.Audit;
+using NormaCase.Domain.Cases;
 
 namespace NormaCase.Application.Assessments;
 
@@ -6,13 +7,14 @@ public sealed record AssessmentExecutionContext
 {
     public AssessmentExecutionContext(
         AssessmentId assessmentId,
-        string caseId,
+        CaseId caseId,
         string platformVersion,
         DateTimeOffset recordedAtUtc)
     {
         if (assessmentId.IsEmpty)
             throw new ArgumentException("Assessment id must be explicit.", nameof(assessmentId));
-        ArgumentException.ThrowIfNullOrWhiteSpace(caseId);
+        if (caseId.IsEmpty)
+            throw new ArgumentException("Case id must be explicit.", nameof(caseId));
         ArgumentException.ThrowIfNullOrWhiteSpace(platformVersion);
         if (recordedAtUtc == default
             || recordedAtUtc.Offset != TimeSpan.Zero)
@@ -29,7 +31,7 @@ public sealed record AssessmentExecutionContext
     }
 
     public AssessmentId AssessmentId { get; }
-    public string CaseId { get; }
+    public CaseId CaseId { get; }
     public string PlatformVersion { get; }
     public DateTimeOffset RecordedAtUtc { get; }
 }

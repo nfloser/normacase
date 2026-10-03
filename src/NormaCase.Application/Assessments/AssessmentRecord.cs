@@ -1,4 +1,5 @@
 using NormaCase.Domain.Audit;
+using NormaCase.Domain.Cases;
 using NormaCase.RuleEngine.Evaluation;
 
 namespace NormaCase.Application.Assessments;
@@ -7,7 +8,7 @@ public sealed record AssessmentRecord
 {
     public AssessmentRecord(
         AssessmentId assessmentId,
-        string caseId,
+        CaseId caseId,
         string knowledgePackId,
         string platformVersion,
         DateTimeOffset recordedAtUtc,
@@ -16,7 +17,8 @@ public sealed record AssessmentRecord
     {
         if (assessmentId.IsEmpty)
             throw new ArgumentException("Assessment id must be explicit.", nameof(assessmentId));
-        ArgumentException.ThrowIfNullOrWhiteSpace(caseId);
+        if (caseId.IsEmpty)
+            throw new ArgumentException("Case id must be explicit.", nameof(caseId));
         ArgumentException.ThrowIfNullOrWhiteSpace(knowledgePackId);
         ArgumentException.ThrowIfNullOrWhiteSpace(platformVersion);
         ArgumentNullException.ThrowIfNull(input);
@@ -44,7 +46,7 @@ public sealed record AssessmentRecord
     }
 
     public AssessmentId AssessmentId { get; }
-    public string CaseId { get; }
+    public CaseId CaseId { get; }
     public string KnowledgePackId { get; }
     public string PlatformVersion { get; }
     public DateTimeOffset RecordedAtUtc { get; }

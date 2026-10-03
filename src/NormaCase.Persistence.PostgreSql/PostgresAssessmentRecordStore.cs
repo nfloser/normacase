@@ -56,7 +56,7 @@ public sealed class PostgresAssessmentRecordStore
                 connection);
 
             command.Parameters.AddWithValue(record.AssessmentId.Value);
-            command.Parameters.AddWithValue(record.CaseId);
+            command.Parameters.AddWithValue(record.CaseId.Value);
             command.Parameters.AddWithValue(record.KnowledgePackId);
             command.Parameters.AddWithValue(record.Result.KnowledgeRelease);
             command.Parameters.AddWithValue(record.PlatformVersion);
@@ -164,7 +164,7 @@ public sealed class PostgresAssessmentRecordStore
 
             if (record.AssessmentId != assessmentId
                 || !string.Equals(
-                    record.CaseId,
+                    record.CaseId.Value,
                     caseId,
                     StringComparison.Ordinal)
                 || !string.Equals(

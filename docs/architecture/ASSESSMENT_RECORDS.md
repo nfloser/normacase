@@ -60,3 +60,16 @@ resolve source metadata from a newer Knowledge Release.
 
 Authentication, authorization, identity separation and retention/deletion policy are
 separate reviewed slices before any real sensitive data may be used.
+
+## Explicit case identity
+
+`CaseId` is an immutable, domain-neutral identity value in `NormaCase.Domain.Cases`.
+Assessment execution and records require it explicitly; blank construction and the
+default value are rejected. Equality is ordinal and values are preserved without
+trimming or normalization. JSON format version 1 still uses a string `caseId`, and
+PostgreSQL still stores `case_id` as text. The adapter compares its exact value
+against the stored record metadata; no migration is needed.
+
+This contract supplies identity only. It is not a patient identifier, case lifecycle,
+authorization mechanism or data-retention policy. Use opaque synthetic identifiers
+in development.
