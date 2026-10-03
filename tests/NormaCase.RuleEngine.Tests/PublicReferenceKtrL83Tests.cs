@@ -72,6 +72,16 @@ public sealed class PublicReferenceKtrL83Tests
         Assert.Equal(
             "2025-05-15",
             result.RuleTrace.Source.Version);
+
+        var approval = Assert.Single(
+            result.DomainOutputs,
+            output => output.OutputId == "approval_state");
+        Assert.Equal(
+            DomainOutputValueKind.Choice,
+            approval.Value.Kind);
+        Assert.Equal(
+            "DEEMED_GRANTED",
+            approval.Value.Choice);
     }
 
     [Theory]
@@ -139,6 +149,13 @@ public sealed class PublicReferenceKtrL83Tests
         Assert.Equal(
             ConditionResult.NotMatched,
             result.RuleTrace!.ConditionResult);
+
+        var approval = Assert.Single(
+            result.DomainOutputs,
+            output => output.OutputId == "approval_state");
+        Assert.Equal(
+            "NOT_DETERMINED_BY_THIS_PACK",
+            approval.Value.Choice);
     }
 
     [Theory]
@@ -162,6 +179,12 @@ public sealed class PublicReferenceKtrL83Tests
         Assert.Equal(
             AssessmentOutcome.HumanReview,
             result.Outcome);
+        var approval = Assert.Single(
+            result.DomainOutputs,
+            output => output.OutputId == "approval_state");
+        Assert.Equal(
+            DomainOutputValueKind.Unknown,
+            approval.Value.Kind);
     }
 
     [Fact]
