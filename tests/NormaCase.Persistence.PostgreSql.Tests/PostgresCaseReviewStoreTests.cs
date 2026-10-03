@@ -139,6 +139,28 @@ public sealed class PostgresCaseReviewStoreTests
     }
 
     [Fact]
+    public async Task Changed_original_assessment_metadata_invalidates_the_aggregate()
+    {
+        await using var source = Source();
+        var initial = await Seed(source);
+        await using var connection = await source.OpenConnectionAsync();
+        await using var disable = new NpgsqlCommand("ALTER TABLE normacase.assessment_records DISABLE TRIGGER assessment_records_no_update", connection);
+        await disable.ExecuteNonQueryAsync();
+        try
+        {
+            await using var corrupt = new NpgsqlCommand("UPDATE normacase.assessment_records SET record_format_version=999 WHERE assessment_id=$1", connection);
+            corrupt.Parameters.AddWithValue(initial.Assessment.AssessmentId.Value);
+            await corrupt.ExecuteNonQueryAsync();
+        }
+        finally
+        {
+            await using var enable = new NpgsqlCommand("ALTER TABLE normacase.assessment_records ENABLE TRIGGER assessment_records_no_update", connection);
+            await enable.ExecuteNonQueryAsync();
+        }
+        await Assert.ThrowsAsync<CaseReviewIntegrityException>(() => Store(source).LoadAsync(initial.Process.CaseId));
+    }
+
+    [Fact]
     public async Task Initialization_cannot_bind_a_changed_original_assessment()
     {
         await using var source = Source();

@@ -115,7 +115,8 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
             || previous.AssessmentCaseRevision != next.AssessmentCaseRevision
             || previous.Process.CaseId != next.Process.CaseId || previous.Process.CaseRevision != next.Process.CaseRevision
             || previous.Process.WorkflowId != next.Process.WorkflowId || previous.Process.WorkflowVersion != next.Process.WorkflowVersion
-            || next.Process.Revision != checked(previous.Process.Revision + 1)
+            || previous.Process.Revision == long.MaxValue
+            || next.Process.Revision != previous.Process.Revision + 1
             || next.Audit.Events.Count != previous.Audit.Events.Count + 1)
             throw new CaseReviewIntegrityException();
         var definition = resolver(previous.Process.WorkflowId, previous.Process.WorkflowVersion);
@@ -128,12 +129,19 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
 
     private static async Task VerifyAssessment(NpgsqlConnection connection, NpgsqlTransaction transaction, CaseReviewState state, CancellationToken token)
     {
-        await using var command = new NpgsqlCommand("SELECT case_id, record_json::text, record_sha256 FROM normacase.assessment_records WHERE assessment_id=$1", connection, transaction);
+        await using var command = new NpgsqlCommand("SELECT case_id, record_json::text, record_sha256, knowledge_pack_id, knowledge_release, platform_version, assessment_date, recorded_at_utc_ticks, record_format_version, recorded_at_utc FROM normacase.assessment_records WHERE assessment_id=$1", connection, transaction);
         command.Parameters.AddWithValue(state.Assessment.AssessmentId.Value);
         await using var reader = await command.ExecuteReaderAsync(token);
         if (!await reader.ReadAsync(token) || reader.GetString(0) != state.Process.CaseId.Value
             || reader.GetString(1) != AssessmentRecordJson.Serialize(state.Assessment)
-            || reader.GetString(2) != Hash(reader.GetString(1))) throw new CaseReviewIntegrityException();
+            || reader.GetString(2) != Hash(reader.GetString(1))
+            || reader.GetString(3) != state.Assessment.KnowledgePackId
+            || reader.GetString(4) != state.Assessment.Result.KnowledgeRelease
+            || reader.GetString(5) != state.Assessment.PlatformVersion
+            || reader.GetFieldValue<DateOnly>(6) != state.Assessment.Input.AssessmentDate
+            || reader.GetInt64(7) != state.Assessment.RecordedAtUtc.Ticks
+            || reader.GetInt32(8) != AssessmentRecordJson.CurrentFormatVersion
+            || reader.GetDateTime(9).Ticks != state.Assessment.RecordedAtUtc.Ticks - state.Assessment.RecordedAtUtc.Ticks % 10) throw new CaseReviewIntegrityException();
     }
 
     private static async Task Lock(NpgsqlConnection connection, NpgsqlTransaction transaction, CaseId caseId, CancellationToken token)
