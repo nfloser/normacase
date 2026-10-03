@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Globalization;
 using System.Net;
 using System.Reflection;
@@ -19,7 +20,7 @@ public static class DemoHost
 {
     public const int MaximumBodyBytes = 1024 * 1024;
 
-    public static WebApplication Build(string[] args)
+    public static WebApplication Build(string[] args, Action<WebApplicationBuilder>? configure = null)
     {
         var webRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args, WebRootPath = Directory.Exists(webRoot) ? webRoot : null });
@@ -28,6 +29,22 @@ public static class DemoHost
             options.ListenLocalhost(5080);
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
+        configure?.Invoke(builder);
+        var reviewMode = builder.Configuration["NORMACASE_REVIEW_DEMO"] == "1";
+        if (reviewMode)
+        {
+            var credential = builder.Configuration["NORMACASE_REVIEW_DEMO_KEY"];
+            var connection = builder.Configuration["NORMACASE_REVIEW_DEMO_CONNECTION"];
+            if (credential is null || credential.Length != 64 || !credential.All(Uri.IsHexDigit) || string.IsNullOrWhiteSpace(connection))
+                throw new InvalidOperationException("Die lokale Freigabe-Demo benötigt einen externen 256-Bit-Zugangsschlüssel und eine PostgreSQL-Konfiguration.");
+            builder.Services.AddAuthentication(ReviewAuthenticationHandler.SchemeName)
+                .AddScheme<ReviewAuthenticationOptions, ReviewAuthenticationHandler>(ReviewAuthenticationHandler.SchemeName,
+                    options => options.CredentialHash = System.Security.Cryptography.SHA256.HashData(Convert.FromHexString(credential)));
+            builder.Services.AddAuthorization();
+            builder.Services.TryAddSingleton(TimeProvider.System);
+            builder.Services.AddSingleton(_ => Npgsql.NpgsqlDataSource.Create(connection));
+            builder.Services.TryAddSingleton<IReviewDemoRepository, ReviewDemoRepository>();
+        }
         builder.Logging.ClearProviders();
         var catalog = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Knowledge"), "*.json")
             .Select(path => File.ReadAllText(path, new UTF8Encoding(false, true)))
@@ -191,7 +208,9 @@ public static class DemoHost
             return Results.Json(new { assessmentJson = AssessmentJson.Serialize(result.Assessment, result.PlatformVersion) });
         }));
 
-        WorkQueueEndpoints.Map(app, packs, platformVersion);
+        app.MapGet("/api/review-mode", () => Results.Json(new { enabled = reviewMode }));
+        if (reviewMode) ReviewDemoEndpoints.Map(app, packs, platformVersion);
+        else WorkQueueEndpoints.Map(app, packs, platformVersion);
         WorkflowEndpoints.Map(app, packs, presentations, platformVersion);
         return app;
     }

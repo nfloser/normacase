@@ -2,6 +2,7 @@
   <ItemGroup>
     <Content Update="wwwroot/**" CopyToOutputDirectory="PreserveNewest" />
     <ProjectReference Include="../NormaCase.Replay/NormaCase.Replay.csproj" />
+    <ProjectReference Include="../NormaCase.Persistence.PostgreSql/NormaCase.Persistence.PostgreSql.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="../../knowledge/demo-a/pack.json" Link="Knowledge/demo-a.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />

@@ -18,4 +18,8 @@
   <data name="workflow_transition" xml:space="preserve"><value>Dieser Übergang ist im aktuellen Vorgangsstand nicht verfügbar.</value></data>
   <data name="workflow_mismatch" xml:space="preserve"><value>Der Vorgang passt nicht zum installierten synthetischen Wissens- oder Plattformstand.</value></data>
   <data name="unknown_work_case" xml:space="preserve"><value>Der synthetische Fall wurde nicht gefunden.</value></data>
+  <data name="review_login" xml:space="preserve"><value>Bitte mit dem lokalen Demo-Zugangsschlüssel anmelden.</value></data>
+  <data name="review_denied" xml:space="preserve"><value>Diese Prüfaktion ist für diesen Fall nicht erlaubt.</value></data>
+  <data name="review_conflict" xml:space="preserve"><value>Der Fallstand hat sich geändert. Öffne den aktuellen Fallstand erneut.</value></data>
+  <data name="review_storage" xml:space="preserve"><value>Die lokale Fallverwaltung ist derzeit nicht verfügbar.</value></data>
 </root>

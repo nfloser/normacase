@@ -16,47 +16,9 @@ internal static class WorkQueueEndpoints
 {
     internal static void Map(WebApplication app, IReadOnlyDictionary<string, KnowledgePack> packs, string platformVersion)
     {
-        var workflow = new WorkflowDefinition("synthetic-queue-process", 1, "received",
-            [new("received", false), new("awaiting-approval", false), new("waiting-information", false),
-             new("manual-review", false), new("integration-error", false)],
-            [new("prepare-approval", "received", "awaiting-approval"),
-             new("request-information", "received", "waiting-information"),
-             new("request-review", "received", "manual-review"),
-             new("technical-error", "received", "integration-error")]);
-        var triagePolicy = new ApprovalRoutingPolicy("synthetic-queue-triage", 1,
-            [AssessmentOutcome.Supported, AssessmentOutcome.NotSupported]);
-        var routingPolicy = new CaseProcessingRoutingPolicy("synthetic-queue-routing", 1,
-            triagePolicy.Id, triagePolicy.Version, workflow.Id, workflow.Version,
-            new Dictionary<AssessmentRoutingDisposition, string>
-            {
-                [AssessmentRoutingDisposition.ReadyForApproval] = "prepare-approval",
-                [AssessmentRoutingDisposition.Incomplete] = "request-information",
-                [AssessmentRoutingDisposition.HumanReview] = "request-review"
-            });
-        var configuration = new CaseWorkQueueConfiguration("synthetic-queues", 1,
-            [new("approval", workflow.Id, workflow.Version, ["awaiting-approval"]),
-             new("clarification", workflow.Id, workflow.Version, ["waiting-information"]),
-             new("review", workflow.Id, workflow.Version, ["manual-review"]),
-             new("technical", workflow.Id, workflow.Version, ["integration-error"])]);
-        var projection = new CaseWorkQueueProjectionService();
-        var items = new List<Detail>();
-        foreach (var id in new[] { "demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review" })
-        {
-            var input = CaseInputJson.Deserialize(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", id + ".json")));
-            var record = new AssessmentRecorder().Evaluate(packs["synthetic.demo-g"], input.Facts,
-                input.AssessmentDate, input.Evidence,
-                new(new("assessment-" + id), new(id), platformVersion, new DateTimeOffset(2026, 10, 3, 13, 0, 0, TimeSpan.Zero)));
-            var triage = new AssessmentTriageService().Route(record, triagePolicy);
-            var process = CaseProcessingInstance.Start(record.CaseId, 1, workflow);
-            var applied = new CaseProcessingRoutingService().Apply(triage, process, workflow, routingPolicy, 1, 0);
-            if (applied.Status != CaseProcessingRoutingStatus.Applied)
-                throw new InvalidOperationException("Synthetic queue fixture could not be routed.");
-            var enriched = projection.Project(record, triage, applied.Process, configuration);
-            items.Add(Create(enriched.Membership, record));
-        }
-        var technical = CaseProcessingInstance.Start(new("demo-technical"), 1, workflow)
-            .Apply(workflow, 0, "technical-error");
-        items.Add(Create(projection.Project(technical, configuration), null));
+        var workload = SyntheticWorkload.Create(packs, platformVersion);
+        var configuration = workload.Queues;
+        var items = workload.Cases.Select(seed => Create(new CaseWorkQueueProjectionService().Project(seed.Process, configuration), seed.Assessment)).ToArray();
         var details = items.ToDictionary(item => item.CaseId, StringComparer.Ordinal);
         app.MapGet("/api/work-queues", () => Results.Json(new
         {
