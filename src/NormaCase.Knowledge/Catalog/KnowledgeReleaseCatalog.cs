@@ -50,15 +50,9 @@ public sealed class KnowledgeReleaseArtifact
 public sealed class KnowledgeReleaseCatalog
 {
     private readonly object _gate = new();
-    private readonly KnowledgePackLoader _loader;
+    private readonly KnowledgePackLoader _loader = new();
     private readonly Dictionary<ReleaseKey, KnowledgeReleaseArtifact>
         _releases = [];
-
-    public KnowledgeReleaseCatalog(
-        KnowledgePackLoader? loader = null)
-    {
-        _loader = loader ?? new KnowledgePackLoader();
-    }
 
     public IReadOnlyList<KnowledgeReleaseArtifact> Releases
     {
