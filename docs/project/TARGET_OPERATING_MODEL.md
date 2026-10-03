@@ -54,6 +54,44 @@ The normalized platform model stays stable when an upstream vendor, file format 
 
 Manual import remains supported as a synthetic preview, test, administrative and exceptional fallback mechanism. It is not the desired routine assessor workflow.
 
+## Interoperability model
+
+NormaCase should be usable in more than one deployment shape without changing the deterministic core:
+
+```text
+A) Existing host UI
+   -> NormaCase API/application boundary
+   -> assessment/workflow result
+   -> host UI
+
+B) Upstream system
+   -> inbound adapter
+   -> NormaCase
+   -> NormaCase work queue/workbench
+   -> outbound adapter
+
+C) Bounded file/import fallback
+   -> adapter
+   -> same normalized intake contract
+```
+
+The first-party UI is therefore a product surface, not a mandatory integration dependency.
+
+Integration design follows these rules:
+
+- one canonical normalized case/evidence contract inside the platform boundary;
+- explicit versioned inbound and outbound contracts;
+- idempotent processing for replayed external messages;
+- correlation identifiers and source provenance preserved across the boundary;
+- strict validation before external data reaches the deterministic core;
+- transport concerns such as REST, messaging/events or files remain adapter concerns;
+- synchronous and asynchronous transports may coexist without changing Domain semantics;
+- external status codes, vendor field names and authentication mechanisms do not become Domain enums or rule concepts;
+- adapter failures are distinguishable from domain outcomes and route to a technical/integration exception path;
+- contract evolution is backwards-compatible where practical and fails closed when compatibility cannot be proven.
+
+This allows future integrations with enterprise systems without making NormaCase dependent on one product or vendor.
+
 ## Deterministic triage
 
 Every routable result must come from explicit structured state.
@@ -160,14 +198,19 @@ Unknown integration details remain explicit project questions rather than assump
 
 ## Near-term engineering implications
 
-Future implementation work should prioritize generic capabilities in this order:
+Future implementation work follows one critical path:
 
 1. explicit case lifecycle and processing-state contract separated from assessment outcomes;
-2. normalized intake/application boundary with synthetic adapter fixtures;
-3. work-queue queries and approval/review orchestration;
-4. authenticated actor and authorization boundary;
-5. transactional persistent case/workflow operation;
-6. outbound adapter contract;
-7. concrete external adapters when authoritative contracts are available.
+2. normalized intake/application boundary with at least two materially different synthetic adapter fixtures;
+3. deterministic routing from recorded assessment/process facts into explicit next-step commands;
+4. persistent work-queue projections and detailed case drill-down;
+5. individual human review/approval using authenticated actors and append-only audit;
+6. transactional case/workflow persistence and concurrency handling;
+7. outbound integration contract and synthetic roundtrip;
+8. batch-review capability only behind an explicit policy contract;
+9. one standards-based or institution-specific adapter when an authoritative interface contract is available;
+10. additional adapters without changing Domain/RuleEngine contracts.
+
+For speed, each step should be delivered as the smallest end-to-end slice that proves the next boundary. Do not build a generalized integration framework in advance of concrete synthetic examples, and do not block generic product progress on access to a proprietary system.
 
 This preserves the platform-first rule: a new institution or inbound system should normally require an adapter/configuration change, not a rewrite of the rule engine.
