@@ -52,7 +52,14 @@ Likely platform gaps such as weighted aggregation or age-dependent applicability
 
 Detailed source analysis completed in `docs/knowledge/research/PFLEGE_2026_SOURCE_ANALYSIS.md`.
 
-The official source artifact is pinned there with retrieval metadata and SHA-256. Adult scoring semantics and remaining domain-review boundaries are documented. No production rule has been derived yet.
+The official source artifact is pinned there with retrieval metadata and SHA-256. The
+generic numeric range-lookup, sum and max behavior was proven synthetically first.
+
+A narrow real-domain implementation now exists under
+`knowledge/public-reference/pflege-adult-score/`. It transforms already-established
+adult module sums into the published weighted total and exposes score-threshold flags.
+It remains `PUBLIC_REFERENCE` / `IN_REVIEW` and deliberately does not assign a
+Pflegegrad, interpret item-level findings or model the special needs constellation.
 
 ## Candidate B: prescribed patient transport
 
