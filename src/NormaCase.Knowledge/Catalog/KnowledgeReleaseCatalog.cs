@@ -142,9 +142,16 @@ public sealed class KnowledgeReleaseCatalog
 
         lock (_gate)
         {
-            return _releases.TryGetValue(
-                new ReleaseKey(packId, releaseId),
-                out artifact);
+            if (_releases.TryGetValue(
+                    new ReleaseKey(packId, releaseId),
+                    out var existing))
+            {
+                artifact = existing;
+                return true;
+            }
+
+            artifact = null;
+            return false;
         }
     }
 
