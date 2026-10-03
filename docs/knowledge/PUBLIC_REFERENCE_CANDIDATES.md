@@ -91,7 +91,15 @@ Potential needs such as set-membership operators or richer domain outcomes must 
 
 Detailed source analysis completed in `docs/knowledge/research/KRANKENTRANSPORT_2025_SOURCE_ANALYSIS.md`.
 
-The official source artifact is pinned there with retrieval metadata and SHA-256. The analysis confirms that this domain is structurally different from Pflege scoring and exposes multi-output/workflow requirements that must be proven synthetically before changing the core. No production rule has been derived yet.
+The official source artifact is pinned there with retrieval metadata and SHA-256. The
+generic evidence and multi-output capabilities were proven with synthetic packs first.
+
+The first real-domain pack now exists under
+`knowledge/public-reference/kt-rl-8-3/`. It is deliberately limited to the
+unambiguous § 8 Absatz 3 evidence path plus the directly associated § 8 Absatz 6
+approval-state statement. It remains `PUBLIC_REFERENCE` / `IN_REVIEW` and does not
+encode § 8 Absatz 2, § 8 Absatz 4, transport-mode selection or professional medical
+interpretation.
 
 ## Deferred candidate: hearing aids
 
