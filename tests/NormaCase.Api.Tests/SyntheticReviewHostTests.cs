@@ -89,6 +89,8 @@ public sealed class SyntheticReviewHostTests
         using var persisted = JsonDocument.Parse(await afterRestart.GetStringAsync("/api/review/work-cases/demo-g-supported"));
         Assert.Equal("accepted", persisted.RootElement.GetProperty("stateId").GetString());
         Assert.Equal(2, persisted.RootElement.GetProperty("audit").GetArrayLength());
+
+        await ResetDatabase(connection);
     }
 
     [Fact]
