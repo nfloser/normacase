@@ -84,11 +84,18 @@ public sealed class ReviewedOutboundResult
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(evidenceReferences);
 
+        if (evidenceReferences.Count != input.Evidence.Count
+            || evidenceReferences.Keys.Any(key => !input.Evidence.ContainsKey(key)))
+            throw new ArgumentException("Evidence references must match normalized evidence keys.", nameof(evidenceReferences));
         var references = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
         foreach (var item in evidenceReferences)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(item.Key);
-            if (item.Value is null) throw new ArgumentException("Evidence references cannot be null.", nameof(evidenceReferences));
+            OutboundBoundary.Identifier(item.Key, nameof(evidenceReferences));
+            if (item.Value is null || item.Value.Count > 32)
+                throw new ArgumentException("Invalid evidence references.", nameof(evidenceReferences));
+            foreach (var reference in item.Value) OutboundBoundary.Identifier(reference, nameof(evidenceReferences));
+            if (item.Value.Distinct(StringComparer.Ordinal).Count() != item.Value.Count)
+                throw new ArgumentException("Duplicate evidence reference.", nameof(evidenceReferences));
             references.Add(item.Key, Array.AsReadOnly(item.Value.ToArray()));
         }
 
