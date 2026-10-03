@@ -28,7 +28,7 @@ removing merge-relevant checks.
 
 Verification extracts into a path with spaces, validates the complete file
 inventory and SHA-256 digests, confirms included runtime configuration and starts
-both executable hosts with shared runtime lookup disabled. It checks all five
+both executable hosts with shared runtime lookup disabled. It checks all seven
 German catalogs, local browser assets and security headers, cross-origin rejection,
 exact decimal CLI/API capture and bidirectional snapshot replay. Test output
 contains technical summaries only. Separate integrity tests cover corruption,

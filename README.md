@@ -6,7 +6,9 @@ The platform separates executable application code from versioned domain knowled
 
 ## Project status
 
-NormaCase is in early foundation work. It is **not** a medical device, production assessment system or domain-approved knowledge base.
+NormaCase has an executable synthetic end-to-end demonstration: normalized JSON/XML intake, deterministic assessment, persisted work queues, human review, outbound delivery and restart/backup restoration. Windows and Linux self-contained previews and browser/database integration are verified in CI. This is **not** a production assessment system or domain-approved knowledge base.
+
+Start with the [German demo acceptance guide](docs/development/DEMO_ABNAHME.de.md) for downloads, the pitch and the persistent integration test. See the [readiness inventory](docs/project/EXTERNAL_DATA_FREE_READINESS.md) for verified capabilities and external prerequisites.
 
 Only synthetic data belongs in the repository.
 
@@ -132,7 +134,7 @@ Use `--json` for the versioned lossless assessment document. See
 [the German offline guide](docs/development/OFFLINE_EVALUATOR.md) for supported,
 incomplete and human-review examples, file formats, exit codes and limitations.
 The adapter needs no runtime network service. It accepts SYNTHETIC packs only;
-production authorization and persistence are not implemented yet.
+the CLI does not provide production authorization. Persistent assessment and review are available through the separate PostgreSQL adapter and opt-in synthetic review host.
 
 ## Local synthetic HTTP adapter
 
@@ -187,8 +189,9 @@ system libraries described in [the German start guide](docs/development/PREVIEW_
 
 The preview includes the German workbench, offline CLI, all synthetic packs and
 examples, its exact source/platform identity and corruption-detection checksums.
-It keeps the existing loopback-only host and does not expose persistence or
-production authorization. A CI preview is not an approved product release.
+The default launch keeps the loopback-only host without persistence. An explicitly
+configured synthetic review mode can use a separate local PostgreSQL instance;
+productive authorization is not provided. A CI preview is not an approved product release.
 
 For a repeatable product presentation, use the
 [German synthetic pitch runbook](docs/development/PITCH_DEMO.de.md). It walks the
