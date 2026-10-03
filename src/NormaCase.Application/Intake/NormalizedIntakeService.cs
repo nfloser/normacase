@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using NormaCase.Application.Assessments;
 using NormaCase.Domain.Cases;
 using NormaCase.Domain.Evidence;
@@ -10,20 +9,39 @@ namespace NormaCase.Application.Intake;
 public sealed class NormalizedIntakeRecord
 {
     internal NormalizedIntakeRecord(NormalizedIntakeRequest request, KnowledgePack pack,
-        AssessmentInputSnapshot input, Dictionary<string,IReadOnlyList<string>> references)
+        AssessmentInputSnapshot input, Dictionary<string, IReadOnlyList<string>> references)
+        : this(request.CaseId, request.CaseTypeId, request.Provenance, pack.Manifest.PackId,
+            pack.Manifest.ReleaseId, input, references)
+    { }
+
+    private NormalizedIntakeRecord(CaseId caseId, string caseTypeId, IntakeProvenance provenance,
+        string packId, string release, AssessmentInputSnapshot input, IReadOnlyDictionary<string, IReadOnlyList<string>> references)
     {
-        CaseId = request.CaseId; CaseTypeId = request.CaseTypeId; Provenance = request.Provenance;
-        KnowledgePackId = pack.Manifest.PackId; KnowledgeRelease = pack.Manifest.ReleaseId;
-        Input = input;
-        EvidenceReferences = new ReadOnlyDictionary<string,IReadOnlyList<string>>(references);
+        ArgumentNullException.ThrowIfNull(input);
+        foreach (var value in new[] { packId, release })
+            if (string.IsNullOrWhiteSpace(value) || value.Length > 256 || value.Any(char.IsControl))
+                throw new ArgumentException("Explicit bounded knowledge identity required.");
+        var bounded = new NormalizedIntakeRequest(caseId, caseTypeId, provenance, input.AssessmentDate, input.Facts, input.Evidence, references);
+        if (!bounded.Evidence.Keys.Order(StringComparer.Ordinal).SequenceEqual(bounded.EvidenceReferences.Keys.Order(StringComparer.Ordinal)))
+            throw new ArgumentException("Historical evidence reference keys must be complete.");
+        foreach (var item in bounded.Evidence)
+            if (item.Value == EvidenceStatus.Present && bounded.EvidenceReferences[item.Key].Count == 0
+                || item.Value == EvidenceStatus.Missing && bounded.EvidenceReferences[item.Key].Count > 0)
+                throw new ArgumentException("Historical evidence/reference binding is invalid.");
+        CaseId = caseId; CaseTypeId = caseTypeId; Provenance = provenance; KnowledgePackId = packId; KnowledgeRelease = release;
+        Input = new(input.AssessmentDate, bounded.Facts, bounded.Evidence); EvidenceReferences = bounded.EvidenceReferences;
     }
+    // Structural historical restore, not schema re-normalization or provenance authentication.
+    public static NormalizedIntakeRecord Restore(CaseId caseId, string caseTypeId, IntakeProvenance provenance,
+        string packId, string release, AssessmentInputSnapshot input, IReadOnlyDictionary<string, IReadOnlyList<string>> references)
+        => new(caseId, caseTypeId, provenance, packId, release, input, references);
     public CaseId CaseId { get; }
     public string CaseTypeId { get; }
     public IntakeProvenance Provenance { get; }
     public string KnowledgePackId { get; }
     public string KnowledgeRelease { get; }
     public AssessmentInputSnapshot Input { get; }
-    public IReadOnlyDictionary<string,IReadOnlyList<string>> EvidenceReferences { get; }
+    public IReadOnlyDictionary<string, IReadOnlyList<string>> EvidenceReferences { get; }
 
     /// <summary>Semantic retry equality; message id and local receipt time are delivery metadata.</summary>
     public bool HasSameContent(NormalizedIntakeRecord other)
@@ -41,7 +59,7 @@ public sealed class NormalizedIntakeRecord
             && EvidenceReferences.All(item => other.EvidenceReferences.TryGetValue(item.Key, out var references)
                 && item.Value.SequenceEqual(references, StringComparer.Ordinal));
     }
-    private static bool Equal<T>(IReadOnlyDictionary<string,T> left, IReadOnlyDictionary<string,T> right)
+    private static bool Equal<T>(IReadOnlyDictionary<string, T> left, IReadOnlyDictionary<string, T> right)
         => left.Count == right.Count && left.All(item => right.TryGetValue(item.Key, out var value)
             && EqualityComparer<T>.Default.Equals(item.Value, value));
 }
