@@ -44,8 +44,8 @@ public sealed class ReviewedOutboundResultTests
         Assert.Equal("review-1",result.ReviewId.Value);
         Assert.Equal(state.Assessment.Result.Outcome,result.OriginalOutcome);
         Assert.Equal(disposition==HumanReviewDisposition.Override?AssessmentOutcome.NotSupported:state.Assessment.Result.Outcome,result.HumanOutcome);
-        Assert.Equal(intake.Input.Facts,result.Input.Facts);
-        Assert.Equal(intake.Input.Evidence,result.Input.Evidence);
+        Assert.Equal(intake.Input.Facts.OrderBy(item=>item.Key),result.Input.Facts.OrderBy(item=>item.Key));
+        Assert.Equal(intake.Input.Evidence.OrderBy(item=>item.Key),result.Input.Evidence.OrderBy(item=>item.Key));
         Assert.Equal("synthetic-document-1",result.EvidenceReferences["verification"].Single());
     }
 
@@ -81,8 +81,22 @@ public sealed class ReviewedOutboundResultTests
         Assert.Throws<OutboundResultBindingException>(()=>new ReviewedOutboundResultBuilder().Build(
             changed,state,Workflow,new("message","correlation",7,1,2)));
 
-        var otherPack=new KnowledgePack("other-pack",Pack().Manifest,Pack().Fields,Pack().EvidenceRequirements,Pack().Rule);
-        Assert.NotNull(otherPack);
+    }
+
+    [Fact]
+    public void Assessment_revision_and_original_audit_timestamp_are_bound()
+    {
+        var (intake,state)=Ready();
+        var wrongRevision=state with { AssessmentCaseRevision=6 };
+        Assert.Throws<OutboundResultBindingException>(()=>new ReviewedOutboundResultBuilder().Build(
+            intake,wrongRevision,Workflow,new("message","correlation",7,1,2)));
+
+        var wrongAudit=AssessmentAuditTrail.Start(AssessmentAuditEvent.AssessmentCreated(1,state.Assessment.AssessmentId,
+            state.Assessment.RecordedAtUtc.AddSeconds(1),"synthetic-ingest"))
+            .Append(AssessmentAuditEvent.HumanReviewRecorded(2,state.Audit.Events[^1].Review!));
+        var wrongTimestamp=state with { Audit=wrongAudit };
+        Assert.Throws<OutboundResultBindingException>(()=>new ReviewedOutboundResultBuilder().Build(
+            intake,wrongTimestamp,Workflow,new("message","correlation",7,1,2)));
     }
 
     [Fact]
