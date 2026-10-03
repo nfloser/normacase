@@ -31,6 +31,7 @@ upstream assertion, not professional verification of the underlying document.
 - unique `(source system, message id)`;
 - unique `(source system, upstream case id, upstream revision)`;
 - stable platform case/type mapping for each upstream case across revisions;
+- globally unique platform CaseId ownership by one `(source system, upstream case)` stream;
 - increasing new upstream revisions; existing identical historical receipts may replay.
 
 The same semantic normalized content returns the **original** immutable receipt.
@@ -53,3 +54,8 @@ and evidence while retaining distinct source/adapter identities. Decimal values 
 invariant decimal parsing, unknowns remain explicit, unmapped truth values fail, and
 the XML fixture parser rejects DTD/entity resolution. These fixtures are not real MD
 formats and must not be advertised as compatible with any external system.
+
+The current contract has one authoritative upstream revision stream per platform case.
+Independent sources must receive distinct platform case identities. Multi-source
+enrichment requires an explicit aggregation adapter with its own revision stream;
+independent upstream revision numbers must never be merged implicitly.

@@ -53,6 +53,7 @@ public sealed record IntakeReceipt(IntakeAcceptance Acceptance, NormalizedIntake
 /// Atomic uniqueness: (source, message) AND (source, upstream case, revision).
 /// Same semantic content returns the ORIGINAL receipt; any conflicting binding throws.
 /// Implementations must preserve case mapping across revisions and reject stale revisions.
+/// Each platform CaseId is owned by exactly one (source system, upstream case) stream.
 /// </summary>
 public interface INormalizedIntakeStore
 {

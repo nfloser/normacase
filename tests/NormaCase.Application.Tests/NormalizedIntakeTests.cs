@@ -82,6 +82,16 @@ public sealed class NormalizedIntakeTests
     }
 
     [Fact]
+    public async Task Independent_upstream_sources_cannot_claim_the_same_platform_case_identity()
+    {
+        var service = new NormalizedIntakeService(new MemoryStore());
+        var alpha = AdapterAlpha(File.ReadAllText(Fixture("intake-alpha.json")));
+        var beta = AdapterBeta(File.ReadAllText(Fixture("intake-beta.xml")));
+        await service.AcceptAsync(alpha, Pack());
+        await Assert.ThrowsAsync<IntakeConflictException>(() => service.AcceptAsync(beta, Pack()));
+    }
+
+    [Fact]
     public void Missing_values_and_evidence_are_explicit_and_caller_collections_are_detached()
     {
         var facts = new Dictionary<string, CaseValue>();
@@ -175,6 +185,7 @@ public sealed class NormalizedIntakeTests
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var p=record.Provenance;
+                if (Records.Any(r => r.CaseId == record.CaseId && (r.Provenance.SourceSystemId != p.SourceSystemId || r.Provenance.UpstreamCaseId != p.UpstreamCaseId))) throw new IntakeConflictException();
                 var existing=Records.FirstOrDefault(r=>r.Provenance.SourceSystemId==p.SourceSystemId && (r.Provenance.MessageId==p.MessageId || (r.Provenance.UpstreamCaseId==p.UpstreamCaseId && r.Provenance.UpstreamRevision==p.UpstreamRevision)));
                 if(existing is not null)
                 {
