@@ -183,9 +183,7 @@ public sealed class PostgresCaseReviewTransactionStoreTests
                 dataSource,
                 fixture.Assessment.CaseId));
 
-        await InstallRejectingInsertTrigger(
-            dataSource,
-            fixture.Assessment.CaseId);
+        await InstallRejectingInsertTrigger(dataSource);
         try
         {
             await Assert.ThrowsAsync<CaseReviewAggregateStorageException>(
@@ -465,8 +463,7 @@ public sealed class PostgresCaseReviewTransactionStoreTests
     }
 
     private static async Task InstallRejectingInsertTrigger(
-        NpgsqlDataSource dataSource,
-        CaseId caseId)
+        NpgsqlDataSource dataSource)
     {
         await using var connection =
             await dataSource.OpenConnectionAsync();
@@ -477,8 +474,7 @@ public sealed class PostgresCaseReviewTransactionStoreTests
             LANGUAGE plpgsql
             AS $$
             BEGIN
-                IF NEW.case_id = $case$""" + caseId.Value + """$case$
-                    AND NEW.process_revision > 0 THEN
+                IF NEW.process_revision > 0 THEN
                     RAISE EXCEPTION 'synthetic insert failure'
                         USING ERRCODE = 'P0001';
                 END IF;
