@@ -80,8 +80,6 @@ public sealed class ReviewedOutboundResult
             throw new ArgumentException("Invalid outbound decision value.");
         if (disposition == HumanReviewDisposition.AcceptSystemResult && humanOutcome != originalOutcome)
             throw new ArgumentException("Accepted review must preserve the system outcome.", nameof(humanOutcome));
-        if (disposition == HumanReviewDisposition.Override && humanOutcome == originalOutcome)
-            throw new ArgumentException("Override must carry its explicit human outcome.", nameof(humanOutcome));
         ArgumentNullException.ThrowIfNull(provenance);
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(evidenceReferences);
