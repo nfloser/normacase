@@ -27,7 +27,7 @@ public sealed class SyntheticReviewHostTests
             using var anonymous = factory.CreateClient();
             var unauthorized = await anonymous.GetAsync("/api/review/work-queues");
             Assert.Equal(HttpStatusCode.Unauthorized, unauthorized.StatusCode);
-            Assert.Contains("Authentifizierung", await unauthorized.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+            Assert.Contains("Anmeldung", await unauthorized.Content.ReadAsStringAsync(), StringComparison.Ordinal);
 
             using var wrong = factory.CreateClient();
             wrong.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Convert.ToBase64String(new byte[32]));
