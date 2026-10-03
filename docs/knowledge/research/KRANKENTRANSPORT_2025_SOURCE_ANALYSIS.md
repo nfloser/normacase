@@ -3,7 +3,7 @@
 Status: **PUBLIC_REFERENCE research only**  
 Research date: 2026-10-02  
 Issue: #32  
-Scope: current G-BA Krankentransport-Richtlinie (KT-RL) as a second real reference domain; no productive Knowledge Pack is defined by this document.
+Scope: current G-BA Krankentransport-Richtlinie (KT-RL) as a second real reference domain. This document remains a source analysis; a later narrow PUBLIC_REFERENCE implementation is maintained separately under `knowledge/public-reference/kt-rl-8-3/`.
 
 This analysis records semantics supported by the current official source and uses them to challenge NormaCase's generic platform abstractions. It is not a G-BA, Medizinischer Dienst or other domain approval of NormaCase. It must not be promoted to `DOMAIN_REVIEWED` or `PRODUCTION_APPROVED` without the corresponding governance process.
 
@@ -341,7 +341,7 @@ These remain `needs-domain-review` or external-input boundaries.
 3. Include an external/pending workflow state in the synthetic domain so "approval required" cannot be mistaken for approval granted.
 4. Test separate direction-scoped output values without transport-specific core names.
 5. Make every produced output traceable to rule/source revision.
-6. Only after the synthetic model is stable, revisit whether a PUBLIC_REFERENCE KT-RL pack can encode a narrow, unambiguous subset.
+6. The synthetic model is now stable enough for the narrow § 8(3) PUBLIC_REFERENCE implementation under `knowledge/public-reference/kt-rl-8-3/`; keep its scope limited to explicit source-backed facts.
 7. Keep § 8(4) and other professional-judgment criteria out of machine rules until dedicated domain review exists.
 
 If the generic output model needs names such as `transportMode`, `pflegegrad` or `krankenkasseApproval` in platform code, the abstraction is wrong.
