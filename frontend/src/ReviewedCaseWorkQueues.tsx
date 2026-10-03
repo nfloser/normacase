@@ -48,6 +48,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     const result=await reviewFetch<ReviewQueues>('/api/review/work-queues',activeCredential);
     if(result.kind==='unauthorized'){clearSession(text.loginExpired);return false;}
     if(result.kind==='forbidden'){setMessage(text.forbidden);return false;}
+    if(result.kind==='conflict'){setMessage(text.conflict);return false;}
     if(result.kind==='disabled'){setMessage(text.persistenceUnavailable);return false;}
     if(result.kind==='error'){setMessage(de.networkError);return false;}
     setQueues(result.value);return true;
