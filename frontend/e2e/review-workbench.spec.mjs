@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const credential=process.env.NORMACASE_REVIEW_TEST_CREDENTIAL;
-if(!credential) throw new Error('NORMACASE_REVIEW_TEST_CREDENTIAL is required');
+test.skip(!credential,'persistent review environment is opt-in');
 
 async function login(page){
   await page.goto('/');
