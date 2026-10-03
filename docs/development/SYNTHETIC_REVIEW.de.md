@@ -75,7 +75,8 @@ Originalprüfungen, Abmeldung während einer Anfrage und leeren Browserspeicher.
 Das ist ein gemeinsamer synthetischer Akteur, keine produktive Personenverwaltung
 oder fachliche MD-Freigabe. Es gibt keine Batch-Freigabe. Institutionelle Rollen,
 Datenschutz-/Betriebsfreigabe und verbindliche Schnittstellen bleiben gesonderte
-Arbeit. Der generische Outbound-Roundtrip folgt in #120.
+Arbeit. Der implementierte generische Ein-/Ausgang und die Wiederherstellungsprobe
+stehen in [Synthetischer Gesamtablauf](SYNTHETIC_ROUNDTRIP.de.md).
 
 `docker compose -f compose.synthetic-review.yml down` beendet die Demo-Datenbank
 und erhält die synthetische Historie im Volume. Ein vollständiger Reset würde dieses
