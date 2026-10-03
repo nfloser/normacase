@@ -66,9 +66,9 @@ werden mit 409 abgewiesen.
 Die deutsche Workbench verwendet denselben Vertrag. Der Schlüssel bleibt nur im
 React-Arbeitsspeicher und wird ausschließlich als Authorization-Header gesendet;
 kein Browser-Speicher, Cookie, URL-Parameter oder lokaler Actor-Wert dient als
-Identitätsquelle. 401 löscht den Review-Browserzustand, 403 behält den committed
-Falldetailstand und 409 lädt den aktuellen committed Zustand neu. Erfolgreiche
-Aktionen werden ebenfalls vollständig vom Server neu geladen.
+Identitätsquelle. 401 löscht den Review-Browserzustand; 403 und 409 verwerfen einen
+möglicherweise veralteten Falldetailstand und laden den aktuellen committed Zustand
+neu. Erfolgreiche Aktionen werden ebenfalls vollständig vom Server neu geladen.
 
 Produktiver Betrieb benötigt weiterhin eine institutionell geprüfte Identitäts-,
 Berechtigungs- und Datenschutzkonzeption (#119).
