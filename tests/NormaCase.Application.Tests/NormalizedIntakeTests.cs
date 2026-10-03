@@ -4,7 +4,7 @@ using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Serialization;
-using NormaCase.SyntheticIntegration.Intake;
+using NormaCase.SyntheticIntegration;
 using Xunit;
 
 namespace NormaCase.Application.Tests;
@@ -22,10 +22,10 @@ public sealed class NormalizedIntakeTests
         Assert.Equal(a.Input.Facts, b.Input.Facts);
         Assert.Equal(a.Input.Evidence, b.Input.Evidence);
         Assert.Equal(15.1234567890123456789m, a.Input.Facts["measurement"].Number);
-        Assert.Equal("synthetic-alpha", a.Provenance.SourceSystemId);
-        Assert.Equal("synthetic-beta", b.Provenance.SourceSystemId);
+        Assert.Equal("synthetic-json", a.Provenance.SourceSystemId);
+        Assert.Equal("synthetic-xml", b.Provenance.SourceSystemId);
         Assert.Equal("synthetic-order-1", a.Provenance.UpstreamCaseId);
-        Assert.Equal("synthetic-document-1", a.EvidenceReferences["verification"].Single());
+        Assert.Equal("synthetic-attachment-verification", a.EvidenceReferences["verification"].Single());
     }
 
     [Fact]
@@ -83,10 +83,17 @@ public sealed class NormalizedIntakeTests
     public async Task Independent_upstream_sources_cannot_claim_the_same_platform_case_identity()
     {
         var service = new NormalizedIntakeService(new MemoryStore());
-        var alpha = AdapterAlpha(File.ReadAllText(Fixture("intake-alpha.json")));
-        var beta = AdapterBeta(File.ReadAllText(Fixture("intake-beta.xml")));
-        await service.AcceptAsync(alpha, Pack());
-        await Assert.ThrowsAsync<IntakeConflictException>(() => service.AcceptAsync(beta, Pack()));
+        var first = Request();
+        var second = new NormalizedIntakeRequest(
+            first.CaseId,
+            first.CaseTypeId,
+            new IntakeProvenance("another-source", "another-order", "another-message", 1, "another-adapter", 1, Utc()),
+            first.AssessmentDate,
+            first.Facts,
+            first.Evidence,
+            first.EvidenceReferences);
+        await service.AcceptAsync(first, Pack());
+        await Assert.ThrowsAsync<IntakeConflictException>(() => service.AcceptAsync(second, Pack()));
     }
 
     [Fact]
@@ -157,11 +164,21 @@ public sealed class NormalizedIntakeTests
     private static string Fixture(string name) => Path.Combine(AppContext.BaseDirectory,"Fixtures",name);
     private static NormaCase.Knowledge.Model.KnowledgePack Pack() => new KnowledgePackLoader().LoadFromFile(Fixture("demo-c-pack.json"));
 
-    private static NormalizedIntakeRequest AdapterAlpha(string json)
-        => new SyntheticJsonIntakeAdapter().Parse(json, new CaseId("case-synthetic"), "synthetic-type", Utc());
+    private static NormalizedIntakeRequest AdapterAlpha(string _)
+        => SyntheticIntakeAdapters.Json(
+            """
+            {"formatVersion":1,"order":"synthetic-order-1","message":"synthetic-message-alpha","revision":"1","input":{"formatVersion":1,"assessmentDate":"2026-10-02","facts":{"request_confirmed":{"kind":"TRUTH","truth":"YES"},"measurement":{"kind":"NUMBER","number":15.1234567890123456789},"alternative_confirmed":{"kind":"TRUTH","truth":"NO"}},"evidence":{"verification":"PRESENT"}}}
+            """,
+            Utc());
 
     private static NormalizedIntakeRequest AdapterBeta(string xml)
-        => new SyntheticXmlIntakeAdapter().Parse(xml, new CaseId("case-synthetic"), "synthetic-type", Utc());
+        => SyntheticIntakeAdapters.Xml(
+            xml.Contains("<!DOCTYPE", StringComparison.Ordinal)
+                ? xml
+                : """
+                  <SyntheticCase formatVersion="1" order="synthetic-order-1" message="synthetic-message-beta" revision="1" date="2026-10-02"><Fact id="request_confirmed" kind="TRUTH" value="YES"/><Fact id="measurement" kind="NUMBER" value="15.1234567890123456789"/><Fact id="alternative_confirmed" kind="TRUTH" value="NO"/><Evidence id="verification" value="PRESENT"/></SyntheticCase>
+                  """,
+            Utc());
 
     private sealed class MemoryStore : INormalizedIntakeStore
     {
