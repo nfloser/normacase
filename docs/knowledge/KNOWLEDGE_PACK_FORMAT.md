@@ -301,3 +301,24 @@ not a signature or proof of authenticity. Validation checks syntax and required
 metadata only; it does not fetch remote content or verify bytes against the hash.
 The source validity interval is recorded metadata; this change does not add an
 implicit rule/source temporal policy. Rule selection still uses the explicit date.
+
+## Presentation metadata
+
+User-visible labels are not part of deterministic rule semantics. Locale-specific
+files such as `presentation.de-DE.json` are version-controlled Knowledge
+presentation metadata and are loaded through
+`NormaCase.Knowledge.Presentation.KnowledgePresentationLoader`.
+
+The presentation contract has its own `formatVersion` and locale. Loading validates
+that the declared pack id, field ids, evidence ids, output ids and output choices
+match the supplied Knowledge Pack exactly. Unknown, duplicate or missing JSON
+properties and blank required display text fail closed.
+
+Presentation metadata may reference example case filenames, but it does not load or
+evaluate case files itself. Adapters decide how examples are stored and whether they
+may be executed.
+
+Changing a label, help text or locale does not alter a rule, criterion, source,
+assessment outcome or Knowledge Release identity. Conversely, changing deterministic
+Knowledge must not be hidden as a presentation-only edit. Future locales are added as
+additional presentation resources rather than branches in the decision core.
