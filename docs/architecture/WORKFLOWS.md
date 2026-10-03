@@ -110,9 +110,27 @@ execution rebuilds a new immutable Domain `WorkflowDefinition` and restores the
 Knowledge Pack. Invalid graph references, undeclared current states and negative
 revisions therefore fail closed through the same Domain invariants used at runtime.
 
-This snapshot is a storage-neutral in-memory contract. It is not yet a JSON format,
-database schema, authenticated provenance record or tamper-evident artifact. Those
-boundaries remain separate reviewed slices.
+This snapshot is a storage-neutral in-memory contract. Database persistence,
+authenticated provenance and tamper-evident storage remain separate reviewed slices.
+
+## Versioned JSON interchange
+
+`NormaCase.Serialization.WorkflowExecutionSnapshotJson` provides format version 1
+for portable workflow execution snapshots. Transport records are separate from the
+Application model so JSON constructor/property details do not shape the workflow
+contract.
+
+The shared strict interchange boundary rejects duplicate and unknown properties,
+missing constructor fields, unsupported versions, oversized documents and excessive
+nesting. Export validates the snapshot through the normal restore invariants before
+writing JSON. Import reconstructs the Application snapshot and invokes that same
+restore path. Invalid source metadata, graph definitions, current states and revisions
+therefore fail closed on both sides of the interchange boundary.
+
+The JSON document contains the complete source revision and workflow graph required to
+continue the execution without loading current Knowledge. It is still only data:
+successful parsing does not authenticate who produced it, prove domain approval or
+provide tamper evidence.
 
 ## Determinism and audit boundary
 
