@@ -58,6 +58,86 @@
       "status": "ACTIVE"
     }
   ],
+  "outputs": [
+    {
+      "id": "approval_state",
+      "version": 1,
+      "validFrom": "2025-08-06",
+      "validUntil": null,
+      "sourceId": "GBA-KT-RL-2025-05-15",
+      "type": "choice",
+      "choices": [
+        "DEEMED_GRANTED",
+        "NOT_DETERMINED_BY_THIS_PACK"
+      ],
+      "condition": {
+        "kind": "all",
+        "conditions": [
+          {
+            "kind": "field_equals",
+            "field": "ambulatory_treatment",
+            "expected": "YES"
+          },
+          {
+            "kind": "field_equals",
+            "field": "strict_medical_necessity",
+            "expected": "YES"
+          },
+          {
+            "kind": "any",
+            "conditions": [
+              {
+                "kind": "requires_evidence",
+                "evidenceRequirementId": "severe_disability_card",
+                "conditions": [
+                  {
+                    "kind": "field_equals",
+                    "field": "qualifying_disability_marker_ag_bl_h",
+                    "expected": "YES"
+                  }
+                ]
+              },
+              {
+                "kind": "requires_evidence",
+                "evidenceRequirementId": "care_grade_notice",
+                "conditions": [
+                  {
+                    "kind": "any",
+                    "conditions": [
+                      {
+                        "kind": "number_in_range",
+                        "field": "care_grade",
+                        "minimum": 4,
+                        "maximum": 5
+                      },
+                      {
+                        "kind": "all",
+                        "conditions": [
+                          {
+                            "kind": "number_in_range",
+                            "field": "care_grade",
+                            "minimum": 3,
+                            "maximum": 3
+                          },
+                          {
+                            "kind": "field_equals",
+                            "field": "care_grade_3_permanent_mobility_transport_need",
+                            "expected": "YES"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "onMatch": "DEEMED_GRANTED",
+      "onNoMatch": "NOT_DETERMINED_BY_THIS_PACK"
+    }
+  ],
   "rules": [
     {
       "id": "GBA-KT-RL-8-3-EXCEPTION-PATH",
