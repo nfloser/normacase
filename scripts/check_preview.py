@@ -31,13 +31,31 @@ def extract_verified(archive, target):
         names = bundle.namelist()
         if len(names) != len(set(names)):
             raise ValueError("Duplicate bundle entries")
+        portable_names = set()
         for name in names:
             path = PurePosixPath(name)
             info = bundle.getinfo(name)
-            if (name != info.orig_filename or path.is_absolute() or ".." in path.parts or "\\" in name
+            if (not name or name != path.as_posix() or name != info.orig_filename
+                    or path.is_absolute() or ".." in path.parts or "\\" in name
                     or ":" in name or info.is_dir()
                     or (info.external_attr >> 16) & 0o170000 == 0o120000):
                 raise ValueError("Invalid bundle path")
+            for component in path.parts:
+                device = component.split(".", 1)[0].upper()
+                if (component.endswith((".", " "))
+                        or any(ord(char) < 32 or char in '<>"|?*' for char in component)
+                        or device in {"CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"}
+                        or re.fullmatch(r"(?:COM|LPT)[1-9¹²³]", device)):
+                    raise ValueError("Invalid portable bundle path")
+            portable = name.casefold()
+            if portable in portable_names:
+                raise ValueError("Bundle path collision")
+            portable_names.add(portable)
+
+        for name in portable_names:
+            parents = PurePosixPath(name).parents
+            if any(parent.as_posix() in portable_names for parent in parents):
+                raise ValueError("Bundle file/directory path collision")
 
         if "preview.json" not in names:
             raise ValueError("Bundle manifest missing")
