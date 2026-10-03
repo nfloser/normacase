@@ -79,6 +79,10 @@ class PreviewIntegrityTests(unittest.TestCase):
             "api/CON",
             "api/nul.txt",
             "api/COM1.json",
+            "api/question?.json",
+            "api/star*.json",
+            "api/pipe|name",
+            "api/less<name",
         ]
         for path in paths:
             with self.subTest(path=path), tempfile.TemporaryDirectory() as temporary:
