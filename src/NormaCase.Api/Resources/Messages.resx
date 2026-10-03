@@ -17,4 +17,7 @@
   <data name="workflow_revision" xml:space="preserve"><value>Der Vorgangsstand hat sich geändert. Prüfe die erwartete Revision.</value></data>
   <data name="workflow_transition" xml:space="preserve"><value>Dieser Übergang ist im aktuellen Vorgangsstand nicht verfügbar.</value></data>
   <data name="workflow_mismatch" xml:space="preserve"><value>Der Vorgang passt nicht zum installierten synthetischen Wissens- oder Plattformstand.</value></data>
+  <data name="unknown_work_item" xml:space="preserve">
+    <value>Der synthetische Arbeitskorb-Fall wurde nicht gefunden.</value>
+  </data>
 </root>
