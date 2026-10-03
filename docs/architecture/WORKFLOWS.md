@@ -114,8 +114,6 @@ This snapshot is a storage-neutral in-memory contract. It is not yet a JSON form
 database schema, authenticated provenance record or tamper-evident artifact. Those
 boundaries remain separate reviewed slices.
 
-No assessment outcome triggers a transition automatically.
-
 ## Determinism and audit boundary
 
 The lifecycle:
