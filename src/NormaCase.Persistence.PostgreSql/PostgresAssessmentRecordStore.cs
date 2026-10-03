@@ -5,6 +5,7 @@ using Npgsql;
 using NpgsqlTypes;
 using NormaCase.Application.Assessments;
 using NormaCase.Domain.Audit;
+using NormaCase.Domain.Cases;
 using NormaCase.Serialization;
 
 namespace NormaCase.Persistence.PostgreSql;
@@ -56,7 +57,7 @@ public sealed class PostgresAssessmentRecordStore
                 connection);
 
             command.Parameters.AddWithValue(record.AssessmentId.Value);
-            command.Parameters.AddWithValue(record.CaseId);
+            command.Parameters.AddWithValue(record.CaseId.Value);
             command.Parameters.AddWithValue(record.KnowledgePackId);
             command.Parameters.AddWithValue(record.Result.KnowledgeRelease);
             command.Parameters.AddWithValue(record.PlatformVersion);
@@ -127,7 +128,7 @@ public sealed class PostgresAssessmentRecordStore
             if (!await reader.ReadAsync(cancellationToken))
                 return null;
 
-            var caseId = reader.GetString(0);
+            var caseId = new CaseId(reader.GetString(0));
             var knowledgePackId = reader.GetString(1);
             var knowledgeRelease = reader.GetString(2);
             var platformVersion = reader.GetString(3);
@@ -163,10 +164,7 @@ public sealed class PostgresAssessmentRecordStore
             }
 
             if (record.AssessmentId != assessmentId
-                || !string.Equals(
-                    record.CaseId,
-                    caseId,
-                    StringComparison.Ordinal)
+                || record.CaseId != caseId
                 || !string.Equals(
                     record.KnowledgePackId,
                     knowledgePackId,
