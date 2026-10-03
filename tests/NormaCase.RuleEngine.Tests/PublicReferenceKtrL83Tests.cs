@@ -265,7 +265,7 @@ public sealed class PublicReferenceKtrL83Tests
             new DateOnly(2026, 10, 3),
             evidence);
 
-    private Knowledge.Model.KnowledgePack Load()
+    private NormaCase.Knowledge.Model.KnowledgePack Load()
         => _loader.LoadFromFile(
             Path.Combine(
                 AppContext.BaseDirectory,
