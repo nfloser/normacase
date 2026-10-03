@@ -29,6 +29,12 @@ public static class DemoHost
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
         builder.Logging.ClearProviders();
+        builder.Services.AddSingleton(services => SyntheticReviewCredential.Load(
+            services.GetRequiredService<IConfiguration>()));
+        builder.Services.AddAuthentication(SyntheticReviewAuthentication.SchemeName)
+            .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
+                SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
+        builder.Services.AddAuthorization();
         var catalog = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Knowledge"), "*.json")
             .Select(path => File.ReadAllText(path, new UTF8Encoding(false, true)))
             .Select(json => (Json: json, Pack: new KnowledgePackLoader().LoadFromJson(json)))
@@ -39,6 +45,7 @@ public static class DemoHost
         var presentations = PresentationCatalog.Load(packs);
         var platformVersion = typeof(DemoHost).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         var app = builder.Build();
+        var reviewCredential = app.Services.GetRequiredService<SyntheticReviewCredential>();
 
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
@@ -69,6 +76,13 @@ public static class DemoHost
             }
             await next(context);
         });
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+        if (reviewCredential.Enabled)
+            app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal user) =>
+                Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId }))
+                .RequireAuthorization();
 
         app.UseDefaultFiles();
         app.UseStaticFiles();

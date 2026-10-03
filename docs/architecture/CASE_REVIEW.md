@@ -96,3 +96,12 @@ silently adopted. No migration of old independently recorded reviews is implied.
 Full historical verification currently reads the case's retained versions; indexing
 and snapshot optimization require measured need and must preserve these invariants.
 This adapter supplies persistence, not authentication or a public mutation API.
+
+## Synthetic HTTP authentication seam
+
+Issue #139 supplies an opt-in ASP.NET Core bearer identity adapter and a protected
+session probe. It derives the fixed authority-qualified synthetic actor from its
+own verified authentication scheme, never from command bodies or caller actor
+headers. The preview remains anonymous/read-only by default. This seam provides no
+case permissions or review mutations; persistent API/UI integration remains #138.
+See [synthetic host security design](../security/SYNTHETIC_REVIEW_HOST.md).

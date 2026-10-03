@@ -119,3 +119,14 @@ transaction and preserve the original assessment. A store implementation must co
 process and audit together or roll back both; separate successful writes are unsafe.
 The synthetic contract tests do not replace durable-store or identity-provider review.
 See [CASE_REVIEW.md](../architecture/CASE_REVIEW.md).
+
+### Synthetic local bearer identity
+
+An opt-in bootstrap credential authenticates one fixed synthetic actor through
+ASP.NET Core. An attacker with the credential can impersonate that shared actor;
+loopback does not protect against local compromise. Credentials are external,
+canonical 256-bit Base64, checked in fixed time and accepted only from one Bearer
+Authorization header. Query/body actor claims are ignored. Local/origin guards and
+no-store headers remain mandatory. The default preview exposes no review session;
+no mutation endpoint or permissive case authorizer is added. This is not productive
+organizational identity. See [synthetic review host](SYNTHETIC_REVIEW_HOST.md).
