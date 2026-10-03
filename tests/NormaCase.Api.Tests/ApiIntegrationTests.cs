@@ -22,7 +22,7 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         var response = await _client.GetAsync("/api/packs");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        Assert.Equal(6, json.RootElement.GetArrayLength());
+        Assert.Equal(7, json.RootElement.GetArrayLength());
         foreach (var pack in json.RootElement.EnumerateArray())
         {
             Assert.Equal("SYNTHETIC", pack.GetProperty("validationLevel").GetString());
@@ -45,6 +45,10 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
     [InlineData("demo-c-review", "demo-c", AssessmentOutcome.HumanReview)]
     [InlineData("demo-d-supported", "demo-d", AssessmentOutcome.Supported)]
     [InlineData("demo-e-partial", "demo-e", AssessmentOutcome.Supported)]
+    [InlineData("demo-g-incomplete", "demo-g", AssessmentOutcome.Incomplete)]
+    [InlineData("demo-g-review", "demo-g", AssessmentOutcome.HumanReview)]
+    [InlineData("demo-g-supported", "demo-g", AssessmentOutcome.Supported)]
+    [InlineData("demo-g-not-supported", "demo-g", AssessmentOutcome.NotSupported)]
     public async Task Http_result_matches_direct_engine_evaluation(string name, string demo, AssessmentOutcome expected)
     {
         var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", name + ".json"));

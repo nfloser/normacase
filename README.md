@@ -46,6 +46,7 @@ knowledge/
   demo-d/                 derived numeric expression synthetic pack
   demo-e/                 independent domain-output synthetic pack
   demo-f/                 manual generic review workflow and run-history synthetic pack
+  demo-g/                 repeatable synthetic pitch scenario with incomplete/review/decision paths
   public-reference/
     pflege-adult-score/    narrow MD Bund adult weighted-score PUBLIC_REFERENCE pack
     kt-rl-8-3/             narrow G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack
@@ -186,3 +187,8 @@ The preview includes the German workbench, offline CLI, all synthetic packs and
 examples, its exact source/platform identity and corruption-detection checksums.
 It keeps the existing loopback-only host and does not expose persistence or
 production authorization. A CI preview is not an approved product release.
+
+For a repeatable product presentation, use the
+[German synthetic pitch runbook](docs/development/PITCH_DEMO.de.md). It walks the
+same four case states exercised by CI and keeps the demonstration explicitly
+separate from public-reference or production domain knowledge.
