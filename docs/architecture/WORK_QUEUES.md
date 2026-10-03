@@ -57,3 +57,27 @@ Productive authorization and human approval remain separate slices.
 
 All current examples are synthetic and make no claim about MD-specific queue names,
 roles or operational process states.
+
+## Current synthetic workbench adapter
+
+The loopback demo host materializes one deterministic in-memory workload for the
+German workbench. Assessed items are created through the real application path:
+
+```text
+AssessmentRecorder
+-> AssessmentTriageService
+-> CaseProcessingRoutingService
+-> CaseWorkQueueProjectionService
+```
+
+The workload covers approval-ready, incomplete/missing-information and human-review
+routing. A separate integration-error item is projected with the process-only overload
+and therefore has no fabricated assessment.
+
+The HTTP adapter exposes technical queue/state ids and revisions. German labels live
+in the frontend presentation resources. The browser consumes the recorded projection
+and assessment trace; it does not infer routing or queue membership.
+
+This adapter is intentionally read-only and in-memory. It does not authenticate,
+approve, reject, override, batch-process or persist cases. Productive queue indexing,
+authorization and audited human approval remain separate critical-path work.
