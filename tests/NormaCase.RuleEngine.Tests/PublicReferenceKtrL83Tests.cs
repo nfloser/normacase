@@ -124,6 +124,31 @@ public sealed class PublicReferenceKtrL83Tests
         Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
     }
 
+    [Fact]
+    public void Legacy_care_level_two_transition_with_current_grade_three_or_higher_supports_the_path()
+    {
+        var facts = CompleteNegativeFacts();
+        facts["legacy_care_level_2_until_2016"] =
+            TruthValue.Yes;
+        facts["care_grade"] = 3;
+
+        var result = Evaluate(
+            facts,
+            new()
+            {
+                ["legacy_care_level_2_proof"] =
+                    EvidenceStatus.Present,
+                ["care_grade_notice"] =
+                    EvidenceStatus.Present
+            });
+
+        Assert.Equal(AssessmentOutcome.Supported, result.Outcome);
+        var approval = Assert.Single(
+            result.DomainOutputs,
+            output => output.OutputId == "approval_state");
+        Assert.Equal("DEEMED_GRANTED", approval.Value.Choice);
+    }
+
     [Theory]
     [InlineData(2, false)]
     [InlineData(3, false)]
@@ -305,6 +330,8 @@ public sealed class PublicReferenceKtrL83Tests
                 TruthValue.No,
             ["care_grade"] = 2m,
             ["care_grade_3_permanent_mobility_transport_need"] =
+                TruthValue.No,
+            ["legacy_care_level_2_until_2016"] =
                 TruthValue.No
         };
 
@@ -315,6 +342,8 @@ public sealed class PublicReferenceKtrL83Tests
             ["severe_disability_card"] =
                 EvidenceStatus.Present,
             ["care_grade_notice"] =
+                EvidenceStatus.Present,
+            ["legacy_care_level_2_proof"] =
                 EvidenceStatus.Present
         };
 }
