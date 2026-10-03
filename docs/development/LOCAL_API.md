@@ -8,7 +8,7 @@ dotnet run --project src/NormaCase.Api
 
 Der Dienst lauscht ausschließlich auf Loopback-Port 5080. Aufrufparameter oder
 ASPNETCORE_URLS ändern diese Bindung nicht. Es gibt keine Runtime-Netzwerkabfragen.
-Alle sechs mitgelieferten synthetischen Packs werden lokal geladen und validiert.
+Alle sieben mitgelieferten synthetischen Packs werden lokal geladen und validiert.
 
 - `GET http://localhost:5080/api/packs`: Pack-/Release-IDs, Felder, Evidenzreferenzen sowie externe deutsche Präsentationsmetadaten und Beispiel-IDs.
 - `GET http://localhost:5080/api/packs/{packId}/examples/{exampleId}`: synthetische UI-Vorlage mit explizitem Prüfdatum; numerische Werte werden als verlustfreie Strings ausgeliefert.
@@ -34,10 +34,11 @@ Dateipfade und Exception-Texte werden nicht ausgegeben oder protokolliert.
 Requests sind auf 1 MiB begrenzt. Keine CORS-Freigabe, Forwarded-Header-Auswertung
 oder externe Bindung. Browserantworten setzen restriktive CSP-, Frame-, Referrer-
 und MIME-Sicherheitsheader. Nach einem Frontend-Build wird die lokale Workbench
-unter `http://localhost:5080/` aus demselben Prozess ausgeliefert. Der Dienst enthält keine Authentifizierung, Speicherung,
-Patientendatenverwaltung oder fachliche Freigabe. Er dient ausschließlich lokalen
-synthetischen Entwicklungstests. Eine produktive API benötigt eine gesonderte
-Berechtigungs-/Datenschutzarchitektur und geprüfte Betriebsfreigabe.
+unter `http://localhost:5080/` aus demselben Prozess ausgeliefert. Standardmäßig
+bleibt die Vorschau anonym und ohne persistente Review-Mutationen. Eine optionale
+synthetische Authentifizierungs- und PostgreSQL-Review-API ist ausschließlich für
+lokale Entwicklung vorgesehen; produktive Identität, Patientendatenverwaltung und
+fachliche Freigabe sind damit ausdrücklich nicht umgesetzt.
 
 ```bash
 dotnet test tests/NormaCase.Api.Tests --configuration Release
@@ -100,3 +101,34 @@ Revision bezieht sich auf die übergebene Datei, nicht auf einen zentralen gespe
 Stand. Mehrere Kopien einer Datei können daher unabhängig fortgesetzt werden.
 Authentifizierung, produktive Case-Verwaltung und PostgreSQL-Anbindung bleiben
 separate Voraussetzungen; Actor-IDs und Gründe sind unauthentifizierte Angaben.
+
+
+## Persistente synthetische Review-API
+
+Die Authentifizierungsgrenze aus `docs/security/SYNTHETIC_REVIEW_HOST.md` kann ohne
+Datenbank separat getestet werden. Persistente Fallprüfung wird erst mit allen
+folgenden Einstellungen aktiviert:
+
+```text
+SyntheticReview__Enabled=true
+SyntheticReview__PersistenceEnabled=true
+SyntheticReview__Credential=<kanonische Base64-Kodierung von 32 Zufallsbytes>
+ConnectionStrings__SyntheticReview=<lokale PostgreSQL-Verbindung>
+```
+
+Ohne `PersistenceEnabled=true` werden keine persistenten Review-Endpunkte registriert
+und PostgreSQL wird nicht benötigt. Bei aktivierter Persistenz migriert der Host das
+vorhandene NormaCase-Schema und initialisiert nur synthetische `demo-g`-Fixtures,
+sofern sie noch nicht vorhanden sind.
+
+Geschützte Endpunkte:
+
+- `GET /api/review/work-queues`
+- `GET /api/review/work-cases/{caseId}`
+- `POST /api/review/work-cases/{caseId}/reviews`
+
+Review-Kommandos enthalten erwartete Case-, Prozess- und Audit-Revisionen, Disposition
+und Begründung. Actor, Review-ID und Aufzeichnungszeit stammen vom Server. Der
+synthetische Authorizer erlaubt Accept/Override nur aus `awaiting-approval`; stale
+Revisionen liefern 409, nicht erlaubte Zustände 403. Die ursprüngliche deterministische
+Bewertung bleibt unverändert und der Review wird append-only auditiert.
