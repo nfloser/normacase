@@ -136,6 +136,53 @@ public sealed class KnowledgePresentationLoaderTests
                 "de-DE"));
     }
 
+    [Theory]
+    [InlineData("id")]
+    [InlineData("label")]
+    [InlineData("caseFile")]
+    public void Example_required_text_must_not_be_blank(
+        string property)
+    {
+        var node = JsonNode.Parse(
+            PresentationJson("demo-a"))!;
+        node["examples"]![0]![property] = " ";
+
+        Assert.Throws<InvalidOperationException>(
+            () => _presentationLoader.LoadFromJson(
+                LoadPack("demo-a"),
+                node.ToJsonString(),
+                "de-DE"));
+    }
+
+    [Fact]
+    public void Output_choice_labels_must_not_be_blank()
+    {
+        var node = JsonNode.Parse(
+            PresentationJson("demo-e"))!;
+        node["outputs"]!["external_state"]!["choices"]![
+            "PENDING_EXTERNAL"] = " ";
+
+        Assert.Throws<InvalidOperationException>(
+            () => _presentationLoader.LoadFromJson(
+                LoadPack("demo-e"),
+                node.ToJsonString(),
+                "de-DE"));
+    }
+
+    [Fact]
+    public void Null_collection_entries_are_rejected_as_json()
+    {
+        var node = JsonNode.Parse(
+            PresentationJson("demo-a"))!;
+        node["examples"]![0] = null;
+
+        Assert.Throws<JsonException>(
+            () => _presentationLoader.LoadFromJson(
+                LoadPack("demo-a"),
+                node.ToJsonString(),
+                "de-DE"));
+    }
+
     [Fact]
     public void Unknown_and_duplicate_json_properties_fail_closed()
     {
