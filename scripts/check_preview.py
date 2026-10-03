@@ -26,18 +26,52 @@ def verify_archive_sidecar(archive):
         raise ValueError("Archive checksum mismatch")
 
 
+WINDOWS_RESERVED_NAMES = {
+    "CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$",
+    *(f"COM{number}" for number in range(1, 10)),
+    *(f"LPT{number}" for number in range(1, 10)),
+}
+
+
+def validate_bundle_paths(bundle):
+    infos = bundle.infolist()
+    names = [info.filename for info in infos]
+    if len(names) != len(set(names)):
+        raise ValueError("Duplicate bundle entries")
+
+    folded_paths = set()
+    for info in infos:
+        name = info.filename
+        path = PurePosixPath(name)
+        parts = path.parts
+        if (not name or name != info.orig_filename or path.is_absolute()
+                or name != path.as_posix() or "\\" in name or ":" in name
+                or info.is_dir()
+                or (info.external_attr >> 16) & 0o170000 == 0o120000):
+            raise ValueError("Invalid bundle path")
+        for part in parts:
+            base = part.split(".", 1)[0].upper()
+            if (not part or part in {".", ".."} or part.endswith((" ", "."))
+                    or any(ord(character) < 32 for character in part)
+                    or base in WINDOWS_RESERVED_NAMES):
+                raise ValueError("Invalid bundle path")
+
+        folded = "/".join(part.casefold() for part in parts)
+        if folded in folded_paths:
+            raise ValueError("Bundle extraction path collision")
+        folded_paths.add(folded)
+
+    for folded in folded_paths:
+        parts = folded.split("/")
+        for index in range(1, len(parts)):
+            if "/".join(parts[:index]) in folded_paths:
+                raise ValueError("Bundle extraction path collision")
+    return names
+
+
 def extract_verified(archive, target):
     with zipfile.ZipFile(archive) as bundle:
-        names = bundle.namelist()
-        if len(names) != len(set(names)):
-            raise ValueError("Duplicate bundle entries")
-        for name in names:
-            path = PurePosixPath(name)
-            info = bundle.getinfo(name)
-            if (name != info.orig_filename or path.is_absolute() or ".." in path.parts or "\\" in name
-                    or ":" in name or info.is_dir()
-                    or (info.external_attr >> 16) & 0o170000 == 0o120000):
-                raise ValueError("Invalid bundle path")
+        names = validate_bundle_paths(bundle)
 
         if "preview.json" not in names:
             raise ValueError("Bundle manifest missing")
