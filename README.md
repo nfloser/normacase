@@ -45,6 +45,8 @@ knowledge/
   demo-c/                 evidence dependency and review synthetic pack
   demo-d/                 derived numeric expression synthetic pack
   demo-e/                 independent domain-output synthetic pack
+  public-reference/
+    pflege-adult-score/    narrow MD Bund adult weighted-score PUBLIC_REFERENCE pack
 
 docs/
   project/
@@ -60,6 +62,7 @@ The system grows as a modular monolith. ASP.NET Core, React + TypeScript, Postgr
 
 The current core can:
 - load external JSON Knowledge Packs,
+- retain multiple validated Knowledge Releases in an exact-selection in-memory catalog without implicit latest resolution,
 - validate manifests, fields, sources, rule references and validity intervals,
 - evaluate typed truth and numeric case values,
 - evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
@@ -71,9 +74,13 @@ The current core can:
 - return source-backed recursive Decision Trace data,
 - emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
 - advance generic immutable workflow instances through explicitly declared deterministic transitions,
+- bind validated, source-backed Knowledge workflows to immutable in-memory application executions,
+- capture and restore detached workflow execution snapshots without re-reading current Knowledge,
+- serialize workflow execution snapshots through a strict versioned JSON interchange contract,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
-- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint.
+- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
+- evaluate a narrowly scoped, source-pinned MD Bund adult weighted-score PUBLIC_REFERENCE pack without assigning a Pflegegrad or implying domain approval.
 
 ## Local verification
 

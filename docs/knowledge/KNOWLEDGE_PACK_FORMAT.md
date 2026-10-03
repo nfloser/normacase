@@ -12,8 +12,10 @@ Current repository examples:
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
 - `knowledge/demo-d/pack.json`: derived numeric expressions with range lookup, sum, max and UNKNOWN propagation.
 - `knowledge/demo-e/pack.json`: independent, source-backed categorical domain outputs with per-output UNKNOWN.
+- `knowledge/public-reference/pflege-adult-score/pack.json`: MD Bund adult weighted-score transformation using source-backed range lookup, max and sum with threshold outputs.
 
-All five packs are `SYNTHETIC`.
+The five demo packs are `SYNTHETIC`. The Pflege score pack is `PUBLIC_REFERENCE`
+and remains explicitly non-domain-approved.
 
 ## Manifest
 
@@ -31,6 +33,11 @@ All five packs are `SYNTHETIC`.
 `formatVersion` makes format changes explicit. Version 1 is currently supported. `releaseId` is carried into every assessment result. `entryRuleId` identifies the logical rule resolved for the explicit assessment date.
 
 Release lifecycle and validation level are independent. Lifecycle states are `DRAFT`, `IN_REVIEW`, `APPROVED`, `ACTIVE`, `DEPRECATED` and `RETIRED`.
+
+The platform's in-memory release catalog treats `packId` + `releaseId` as the exact
+historical identity. Several releases of one pack may coexist; there is deliberately
+no implicit latest/current selection. Registering different JSON under an existing
+identity is rejected, while an exact-byte duplicate is idempotent.
 
 Validation levels currently recognized by the loader are:
 - `SYNTHETIC`
@@ -315,4 +322,3 @@ Changing a label, help text or locale does not alter a rule, criterion, source,
 assessment outcome or Knowledge Release identity. Conversely, changing deterministic
 Knowledge must not be hidden as a presentation-only edit. Future locales are added as
 additional presentation resources rather than branches in the decision core.
-

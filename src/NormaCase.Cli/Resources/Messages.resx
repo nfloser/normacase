@@ -7,11 +7,12 @@
   <data name="Help" xml:space="preserve"><value>NormaCase – Offline-Prüfung synthetischer Fälle
 
 Aufruf:
+validate --pack DATEI
 evaluate --pack DATEI --case DATEI --platform-version VERSION [--json]
 snapshot --pack DATEI --case DATEI --platform-version VERSION
 replay --snapshot DATEI --platform-version VERSION [--json]
 
---pack: lokales Wissenspaket
+--pack: lokales Wissenspaket; validate prüft nur Struktur und Referenzen
 --snapshot: selbstständiger Prüfsnapshot mit eingebettetem Wissen
 --case: strukturierter synthetischer Fall mit explizitem Prüfdatum
 --platform-version: verwendeter Plattformstand
@@ -19,6 +20,9 @@ replay --snapshot DATEI --platform-version VERSION [--json]
 
 Rückgabecodes: 0 = ausgeführt, 2 = ungültige Eingabe, 3 = Dateifehler, 4 = Wiederholung nicht bestätigt.
 Ein unvollständiges Ergebnis ist kein technischer Programmfehler.</value></data>
+  <data name="ValidationSuccess" xml:space="preserve"><value>Strukturprüfung abgeschlossen: Das Wissenspaket ist mit diesem Plattformstand technisch gültig.</value></data>
+  <data name="ValidationDisclaimer" xml:space="preserve"><value>Die Strukturprüfung ist keine fachliche Freigabe, Quellenbestätigung oder Produktionszulassung.</value></data>
+  <data name="ValidationError" xml:space="preserve"><value>Die Strukturprüfung ist fehlgeschlagen. Technische Fehlercodes:</value></data>
   <data name="SyntheticNotice" xml:space="preserve"><value>Synthetische Demonstration – keine fachlich freigegebene Begutachtung.</value></data>
   <data name="Outcome" xml:space="preserve"><value>Ergebnis</value></data>
   <data name="Date" xml:space="preserve"><value>Prüfdatum</value></data>

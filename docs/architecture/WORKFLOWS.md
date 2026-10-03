@@ -66,6 +66,72 @@ explicit workflow instance. It must not hard-code domain vocabulary into
 
 Presentation labels belong in external presentation metadata.
 
+## Application execution binding
+
+`NormaCase.Application.Workflows.WorkflowExecutionService` is the first orchestration
+layer above Knowledge and Domain workflow contracts.
+
+Starting an execution requires an explicit workflow id and version. The service:
+
+- validates the supplied Knowledge Pack,
+- selects exactly that workflow id/version,
+- materializes the generic immutable Domain definition,
+- starts the Domain instance at revision 0,
+- snapshots the Knowledge Pack id and Knowledge Release,
+- copies the exact source revision referenced by the workflow.
+
+The resulting `WorkflowExecution` retains the immutable materialized
+`WorkflowDefinition`. Advancing an execution therefore does not re-read the caller's
+mutable `KnowledgePack`; mutations after start cannot silently change the graph or
+source metadata of the in-flight execution.
+
+`Apply` requires one explicit transition id and delegates transition semantics to the
+Domain instance. It returns a new execution with the same Knowledge/source/definition
+snapshot and the next immutable instance revision.
+
+This is deliberately an **in-memory application contract**, not a persistence format.
+A later reviewed slice may define storage/reload and append-only workflow transition
+audit records. Such a format must preserve the exact Knowledge Release, source
+revision, workflow definition identity and instance revision needed for historical
+reconstruction.
+
+No assessment outcome triggers a transition automatically.
+
+## Storage-neutral execution snapshots
+
+`WorkflowExecutionService.Capture` converts an in-memory execution into a detached
+`WorkflowExecutionSnapshot`. The snapshot contains the Knowledge Pack and Release
+identity, the complete source revision, the full materialized workflow graph and the
+current state/revision.
+
+State and transition collections are copied into read-only collections. Restoring an
+execution rebuilds a new immutable Domain `WorkflowDefinition` and restores the
+`WorkflowInstance` from the snapshot only; it does not reload or resolve a current
+Knowledge Pack. Invalid graph references, undeclared current states and negative
+revisions therefore fail closed through the same Domain invariants used at runtime.
+
+This snapshot is a storage-neutral in-memory contract. Database persistence,
+authenticated provenance and tamper-evident storage remain separate reviewed slices.
+
+## Versioned JSON interchange
+
+`NormaCase.Serialization.WorkflowExecutionSnapshotJson` provides format version 1
+for portable workflow execution snapshots. Transport records are separate from the
+Application model so JSON constructor/property details do not shape the workflow
+contract.
+
+The shared strict interchange boundary rejects duplicate and unknown properties,
+missing constructor fields, unsupported versions, oversized documents and excessive
+nesting. Export validates the snapshot through the normal restore invariants before
+writing JSON. Import reconstructs the Application snapshot and invokes that same
+restore path. Invalid source metadata, graph definitions, current states and revisions
+therefore fail closed on both sides of the interchange boundary.
+
+The JSON document contains the complete source revision and workflow graph required to
+continue the execution without loading current Knowledge. It is still only data:
+successful parsing does not authenticate who produced it, prove domain approval or
+provide tamper evidence.
+
 ## Determinism and audit boundary
 
 The lifecycle:

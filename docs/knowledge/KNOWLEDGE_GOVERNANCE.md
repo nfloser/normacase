@@ -51,6 +51,31 @@ Conflicting or ambiguous source material is marked for domain review instead of 
 
 Rules derived from public official sources may be useful for reference implementations but remain `PUBLIC_REFERENCE` until separately reviewed by a qualified domain process.
 
+## Release catalog and exact historical selection
+
+`NormaCase.Knowledge.Catalog.KnowledgeReleaseCatalog` is the first storage-neutral
+catalog boundary for retaining several validated releases of the same Knowledge Pack.
+
+Registration accepts the original JSON text, validates it through the normal strict
+Knowledge Pack loader and stores an immutable release artifact identified by the exact
+`packId` + `releaseId` pair. The artifact records lifecycle status, validation level
+and a lowercase SHA-256 fingerprint over the UTF-8 bytes of that exact registered JSON
+text.
+
+Selection is intentionally exact. The catalog does not infer "latest", "current" or
+"active" from release ids, insertion order or lifecycle state. A caller requesting a
+historical release must provide both identities explicitly.
+
+The same exact JSON may be registered again idempotently. Reusing one pack/release
+identity for different JSON is rejected instead of silently replacing history. Loading
+an artifact reparses the retained JSON and returns a fresh validated `KnowledgePack`,
+so mutation by one caller cannot alter the registered release seen by another caller.
+
+This catalog is in-memory only. Its SHA-256 fingerprint distinguishes registered
+content and detects accidental substitution; it is not a signature, authenticity
+proof, approval record or persistent tamper-evident store. Activation policy,
+persistence, signatures and key management remain separate reviewed boundaries.
+
 ## Tests and releases
 
 A Knowledge Release must be internally consistent and validated before activation. Validation will grow to cover schemas, references, operators, validity intervals, dependencies, unreachable nodes, missing tests and manifest integrity.

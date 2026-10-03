@@ -91,6 +91,14 @@ def check(archive, rid, commit):
             return result.stdout
 
         assert "synthet" in run("--help").lower(), "German CLI help missing"
+        for demo in "abcde":
+            validation = run(
+                "validate",
+                "--pack",
+                root / "knowledge" / ("demo-" + demo) / "pack.json",
+            )
+            assert "Strukturprüfung abgeschlossen" in validation
+            assert "keine fachliche Freigabe" in validation
         case = root / "examples" / "cases" / "demo-b-supported.json"
         precise = case.read_text(encoding="utf-8").replace(
             '"number": 15', '"number": 123456789.1234567890123456789')
