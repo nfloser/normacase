@@ -19,6 +19,13 @@ and a manifest. InformationalVersion is explicitly `0.1.0-preview+<full SHA>`.
 The workflow checks out that exact SHA; previews of PR heads and merged main are
 distinct builds. Archive identities are independent of Knowledge Release ids.
 
+CI and preview workflows use workflow-scoped concurrency groups. When a newer commit
+arrives on the same pull request, an older in-progress run of that same workflow is
+cancelled as superseded. CI and preview do not cancel each other, different pull
+requests remain independent, and the latest head still runs the complete configured
+verification. This reduces duplicate private-repository runner consumption without
+removing merge-relevant checks.
+
 Verification extracts into a path with spaces, validates the complete file
 inventory and SHA-256 digests, confirms included runtime configuration and starts
 both executable hosts with shared runtime lookup disabled. It checks all five
