@@ -168,6 +168,15 @@ public sealed class KnowledgePresentationLoaderTests
                 "de-DE"));
 
         node = JsonNode.Parse(PresentationJson("demo-a"))!;
+        node["examples"]![0]!["caseFile"] = "example.txt";
+
+        Assert.Throws<InvalidOperationException>(
+            () => _presentationLoader.LoadFromJson(
+                LoadPack("demo-a"),
+                node.ToJsonString(),
+                "de-DE"));
+
+        node = JsonNode.Parse(PresentationJson("demo-a"))!;
         node["examples"]![1]!["id"] =
             node["examples"]![0]!["id"]!.GetValue<string>();
 
