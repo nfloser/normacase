@@ -137,7 +137,7 @@ export function WorkQueueWorkbench({packs}:{packs:Pack[]}) {
         <h4>{text.assessment}</h4>
         <dl>
           <dt>{de.result}</dt><dd>{outcomeLabels[detail.assessment.outcome]??de.unknown}</dd>
-          <dt>{text.routing}</dt><dd>{routingLabels[detail.assessment.routingDisposition]??de.unknown}</dd>
+          <dt>{text.routingLabel}</dt><dd>{routingLabels[detail.assessment.routingDisposition]??de.unknown}</dd>
           <dt>{de.date}</dt><dd>{detail.assessment.assessmentDate.split('-').reverse().join('.')}</dd>
           <dt>{de.release}</dt><dd>{detail.assessment.knowledgeRelease}</dd>
           <dt>{de.platform}</dt><dd>{assessment.platformVersion}</dd>
