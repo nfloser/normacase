@@ -43,17 +43,20 @@ A new revision creates a separate record and never replaces the original.
 
 The Application service validates the returned receipt binding and propagates
 conflicts; it does not retry with new ids or rewrite history. Tests exercise the
-atomic contract through an in-memory test adapter. A durable PostgreSQL adapter,
-transactional assessment/process creation and authenticated transport remain future
-integration slices. This interface alone does not provide persistent idempotency.
+atomic contract through an in-memory test adapter, while
+`PostgresNormalizedIntakeStore` provides the append-only durable implementation.
+Transactional assessment/process creation and authenticated host orchestration remain
+separate integration concerns.
 
-Two intentionally different synthetic upstream fixtures demonstrate the boundary:
-`intake-alpha.json` uses an answer object and document list; `intake-beta.xml` uses
-answer/attachment elements. Their test-only adapters normalize identical exact facts
-and evidence while retaining distinct source/adapter identities. Decimal values use
-invariant decimal parsing, unknowns remain explicit, unmapped truth values fail, and
-the XML fixture parser rejects DTD/entity resolution. These fixtures are not real MD
-formats and must not be advertised as compatible with any external system.
+Two intentionally different reusable adapters in `NormaCase.SyntheticIntegration`
+demonstrate the boundary. `SyntheticJsonIntakeAdapter` maps the alpha answer/document
+shape; `SyntheticXmlIntakeAdapter` maps the beta answer/attachment shape. Both require
+the host to supply platform case/type identity and explicit UTC receipt time, normalize
+identical exact facts/evidence while retaining distinct source/adapter identities, and
+fail closed on unknown fields/elements. Decimal values use invariant decimal parsing,
+unknowns remain explicit, unmapped values fail, and the XML parser rejects DTD/entity
+resolution. These synthetic contracts are not real MD formats and must not be
+advertised as compatible with any external system.
 
 The current contract has one authoritative upstream revision stream per platform case.
 Independent sources must receive distinct platform case identities. Multi-source

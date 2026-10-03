@@ -1,12 +1,10 @@
-using System.Globalization;
-using System.Text.Json;
 using System.Xml;
-using System.Xml.Linq;
 using NormaCase.Application.Intake;
 using NormaCase.Domain.Cases;
 using NormaCase.Domain.Decision;
 using NormaCase.Domain.Evidence;
 using NormaCase.Knowledge.Serialization;
+using NormaCase.SyntheticIntegration.Intake;
 using Xunit;
 
 namespace NormaCase.Application.Tests;
@@ -98,7 +96,7 @@ public sealed class NormalizedIntakeTests
         var evidence = new Dictionary<string, EvidenceStatus>();
         var references = new Dictionary<string, IReadOnlyList<string>> { ["verification"] = new List<string>() };
         var request = new NormalizedIntakeRequest(new("case-synthetic"), "synthetic-type", Provenance(),
-            new DateOnly(2026, 10, 2), facts, evidence, references);
+            new DateOnly(2026,10,2), facts, evidence, references);
         facts["request_confirmed"] = TruthValue.Yes;
         var record = new NormalizedIntakeService(new MemoryStore()).Normalize(request, Pack());
         Assert.True(record.Input.Facts["request_confirmed"].IsUnknown);
@@ -113,11 +111,11 @@ public sealed class NormalizedIntakeTests
         var service = new NormalizedIntakeService(new MemoryStore());
         var provenance = Provenance();
         Assert.Throws<ArgumentException>(() => service.Normalize(new(new("case"), "type", provenance,
-            new(2026,10,2), new Dictionary<string,CaseValue>{["unknown"] = TruthValue.Yes}, new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>()), Pack()));
+            new(2026,10,2), new Dictionary<string,CaseValue>{{"unknown", TruthValue.Yes}}, new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>()), Pack()));
         Assert.Throws<ArgumentException>(() => service.Normalize(new(new("case"), "type", provenance,
-            new(2026,10,2), new Dictionary<string,CaseValue>{["measurement"] = TruthValue.Yes}, new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>()), Pack()));
+            new(2026,10,2), new Dictionary<string,CaseValue>{{"measurement", TruthValue.Yes}}, new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>()), Pack()));
         Assert.Throws<ArgumentException>(() => service.Normalize(new(new("case"), "type", provenance,
-            new(2026,10,2), new Dictionary<string,CaseValue>(), new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>{["unknown"] = ["doc"]}), Pack()));
+            new(2026,10,2), new Dictionary<string,CaseValue>(), new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>{{"unknown", new[] {"doc"}}}), Pack()));
     }
 
     [Fact]
@@ -130,7 +128,7 @@ public sealed class NormalizedIntakeTests
         Assert.Throws<ArgumentException>(() => new NormalizedIntakeRequest(default, "type", Provenance(), new(2026,10,2), new Dictionary<string,CaseValue>(), new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>()));
         Assert.Throws<ArgumentException>(() => new NormalizedIntakeRequest(new("case"), "type", Provenance(), default, new Dictionary<string,CaseValue>(), new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>()));
         Assert.Throws<ArgumentException>(() => new NormalizedIntakeRequest(new("case"), "type", Provenance(), new(2026,10,2), Enumerable.Range(0,257).ToDictionary(i => "f"+i, _ => CaseValue.Unknown), new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>()));
-        Assert.Throws<ArgumentException>(() => new NormalizedIntakeRequest(new("case"), "type", Provenance(), new(2026,10,2), new Dictionary<string,CaseValue>(), new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>{["verification"] = ["file:///patient-file"]}));
+        Assert.Throws<ArgumentException>(() => new NormalizedIntakeRequest(new("case"), "type", Provenance(), new(2026,10,2), new Dictionary<string,CaseValue>(), new Dictionary<string,EvidenceStatus>(), new Dictionary<string,IReadOnlyList<string>>{{"verification", new[] {"file:///patient-file"}}}));
     }
 
     [Fact]
@@ -142,39 +140,28 @@ public sealed class NormalizedIntakeTests
         Assert.Throws<ArgumentException>(() => AdapterAlpha("{\"message\":\"message\",\"order\":\"order\",\"revision\":1,\"date\":\"2026-10-02\",\"answers\":{\"confirmed\":\"maybe\"},\"documents\":[]}"));
     }
 
+    [Fact]
+    public void Synthetic_adapters_fail_closed_on_unknown_shape()
+    {
+        Assert.Throws<ArgumentException>(() => AdapterAlpha("{\"message\":\"m\",\"order\":\"o\",\"revision\":1,\"date\":\"2026-10-02\",\"answers\":{},\"documents\":[],\"extra\":true}"));
+        Assert.Throws<ArgumentException>(() => AdapterBeta("<SyntheticOrder message=\"m\" order=\"o\" revision=\"1\" date=\"2026-10-02\" extra=\"x\" />"));
+    }
+
     private static NormalizedIntakeRequest Request(TruthValue truth = TruthValue.Yes, string message = "message", long revision = 1) => new(
         new("case-synthetic"), "synthetic-type", Provenance(message, revision), new(2026,10,2),
-        new Dictionary<string,CaseValue>{["request_confirmed"] = truth, ["measurement"] = 15m, ["alternative_confirmed"] = TruthValue.No},
-        new Dictionary<string,EvidenceStatus>{["verification"] = EvidenceStatus.Present},
-        new Dictionary<string,IReadOnlyList<string>>{["verification"] = ["synthetic-document-1"]});
+        new Dictionary<string,CaseValue>{{"request_confirmed", truth}, {"measurement", 15m}, {"alternative_confirmed", TruthValue.No}},
+        new Dictionary<string,EvidenceStatus>{{"verification", EvidenceStatus.Present}},
+        new Dictionary<string,IReadOnlyList<string>>{{"verification", new[] {"synthetic-document-1"}}});
     private static IntakeProvenance Provenance(string message = "message", long revision = 1) => new("synthetic-source", "synthetic-order", message, revision, "synthetic-adapter", 1, Utc());
     private static DateTimeOffset Utc() => new(2026,10,2,12,0,0,TimeSpan.Zero);
     private static string Fixture(string name) => Path.Combine(AppContext.BaseDirectory,"Fixtures",name);
     private static NormaCase.Knowledge.Model.KnowledgePack Pack() => new KnowledgePackLoader().LoadFromFile(Fixture("demo-c-pack.json"));
 
-    // These intentionally different synthetic fixture adapters are NOT MD interfaces.
     private static NormalizedIntakeRequest AdapterAlpha(string json)
-    {
-        using var document = JsonDocument.Parse(json, new JsonDocumentOptions{MaxDepth=8});
-        var root = document.RootElement;
-        return Map("synthetic-alpha", root.GetProperty("order").GetString()!, root.GetProperty("message").GetString()!, root.GetProperty("revision").GetInt64(),
-            root.GetProperty("date").GetString()!, root.GetProperty("answers").EnumerateObject().ToDictionary(p=>p.Name,p=>p.Value.GetString()!), root.GetProperty("documents").EnumerateArray().Select(d=>d.GetString()!).ToArray());
-    }
+        => new SyntheticJsonIntakeAdapter().Parse(json, new CaseId("case-synthetic"), "synthetic-type", Utc());
+
     private static NormalizedIntakeRequest AdapterBeta(string xml)
-    {
-        using var reader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings{DtdProcessing=DtdProcessing.Prohibit,XmlResolver=null,MaxCharactersInDocument=8192});
-        var root = XDocument.Load(reader).Root!;
-        return Map("synthetic-beta", root.Attribute("order")!.Value, root.Attribute("message")!.Value, long.Parse(root.Attribute("revision")!.Value,CultureInfo.InvariantCulture),
-            root.Attribute("date")!.Value, root.Elements("Answer").ToDictionary(e=>e.Attribute("name")!.Value,e=>e.Attribute("value")!.Value), root.Elements("Attachment").Select(e=>e.Attribute("reference")!.Value).ToArray());
-    }
-    private static NormalizedIntakeRequest Map(string source,string order,string message,long revision,string date,Dictionary<string,string> answers,string[] docs)
-    {
-        var facts = new Dictionary<string,CaseValue>();
-        if (answers.TryGetValue("confirmed",out var truth)) facts["request_confirmed"] = truth.ToUpperInvariant() switch {"YES"=>TruthValue.Yes,"NO"=>TruthValue.No,"UNKNOWN"=>TruthValue.Unknown,_=>throw new ArgumentException("Unmapped synthetic value.")};
-        if (answers.TryGetValue("measurement",out var number)) facts["measurement"] = decimal.Parse(number,NumberStyles.AllowDecimalPoint|NumberStyles.AllowLeadingSign,CultureInfo.InvariantCulture);
-        return new(new("case-synthetic"), "synthetic-type", new(source,order,message,revision,source+"-adapter",1,Utc()), DateOnly.ParseExact(date,"yyyy-MM-dd",CultureInfo.InvariantCulture), facts,
-            new Dictionary<string,EvidenceStatus>{["verification"] = docs.Length>0?EvidenceStatus.Present:EvidenceStatus.Missing},new Dictionary<string,IReadOnlyList<string>>{["verification"] = docs});
-    }
+        => new SyntheticXmlIntakeAdapter().Parse(xml, new CaseId("case-synthetic"), "synthetic-type", Utc());
 
     private sealed class MemoryStore : INormalizedIntakeStore
     {
