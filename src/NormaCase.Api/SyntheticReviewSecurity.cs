@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -53,8 +52,11 @@ public sealed class SyntheticReviewHostOptions
 
         try
         {
+            if (value.Length != 43 || value.Any(ch => !(char.IsAsciiLetterOrDigit(ch) || ch is '-' or '_')))
+                return false;
+
             var normalized = value.Replace('-', '+').Replace('_', '/');
-            normalized = normalized.Length % 4 switch
+            normalized = (normalized.Length % 4) switch
             {
                 0 => normalized,
                 2 => normalized + "==",
@@ -96,7 +98,7 @@ internal sealed class SyntheticReviewCredential
 internal sealed class SyntheticReviewAuthenticationHandler
     : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public const string Scheme = "SyntheticReviewBearer";
+    public const string AuthenticationScheme = "SyntheticReviewBearer";
     private readonly SyntheticReviewCredential credential;
 
     public SyntheticReviewAuthenticationHandler(
@@ -135,9 +137,9 @@ internal sealed class SyntheticReviewAuthenticationHandler
 
         var identity = new ClaimsIdentity(
             new[] { new Claim(ClaimTypes.NameIdentifier, credential.ActorId) },
-            Scheme);
+            AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
-        return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(principal, Scheme)));
+        return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(principal, AuthenticationScheme)));
     }
 
     protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
