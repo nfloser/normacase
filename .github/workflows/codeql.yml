@@ -1,0 +1,58 @@
+name: CodeQL security analysis
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - 'Directory.Build.props'
+      - 'global.json'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - '.github/workflows/codeql.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - 'Directory.Build.props'
+      - 'global.json'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - '.github/workflows/codeql.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: CodeQL source analysis
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: csharp,javascript-typescript,python
+          build-mode: none
+          queries: security-extended
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:multi
