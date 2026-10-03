@@ -93,5 +93,41 @@
     "notice": "Nur synthetische Daten. Bearbeiterangaben werden nicht authentifiziert. Der Vorgang bleibt im Arbeitsspeicher; exportierte Dateien kannst du später wieder laden.",
     "timeHelp": "Beispiel: 2026-10-03T12:00:00Z. Gib den Zeitpunkt ausdrücklich an; es wird keine aktuelle Uhrzeit ergänzt.",
     "importHelp": "Nur Vorgänge des gewählten Prüfbereichs mit passendem installierten Wissens- und Plattformstand. Eine erfolgreiche Prüfung bestätigt keine Herkunft oder fachliche Freigabe."
+  },
+  "decisionTrace": {
+    "heading": "Prüfweg nachvollziehen",
+    "help": "Anzeige der aufgezeichneten Prüfspur. Bedingungen werden hier nicht neu berechnet. Ein Bedingungsergebnis ist vom abschließenden Prüfergebnis getrennt.",
+    "unrecorded": "Nicht aufgezeichnet",
+    "conditionResult": "Aufgezeichnetes Bedingungsergebnis",
+    "actual": "Aufgezeichneter Wert",
+    "expected": "Vergleichswert",
+    "minimum": "Untergrenze (einschließlich)",
+    "maximum": "Obergrenze (einschließlich)",
+    "calculation": "Aufgezeichnete Berechnung",
+    "calculatedValue": "Aufgezeichneter Berechnungswert",
+    "selectedRange": "Verwendete Bereichszuordnung",
+    "selectedValue": "Zugeordneter Wert",
+    "entry": "Eingangsregel",
+    "output": "Prüfweg der Fachausgabe",
+    "conditions": {
+      "field_equals": "Wert entspricht Vorgabe",
+      "number_gte": "Wert erreicht Mindestgrenze",
+      "number_in_range": "Wert liegt im Bereich",
+      "all": "Alle Bedingungen",
+      "any": "Mindestens eine Bedingung",
+      "not": "Bedingung negiert",
+      "requires_evidence": "Nachweisabhängige Bedingung"
+    },
+    "results": {
+      "MATCHED": "Bedingung erfüllt",
+      "NOT_MATCHED": "Bedingung nicht erfüllt",
+      "UNKNOWN": "Nicht ausreichend beurteilbar"
+    },
+    "expressions": {
+      "field": "Feldwert",
+      "range_lookup": "Bereichszuordnung",
+      "sum": "Summe",
+      "max": "Maximum"
+    }
   }
 }

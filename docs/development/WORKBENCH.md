@@ -115,3 +115,24 @@ Bearbeiter- und Fall-IDs sind hier synthetische Angaben, keine authentifizierten
 Identitäten. Die Prüfung einer Datei bestätigt interne Konsistenz und passenden
 Programm-/Wissensstand, keine Herkunft, Berechtigung oder fachliche Freigabe. Die
 separat getestete PostgreSQL-Speicherung wird durch diese Demo-Oberfläche nicht geöffnet.
+
+## Aufgezeichneten Prüfweg lesen
+
+„Prüfweg nachvollziehen“ zeigt für die aktuelle Auswertung die vollständige
+Bedingungsstruktur und jede unabhängige Fachausgabe mit ihrer ursprünglichen Quelle.
+Bedingungsergebnisse bleiben vom abschließenden Prüfergebnis getrennt. Bei fehlenden
+oder widersprüchlichen Nachweisen zeigt die Ansicht das aufgezeichnete unbekannte
+Ergebnis, auch wenn die untergeordnete Bedingung erfüllt ist.
+
+Feld-, Nachweis- und Ausgabebeschriftungen stammen aus den externen Metadaten des
+aktiven Wissenspakets; Operatoren und Statusbeschriftungen aus de.json. Zahlenwerte,
+Grenzen, Bereichszuordnungen und Berechnungsschritte werden aus dem ursprünglichen
+Serverergebnis angezeigt. Dezimaltokens bleiben exakt und bekommen ausschließlich
+ein deutsches Dezimalkomma. Die Oberfläche berechnet keine Bedingungen, Summen,
+Maxima oder Entscheidungen neu. Unbekannt, Nein, nicht anwendbar und ein nicht
+aufgezeichneter Wert bleiben unterschiedliche Zustände.
+
+Die technische Prüfspur und beide Downloads bleiben unverändert. Importierte
+historische Snapshots erhalten diese aktuelle Präsentation nicht: historische
+Beschriftungen sind bislang nicht Teil des Snapshotvertrags. Ihre bestätigte
+originale Prüfspur ist weiterhin als JSON verfügbar.
