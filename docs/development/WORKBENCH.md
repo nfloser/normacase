@@ -76,3 +76,42 @@ Ungültiges UTF-8 wird bereits vor einer Übertragung abgelehnt. Gültige Dateie
 geprüft. Sie wird nicht serverseitig oder im Browser-Speicher persistiert.
 Dateiauswahl oder Änderungen der Prüfangaben entfernen vorherige Ergebnisse und
 brechen veraltete Anfragen ab. Ausschließlich synthetische Daten verwenden.
+
+## Synthetische Vorgänge bearbeiten
+
+Wähle „Demo F – Vorgang und Prüfung“. Unter „Vorgang bearbeiten“ kannst du
+synthetische Vorgangsangaben laden oder Fall-ID, Vorgangs-ID, Bearbeiter-ID,
+UTC-Zeitpunkt und Begründung ausdrücklich eingeben. „Vorgang starten“ erzeugt
+Revision 0 im Zustand „In Vorbereitung“.
+
+„Zur Prüfung geben“, „Zur Vorbereitung zurückgeben“ und „Prüfung abschließen“
+stammen aus dem Wissenspaket. Die Oberfläche zeigt nur Übergänge des aktuellen
+Zustands. Jeder Schritt benötigt Bearbeiter, UTC-Zeitpunkt und Begründung; gleiche
+Zeitpunkte sind erlaubt, rückwärts laufende Zeitpunkte werden abgelehnt. Der
+Zeitpunkt wird nicht automatisch ergänzt. Nach Abschluss sind keine weiteren
+Übergänge möglich. Eine Fallauswertung löst keinen Prozessübergang automatisch aus.
+
+Die Historie enthält alle Revisionen mit deutschem Zustand/Übergang, Bearbeiter,
+UTC-Zeitpunkt und Begründung. Der Download „Vorgang als JSON herunterladen“ speichert
+den originalen JSON-Text des Servers mit exakten Zeitwerten und sämtlichen Graph- und
+Quellenständen. Es wird nichts in localStorage oder einer Datenbank gespeichert.
+
+„Vorgangsdatei laden und prüfen“ prüft eine lokale JSON-Datei und erlaubt danach die
+Fortsetzung. Die Datei muss zum ausgewählten Prüfbereich und dem installierten
+Wissens-/Plattformstand passen. Der Dienst prüft die komplette Übergangshistorie und
+den exakten ursprünglichen Graph/Quellenstand gegen den synthetischen Katalog.
+Ein später geändertes Wissen wird nicht still als historische Definition verwendet.
+Zum Fortsetzen archivierter Vorgänge ist der passende archivierte Programm- und
+Wissensstand erforderlich.
+
+Dateien sind auf 1 MiB begrenzt; ungültiges UTF-8 wird vor Übertragung abgelehnt.
+Der API-Adapter begrenzt exportierbare Vorgangs-JSON zusätzlich auf 256 KiB, damit die
+spätere Übergangsanfrage mit eingebetteter Historie innerhalb der Request-Grenze
+bleibt. Eine zu große Fortsetzung verändert den bisher geladenen Vorgang nicht.
+Änderungen an künftigen Schrittdaten brechen laufende Anfragen ab; die bisher bestätigte
+Historie bleibt erhalten. Ein Wechsel des Prüfbereichs verwirft den geladenen Vorgang.
+
+Bearbeiter- und Fall-IDs sind hier synthetische Angaben, keine authentifizierten
+Identitäten. Die Prüfung einer Datei bestätigt interne Konsistenz und passenden
+Programm-/Wissensstand, keine Herkunft, Berechtigung oder fachliche Freigabe. Die
+separat getestete PostgreSQL-Speicherung wird durch diese Demo-Oberfläche nicht geöffnet.

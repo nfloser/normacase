@@ -8,7 +8,7 @@ dotnet run --project src/NormaCase.Api
 
 Der Dienst lauscht ausschließlich auf Loopback-Port 5080. Aufrufparameter oder
 ASPNETCORE_URLS ändern diese Bindung nicht. Es gibt keine Runtime-Netzwerkabfragen.
-Alle fünf mitgelieferten synthetischen Packs werden lokal geladen und validiert.
+Alle sechs mitgelieferten synthetischen Packs werden lokal geladen und validiert.
 
 - `GET http://localhost:5080/api/packs`: Pack-/Release-IDs, Felder, Evidenzreferenzen sowie externe deutsche Präsentationsmetadaten und Beispiel-IDs.
 - `GET http://localhost:5080/api/packs/{packId}/examples/{exampleId}`: synthetische UI-Vorlage mit explizitem Prüfdatum; numerische Werte werden als verlustfreie Strings ausgeliefert.
@@ -71,3 +71,32 @@ Prüfsummen-/Strukturfehler bleiben 400. Der gemeinsame JSON-Adapter zählt maxi
 mehrbyteigem UTF-8. UTF-8 mit optionaler UTF-8-BOM wird unterstützt.
 Die übrigen Host-, Origin-, Inhalts-, Datenschutz- und Sicherheitsgrenzen gelten
 unverändert auch für beide Snapshot-Endpunkte.
+
+## Synthetische Workflow-Vorgänge
+
+- `POST /api/workflows/{packId}/start`: JSON mit `workflowId`, `workflowVersion`,
+  `runId`, `caseId`, `actorId`, `recordedAtUtc` und `reason`.
+- `POST /api/workflows/advance`: JSON mit `runJson` (vollständige Vorgangsdatei als
+  Zeichenfolge), `expectedRevision`, `transitionId`, `actorId`, `recordedAtUtc`, `reason`.
+- `POST /api/workflows/verify`: vollständige Vorgangsdatei direkt als JSON-Body.
+
+Antworten enthalten `runJson` als originalen versionierten JSON-Text und `view` mit
+externen deutschen Labels, aktuellem Stand, verfügbaren Übergängen und Historie.
+Revisionen im View sind Strings; der erwartete Revisionswert im Übergangskommando
+ist ein ganzzahliges JSON-Token. Der Plattformstand stammt ausschließlich aus der
+gestarteten Assembly. Alle IDs, Bearbeiter, UTC-Zeiten und Gründe sind explizit.
+Der Server generiert keine IDs, liest keine Uhrzeit und speichert keine Vorgänge.
+
+Import und Übergang prüfen zusätzlich zum strengen JSON-/Historienvertrag die
+exakte erste Graph-/Quellensnapshot gegen das installierte SYNTHETIC-Wissen.
+Vorgänge mit abweichendem Wissens-/Plattformstand oder substituiertem Graph werden
+mit 409 abgelehnt. Veraltete Revisionen oder nicht verfügbare Übergänge sind ebenfalls
+409; rückwärts laufende oder nicht explizite UTC-Zeitpunkte sind 400. Die APIs
+übernehmen dieselben Loopback-/Origin-/UTF-8-/Body-/no-store-Grenzen wie Assessments.
+Exportierbares Vorgangs-JSON ist auf 256 KiB begrenzt; Überschreitungen sind 413.
+
+Es handelt sich um einen stateless synthetischen Dateiaustausch. Die erwartete
+Revision bezieht sich auf die übergebene Datei, nicht auf einen zentralen gespeicherten
+Stand. Mehrere Kopien einer Datei können daher unabhängig fortgesetzt werden.
+Authentifizierung, produktive Case-Verwaltung und PostgreSQL-Anbindung bleiben
+separate Voraussetzungen; Actor-IDs und Gründe sind unauthentifizierte Angaben.

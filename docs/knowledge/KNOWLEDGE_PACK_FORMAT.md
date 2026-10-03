@@ -12,10 +12,11 @@ Current repository examples:
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
 - `knowledge/demo-d/pack.json`: derived numeric expressions with range lookup, sum, max and UNKNOWN propagation.
 - `knowledge/demo-e/pack.json`: independent, source-backed categorical domain outputs with per-output UNKNOWN.
+- `knowledge/demo-f/pack.json`: case-bound generic review workflow with explicit manual transitions and history.
 - `knowledge/public-reference/pflege-adult-score/pack.json`: MD Bund adult weighted-score transformation using source-backed range lookup, max and sum with threshold outputs.
 - `knowledge/public-reference/kt-rl-8-3/pack.json`: narrow G-BA KT-RL § 8 Absatz 3 public-reference path with explicit evidence gating and a source-backed approval-state output.
 
-The five demo packs are `SYNTHETIC`. The Pflege score and KT-RL packs are
+The six demo packs are `SYNTHETIC`. The Pflege score and KT-RL packs are
 `PUBLIC_REFERENCE` and remain explicitly non-domain-approved.
 
 ## Manifest
@@ -323,3 +324,14 @@ Changing a label, help text or locale does not alter a rule, criterion, source,
 assessment outcome or Knowledge Release identity. Conversely, changing deterministic
 Knowledge must not be hidden as a presentation-only edit. Future locales are added as
 additional presentation resources rather than branches in the decision core.
+
+Presentation format v1 additionally accepts optional `workflows` metadata. Packs
+with no workflows may omit it. For every declared workflow, metadata must include
+the exact `id` and `version`, a non-blank `label`, and complete `states` and
+`transitions` dictionaries keyed by the graph ids. Unknown/duplicate versions,
+missing ids and blank/null labels fail closed. Materialized dictionaries are detached
+and read-only. These labels never control transitions or assessment outcomes.
+
+Demo F is a new synthetic Knowledge Release; existing released packs and source
+meaning are unchanged. Its workflow demonstrates submit, return and finish mechanics,
+not medical or institutional process requirements.

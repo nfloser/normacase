@@ -45,6 +45,7 @@ knowledge/
   demo-c/                 evidence dependency and review synthetic pack
   demo-d/                 derived numeric expression synthetic pack
   demo-e/                 independent domain-output synthetic pack
+  demo-f/                 manual generic review workflow and run-history synthetic pack
   public-reference/
     pflege-adult-score/    narrow MD Bund adult weighted-score PUBLIC_REFERENCE pack
     kt-rl-8-3/             narrow G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack
@@ -80,6 +81,7 @@ The current core can:
 - serialize workflow execution snapshots through a strict versioned JSON interchange contract,
 - bind workflow runs to typed case identities and retain immutable actor/time/reason transition history with strict replay-checked JSON interchange,
 - persist workflow run revisions append-only in PostgreSQL with transactional conflict checks and explicit historical reads,
+- start, advance, export and resume synthetic workflow runs through the German loopback workbench without automatic transitions or database exposure,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
 - persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
