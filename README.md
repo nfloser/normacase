@@ -110,7 +110,7 @@ dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj
 
 The deterministic core itself needs no external runtime service. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md), while human review/audit semantics are documented in [docs/architecture/AUDIT.md](docs/architecture/AUDIT.md).
 
-An optional PostgreSQL adapter persists immutable assessment records without coupling the core to storage. Its schema, migration and integrity guarantees are documented in [docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md](docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md). It is not connected to the user-facing API yet.
+An optional PostgreSQL adapter persists immutable assessment records without coupling the core to storage. Its schema, migration and integrity guarantees are documented in [docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md](docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md). The local synthetic host can opt into a separately authenticated PostgreSQL review API; the normal preview remains read-only.
 
 ## Development
 
@@ -142,7 +142,7 @@ The ASP.NET Core development host listens on loopback port 5080 and provides
 `GET /api/packs` and `POST /api/assessments/{packId}`. It uses the same engine and
 lossless assessment contract as the CLI. See [the German API guide](docs/development/LOCAL_API.md)
 for curl examples, limits and security boundaries. Synthetic knowledge only;
-production authentication and persistence remain open work.
+the default preview remains anonymous/read-only. A separate synthetic authentication and PostgreSQL review mode exists only for local development; productive identity/privacy remain open work.
 
 ## German synthetic workbench
 
