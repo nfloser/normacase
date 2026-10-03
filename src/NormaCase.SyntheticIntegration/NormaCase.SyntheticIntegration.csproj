@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>NormaCase.SyntheticIntegration</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../NormaCase.Application/NormaCase.Application.csproj" />
+    <ProjectReference Include="../NormaCase.Serialization/NormaCase.Serialization.csproj" />
+  </ItemGroup>
+</Project>
