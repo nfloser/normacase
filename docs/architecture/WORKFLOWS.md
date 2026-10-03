@@ -122,9 +122,10 @@ contract.
 
 The shared strict interchange boundary rejects duplicate and unknown properties,
 missing constructor fields, unsupported versions, oversized documents and excessive
-nesting. Import then reconstructs the Application snapshot and invokes the normal
-workflow restore path. Invalid source metadata, graph definitions, current states and
-revisions therefore fail closed before a snapshot is accepted.
+nesting. Export validates the snapshot through the normal restore invariants before
+writing JSON. Import reconstructs the Application snapshot and invokes that same
+restore path. Invalid source metadata, graph definitions, current states and revisions
+therefore fail closed on both sides of the interchange boundary.
 
 The JSON document contains the complete source revision and workflow graph required to
 continue the execution without loading current Knowledge. It is still only data:
