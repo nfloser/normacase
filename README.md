@@ -201,3 +201,8 @@ Die [lokale Review-Anleitung](docs/development/SYNTHETIC_REVIEW.de.md) beschreib
 PostgreSQL-Start, Anmeldung, individuelle Freigabe und append-only Override im
 Browser. Der normale Vorschau-Modus funktioniert weiterhin ohne Datenbank und
 Schlüssel. Ausschließlich synthetische Daten; keine produktive MD-Freigabe.
+
+
+Der vollständige lokale Testablauf mit frischen JSON-/XML-Eingängen, gespeicherter
+Arbeitsliste, menschlicher Freigabe, zwei Rückgabezielen und Wiederherstellungsprobe
+steht in [Synthetischer Gesamtablauf](docs/development/SYNTHETIC_ROUNDTRIP.de.md).

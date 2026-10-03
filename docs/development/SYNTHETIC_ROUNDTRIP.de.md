@@ -76,7 +76,8 @@ nicht gespeichert. Die Prüfung beendet den Host wieder.
 Bewertungen, Review-Historien und Zustellbelege exakt. CI führt anschließend
 `pg_dump` mit dem PostgreSQL-18-Client im selben Container aus, stellt den Dump in
 einer zweiten frisch angelegten Datenbank wieder her und führt `verify` dort erneut
-aus. Das Dateiverzeichnis wird dabei ebenfalls geprüft. Migrationen sind beim
+aus. Der Dateiausgang wird separat archiviert, in ein neues Verzeichnis zurückgespielt
+und ebenfalls exakt geprüft. Migrationen sind beim
 Neustart checksum-geprüft und werden nicht erneut angewendet.
 
 Im Zielbetrieb gehören Datenbank, freigegebene Knowledge-Versionen, Plattform-Build,

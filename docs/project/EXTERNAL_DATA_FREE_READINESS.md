@@ -8,11 +8,11 @@ CI are the acceptance evidence; completing a checkbox requires integration and r
 |---|---|---|
 | Deterministic rule/knowledge core | Multiple structurally different synthetic packs, UNKNOWN/evidence semantics, exact decimals, versioned source traces and offline replay | Continue rule/domain regression coverage as new packs arrive |
 | German preview and pitch examples | Local workbench and Windows/Linux self-contained preview builds | Final pitch rehearsal against a named build |
-| Normalized upstream boundary | Two different synthetic upstream formats, application idempotency contract and append-only PostgreSQL intake storage (#153) | Authenticated JSON/XML host intake (#156); no invented MD format |
-| Recorded assessment, routing and queue projections | Immutable assessment/process contracts and separate workflow states | Atomic fresh assessment/process initialization and persisted queues (#156) |
-| Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review remains #119; missing-information/correction workflows need explicit policy |
-| Versioned reviewed outbound result | Exact intake/assessment/review binding and strict JSON contract (#150) | Two synthetic sinks (#152), durable receipts and authenticated full roundtrip (#156) |
-| Local review operation | Opt-in database configuration, loopback Compose and German start/demo guide | Clean database install, exact restart replay and pg_dump/pg_restore rehearsal (#160); target-specific deployment/update approval remains external |
+| Normalized upstream boundary | Strict synthetic JSON/XML host intake and append-only PostgreSQL original receipts (#153, #158) | Real institutional adapter specifications and approved access |
+| Recorded assessment, routing and queue projections | Atomic fresh assessment/process initialization, immutable original and persisted queues (#158) | Institutionally approved correction/clarification policy |
+| Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review and explicit missing-information/correction policies remain external |
+| Versioned reviewed outbound result | Exact original/review binding, strict JSON, two sinks, durable receipts and authenticated full roundtrip (#150, #152, #158) | Concrete vendor delivery contracts and approved access |
+| Local review operation | Opt-in local operation, clean database install, exact restart and pg_dump/pg_restore rehearsal (#160) | Target-specific deployment/update approval |
 | Independent security/deployment assessment | Fail-closed guards, tests and evolving threat model | Operational/security/privacy review is required beyond software unit/integration success |
 
 The executable synthetic path now connects fresh normalized intake to recorded

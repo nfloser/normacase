@@ -58,9 +58,22 @@ committed. Delivery status is transport state only and never changes case, asses
 workflow or human-review semantics.
 
 Receipt persistence is represented by `IOutboundDeliveryReceiptStore`; Application
-does not choose a database or claim exactly-once delivery. The synthetic in-memory
-store uses atomic key commits. Downstream adapters receive the same stable delivery
-identity and must also suppress duplicate side effects for concurrent or replayed calls.
+does not choose a database or claim exactly-once delivery. Downstream adapters receive
+the same stable delivery identity and must also suppress duplicate side effects for
+concurrent or replayed calls.
+
+The PostgreSQL adapter now implements durable terminal receipts with
+`PostgresOutboundDeliveryReceiptStore`. It stores the strict reviewed-result JSON as
+PostgreSQL `json`, binds a SHA-256 integrity digest to the exact stored text, serializes
+concurrent commits for the same delivery key and returns the original committed receipt
+after restart. The database rejects UPDATE and DELETE on receipt rows. Retryable
+failures are never written because they are explicitly non-terminal.
+
+This persistence closes the restart gap for the receipt ledger, but it is not a claim of
+generic exactly-once transport. A crash after an external side effect but before receipt
+commit still requires destination-side idempotency under the stable delivery identity,
+or a future transport-specific transactional/outbox mechanism where an authoritative
+interface supports it.
 
 ## Synthetic adapters
 
@@ -77,14 +90,21 @@ offline adapters:
 
 These are synthetic adapters, not productive transports. A synchronous HTTP adapter,
 message broker adapter or governed file exchange can implement the same sink contract
-later without entering Domain or RuleEngine. Authentication, authorization, durable
-outbox policy and vendor-specific protocol details remain host/adapter concerns.
+later without entering Domain or RuleEngine. Authentication, authorization, bounded
+retry/outbox policy and vendor-specific protocol details remain host/adapter concerns.
 
-## Remaining roundtrip work (#120)
+## Executable synthetic roundtrip
 
-The delivery boundary does not expose a public exporter and does not claim productive
-exactly-once semantics. Issue #120 still needs one runnable synthetic path from inbound
-normalization through deterministic assessment, routing, persistent human review and
-this outbound delivery boundary, preserving correlation and replay identity.
+The authenticated local synthetic host connects JSON/XML intake, immutable normalized
+receipts, atomic assessment/process initialization, persisted queues and human review
+to this delivery boundary. It uses the durable PostgreSQL receipt store for both a
+synthetic inbox (one atomic committed row) and bounded atomic file delivery. Message
+id plus destination is the host delivery key. Stale or unreviewed exports fail before
+delivery; repeated identical exports preserve correlation and original receipt.
 
-No MDconnect, MEDIKOS, SAP or other vendor API is invented.
+Real PostgreSQL host tests cover restart and both destinations. CI also runs the real
+executable on a clean database, compares exact historical state on restart, restores
+a pg_dump into a second clean database and compares it again. See
+`docs/development/SYNTHETIC_ROUNDTRIP.de.md`. Productive permissions, domain/process
+approval and actual vendor adapters require authoritative specifications and approved
+access. No MDconnect, MEDIKOS, SAP or other vendor API is invented.

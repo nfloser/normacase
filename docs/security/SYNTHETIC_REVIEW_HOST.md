@@ -52,8 +52,9 @@ Netzwerk veröffentlicht werden. Keine echten Patientendaten verwenden.
 Mit `SyntheticReview:PersistenceEnabled=true` wird zusätzlich die persistente
 Review-API aktiviert. Dafür müssen die oben beschriebene Authentifizierung aktiv und
 `ConnectionStrings:SyntheticReview` auf eine lokale PostgreSQL-Datenbank gesetzt
-sein. Der Host migriert sein Schema und initialisiert ausschließlich die vier
-synthetischen `demo-g`-Fixtures, falls sie noch nicht vorhanden sind.
+sein. Der Host migriert sein Schema und initialisiert die vier synthetischen `demo-g`-Fixtures,
+falls sie noch nicht vorhanden sind. Authentifizierte JSON-/XML-Testeingänge können
+zusätzlich frische synthetische Fälle anlegen.
 
 Die geschützten Endpunkte `/api/review/work-queues`,
 `/api/review/work-cases/{caseId}` und
@@ -84,3 +85,24 @@ HTTP-Integrationstests prüfen deaktivierten Standardmodus, gültige Anmeldung,
 fehlende/falsche/ungültige Schlüssel, doppelte Header, ignorierte Query-Schlüssel,
 serverseitige Identitätsbindung, Fremd-Origin-Abweisung, no-store und ungültige
 Startkonfiguration. Die unveränderten Vorschau-Tests laufen ebenfalls weiter.
+
+
+## Frische Testeingänge und Rückgabe
+
+Die neuen geschützten `/api/review/intake/{json|xml}`-Endpunkte sind auf 64 KiB,
+die expliziten synthetischen Formate und initiale Revision 1 begrenzt. Unbekannte
+Eigenschaften, doppelte JSON-Schlüssel, DTDs und gerundete Zahlen werden abgewiesen.
+Die Quellidentität ist an den gewählten Testadapter gebunden; eine reale externe
+Quelle oder echte Dokumentauthentizität wird damit nicht bestätigt. Fall-IDs sind
+serverseitig aus Testquelle/Auftrags-ID abgeleitet. Fallberechtigung gilt für gespeicherte
+Testfälle unter diesem Host und seiner synthetischen Workflow-Policy.
+
+`/api/review/work-cases/{caseId}/outbound` benötigt denselben verifizierten Akteur,
+einen unveränderlichen Eingangsbeleg, terminalen menschlichen Review und exakte
+Revisionen. Nur der explizite PostgreSQL-Testposteingang und das optional konfigurierte
+lokale Dateiverzeichnis sind Ziele. Dateipfade werden nicht aus Benutzereingaben
+übernommen; die Nachricht wird durch atomare Veröffentlichung ohne Überschreiben
+bereitgestellt. Der Betreiber muss das Verzeichnis vor anderen lokalen Nutzern
+schützen. Wiederholung nach Abbruch vergleicht den ursprünglichen Inhalt; sie ändert
+keinen Review. Details und die Backup-/Restore-Probe stehen in
+[synthetischer Gesamtablauf](../development/SYNTHETIC_ROUNDTRIP.de.md).

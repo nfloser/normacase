@@ -253,6 +253,10 @@ jobs:
           POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
         run: |
           docker exec "$POSTGRES_CONTAINER" pg_dump -U normacase_test --format=custom --no-owner --no-acl normacase_roundtrip > /tmp/normacase-rehearsal.dump
+          tar -cf /tmp/normacase-outbound.tar -C /tmp/synthetic-outbound .
+          mv /tmp/synthetic-outbound /tmp/normacase-outbound-before-restore
+          mkdir /tmp/synthetic-outbound
+          tar -xf /tmp/normacase-outbound.tar -C /tmp/synthetic-outbound
           docker exec -i "$POSTGRES_CONTAINER" pg_restore -U normacase_test --dbname=normacase_restored --no-owner --no-acl --exit-on-error < /tmp/normacase-rehearsal.dump
       - name: Verify original cases and delivery receipts after restore
         env:

@@ -169,6 +169,25 @@ public sealed class OutboundDeliveryTests
         }
     }
 
+    [Fact]
+    public async Task Independent_file_sink_instances_publish_one_complete_original()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "synthetic-independent-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var one = new BoundedFileReviewedCaseResultSink("synthetic-file", directory);
+            var two = new BoundedFileReviewedCaseResultSink("synthetic-file", directory);
+            var request = new OutboundDeliveryRequest("same-message", "synthetic-file", Sample());
+            var deliveries = await Task.WhenAll(Enumerable.Range(0, 8).Select(i => (i % 2 == 0 ? one : two).DeliverAsync(request)));
+            Assert.All(deliveries, delivery => Assert.Equal(deliveries[0], delivery));
+            Assert.Single(Directory.GetFiles(directory));
+            Assert.Equal(Sample(), NormaCase.Serialization.ReviewedCaseResultJson.Deserialize(await File.ReadAllTextAsync(Directory.GetFiles(directory).Single())));
+            var restarted = new BoundedFileReviewedCaseResultSink("synthetic-file", directory);
+            await Assert.ThrowsAsync<OutboundDeliveryConflictException>(() => restarted.DeliverAsync(request with { Result = Sample() with { CorrelationId = "conflict" } }));
+        }
+        finally { if (Directory.Exists(directory)) Directory.Delete(directory, true); }
+    }
+
     private static ReviewedCaseResult Sample()
         => new(
             "message-1",

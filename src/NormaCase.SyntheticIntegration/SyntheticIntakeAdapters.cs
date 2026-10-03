@@ -34,6 +34,7 @@ public static class SyntheticIntakeAdapters
         var root = XDocument.Load(reader).Root ?? throw new FormatException();
         if (root.Name != "SyntheticCase" || root.Attributes().Any(a => !new[] { "formatVersion", "order", "message", "revision", "date" }.Contains(a.Name.ToString()))
             || root.Attribute("formatVersion")?.Value != "1") throw new FormatException();
+        if (root.Nodes().OfType<XText>().Any(text => !string.IsNullOrWhiteSpace(text.Value))) throw new FormatException();
         var facts = new Dictionary<string, CaseValue>(StringComparer.Ordinal);
         var evidence = new Dictionary<string, EvidenceStatus>(StringComparer.Ordinal);
         foreach (var element in root.Elements())
