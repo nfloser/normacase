@@ -12,8 +12,10 @@ Current repository examples:
 - `knowledge/demo-c/pack.json`: evidence-gated nested alternatives and explicit human review.
 - `knowledge/demo-d/pack.json`: derived numeric expressions with range lookup, sum, max and UNKNOWN propagation.
 - `knowledge/demo-e/pack.json`: independent, source-backed categorical domain outputs with per-output UNKNOWN.
+- `knowledge/public-reference/pflege-adult-score/pack.json`: MD Bund adult weighted-score transformation using source-backed range lookup, max and sum with threshold outputs.
 
-All five packs are `SYNTHETIC`.
+The five demo packs are `SYNTHETIC`. The Pflege score pack is `PUBLIC_REFERENCE`
+and remains explicitly non-domain-approved.
 
 ## Manifest
 

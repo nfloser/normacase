@@ -35,5 +35,8 @@
     <None Include="../../knowledge/demo-e/pack.json"
           Link="Fixtures/demo-e-pack.json"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/public-reference/pflege-adult-score/pack.json"
+          Link="Fixtures/pflege-adult-score-pack.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

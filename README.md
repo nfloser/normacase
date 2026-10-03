@@ -45,6 +45,8 @@ knowledge/
   demo-c/                 evidence dependency and review synthetic pack
   demo-d/                 derived numeric expression synthetic pack
   demo-e/                 independent domain-output synthetic pack
+  public-reference/
+    pflege-adult-score/    narrow MD Bund adult weighted-score PUBLIC_REFERENCE pack
 
 docs/
   project/
@@ -77,7 +79,8 @@ The current core can:
 - serialize workflow execution snapshots through a strict versioned JSON interchange contract,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
-- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint.
+- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
+- evaluate a narrowly scoped, source-pinned MD Bund adult weighted-score PUBLIC_REFERENCE pack without assigning a Pflegegrad or implying domain approval.
 
 ## Local verification
 

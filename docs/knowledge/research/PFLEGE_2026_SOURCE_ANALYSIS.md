@@ -2,7 +2,7 @@
 
 Status: **PUBLIC_REFERENCE research only**  
 Research date: 2026-10-02  
-Scope: adult scoring path only; no productive Knowledge Pack is defined by this document.
+Scope: adult scoring path only. This document remains a source analysis; a later narrow PUBLIC_REFERENCE weighted-score implementation is maintained separately under `knowledge/public-reference/pflege-adult-score/`.
 
 This analysis records statements that are directly supported by the current official Medizinischer Dienst Bund guideline. It is not an MD approval of NormaCase and must not be treated as domain-reviewed knowledge.
 
@@ -229,7 +229,7 @@ The following remain outside this source slice:
    - banded result mapping.
 2. Protect UNKNOWN and type semantics with synthetic tests first.
 3. Add a separate source-backed test matrix for the adult scoring boundaries.
-4. Only then create an initial `PUBLIC_REFERENCE` Pflege scoring pack using the pinned source provenance above.
-5. Model F 4.1.B only after a dedicated source/domain review of the detailed criterion.
+4. The source-backed weighted-score subset is now implemented under `knowledge/public-reference/pflege-adult-score/` using only already-established module sums and threshold outputs.
+5. Keep final Pflegegrad assignment and F 4.1.B outside that pack until their full duration/override semantics have dedicated review.
 
 If implementing these capabilities requires naming Pflege modules in platform code, the abstraction is wrong.
