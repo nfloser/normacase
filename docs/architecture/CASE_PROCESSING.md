@@ -25,8 +25,12 @@ input/process binding and invalidate readiness for older input before approving.
 
 No assessment result is accepted by the Domain lifecycle API. In particular,
 SUPPORTED does not cause approval, and an incomplete result is not a process state.
-Application routing policy supplies a proposed explicit command; a later orchestration
-boundary validates metadata, authorization and transactional revision before applying.
+Application routing consumes the existing immutable assessment-routing result and maps
+its disposition through a separately versioned `CaseProcessingRoutingPolicy` to one
+explicit transition. The mapping does not re-inspect assessment facts. It verifies case,
+assessment-routing-policy and workflow identity plus expected case/process revisions
+before applying the transition. Unmapped or unavailable routes fail closed. Human
+authorization and transactional persistence remain later orchestration responsibilities.
 
 `Restore` checks structural graph membership and revision validity. It does not prove
 that a transition history occurred, authenticate a actor or verify historical source
