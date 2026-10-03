@@ -120,7 +120,7 @@ public sealed class PublicReferenceKtrL83Tests
             AssessmentOutcome.NotSupported,
             result.Outcome);
         Assert.Equal(
-            "NOT_DETERMINED_BY_THIS_PACK",
+            "SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE",
             Approval(result).Value.Choice);
     }
 
@@ -212,7 +212,7 @@ public sealed class PublicReferenceKtrL83Tests
             ConditionResult.NotMatched,
             result.RuleTrace!.ConditionResult);
         Assert.Equal(
-            "NOT_DETERMINED_BY_THIS_PACK",
+            "SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE",
             Approval(result).Value.Choice);
     }
 
