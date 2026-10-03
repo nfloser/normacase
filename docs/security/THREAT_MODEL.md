@@ -130,3 +130,19 @@ Authorization header. Query/body actor claims are ignored. Local/origin guards a
 no-store headers remain mandatory. The default preview exposes no review session;
 no mutation endpoint or permissive case authorizer is added. This is not productive
 organizational identity. See [synthetic review host](SYNTHETIC_REVIEW_HOST.md).
+
+
+### Browser credential exposure in the synthetic review workbench
+
+The optional local review UI temporarily handles the synthetic bearer credential.
+Persisting it in browser storage, cookies or URLs would extend its lifetime and make
+it available to unrelated browser mechanisms or later sessions.
+
+Baseline: keep the credential only in React memory, use a masked non-autocomplete
+input, send it only in the Authorization header to same-origin loopback review
+endpoints, clear the complete review session on 401 or explicit logout, and never
+echo the value in rendered errors. All mutable case state is refreshed from committed
+server state after successful review and after concurrency conflicts. The existing
+CSP, no-store, Origin and loopback restrictions remain in force. This mitigates
+accidental persistence; it does not protect a credential from a compromised browser
+process or local machine.
