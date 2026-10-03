@@ -161,9 +161,9 @@ eine ausdrückliche Begründung; ein Override zusätzlich ein generisches Zieler
 Bei einer Review-Anfrage sendet der Browser genau die angezeigten Case-, Process- und
 Audit-Revisionen. Nach Erfolg wird kein lokaler Workflowzustand optimistisch
 fortgeschrieben: Warteschlangen und Detail werden erneut aus dem committed
-PostgreSQL-Zustand geladen. Ein 401 verwirft die aktive Anmeldung, ein 403 erhält den
-committed Falldetailstand und zeigt eine begrenzte deutsche Meldung, ein 409 verwirft
-den veralteten Stand und lädt den aktuellen Fall neu.
+PostgreSQL-Zustand geladen. Ein 401 verwirft die aktive Anmeldung. Bei 403 oder 409 wird ein möglicherweise
+veralteter Falldetailstand verworfen und der aktuelle committed Fall neu geladen;
+403 zeigt dabei eine begrenzte Berechtigungsmeldung, 409 einen Konflikthinweis.
 
 Für den Browser-Test wird ein echter lokaler ASP.NET-Host gegen PostgreSQL gestartet.
 Das CI erzeugt dafür einen flüchtigen zufälligen Schlüssel außerhalb des Repositorys:
