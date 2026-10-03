@@ -22,8 +22,13 @@ while holding a transaction. No permissive default authorizer exists.
 
 The host supplies the active reviewed workflow/policy and explicit UTC recording time.
 Authentication and permission sources remain adapter concerns; the core requires no
-cloud identity service. This slice provides no real identity provider or HTTP mutation
-endpoint. The existing synthetic demo remains read-only.
+cloud identity service. The default synthetic demo remains read-only. An explicit local synthetic review-host
+mode now establishes the first HTTP authentication boundary: startup requires an
+externally supplied 256-bit base64url bearer credential, a server-configured actor id
+and PostgreSQL configuration. ASP.NET authentication maps the verified credential to
+the actor principal; request bodies, query parameters and unsigned actor headers never
+select the actor. The mode is still synthetic bootstrap infrastructure, not a productive
+identity provider, and no review mutation endpoint is exposed by this authentication slice.
 
 ## One atomic aggregate
 
@@ -68,9 +73,10 @@ transaction/authorization failure, cancellation during authorization and queue m
 is a test contract fixture only, not runtime persistence or a database substitute.
 Existing assessment replay remains independent from appended human decisions.
 
-Issue #134 covers this boundary. Issues #119 and #116 remain open for the durable
-PostgreSQL aggregate adapter, reviewed authentication/authorization adapter, German
-HTTP/UI error mapping and productive multi-user integration. No real patient data or
+Issue #134 covers the Application boundary and #136 the durable PostgreSQL aggregate
+adapter. Issue #138 connects those pieces to the local synthetic host in reviewed
+increments; #119 and #116 remain open until the authenticated review flow, German UI,
+authorization policy and productive multi-user/security work are complete. No real patient data or
 claim of productive approval readiness is introduced.
 
 ## PostgreSQL aggregate adapter
