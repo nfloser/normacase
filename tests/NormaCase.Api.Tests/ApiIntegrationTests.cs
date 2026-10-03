@@ -65,6 +65,49 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
     }
 
     [Fact]
+    public async Task Pitch_scenario_manifest_matches_case_results_and_trace_identity()
+    {
+        var scenarioJson = File.ReadAllText(
+            Path.Combine(AppContext.BaseDirectory, "Scenarios", "pitch-demo-v1.json"));
+        using var scenario = JsonDocument.Parse(scenarioJson);
+        var root = scenario.RootElement;
+
+        Assert.Equal("SYNTHETIC", root.GetProperty("validationLevel").GetString());
+        Assert.Equal("synthetic.demo-g", root.GetProperty("packId").GetString());
+        var releaseId = root.GetProperty("releaseId").GetString();
+        var ruleId = root.GetProperty("ruleId").GetString();
+        var sourceId = root.GetProperty("sourceId").GetString();
+
+        foreach (var step in root.GetProperty("steps").EnumerateArray())
+        {
+            var caseJson = File.ReadAllText(
+                Path.Combine(AppContext.BaseDirectory, "Cases", step.GetProperty("caseFile").GetString()!));
+            var response = await Post("demo-g", caseJson);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            using var actual = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            var assessment = actual.RootElement.GetProperty("assessment");
+            Assert.Equal(step.GetProperty("expectedOutcome").GetString(),
+                assessment.GetProperty("outcome").GetString());
+            Assert.Equal(releaseId, assessment.GetProperty("knowledgeRelease").GetString());
+
+            var trace = assessment.GetProperty("ruleTrace");
+            Assert.Equal(ruleId, trace.GetProperty("ruleId").GetString());
+            Assert.Equal(sourceId, trace.GetProperty("sourceId").GetString());
+
+            var expectedMissing = step.GetProperty("expectedMissingRequiredFields")
+                .EnumerateArray()
+                .Select(item => item.GetString())
+                .ToArray();
+            var actualMissing = assessment.GetProperty("missingRequiredFields")
+                .EnumerateArray()
+                .Select(item => item.GetString())
+                .ToArray();
+            Assert.Equal(expectedMissing, actualMissing);
+        }
+    }
+
+    [Fact]
     public async Task Catalog_exposes_external_German_labels_and_examples_for_Demo_E()
     {
         var response = await _client.GetAsync("/api/packs");
