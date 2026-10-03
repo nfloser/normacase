@@ -8,7 +8,7 @@ dotnet run --project src/NormaCase.Api
 
 Der Dienst lauscht ausschließlich auf Loopback-Port 5080. Aufrufparameter oder
 ASPNETCORE_URLS ändern diese Bindung nicht. Es gibt keine Runtime-Netzwerkabfragen.
-Alle sechs mitgelieferten synthetischen Packs werden lokal geladen und validiert.
+Alle sieben mitgelieferten synthetischen Packs werden lokal geladen und validiert.
 
 - `GET http://localhost:5080/api/packs`: Pack-/Release-IDs, Felder, Evidenzreferenzen sowie externe deutsche Präsentationsmetadaten und Beispiel-IDs.
 - `GET http://localhost:5080/api/packs/{packId}/examples/{exampleId}`: synthetische UI-Vorlage mit explizitem Prüfdatum; numerische Werte werden als verlustfreie Strings ausgeliefert.
@@ -34,10 +34,10 @@ Dateipfade und Exception-Texte werden nicht ausgegeben oder protokolliert.
 Requests sind auf 1 MiB begrenzt. Keine CORS-Freigabe, Forwarded-Header-Auswertung
 oder externe Bindung. Browserantworten setzen restriktive CSP-, Frame-, Referrer-
 und MIME-Sicherheitsheader. Nach einem Frontend-Build wird die lokale Workbench
-unter `http://localhost:5080/` aus demselben Prozess ausgeliefert. Der Dienst enthält keine Authentifizierung, Speicherung,
-Patientendatenverwaltung oder fachliche Freigabe. Er dient ausschließlich lokalen
-synthetischen Entwicklungstests. Eine produktive API benötigt eine gesonderte
-Berechtigungs-/Datenschutzarchitektur und geprüfte Betriebsfreigabe.
+unter `http://localhost:5080/` aus demselben Prozess ausgeliefert. Der Standardmodus
+enthält keine Authentifizierung, Review-Mutation oder produktive Case-Verwaltung und
+bleibt die read-only synthetische Vorschau. Eine produktive API benötigt weiterhin
+eine gesonderte Berechtigungs-/Datenschutzarchitektur und geprüfte Betriebsfreigabe.
 
 ```bash
 dotnet test tests/NormaCase.Api.Tests --configuration Release
@@ -100,3 +100,33 @@ Revision bezieht sich auf die übergebene Datei, nicht auf einen zentralen gespe
 Stand. Mehrere Kopien einer Datei können daher unabhängig fortgesetzt werden.
 Authentifizierung, produktive Case-Verwaltung und PostgreSQL-Anbindung bleiben
 separate Voraussetzungen; Actor-IDs und Gründe sind unauthentifizierte Angaben.
+
+
+## Opt-in-Prüfmodus: Authentifizierungsgrenze
+
+Der lokale synthetische Prüfmodus ist standardmäßig deaktiviert. Für die Aktivierung
+müssen alle folgenden Werte extern konfiguriert sein:
+
+- `SyntheticReview__Enabled=true`
+- `SyntheticReview__BearerToken=<256-Bit-Wert als 43 Zeichen Base64url ohne Padding>`
+- `SyntheticReview__ActorId=<serverseitige synthetische Actor-ID>`
+- `ConnectionStrings__SyntheticReview=<PostgreSQL-Verbindungszeichenfolge>`
+
+Bei fehlender oder schwacher Konfiguration startet der Prüfmodus nicht. Es gibt kein
+eingebautes Kennwort und keinen Fallback-Actor. Das Bearer-Token darf nur über den
+`Authorization: Bearer ...`-Header übertragen werden; Query-Parameter, Cookies,
+localStorage und Request-Felder sind keine Identitätsquelle.
+
+Solange dieser erste Slice von #138 noch keine Review-Mutation freigibt, dient
+`GET /api/review-session` als absichtlich kleine Integrationsprobe. Der Endpunkt
+existiert nur im aktivierten Prüfmodus, verlangt ASP.NET-Authentifizierung und gibt
+ausschließlich die serverseitig gebundene synthetische Actor-ID sowie technische
+Modusangaben zurück. Ungültige oder fehlende Credentials liefern eine deutsche 401-
+Antwort. Die bestehenden Loopback-, Origin-, CSP- und `no-store`-Grenzen gelten
+unverändert.
+
+Dieser lokale Credential-Mechanismus ist keine produktive Identitätslösung. Er bietet
+insbesondere keine Organisationskonten, MFA, Rollenverwaltung oder fachliche
+Freigabe. Die nächsten #138-Slices binden die authentifizierte Principal-Identität
+an explizite fallbezogene Autorisierung, den PostgreSQL-Review-Aggregatstore und
+begrenzte Accept/Override-Kommandos.
