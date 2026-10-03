@@ -66,6 +66,8 @@ public sealed class WorkflowExecutionSnapshotJsonTests
     [InlineData("missing-optional")]
     [InlineData("null-snapshot")]
     [InlineData("null-source")]
+    [InlineData("null-states")]
+    [InlineData("null-transitions")]
     [InlineData("null-state")]
     [InlineData("null-transition")]
     public void Malformed_or_semantically_invalid_documents_are_rejected(
@@ -120,6 +122,12 @@ public sealed class WorkflowExecutionSnapshotJsonTests
                 break;
             case "null-source":
                 snapshot["source"] = null;
+                break;
+            case "null-states":
+                snapshot["states"] = null;
+                break;
+            case "null-transitions":
+                snapshot["transitions"] = null;
                 break;
             case "null-state":
                 snapshot["states"]![0] = null;
