@@ -9,6 +9,7 @@ public sealed class BoundedFileReviewedCaseResultSink : IReviewedCaseResultSink
 {
     public const int MaximumPayloadBytes = 64 * 1024;
     private readonly string rootDirectory;
+    private readonly SemaphoreSlim gate = new(1, 1);
 
     public BoundedFileReviewedCaseResultSink(string destinationId, string rootDirectory)
     {
@@ -35,9 +36,16 @@ public sealed class BoundedFileReviewedCaseResultSink : IReviewedCaseResultSink
 
         var fileName = FileName(request.DeliveryId);
         var path = Path.Combine(rootDirectory, fileName);
-
+        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
+            if (File.Exists(path))
+            {
+                await EnsureSameExistingPayload(path, request.Result, cancellationToken)
+                    .ConfigureAwait(false);
+                return new(OutboundSinkDeliveryStatus.Delivered, "file:" + fileName);
+            }
+
             await using var stream = new FileStream(
                 path,
                 FileMode.CreateNew,
@@ -47,26 +55,33 @@ public sealed class BoundedFileReviewedCaseResultSink : IReviewedCaseResultSink
                 FileOptions.Asynchronous);
             await stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
             await stream.FlushAsync(cancellationToken).ConfigureAwait(false);
+            return new(OutboundSinkDeliveryStatus.Delivered, "file:" + fileName);
         }
-        catch (IOException) when (File.Exists(path))
+        finally
         {
-            var existing = await File.ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
-                .ConfigureAwait(false);
-            ReviewedCaseResult restored;
-            try
-            {
-                restored = ReviewedCaseResultJson.Deserialize(existing);
-            }
-            catch
-            {
-                throw new OutboundDeliveryConflictException();
-            }
+            gate.Release();
+        }
+    }
 
-            if (restored != request.Result)
-                throw new OutboundDeliveryConflictException();
+    private static async Task EnsureSameExistingPayload(
+        string path,
+        ReviewedCaseResult expected,
+        CancellationToken cancellationToken)
+    {
+        var existing = await File.ReadAllTextAsync(path, Encoding.UTF8, cancellationToken)
+            .ConfigureAwait(false);
+        ReviewedCaseResult restored;
+        try
+        {
+            restored = ReviewedCaseResultJson.Deserialize(existing);
+        }
+        catch
+        {
+            throw new OutboundDeliveryConflictException();
         }
 
-        return new(OutboundSinkDeliveryStatus.Delivered, "file:" + fileName);
+        if (restored != expected)
+            throw new OutboundDeliveryConflictException();
     }
 
     private static string FileName(string deliveryId)

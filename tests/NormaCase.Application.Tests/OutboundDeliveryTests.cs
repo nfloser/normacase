@@ -143,6 +143,32 @@ public sealed class OutboundDeliveryTests
         }
     }
 
+    [Fact]
+    public async Task Concurrent_file_delivery_creates_one_complete_payload()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "normacase-outbound-concurrent-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var sink = new BoundedFileReviewedCaseResultSink("synthetic-file-sink", root);
+            var service = new ReviewedCaseDeliveryService(new InMemoryOutboundDeliveryReceiptStore());
+            var request = new OutboundDeliveryRequest("delivery-file-concurrent", sink.DestinationId, Sample());
+
+            var results = await Task.WhenAll(
+                Enumerable.Range(0, 8).Select(_ => service.DeliverAsync(request, sink)));
+
+            Assert.All(results, item => Assert.Equal(OutboundDeliveryStatus.Delivered, item.Status));
+            var path = Assert.Single(Directory.GetFiles(root, "*.json"));
+            Assert.Equal(
+                request.Result,
+                NormaCase.Serialization.ReviewedCaseResultJson.Deserialize(await File.ReadAllTextAsync(path)));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
     private static ReviewedCaseResult Sample()
         => new(
             "message-1",
