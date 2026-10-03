@@ -30,6 +30,7 @@ internal static class SyntheticRoundtripEndpoints
         var directory = app.Configuration["SyntheticReview:OutboundDirectory"];
         // File delivery is enabled only with an explicit operator-controlled directory.
         var file = string.IsNullOrWhiteSpace(directory) ? null : new BoundedFileReviewedCaseResultSink("synthetic-file", directory);
+        var credential = app.Services.GetRequiredService<SyntheticReviewCredential>();
         var group = app.MapGroup("/api/review").RequireAuthorization();
         group.MapPost("/intake/{format}", async (string format, HttpContext context, CancellationToken token) =>
         {
@@ -40,6 +41,8 @@ internal static class SyntheticRoundtripEndpoints
             {
                 var text = await ReadBody(context.Request, token);
                 var request = format == "json" ? SyntheticIntakeAdapters.Json(text, TimeProvider.System.GetUtcNow()) : SyntheticIntakeAdapters.Xml(text, TimeProvider.System.GetUtcNow());
+                var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
+                if (!credential.Allows(actor, request.CaseId.Value, "INTAKE")) return DemoHost.Error("review_forbidden", 403);
                 // New upstream revisions need a separately approved correction policy.
                 if (request.Provenance.UpstreamRevision != 1) return DemoHost.Error("review_forbidden", 403);
                 var receipt = await new NormalizedIntakeService(intakeStore).AcceptAsync(request, pack, token);
@@ -58,7 +61,7 @@ internal static class SyntheticRoundtripEndpoints
                     state = await reviews.InitializeRecordedAsync(new(record, 1, routed.Process,
                         AssessmentAuditTrail.Start(AssessmentAuditEvent.AssessmentCreated(1, record.AssessmentId, record.RecordedAtUtc, "synthetic-intake"))), token);
                 }
-                return Results.Json(new { acceptance = receipt.Acceptance.ToString().ToUpperInvariant(), workCase = SyntheticReviewEndpoints.Detail(state) });
+                return Results.Json(new { acceptance = receipt.Acceptance.ToString().ToUpperInvariant(), workCase = SyntheticReviewEndpoints.Detail(state, credential, actor) });
             }
             catch (IntakeConflictException) { return DemoHost.Error("review_conflict", 409); }
             catch (CaseReviewConflictException) { return DemoHost.Error("review_conflict", 409); }
@@ -67,7 +70,11 @@ internal static class SyntheticRoundtripEndpoints
         });
         group.MapPost("/work-cases/{caseId}/outbound", async (string caseId, HttpContext context, CancellationToken token) =>
         {
-            if (!SyntheticReviewEndpoints.PermittedCaseId(caseId)) return DemoHost.Error("unknown_work_case", 404);
+            if (!SyntheticReviewEndpoints.PermittedCaseId(caseId)
+                || !credential.Allows(SyntheticReviewAuthentication.ResolveActor(context.User), caseId, "READ"))
+                return DemoHost.Error("unknown_work_case", 404);
+            if (!credential.Allows(SyntheticReviewAuthentication.ResolveActor(context.User), caseId, "EXPORT"))
+                return DemoHost.Error("review_forbidden", 403);
             try
             {
                 var request = JsonSerializer.Deserialize<ExportRequest>(await ReadBody(context.Request, token), ExportOptions) ?? throw new JsonException();

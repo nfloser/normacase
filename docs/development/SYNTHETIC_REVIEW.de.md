@@ -72,6 +72,11 @@ Originalprüfungen, Abmeldung während einer Anfrage und leeren Browserspeicher.
 
 ## Grenzen
 
+Für getrennte lokale Testidentitäten und genaue Fall-/Aktionsrechte siehe
+[Getrennte lokale Testidentitäten](../security/LOCAL_SYNTHETIC_IDENTITIES.de.md).
+Die folgende Grenze beschreibt den bisherigen gemeinsamen Demo-Schlüssel;
+auch der Mehrbenutzermodus ist keine produktive Personenverwaltung.
+
 Das ist ein gemeinsamer synthetischer Akteur, keine produktive Personenverwaltung
 oder fachliche MD-Freigabe. Es gibt keine Batch-Freigabe. Institutionelle Rollen,
 Datenschutz-/Betriebsfreigabe und verbindliche Schnittstellen bleiben gesonderte

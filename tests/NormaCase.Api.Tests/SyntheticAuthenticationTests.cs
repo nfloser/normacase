@@ -23,6 +23,46 @@ public sealed class SyntheticAuthenticationTests
                 })));
 
     [Fact]
+    public async Task Separate_configured_credentials_resolve_separate_server_owned_subjects()
+    {
+        var second = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        await using var host = MultiUserHost(Token, second);
+        using var client = host.CreateClient();
+        foreach (var (token, expected) in new[] { (Token, "alice"), (second, "bob") })
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await client.GetStringAsync("/api/review-session?actorId=forged");
+            using var json = JsonDocument.Parse(response);
+            Assert.Equal("synthetic-local:user-" + expected, json.RootElement.GetProperty("actorId").GetString());
+            Assert.DoesNotContain(token, response);
+        }
+    }
+
+    [Fact]
+    public async Task Multi_user_mode_rejects_duplicate_credentials_and_legacy_mixing()
+    {
+        await using var duplicate = MultiUserHost(Token, Token);
+        Assert.ThrowsAny<Exception>(() => duplicate.CreateClient());
+        await using var mixed = MultiUserHost(Token, Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)), true);
+        Assert.ThrowsAny<Exception>(() => mixed.CreateClient());
+    }
+
+    private static WebApplicationFactory<Program> MultiUserHost(string first, string second, bool legacy = false)
+        => new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    ["SyntheticReview:Enabled"] = "true",
+                    ["SyntheticReview:Credential"] = legacy ? Token : null,
+                    ["SyntheticReview:Users:alice:Credential"] = first,
+                    ["SyntheticReview:Users:alice:Actions:0"] = "READ",
+                    ["SyntheticReview:Users:alice:CaseIds:0"] = "demo-g-supported",
+                    ["SyntheticReview:Users:bob:Credential"] = second,
+                    ["SyntheticReview:Users:bob:Actions:0"] = "READ",
+                    ["SyntheticReview:Users:bob:CaseIds:0"] = "demo-g-not-supported"
+                })));
+
+    [Fact]
     public async Task Default_preview_has_no_authenticated_identity_endpoint()
     {
         await using var host = new WebApplicationFactory<Program>();

@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Xunit;
 
@@ -12,6 +13,66 @@ namespace NormaCase.Api.Tests;
 public sealed class SyntheticReviewHostTests
 {
     private const string Credential = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=";
+
+    [Fact]
+    public async Task Distinct_identities_filter_cases_actions_and_preserve_actual_review_actor()
+    {
+        var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if (string.IsNullOrWhiteSpace(connection)) return;
+        await ResetDatabase(connection);
+        var second = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));
+        await using var host = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    ["SyntheticReview:Enabled"] = "true",
+                    ["SyntheticReview:PersistenceEnabled"] = "true",
+                    ["ConnectionStrings:SyntheticReview"] = connection,
+                    ["SyntheticReview:Credential"] = null,
+                    ["SyntheticReview:Users:alice:Credential"] = Credential,
+                    ["SyntheticReview:Users:alice:Actions:0"] = "READ",
+                    ["SyntheticReview:Users:alice:Actions:1"] = "ACCEPT",
+                    ["SyntheticReview:Users:alice:CaseIds:0"] = "demo-g-supported",
+                    ["SyntheticReview:Users:bob:Credential"] = second,
+                    ["SyntheticReview:Users:bob:Actions:0"] = "READ",
+                    ["SyntheticReview:Users:bob:CaseIds:0"] = "demo-g-not-supported"
+                })));
+        using var client = host.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+        using var queues = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues"));
+        var cases = queues.RootElement.GetProperty("queues").EnumerateArray()
+            .SelectMany(queue => queue.GetProperty("items").EnumerateArray())
+            .Select(item => item.GetProperty("caseId").GetString()).ToArray();
+        Assert.Equal(new[] { "demo-g-supported" }, cases);
+        Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-cases/demo-g-not-supported")).StatusCode);
+        using var detail = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-cases/demo-g-supported"));
+        Assert.Equal(new[] { "ACCEPT_SYSTEM_RESULT" }, detail.RootElement.GetProperty("allowedActions").EnumerateArray().Select(item => item.GetString()));
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/outbound", new { })).StatusCode);
+        var deniedOverride = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews", new
+        {
+            expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
+            disposition = "OVERRIDE", reason = "Synthetischer nicht erlaubter Override", overrideOutcome = "NOT_SUPPORTED"
+        });
+        Assert.Equal(HttpStatusCode.Forbidden, deniedOverride.StatusCode);
+        var accepted = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews", new
+        {
+            expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
+            disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetische individuelle Freigabe"
+        });
+        Assert.Equal(HttpStatusCode.OK, accepted.StatusCode);
+        using var result = JsonDocument.Parse(await accepted.Content.ReadAsStringAsync());
+        Assert.Equal("synthetic-local:user-alice", result.RootElement.GetProperty("audit").EnumerateArray().Last().GetProperty("actorId").GetString());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", second);
+        Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-cases/demo-g-supported")).StatusCode);
+        using var bob = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-cases/demo-g-not-supported"));
+        Assert.Empty(bob.RootElement.GetProperty("allowedActions").EnumerateArray());
+        var deniedReview = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-not-supported/reviews", new
+        {
+            expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
+            disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetischer nicht erlaubter Review"
+        });
+        Assert.Equal(HttpStatusCode.Forbidden, deniedReview.StatusCode);
+    }
 
     [Fact]
     public async Task Authenticated_review_host_persists_authorized_reviews_and_fails_closed()
