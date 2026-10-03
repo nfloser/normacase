@@ -182,12 +182,38 @@ internal static class SyntheticReviewEndpoints
         var assessmentStore = new PostgresAssessmentRecordStore(source);
         foreach (var id in CaseIds)
         {
-            var input = CaseInputJson.Deserialize(
-                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", id + ".json")));
-            var record = new AssessmentRecorder().Evaluate(
-                packs["synthetic.demo-g"], input.Facts, input.AssessmentDate, input.Evidence,
-                new(new("assessment-" + id), new(id), platformVersion,
-                    new DateTimeOffset(2026, 10, 3, 13, 0, 0, TimeSpan.Zero)));
+            var caseId = new CaseId(id);
+            var assessmentId = new AssessmentId("assessment-" + id);
+
+            // A committed aggregate is historical state. Never re-evaluate it with the
+            // currently running platform/knowledge merely to seed the synthetic host.
+            var storedState = await store.LoadAsync(caseId);
+            if (storedState is not null)
+            {
+                if (storedState.Assessment.CaseId != caseId
+                    || storedState.Assessment.AssessmentId != assessmentId
+                    || !string.Equals(storedState.Assessment.KnowledgePackId, "synthetic.demo-g", StringComparison.Ordinal))
+                    throw new CaseReviewIntegrityException();
+                continue;
+            }
+
+            var record = await assessmentStore.LoadAsync(assessmentId);
+            if (record is null)
+            {
+                var input = CaseInputJson.Deserialize(
+                    File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", id + ".json")));
+                record = new AssessmentRecorder().Evaluate(
+                    packs["synthetic.demo-g"], input.Facts, input.AssessmentDate, input.Evidence,
+                    new(assessmentId, caseId, platformVersion,
+                        new DateTimeOffset(2026, 10, 3, 13, 0, 0, TimeSpan.Zero)));
+                await assessmentStore.AppendAsync(record);
+            }
+            else if (record.CaseId != caseId
+                || !string.Equals(record.KnowledgePackId, "synthetic.demo-g", StringComparison.Ordinal))
+            {
+                throw new CaseReviewIntegrityException();
+            }
+
             var triage = new AssessmentTriageService().Route(record, TriagePolicy);
             var process = CaseProcessingInstance.Start(record.CaseId, 1, Workflow);
             var routed = new CaseProcessingRoutingService().Apply(
@@ -202,24 +228,7 @@ internal static class SyntheticReviewEndpoints
                 AssessmentAuditTrail.Start(AssessmentAuditEvent.AssessmentCreated(
                     1, record.AssessmentId, record.RecordedAtUtc, "synthetic-seed")));
 
-            var storedAssessment = await assessmentStore.LoadAsync(record.AssessmentId);
-            if (storedAssessment is null)
-                await assessmentStore.AppendAsync(record);
-            else if (!string.Equals(
-                AssessmentRecordJson.Serialize(storedAssessment),
-                AssessmentRecordJson.Serialize(record),
-                StringComparison.Ordinal))
-                throw new CaseReviewIntegrityException();
-
-            var stored = await store.LoadAsync(record.CaseId);
-            if (stored is null)
-                await store.InitializeAsync(expected);
-            else if (!string.Equals(
-                AssessmentRecordJson.Serialize(stored.Assessment),
-                AssessmentRecordJson.Serialize(record),
-                StringComparison.Ordinal)
-                || stored.AssessmentCaseRevision != 1)
-                throw new CaseReviewIntegrityException();
+            await store.InitializeAsync(expected);
         }
     }
 
