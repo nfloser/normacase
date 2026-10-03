@@ -394,7 +394,12 @@ internal static class SyntheticReviewEndpoints
                 && string.Equals(actor.AuthenticationAuthority, "synthetic-local", StringComparison.Ordinal)
                 && string.Equals(policy.Id, ReviewPolicy.Id, StringComparison.Ordinal)
                 && policy.Version == ReviewPolicy.Version
-                && state.Process.StateId == "awaiting-approval"
+                // Case entitlement is separate from revision and transition checks.
+                // The service rejects stale commands before checking the reviewed
+                // workflow edge; an up-to-date closed case still has no valid edge.
+                && CaseIds.Contains(state.Process.CaseId.Value, StringComparer.Ordinal)
+                && state.Process.WorkflowId == Workflow.Id
+                && state.Process.WorkflowVersion == Workflow.Version
                 && (command.Disposition == HumanReviewDisposition.AcceptSystemResult
                     || command.Disposition == HumanReviewDisposition.Override);
     }

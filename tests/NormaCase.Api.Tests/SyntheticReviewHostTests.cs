@@ -67,7 +67,11 @@ public sealed class SyntheticReviewHostTests
             var repeated = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews",
                 new { expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
                     disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetischer Wiederholungsversuch" });
-            Assert.Equal(HttpStatusCode.Forbidden, repeated.StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, repeated.StatusCode);
+            var closedState = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews",
+                new { expectedCaseRevision = "1", expectedProcessRevision = "2", expectedAuditRevision = "2",
+                    disposition = "ACCEPT_SYSTEM_RESULT", reason = "Unzulässiger abgeschlossener Übergang" });
+            Assert.Equal(HttpStatusCode.Forbidden, closedState.StatusCode);
 
             var overridden = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-not-supported/reviews",
                 new { expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
