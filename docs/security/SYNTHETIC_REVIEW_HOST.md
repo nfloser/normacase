@@ -1,7 +1,8 @@
 # Lokale Authentifizierung für synthetische Fallprüfung
 
-Status: Authentifizierungsgrenze implementiert; persistente HTTP-Fallprüfung und
-Oberflächenanbindung folgen in #138. Ausschließlich synthetische Daten.
+Status: Authentifizierungsgrenze implementiert; die persistente synthetische
+HTTP-Fallprüfung ist separat opt-in. Die Oberflächenanbindung folgt in #138.
+Ausschließlich synthetische Daten.
 
 ## Betriebsmodi
 
@@ -48,10 +49,23 @@ Loopback schützt nicht vor kompromittierten lokalen Prozessen oder Browsern.
 Dieser HTTP-Demohost ist kein produktiver Identity Provider und darf nicht ins
 Netzwerk veröffentlicht werden. Keine echten Patientendaten verwenden.
 
-#138 verbindet danach PostgreSQL-Aggregate, explizite Fall-/Prozessberechtigungen,
-Revisionsprüfung und append-only Review-Audit mit der deutschen Oberfläche.
-Dafür bleibt ein gesonderter Review erforderlich. Produktiver Betrieb benötigt eine
-institutionell geprüfte Identitäts-, Berechtigungs- und Datenschutzkonzeption (#119).
+Mit `SyntheticReview:PersistenceEnabled=true` wird zusätzlich die persistente
+Review-API aktiviert. Dafür müssen die oben beschriebene Authentifizierung aktiv und
+`ConnectionStrings:SyntheticReview` auf eine lokale PostgreSQL-Datenbank gesetzt
+sein. Der Host migriert sein Schema und initialisiert ausschließlich die vier
+synthetischen `demo-g`-Fixtures, falls sie noch nicht vorhanden sind.
+
+Die geschützten Endpunkte `/api/review/work-queues`,
+`/api/review/work-cases/{caseId}` und
+`/api/review/work-cases/{caseId}/reviews` lesen den committed PostgreSQL-Zustand.
+Accept/Override ist nur aus `awaiting-approval` erlaubt. Commands enthalten explizite
+Case-/Process-/Audit-Revisionen und einen Grund; Actor, Review-ID und UTC-Zeitpunkt
+stammen ausschließlich von der vertrauenswürdigen Servergrenze. Veraltete Revisionen
+werden mit 409 abgewiesen.
+
+#138 verbindet diesen Backend-Slice als Nächstes mit der deutschen Oberfläche.
+Produktiver Betrieb benötigt weiterhin eine institutionell geprüfte Identitäts-,
+Berechtigungs- und Datenschutzkonzeption (#119).
 
 ## Verifikation
 

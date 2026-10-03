@@ -31,6 +31,14 @@ public static class DemoHost
         builder.Logging.ClearProviders();
         builder.Services.AddSingleton(services => SyntheticReviewCredential.Load(
             services.GetRequiredService<IConfiguration>()));
+        builder.Services.AddSingleton(services =>
+        {
+            var reviewConnection = services.GetRequiredService<IConfiguration>()
+                .GetConnectionString("SyntheticReview");
+            if (string.IsNullOrWhiteSpace(reviewConnection))
+                throw new InvalidOperationException("Persistent synthetic review requires an explicit PostgreSQL connection.");
+            return Npgsql.NpgsqlDataSource.Create(reviewConnection);
+        });
         builder.Services.AddAuthentication(SyntheticReviewAuthentication.SchemeName)
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
@@ -46,6 +54,9 @@ public static class DemoHost
         var platformVersion = typeof(DemoHost).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         var app = builder.Build();
         var reviewCredential = app.Services.GetRequiredService<SyntheticReviewCredential>();
+        var persistentReviewEnabled = app.Configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled");
+        if (persistentReviewEnabled && !reviewCredential.Enabled)
+            throw new InvalidOperationException("Persistent synthetic review requires the verified review identity boundary.");
 
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
@@ -80,9 +91,13 @@ public static class DemoHost
         app.UseAuthentication();
         app.UseAuthorization();
         if (reviewCredential.Enabled)
+        {
             app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal user) =>
                 Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId }))
                 .RequireAuthorization();
+            if (persistentReviewEnabled)
+                SyntheticReviewEndpoints.Map(app, packs, platformVersion);
+        }
 
         app.UseDefaultFiles();
         app.UseStaticFiles();
