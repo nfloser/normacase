@@ -253,10 +253,12 @@ public sealed class KnowledgePresentationLoader
         foreach (var text in document.Fields.Values.Concat(
                      document.EvidenceRequirements.Values))
         {
-            if (string.IsNullOrWhiteSpace(text.Label))
+            if (string.IsNullOrWhiteSpace(text.Label)
+                || text.HelpText is not null
+                    && string.IsNullOrWhiteSpace(text.HelpText))
             {
                 throw new InvalidOperationException(
-                    "Presentation labels must not be empty.");
+                    "Presentation labels and help text must be valid.");
             }
         }
 
@@ -299,7 +301,11 @@ public sealed class KnowledgePresentationLoader
                 || !string.Equals(
                     Path.GetFileName(example.CaseFile),
                     example.CaseFile,
-                    StringComparison.Ordinal))
+                    StringComparison.Ordinal)
+                || !string.Equals(
+                    Path.GetExtension(example.CaseFile),
+                    ".json",
+                    StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException(
                     "Invalid presentation example metadata.");
