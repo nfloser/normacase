@@ -149,3 +149,39 @@ historical workflow revisions.
 
 Automatic rule/outcome-driven transitions are intentionally out of scope until
 their knowledge/versioning and audit semantics are designed explicitly.
+
+## Case-bound runs and transition history
+
+`WorkflowRunService` binds an initial execution to an explicit `WorkflowRunId`,
+typed `CaseId` and platform version. Creation and every transition record an explicit
+actor id, UTC timestamp and non-blank reason. Actor ids are caller claims; they are
+not authenticated by this model.
+
+`WorkflowRunRecord` is immutable. Its first history entry must have no transition,
+revision zero and the declared initial state. Each later entry must name an available
+transition, advance exactly one revision and have a non-decreasing UTC timestamp.
+Equal timestamps are permitted because revision order is authoritative.
+
+Every entry retains a detached complete execution snapshot. Construction replays
+all transitions against the original graph and compares the complete Knowledge Pack,
+Release, source, graph, state and revision. Changing any of these identities in a
+later snapshot fails closed. A run can therefore continue without loading current
+Knowledge, and previous in-memory run versions remain unchanged.
+
+Applying a transition requires the expected current revision. A mismatch raises
+`WorkflowRunConcurrencyException`. This guards the supplied in-memory record only;
+it does not prevent competing writes without a transactional storage adapter.
+
+`WorkflowRunRecordJson` format version 1 exports the run identity, case identity,
+platform version and complete history. It uses the strict interchange parser and
+reconstructs through the same replay checks. Import and export are bounded by the
+shared JSON character limit. The application-level invalid-history error does not
+echo actor, reason or source content. The format has no checksum or signature of
+its own and does not prove provenance, actor identity or domain approval.
+
+Snapshots repeat the graph in each revision deliberately to preserve independent
+historical entries. This initial contract is intended for bounded workflows; compact
+large-history storage and query paging require a separate reviewed design.
+
+Database persistence, authorization, association with actual case records,
+assessment-driven transitions and user-facing process controls remain separate slices.

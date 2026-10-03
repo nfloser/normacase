@@ -97,7 +97,7 @@ public static class WorkflowExecutionSnapshotJson
         }
     }
 
-    private static WorkflowExecutionSnapshotData ToData(
+    internal static WorkflowExecutionSnapshotData ToData(
         WorkflowExecutionSnapshot snapshot)
         => new(
             snapshot.KnowledgePackId,
@@ -130,7 +130,7 @@ public static class WorkflowExecutionSnapshotJson
             snapshot.StateId,
             snapshot.Revision);
 
-    private static WorkflowExecutionSnapshot FromData(
+    internal static WorkflowExecutionSnapshot FromData(
         WorkflowExecutionSnapshotData data)
     {
         ArgumentNullException.ThrowIfNull(data);
