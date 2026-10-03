@@ -26,6 +26,7 @@ def verify_archive_sidecar(archive):
         raise ValueError("Archive checksum mismatch")
 
 
+WINDOWS_INVALID_COMPONENT_CHARACTERS = set('<>:"\\|?*')
 WINDOWS_RESERVED_NAMES = {
     "CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$",
     *(f"COM{number}" for number in range(1, 10)),
@@ -53,6 +54,7 @@ def validate_bundle_paths(bundle):
             base = part.split(".", 1)[0].upper()
             if (not part or part in {".", ".."} or part.endswith((" ", "."))
                     or any(ord(character) < 32 for character in part)
+                    or any(character in WINDOWS_INVALID_COMPONENT_CHARACTERS for character in part)
                     or base in WINDOWS_RESERVED_NAMES):
                 raise ValueError("Invalid bundle path")
 
