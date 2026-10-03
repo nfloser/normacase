@@ -113,7 +113,7 @@ export function WorkflowWorkbench({ pack }: { pack: Pack }) {
         <label className="field">{labels.time}<input required type="text" value={time} placeholder="2026-10-03T12:00:00Z" onChange={event => { invalidate(); setTime(event.target.value); }} /></label>
       </div><p className="workflow-help">{labels.timeHelp}</p>
       <label className="field">{labels.reason}<textarea required value={reason} onChange={event => { invalidate(); setReason(event.target.value); }} /></label>
-      {envelope && !envelope.view.terminal && <label className="field">{labels.transition}<select value={transition} onChange={event => { invalidate(); setTransition(event.target.value); }}>
+      {envelope && !envelope.view.terminal && <label className="field">{labels.transition}<select aria-label={labels.transition} value={transition} onChange={event => { invalidate(); setTransition(event.target.value); }}>
         {envelope.view.transitions.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
       </select></label>}
       {error && <div className="error" role="alert"><strong>{de.errorHeading}</strong><p>{error}</p></div>}
