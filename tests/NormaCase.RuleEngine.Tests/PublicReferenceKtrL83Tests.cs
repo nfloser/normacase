@@ -346,7 +346,7 @@ public sealed class PublicReferenceKtrL83Tests
             Load(),
             facts,
             EffectiveDate,
-            new()
+            new Dictionary<string, EvidenceStatus>
             {
                 ["severe_disability_card"] =
                     EvidenceStatus.Present
