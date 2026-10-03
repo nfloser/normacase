@@ -6,9 +6,15 @@ The platform separates executable application code from versioned domain knowled
 
 ## Project status
 
-NormaCase is in early foundation work. It is **not** a medical device, production assessment system or domain-approved knowledge base.
+NormaCase has a complete **synthetic integration milestone**: deterministic assessment,
+persistent routing/work queues, authenticated local human review, reviewed outbound
+delivery and restart/restore rehearsal are executable and covered by CI. The platform
+is still **not** a production assessment system, productive MD integration or
+domain-approved knowledge base.
 
-Only synthetic data belongs in the repository.
+Only synthetic data belongs in the repository. Productive identity, institutional
+interfaces/processes, privacy/security approval and authoritative domain knowledge
+require external validation.
 
 ## Core principles
 
@@ -112,7 +118,10 @@ dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj
 
 The deterministic core itself needs no external runtime service. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md), while human review/audit semantics are documented in [docs/architecture/AUDIT.md](docs/architecture/AUDIT.md).
 
-An optional PostgreSQL adapter persists immutable assessment records without coupling the core to storage. Its schema, migration and integrity guarantees are documented in [docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md](docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md). The local synthetic host can opt into a separately authenticated PostgreSQL review API; the normal preview remains read-only.
+The optional persistent synthetic host uses PostgreSQL for immutable intake,
+assessment/process history, human review and delivery receipts without coupling the
+domain/rule core to storage. The normal preview remains anonymous/read-only unless
+the persistent review mode is explicitly configured.
 
 ## Development
 
@@ -131,8 +140,9 @@ dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-c/pack.
 Use `--json` for the versioned lossless assessment document. See
 [the German offline guide](docs/development/OFFLINE_EVALUATOR.md) for supported,
 incomplete and human-review examples, file formats, exit codes and limitations.
-The adapter needs no runtime network service. It accepts SYNTHETIC packs only;
-production authorization and persistence are not implemented yet.
+The adapter needs no runtime network service and accepts SYNTHETIC packs only.
+Productive authorization is intentionally not provided by the CLI; persistence and
+authenticated review are separate capabilities of the opt-in local host.
 
 ## Local synthetic HTTP adapter
 
@@ -206,3 +216,13 @@ Schlüssel. Ausschließlich synthetische Daten; keine produktive MD-Freigabe.
 Der vollständige lokale Testablauf mit frischen JSON-/XML-Eingängen, gespeicherter
 Arbeitsliste, menschlicher Freigabe, zwei Rückgabezielen und Wiederherstellungsprobe
 steht in [Synthetischer Gesamtablauf](docs/development/SYNTHETIC_ROUNDTRIP.de.md).
+
+
+## Synthetische Abnahme / Übergabe
+
+Für einen vollständigen technischen Handoff des aktuellen access-unabhängigen Stands
+beginne mit der
+[deutschen Abnahme- und Übergabeanleitung](docs/development/SYNTHETIC_ACCEPTANCE.de.md).
+Sie führt von Preview-Download und Pitch über persistente Review-Demo bis zum
+synthetischen End-to-End-Roundtrip und zur Recovery-Probe und trennt dabei klar
+zwischen technisch verifiziertem Stand und extern abhängiger Produktivfreigabe.
