@@ -189,7 +189,7 @@ public sealed class PostgresAssessmentRecordStoreTests
         {
             command.Parameters.AddWithValue(
                 record.AssessmentId.Value);
-            command.Parameters.AddWithValue(record.CaseId);
+            command.Parameters.AddWithValue(record.CaseId.Value);
             command.Parameters.AddWithValue(
                 record.KnowledgePackId);
             command.Parameters.AddWithValue(
@@ -302,7 +302,8 @@ public sealed class PostgresAssessmentRecordStoreTests
             },
             new AssessmentExecutionContext(
                 id,
-                "case-" + suffix + "-" + Guid.NewGuid().ToString("N"),
+                new CaseId(
+                    "case-" + suffix + "-" + Guid.NewGuid().ToString("N")),
                 "postgres-test-platform",
                 new DateTimeOffset(
                     2026,
