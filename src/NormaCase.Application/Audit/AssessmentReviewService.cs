@@ -83,6 +83,10 @@ public sealed class AssessmentReviewService
                 assessmentId);
         }
 
+        ValidateAssessmentBinding(
+            assessmentId,
+            record);
+
         var existing = await _auditTrails.LoadLatestAsync(
             assessmentId,
             cancellationToken);
@@ -134,6 +138,10 @@ public sealed class AssessmentReviewService
                 review.AssessmentId);
         }
 
+        ValidateAssessmentBinding(
+            review.AssessmentId,
+            assessment);
+
         var current = await _auditTrails.LoadLatestAsync(
             review.AssessmentId,
             cancellationToken);
@@ -159,6 +167,17 @@ public sealed class AssessmentReviewService
             cancellationToken);
 
         return next;
+    }
+
+    private static void ValidateAssessmentBinding(
+        AssessmentId requestedAssessmentId,
+        AssessmentRecord assessment)
+    {
+        if (assessment.AssessmentId != requestedAssessmentId)
+        {
+            throw new AssessmentReviewAssessmentBindingException(
+                requestedAssessmentId);
+        }
     }
 
     private static void ValidateAuditBinding(
@@ -213,6 +232,20 @@ public sealed class AssessmentReviewAuditNotInitializedException
         AssessmentId assessmentId)
         : base(
             $"Audit history for assessment '{assessmentId}' has not been initialized.")
+    {
+        AssessmentId = assessmentId;
+    }
+
+    public AssessmentId AssessmentId { get; }
+}
+
+public sealed class AssessmentReviewAssessmentBindingException
+    : Exception
+{
+    public AssessmentReviewAssessmentBindingException(
+        AssessmentId assessmentId)
+        : base(
+            $"Stored assessment does not match requested assessment '{assessmentId}'.")
     {
         AssessmentId = assessmentId;
     }
