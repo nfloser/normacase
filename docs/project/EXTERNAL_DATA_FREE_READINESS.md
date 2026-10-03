@@ -13,7 +13,7 @@ CI are the acceptance evidence; completing a checkbox requires integration and r
 | Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review and explicit missing-information/correction policies remain external |
 | Versioned reviewed outbound result | Exact original/review binding, strict JSON, two sinks, durable receipts and authenticated full roundtrip (#150, #152, #158) | Concrete vendor delivery contracts and approved access |
 | Local review operation | Opt-in local operation, clean database install, exact restart and pg_dump/pg_restore rehearsal (#160) | Target-specific deployment/update approval |
-| Independent security/deployment assessment | Fail-closed guards, tests and evolving threat model | Operational/security/privacy review is required beyond software unit/integration success |
+| Independent security/deployment assessment | Fail-closed guards, maintained threat model, CodeQL for C#/JS/TS/Python, immutable GitHub Action pins and weekly NuGet/npm/Actions dependency updates | Target-specific operational, identity, privacy and security review remains required beyond repository acceptance |
 
 The executable synthetic path now connects fresh normalized intake to recorded
 assessment/routing, persisted work queues, authenticated human review and two
@@ -25,3 +25,14 @@ Internal MD data/specifications are required only for concrete institutional ada
 real process/role mapping, legally/medically authoritative knowledge approval and a
 controlled pilot with approved sensitive data. Generic contracts, synthetic tests,
 offline operation and developer/security preparation remain possible without them.
+
+
+## Access-independent completion boundary
+
+At this repository state, no known open implementation item is required to prove the
+generic synthetic product path. Further substantive product integration now needs at
+least one external authority: an institutional interface specification, approved
+identity/role model, correction/clarification policy, target deployment constraints or
+domain-approved knowledge. New generic work remains appropriate when a concrete defect
+or architecture gap is discovered, but NormaCase must not invent those external
+requirements merely to keep development moving.
