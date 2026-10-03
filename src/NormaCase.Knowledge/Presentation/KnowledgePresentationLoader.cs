@@ -95,18 +95,43 @@ public sealed class KnowledgePresentationLoader
         string expectedLocale)
     {
         ArgumentNullException.ThrowIfNull(pack);
-        ArgumentException.ThrowIfNullOrWhiteSpace(json);
         ArgumentException.ThrowIfNullOrWhiteSpace(expectedLocale);
 
-        RejectDuplicateProperties(json);
+        var document = ReadDocument(json);
 
-        var document =
-            JsonSerializer.Deserialize<PresentationDocument>(
-                json,
-                JsonOptions)
-            ?? throw new JsonException(
-                "Presentation metadata is required.");
+        return Materialize(
+            pack,
+            document,
+            expectedLocale);
+    }
 
+    public KnowledgePresentation LoadFromJson(
+        IReadOnlyDictionary<string, KnowledgePack> packs,
+        string json,
+        string expectedLocale)
+    {
+        ArgumentNullException.ThrowIfNull(packs);
+        ArgumentException.ThrowIfNullOrWhiteSpace(expectedLocale);
+
+        var document = ReadDocument(json);
+
+        if (!packs.TryGetValue(document.PackId, out var pack))
+        {
+            throw new InvalidOperationException(
+                "Presentation metadata references an unknown Knowledge Pack.");
+        }
+
+        return Materialize(
+            pack,
+            document,
+            expectedLocale);
+    }
+
+    private static KnowledgePresentation Materialize(
+        KnowledgePack pack,
+        PresentationDocument document,
+        string expectedLocale)
+    {
         ValidateDocument(pack, document, expectedLocale);
 
         var fields = new ReadOnlyDictionary<
@@ -159,6 +184,20 @@ public sealed class KnowledgePresentationLoader
                 string,
                 KnowledgePresentationOutput>(outputs),
             examples);
+    }
+
+    private static PresentationDocument ReadDocument(
+        string json)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(json);
+
+        RejectDuplicateProperties(json);
+
+        return JsonSerializer.Deserialize<PresentationDocument>(
+                json,
+                JsonOptions)
+            ?? throw new JsonException(
+                "Presentation metadata is required.");
     }
 
     private static void ValidateDocument(
