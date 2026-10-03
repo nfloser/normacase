@@ -114,28 +114,6 @@ public sealed class AssessmentReviewService
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var assessment = await _assessmentRecords.LoadAsync(
-            request.AssessmentId,
-            cancellationToken);
-
-        if (assessment is null)
-        {
-            throw new AssessmentReviewAssessmentNotFoundException(
-                request.AssessmentId);
-        }
-
-        var current = await _auditTrails.LoadLatestAsync(
-            request.AssessmentId,
-            cancellationToken);
-
-        if (current is null)
-        {
-            throw new AssessmentReviewAuditNotInitializedException(
-                request.AssessmentId);
-        }
-
-        ValidateAuditBinding(assessment, current);
-
         var review = new HumanReviewRecord(
             request.ReviewId,
             request.AssessmentId,
@@ -145,6 +123,28 @@ public sealed class AssessmentReviewService
             request.Reason,
             request.OverrideOutcome,
             request.Reference);
+
+        var assessment = await _assessmentRecords.LoadAsync(
+            review.AssessmentId,
+            cancellationToken);
+
+        if (assessment is null)
+        {
+            throw new AssessmentReviewAssessmentNotFoundException(
+                review.AssessmentId);
+        }
+
+        var current = await _auditTrails.LoadLatestAsync(
+            review.AssessmentId,
+            cancellationToken);
+
+        if (current is null)
+        {
+            throw new AssessmentReviewAuditNotInitializedException(
+                request.AssessmentId);
+        }
+
+        ValidateAuditBinding(assessment, current);
 
         var nextSequence = checked(
             current.Events[^1].Sequence + 1);
