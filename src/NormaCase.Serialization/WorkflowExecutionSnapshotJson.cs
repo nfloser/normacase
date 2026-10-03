@@ -51,6 +51,8 @@ public static class WorkflowExecutionSnapshotJson
     {
         ArgumentNullException.ThrowIfNull(snapshot);
 
+        _ = new WorkflowExecutionService().Restore(snapshot);
+
         return JsonSerializer.Serialize(
             new WorkflowExecutionSnapshotDocument(
                 CurrentFormatVersion,
