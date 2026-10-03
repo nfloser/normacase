@@ -7,14 +7,14 @@ internal static class InterchangeJson
 {
     internal static readonly JsonSerializerOptions Options = CreateOptions();
 
-    internal static T Read<T>(string json) where T : class
+    internal static T Read<T>(string json, JsonSerializerOptions? options = null) where T : class
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(json);
         if (json.Length > AssessmentJson.MaximumJsonCharacters)
             throw new JsonException("JSON exceeds the supported size.");
         using var document = JsonDocument.Parse(json, new JsonDocumentOptions { MaxDepth = 64 });
         RejectDuplicates(document.RootElement);
-        return JsonSerializer.Deserialize<T>(json, Options) ?? throw new JsonException("Document is required.");
+        return JsonSerializer.Deserialize<T>(json, options ?? Options) ?? throw new JsonException("Document is required.");
     }
 
     private static void RejectDuplicates(JsonElement element)
