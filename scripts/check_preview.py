@@ -12,6 +12,7 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 import zipfile
+from workflow_smoke import exercise_workflow
 
 
 def verify_archive_sidecar(archive):
@@ -91,7 +92,7 @@ def check(archive, rid, commit):
             return result.stdout
 
         assert "synthet" in run("--help").lower(), "German CLI help missing"
-        for demo in "abcde":
+        for demo in "abcdef":
             validation = run(
                 "validate",
                 "--pack",
@@ -133,7 +134,7 @@ def check(archive, rid, commit):
             else:
                 raise RuntimeError("Bundled API did not become ready")
             assert {p["packId"] for p in catalog} == {
-                "synthetic.demo-" + letter for letter in "abcde"}
+                "synthetic.demo-" + letter for letter in "abcdef"}
             assert all(p["validationLevel"] == "SYNTHETIC" and
                        p["presentation"]["locale"] == "de-DE" for p in catalog)
             with urlopen(base, timeout=5) as response:
@@ -162,6 +163,7 @@ def check(archive, rid, commit):
             assert verified["assessmentJson"] == api_capture["assessmentJson"]
             # Snapshots remain interchangeable between bundled CLI and API.
             assert json.loads(post("/api/snapshots/replay", captured))["assessmentJson"] == replayed.strip()
+            exercise_workflow(base)
             denied = Request(base + "/api/packs", headers={"Origin": "https://example.invalid"})
             try:
                 urlopen(denied, timeout=5)

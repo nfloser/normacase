@@ -29,6 +29,13 @@ public sealed record KnowledgePresentationExample(
     string Label,
     string CaseFile);
 
+public sealed record KnowledgePresentationWorkflow(
+    string Id,
+    int Version,
+    string Label,
+    IReadOnlyDictionary<string, string> States,
+    IReadOnlyDictionary<string, string> Transitions);
+
 public sealed record KnowledgePresentation
 {
     internal KnowledgePresentation(
@@ -39,7 +46,8 @@ public sealed record KnowledgePresentation
         IReadOnlyDictionary<string, KnowledgePresentationText> fields,
         IReadOnlyDictionary<string, KnowledgePresentationText> evidenceRequirements,
         IReadOnlyDictionary<string, KnowledgePresentationOutput> outputs,
-        IReadOnlyList<KnowledgePresentationExample> examples)
+        IReadOnlyList<KnowledgePresentationExample> examples,
+        IReadOnlyList<KnowledgePresentationWorkflow> workflows)
     {
         Locale = locale;
         PackId = packId;
@@ -49,6 +57,7 @@ public sealed record KnowledgePresentation
         EvidenceRequirements = evidenceRequirements;
         Outputs = outputs;
         Examples = examples;
+        Workflows = workflows;
     }
 
     public string Locale { get; }
@@ -67,6 +76,8 @@ public sealed record KnowledgePresentation
     public IReadOnlyDictionary<string, KnowledgePresentationOutput> Outputs { get; }
 
     public IReadOnlyList<KnowledgePresentationExample> Examples { get; }
+
+    public IReadOnlyList<KnowledgePresentationWorkflow> Workflows { get; }
 }
 
 public sealed class KnowledgePresentationLoader
@@ -183,7 +194,11 @@ public sealed class KnowledgePresentationLoader
             new ReadOnlyDictionary<
                 string,
                 KnowledgePresentationOutput>(outputs),
-            examples);
+            examples,
+            Array.AsReadOnly((document.Workflows ?? []).Select(item => new KnowledgePresentationWorkflow(
+                item.Id, item.Version, item.Label,
+                new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(item.States, StringComparer.Ordinal)),
+                new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(item.Transitions, StringComparer.Ordinal)))).ToArray()));
     }
 
     private static PresentationDocument ReadDocument(
@@ -289,6 +304,27 @@ public sealed class KnowledgePresentationLoader
             }
         }
 
+        var workflows = document.Workflows ?? [];
+        if (workflows.Any(item => item is null || item.States is null || item.Transitions is null
+                || item.States.Values.Any(label => label is null)
+                || item.Transitions.Values.Any(label => label is null)))
+            throw new JsonException("Workflow presentation entries are required.");
+
+        var workflowKeys = new HashSet<(string, int)>();
+        foreach (var item in workflows)
+        {
+            var workflow = pack.Workflows.SingleOrDefault(candidate => candidate.Id == item.Id && candidate.Version == item.Version);
+            if (workflow is null || !workflowKeys.Add((item.Id, item.Version))
+                || string.IsNullOrWhiteSpace(item.Label)
+                || item.States.Values.Concat(item.Transitions.Values).Any(string.IsNullOrWhiteSpace))
+                throw new InvalidOperationException("Workflow presentation must match the Knowledge workflow.");
+
+            ValidateKeys(workflow.States.Select(state => state.Id), item.States.Keys);
+            ValidateKeys(workflow.Transitions.Select(transition => transition.Id), item.Transitions.Keys);
+        }
+        if (!workflowKeys.SetEquals(pack.Workflows.Select(item => (item.Id, item.Version))))
+            throw new InvalidOperationException("Every Knowledge workflow requires presentation metadata.");
+
         var exampleIds = new HashSet<string>(
             StringComparer.Ordinal);
 
@@ -389,6 +425,13 @@ public sealed class KnowledgePresentationLoader
         string Label,
         string CaseFile);
 
+    private sealed record PresentationWorkflowData(
+        string Id,
+        int Version,
+        string Label,
+        Dictionary<string, string> States,
+        Dictionary<string, string> Transitions);
+
     private sealed record PresentationDocument(
         int FormatVersion,
         string Locale,
@@ -399,5 +442,6 @@ public sealed class KnowledgePresentationLoader
         Dictionary<string, KnowledgePresentationText>
             EvidenceRequirements,
         Dictionary<string, PresentationOutputData> Outputs,
-        List<PresentationExampleData> Examples);
+        List<PresentationExampleData> Examples,
+        List<PresentationWorkflowData>? Workflows = null);
 }

@@ -6,6 +6,7 @@ import subprocess
 import time
 from urllib.error import URLError, HTTPError
 from urllib.request import Request, urlopen
+from workflow_smoke import exercise_workflow
 
 process = subprocess.Popen(
     ["dotnet", "src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll"],
@@ -25,6 +26,7 @@ try:
                     "synthetic.demo-c",
                     "synthetic.demo-d",
                     "synthetic.demo-e",
+                    "synthetic.demo-f",
                 }.issubset(pack_ids)
                 assert all(pack["validationLevel"] == "SYNTHETIC" for pack in catalog)
                 assert all(pack["presentation"]["locale"] == "de-DE" for pack in catalog)
@@ -58,6 +60,7 @@ try:
         assert outputs["segment_beta"] == {"kind": "UNKNOWN"}
         assert response.headers["X-Content-Type-Options"] == "nosniff"
 
+    exercise_workflow("http://localhost:5080")
     denied = Request("http://localhost:5080/api/packs", headers={"Origin": "https://example.invalid"})
     try:
         urlopen(denied, timeout=5)

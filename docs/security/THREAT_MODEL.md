@@ -75,6 +75,21 @@ Its checksums detect inconsistency but do not authenticate authors; privileged d
 INSERT/schema access can bypass application guarantees. Productive exposure needs
 authentication, case-level authorization and suitable provenance/retention controls.
 
+### Synthetic workflow file continuation
+
+The loopback workflow UI transports complete run histories and free-text reasons.
+All import/advance operations validate strict bounded JSON, replay the history and
+compare the original graph/source/release against installed SYNTHETIC Knowledge and
+the actual API platform identity. The UI exports the exact server JSON, rejects
+oversized/invalid UTF-8 files before transfer and cancels stale requests on prospective
+metadata or pack changes. Runs are not persisted by the API or browser.
+
+This is a stateless demo boundary: two copies of the same run can be continued
+independently, and actor ids remain unauthenticated. Internal replay and catalog
+matching do not prove who created the file. Productive multi-user case/workflow
+operation must bind authenticated actors and case authorization to a transactional
+store and suitable audit/provenance controls.
+
 ### Sensitive logging
 Medical or identity data could leak through logs and CI.
 

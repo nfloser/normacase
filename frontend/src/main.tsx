@@ -4,6 +4,7 @@ import { parse } from 'lossless-json';
 import de from './de.json';
 import { exampleValues, normalizeCatalog, requestJson, type Pack } from './model';
 import './style.css';
+import { WorkflowWorkbench } from './WorkflowWorkbench';
 
 type Result = {platformVersion:string; assessment:{outcome:string; assessmentDate:string; knowledgeRelease:string; missingRequiredFields:string[]; domainOutputs?:{outputId:string;value:{kind:string;choice?:string};source:{title:string;version?:string}}[]; ruleTrace?:{ruleId:string; ruleVersion:unknown; source:{title:string; authority:string; version?:string; sourceLocation?:string}}}};
 const outcomes: Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
@@ -147,6 +148,6 @@ function App() {
         <details><summary>{de.replayTrace}</summary><pre>{replayRaw}</pre></details>
         <button className="secondary export" onClick={()=>saveFile(replayRaw,'normacase-replayed-assessment.json')}>{de.replayExport}</button>
       </>}
-    </section><footer>{de.foot}</footer></main></>;
+    </section>{pack && <WorkflowWorkbench key={pack.packId} pack={pack} />}<footer>{de.foot}</footer></main></>;
 }
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

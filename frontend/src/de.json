@@ -66,5 +66,32 @@
   "replayTrace": "Bestätigte technische Prüfspur anzeigen",
   "replayExport": "Bestätigtes Ergebnis herunterladen",
   "snapshotEncodingError": "Die Datei enthält kein gültiges UTF-8. Wähle einen unveränderten JSON-Prüfsnapshot.",
-  "snapshotChooseFile": "Datei auswählen"
+  "snapshotChooseFile": "Datei auswählen",
+  "workflow": {
+    "heading": "Vorgang bearbeiten",
+    "help": "Synthetische Abläufe mit expliziten Übergängen und nachvollziehbarer Historie. Die Fallauswertung löst keinen Übergang automatisch aus.",
+    "select": "Ablauf auswählen",
+    "caseId": "Synthetische Fall-ID",
+    "runId": "Vorgangs-ID",
+    "actor": "Synthetische Bearbeiter-ID",
+    "time": "UTC-Zeitpunkt (ISO 8601)",
+    "reason": "Begründung des Schritts",
+    "loadDemo": "Synthetische Vorgangsangaben laden",
+    "start": "Vorgang starten",
+    "working": "Vorgang wird geprüft …",
+    "state": "Aktueller Vorgangsstand",
+    "revision": "Revision",
+    "history": "Vorgangshistorie",
+    "transition": "Übergang",
+    "apply": "Übergang ausführen",
+    "terminal": "Der Vorgang ist abgeschlossen. Weitere Übergänge sind nicht verfügbar.",
+    "export": "Vorgang als JSON herunterladen",
+    "import": "Vorgangsdatei laden und prüfen",
+    "file": "Vorgangsdatei auswählen",
+    "verified": "Vorgangsdatei geprüft und geladen",
+    "reset": "Vorgang zurücksetzen",
+    "notice": "Nur synthetische Daten. Bearbeiterangaben werden nicht authentifiziert. Der Vorgang bleibt im Arbeitsspeicher; exportierte Dateien kannst du später wieder laden.",
+    "timeHelp": "Beispiel: 2026-10-03T12:00:00Z. Gib den Zeitpunkt ausdrücklich an; es wird keine aktuelle Uhrzeit ergänzt.",
+    "importHelp": "Nur Vorgänge des gewählten Prüfbereichs mit passendem installierten Wissens- und Plattformstand. Eine erfolgreiche Prüfung bestätigt keine Herkunft oder fachliche Freigabe."
+  }
 }

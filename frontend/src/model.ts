@@ -1,9 +1,12 @@
 import { LosslessNumber, parse, stringify } from 'lossless-json';
 
+export interface WorkflowPresentation { id:string; version:number; label:string; states:Record<string,string>; transitions:Record<string,string> }
+
 export interface Field { id: string; type: string; required: boolean }
 export interface Presentation {
   title: string; description: string; outputs?: Record<string,{label:string;choices:Record<string,string>}>; fields: Record<string,string>; evidence: Record<string,string>;
   examples: { label: string; file: string }[];
+  workflows?: WorkflowPresentation[];
 }
 export interface Pack {
   packId: string; releaseId: string; fields: Field[]; evidenceRequirements: string[]; presentation?: Presentation;
@@ -34,6 +37,6 @@ export function exampleValues(json: string): {date: string; values: Record<strin
     [id, value.kind === 'NUMBER' ? value.number!.value.replace('.', ',') : value.kind === 'TRUTH' ? value.truth! : 'UNKNOWN']))};
 }
 
-export function normalizeCatalog(data: {packId:string;releaseId:string;fields:(Field & {label:string})[];evidenceRequirements:{id:string;label:string}[];presentation:{name:string;description:string;outputs:{id:string;label:string;choices:Record<string,string>}[];examples:{id:string;label:string}[]}}[]): Pack[] {
- return data.map(p=>({packId:p.packId,releaseId:p.releaseId,fields:p.fields,evidenceRequirements:p.evidenceRequirements.map(e=>e.id),presentation:{title:p.presentation.name,description:p.presentation.description,fields:Object.fromEntries(p.fields.map(f=>[f.id,f.label])),evidence:Object.fromEntries(p.evidenceRequirements.map(e=>[e.id,e.label])),outputs:Object.fromEntries(p.presentation.outputs.map(o=>[o.id,{label:o.label,choices:o.choices}])),examples:p.presentation.examples.map(e=>({file:e.id,label:e.label}))}}));
+export function normalizeCatalog(data: {packId:string;releaseId:string;fields:(Field & {label:string})[];evidenceRequirements:{id:string;label:string}[];presentation:{name:string;description:string;workflows?:WorkflowPresentation[];outputs:{id:string;label:string;choices:Record<string,string>}[];examples:{id:string;label:string}[]}}[]): Pack[] {
+ return data.map(p=>({packId:p.packId,releaseId:p.releaseId,fields:p.fields,evidenceRequirements:p.evidenceRequirements.map(e=>e.id),presentation:{title:p.presentation.name,description:p.presentation.description,workflows:p.presentation.workflows??[],fields:Object.fromEntries(p.fields.map(f=>[f.id,f.label])),evidence:Object.fromEntries(p.evidenceRequirements.map(e=>[e.id,e.label])),outputs:Object.fromEntries(p.presentation.outputs.map(o=>[o.id,{label:o.label,choices:o.choices}])),examples:p.presentation.examples.map(e=>({file:e.id,label:e.label}))}}));
 }
