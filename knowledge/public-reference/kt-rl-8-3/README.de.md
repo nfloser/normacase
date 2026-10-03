@@ -77,8 +77,9 @@ Fehlende oder widersprüchliche branchenspezifische Nachweise führen zu
 Der zusätzliche Output `approval_state` kann:
 
 - `DEEMED_GRANTED` liefern, wenn der modellierte §-8-Abs.-3-Pfad bestätigt ist;
-- `NOT_DETERMINED_BY_THIS_PACK` liefern, wenn dieser Pfad vollständig geprüft und
-  nicht erfüllt ist;
+- `SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE` liefern, wenn dieser Pfad vollständig
+  geprüft und nicht erfüllt ist; damit wird ausdrücklich keine Aussage über andere
+  Genehmigungstatbestände getroffen;
 - `UNKNOWN` bleiben, wenn die für den Pfad nötigen Angaben oder Nachweise nicht
   eindeutig vorliegen.
 
