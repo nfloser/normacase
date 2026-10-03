@@ -85,9 +85,12 @@ public static class WorkflowExecutionSnapshotJson
         {
             throw;
         }
-        catch (Exception exception)
-            when (exception is ArgumentException
-                or InvalidOperationException)
+        catch (ArgumentException)
+        {
+            throw new JsonException(
+                "Invalid workflow execution snapshot.");
+        }
+        catch (InvalidOperationException)
         {
             throw new JsonException(
                 "Invalid workflow execution snapshot.");
