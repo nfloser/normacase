@@ -73,6 +73,14 @@ internal sealed class SyntheticReviewCredential
             && entries.Any(entry => entry.ActorId == actor.ActorId
                 && (legacy || entry.Actions.Contains(action) && entry.Cases.Contains(caseId)));
 
+    internal IReadOnlyCollection<NormaCase.Domain.Cases.CaseId>? ReadScope(AuthenticatedReviewActor actor)
+    {
+        var entry = entries.SingleOrDefault(item => item.ActorId == actor.ActorId);
+        if (actor.AuthenticationAuthority != "synthetic-local" || entry is null) return [];
+        return legacy ? null : entry.Actions.Contains("READ")
+            ? entry.Cases.Select(id => new NormaCase.Domain.Cases.CaseId(id)).ToArray() : [];
+    }
+
     private static bool TryDecode(string? token, out byte[] bytes)
     {
         bytes = new byte[32];
