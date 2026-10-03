@@ -47,6 +47,11 @@ public sealed class SyntheticReviewHostTests
                     disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetischer unzulässiger Versuch" });
             Assert.Equal(HttpStatusCode.Forbidden, denied.StatusCode);
 
+            var stale = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews",
+                new { expectedCaseRevision = "1", expectedProcessRevision = "0", expectedAuditRevision = "1",
+                    disposition = "ACCEPT_SYSTEM_RESULT", reason = "Veralteter synthetischer Versuch" });
+            Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+
             var accepted = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews",
                 new { expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
                     disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetische Freigabe" });
@@ -59,10 +64,10 @@ public sealed class SyntheticReviewHostTests
             Assert.Equal("synthetic-local:reviewer", acceptedAudit[1].GetProperty("actorId").GetString());
             Assert.Equal("ACCEPT_SYSTEM_RESULT", acceptedAudit[1].GetProperty("disposition").GetString());
 
-            var stale = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews",
+            var repeated = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews",
                 new { expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
-                    disposition = "ACCEPT_SYSTEM_RESULT", reason = "Veralteter synthetischer Versuch" });
-            Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+                    disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetischer Wiederholungsversuch" });
+            Assert.Equal(HttpStatusCode.Forbidden, repeated.StatusCode);
 
             var overridden = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-not-supported/reviews",
                 new { expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
