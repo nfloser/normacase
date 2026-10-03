@@ -29,7 +29,4 @@
           Link="Fixtures/demo-c-pack.json"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="Fixtures/intake-*" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 </Project>
