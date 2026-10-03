@@ -20,6 +20,19 @@ A pull request should explain:
 
 Do not work directly on `main`.
 
+## Planning and sequencing
+
+Use the shortest code-complete path through the product workflow.
+
+- Prefer one small vertical slice that advances an inbound case toward a usable work-queue/review flow over several disconnected abstractions.
+- Check whether the required capability already exists before creating a new module or contract.
+- Mark issue dependencies explicitly and finish blockers before dependent UI/integration work.
+- Parallel work is appropriate only when branches are independent and cannot create competing contracts.
+- Keep concrete third-party adapters out of implementation until an authoritative interface specification is available. Develop their generic seam with synthetic fixtures and contract tests first.
+- Design application capabilities so they can be consumed by the first-party German UI or headlessly by an external system.
+- Avoid speculative generalization. Require at least two materially different examples before promoting an integration-specific shape into a generic platform abstraction.
+- Do not postpone security, privacy, provenance, idempotency or historical reproducibility to a later cleanup phase.
+
 ## Quality bar
 
 Run the checks that exist for the affected area. At minimum for the current foundation:
