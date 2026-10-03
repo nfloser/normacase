@@ -158,6 +158,180 @@ public sealed class WorkflowExecutionServiceTests
             () => _service.Apply(completed, "request_review"));
     }
 
+    [Fact]
+    public void Capture_and_restore_roundtrip_without_reloading_knowledge()
+    {
+        var started = _service.Start(
+            LoadPack(),
+            "synthetic.review-flow",
+            2);
+        var reviewed = _service.Apply(started, "request_review");
+
+        var snapshot = _service.Capture(reviewed);
+        var restored = _service.Restore(snapshot);
+        var completed = _service.Apply(restored, "complete_review");
+
+        Assert.Equal("synthetic.demo-a", snapshot.KnowledgePackId);
+        Assert.Equal("demo-a-2026.1", snapshot.KnowledgeRelease);
+        Assert.Equal("synthetic.review-flow", snapshot.WorkflowId);
+        Assert.Equal(2, snapshot.WorkflowVersion);
+        Assert.Equal("submitted", snapshot.InitialStateId);
+        Assert.Equal("review", snapshot.StateId);
+        Assert.Equal(1, snapshot.Revision);
+        Assert.Equal(3, snapshot.States.Count);
+        Assert.Equal(2, snapshot.Transitions.Count);
+
+        Assert.NotSame(reviewed.Definition, restored.Definition);
+        Assert.Equal(reviewed.Source, restored.Source);
+        Assert.Equal("review", restored.Instance.StateId);
+        Assert.Equal(1, restored.Instance.Revision);
+        Assert.Equal("complete", completed.Instance.StateId);
+        Assert.Equal(2, completed.Instance.Revision);
+    }
+
+    [Fact]
+    public void Snapshot_constructor_detaches_mutable_graph_collections()
+    {
+        var captured = _service.Capture(
+            _service.Start(
+                LoadPack(),
+                "synthetic.review-flow",
+                2));
+        var states = captured.States.ToList();
+        var transitions = captured.Transitions.ToList();
+
+        var detached = new WorkflowExecutionSnapshot(
+            captured.KnowledgePackId,
+            captured.KnowledgeRelease,
+            captured.Source,
+            captured.WorkflowId,
+            captured.WorkflowVersion,
+            captured.InitialStateId,
+            states,
+            transitions,
+            captured.StateId,
+            captured.Revision);
+
+        states.Clear();
+        transitions.Clear();
+
+        var restored = _service.Restore(detached);
+
+        Assert.Equal(3, detached.States.Count);
+        Assert.Equal(2, detached.Transitions.Count);
+        Assert.Equal("submitted", restored.Instance.StateId);
+    }
+
+    [Fact]
+    public void Restore_rejects_state_not_declared_by_snapshot_definition()
+    {
+        var captured = _service.Capture(
+            _service.Start(
+                LoadPack(),
+                "synthetic.review-flow",
+                2));
+        var invalid = CopySnapshot(
+            captured,
+            stateId: "missing-state");
+
+        Assert.Throws<ArgumentException>(
+            () => _service.Restore(invalid));
+    }
+
+    [Fact]
+    public void Restore_rejects_negative_revision()
+    {
+        var captured = _service.Capture(
+            _service.Start(
+                LoadPack(),
+                "synthetic.review-flow",
+                2));
+        var invalid = CopySnapshot(
+            captured,
+            revision: -1);
+
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => _service.Restore(invalid));
+    }
+
+    [Fact]
+    public void Restore_rejects_invalid_snapshot_workflow_graph()
+    {
+        var captured = _service.Capture(
+            _service.Start(
+                LoadPack(),
+                "synthetic.review-flow",
+                2));
+        var invalid = CopySnapshot(
+            captured,
+            transitions:
+            [
+                new WorkflowTransitionSnapshot(
+                    "request_review",
+                    "submitted",
+                    "missing-state")
+            ]);
+
+        Assert.Throws<ArgumentException>(
+            () => _service.Restore(invalid));
+    }
+
+    [Fact]
+    public void Source_snapshot_rejects_missing_required_metadata()
+    {
+        Assert.Throws<ArgumentException>(
+            () => new WorkflowSourceSnapshot(
+                "source-1",
+                "authority",
+                " ",
+                "SYNTHETIC",
+                "ACTIVE",
+                "1",
+                "repository:synthetic",
+                null,
+                null,
+                null,
+                null,
+                null));
+    }
+
+    [Fact]
+    public void Source_snapshot_rejects_inverted_validity_interval()
+    {
+        Assert.Throws<ArgumentException>(
+            () => new WorkflowSourceSnapshot(
+                "source-1",
+                "authority",
+                "Synthetic source",
+                "SYNTHETIC",
+                "ACTIVE",
+                "1",
+                "repository:synthetic",
+                null,
+                new DateOnly(2026, 10, 3),
+                new DateOnly(2026, 10, 2),
+                null,
+                null));
+    }
+
+    private static WorkflowExecutionSnapshot CopySnapshot(
+        WorkflowExecutionSnapshot source,
+        IReadOnlyList<WorkflowStateSnapshot>? states = null,
+        IReadOnlyList<WorkflowTransitionSnapshot>? transitions = null,
+        string? stateId = null,
+        long? revision = null)
+        => new(
+            source.KnowledgePackId,
+            source.KnowledgeRelease,
+            source.Source,
+            source.WorkflowId,
+            source.WorkflowVersion,
+            source.InitialStateId,
+            states ?? source.States,
+            transitions ?? source.Transitions,
+            stateId ?? source.StateId,
+            revision ?? source.Revision);
+
     private KnowledgePack LoadPack()
     {
         var node = (JsonNode.Parse(
