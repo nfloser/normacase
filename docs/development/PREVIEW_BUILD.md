@@ -30,8 +30,9 @@ Verification extracts into a path with spaces, validates the complete file
 inventory and SHA-256 digests, confirms included runtime configuration and starts
 both executable hosts with shared runtime lookup disabled. Before any extraction,
 ZIP entry paths must already be canonical POSIX relative paths: repeated or dot
-segments, traversal, native separators, Windows drive/ADS syntax, trailing dots or
-spaces, reserved Windows device names, symlinks, case-insensitive aliases and
+segments, traversal, native separators, Windows drive/ADS syntax, Windows-invalid
+filename characters, trailing dots or spaces, reserved Windows device names,
+symlinks, case-insensitive aliases and
 file/directory prefix collisions are rejected. This prevents two separately hashed
 entries from resolving to the same extraction target on supported platforms.
 
