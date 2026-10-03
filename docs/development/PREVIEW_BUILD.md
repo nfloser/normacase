@@ -32,7 +32,14 @@ both executable hosts with shared runtime lookup disabled. It checks all five
 German catalogs, local browser assets and security headers, cross-origin rejection,
 exact decimal CLI/API capture and bidirectional snapshot replay. Test output
 contains technical summaries only. Separate integrity tests cover corruption,
-unlisted files, traversal and symlinks. This is real process integration on both
+unlisted files, traversal and symlinks. Before any extraction, entry paths must be
+canonical relative POSIX paths and portable to Windows: normalized aliases,
+case-insensitive collisions, trailing dots/spaces, reserved device names, invalid
+characters and file/directory prefix conflicts are rejected. This prevents two
+individually hashed entries from overwriting the same extracted file. Extraction
+uses a newly created temporary directory; this check is not a general-purpose
+extractor for pre-existing or concurrently modified directory trees.
+This is real process integration on both
 operating systems, not a mocked publish test.
 
 Only successful native checks upload ZIP/checksum artifacts. Artifacts expire after

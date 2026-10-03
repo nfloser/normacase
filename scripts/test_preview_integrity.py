@@ -82,6 +82,27 @@ class PreviewIntegrityTests(unittest.TestCase):
                 extract_verified(archive, target)
             self.assertEqual([], list(target.iterdir()))
 
+    def test_extraction_aliases_are_rejected_before_writing(self):
+        for name in ["api//fixture", "api/./fixture", "./api/fixture",
+                     "API/fixture", "api/fixture.", "api/fixture ",
+                     "api/CON.txt", "api/nul", "api/LPT1.log", "api/fi?xture",
+                     "api/fi\x01xture", "api/fixture/child", "API"]:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as temporary:
+                archive, target = self.make_bundle(Path(temporary))
+                addition = b"different synthetic bytes"
+                with zipfile.ZipFile(archive) as bundle:
+                    entries = {entry: bundle.read(entry) for entry in bundle.namelist()}
+                manifest = json.loads(entries["preview.json"])
+                manifest["files"][name] = hashlib.sha256(addition).hexdigest()
+                entries["preview.json"] = json.dumps(manifest).encode("utf-8")
+                entries[name] = addition
+                with zipfile.ZipFile(archive, "w") as bundle:
+                    for entry, content in entries.items():
+                        bundle.writestr(entry, content)
+                with self.assertRaisesRegex(ValueError, "path|collision"):
+                    extract_verified(archive, target)
+                self.assertEqual([], list(target.iterdir()))
+
 
 if __name__ == "__main__":
     unittest.main()
