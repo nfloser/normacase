@@ -33,13 +33,14 @@ public static class DemoHost
         var reviewOptions = SyntheticReviewHostOptions.FromConfiguration(builder.Configuration);
         if (reviewOptions.Enabled)
         {
-            _ = reviewOptions.ValidateAndDecodeCredential();
+            var startupCredential = reviewOptions.ValidateAndDecodeCredential();
+            System.Security.Cryptography.CryptographicOperations.ZeroMemory(startupCredential);
             builder.Services.AddSingleton(reviewOptions);
             builder.Services.AddSingleton<SyntheticReviewCredential>();
             builder.Services
-                .AddAuthentication(SyntheticReviewAuthenticationHandler.Scheme)
+                .AddAuthentication(SyntheticReviewAuthenticationHandler.AuthenticationScheme)
                 .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, SyntheticReviewAuthenticationHandler>(
-                    SyntheticReviewAuthenticationHandler.Scheme,
+                    SyntheticReviewAuthenticationHandler.AuthenticationScheme,
                     _ => { });
             builder.Services.AddAuthorization();
         }
