@@ -12,11 +12,10 @@ A state can belong to at most one queue for the same workflow version. Ambiguous
 configuration is rejected. A valid process state with no configured queue produces an
 explicit `Unassigned` projection; there is no fallback queue.
 
-`CaseWorkQueueProjectionService` requires one immutable assessment record, its
-recorded `AssessmentRouting`, the current `CaseProcessingInstance` and a queue
-configuration. It verifies case and assessment identity before projecting.
+## Membership first
 
-Queue membership depends only on:
+`CaseWorkQueueProjectionService.Project(process, configuration)` creates a
+`CaseWorkQueueMembership` using only:
 
 ```text
 workflow id
@@ -24,29 +23,37 @@ workflow id
 + current process state id
 ```
 
-Assessment outcome and triage disposition are copied into the projection for
-drill-down/display, but they do not select or recalculate the queue. The transition
-from assessment routing into process state already belongs to
-`CaseProcessingRoutingService`.
+The membership retains case id/input revision and process revision, but has no
+dependency on assessment, Decision Trace or triage.
+
+This is required because a technical/integration exception may need human attention
+before a deterministic assessment exists. Such a case can enter a configured technical
+queue without fabricating an assessment.
+
+## Optional assessment enrichment
+
+When an assessment exists, the overloaded projection operation accepts the immutable
+`AssessmentRecord` and its recorded `AssessmentRouting`. It first creates the same
+process-only membership and then validates that case and assessment identities agree.
+
+The resulting `CaseWorkItemProjection` adds:
+
+- assessment id and recorded assessment outcome,
+- recorded triage disposition and policy identity.
+
+Those values are drill-down/display metadata. They do not select or recalculate queue
+membership. The transition from assessment routing into process state already belongs
+to `CaseProcessingRoutingService`.
 
 This separation prevents UI/query code from silently becoming another decision layer.
 
-A projected work item retains:
-
-- case id and immutable case-input revision,
-- assessment id and recorded assessment outcome,
-- recorded triage disposition and policy identity,
-- workflow id/version,
-- current process state and process revision,
-- work-queue configuration id/version and optional queue id.
-
 Changing process state and revision changes queue membership on the next projection.
-The projection does not transition, approve, authenticate, authorize or persist
-anything.
+Neither membership nor enrichment transitions, approves, authenticates, authorizes or
+persists anything.
 
-Later adapters may persist/index these projections for efficient queue queries and
-join them to immutable assessment, Decision Trace, evidence and audit history for
-case drill-down. Productive authorization and human approval remain separate slices.
+Later adapters may persist/index memberships for efficient queue queries and join them
+to immutable assessment, Decision Trace, evidence and audit history for case drill-down.
+Productive authorization and human approval remain separate slices.
 
 All current examples are synthetic and make no claim about MD-specific queue names,
 roles or operational process states.
