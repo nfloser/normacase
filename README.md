@@ -71,6 +71,7 @@ The current core can:
 - return source-backed recursive Decision Trace data,
 - emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
 - advance generic immutable workflow instances through explicitly declared deterministic transitions,
+- bind validated, source-backed Knowledge workflows to immutable in-memory application executions,
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
 - persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint.
