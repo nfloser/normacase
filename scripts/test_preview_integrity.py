@@ -70,6 +70,31 @@ class PreviewIntegrityTests(unittest.TestCase):
                 self.assertEqual([], list(target.iterdir()))
                 self.assertFalse((directory / "outside").exists())
 
+    def test_noncanonical_and_windows_ambiguous_paths_are_rejected_before_extraction(self):
+        paths = [
+            "api//fixture",
+            "api/./fixture",
+            "api/trailing.",
+            "api/trailing ",
+            "api/CON",
+            "api/nul.txt",
+            "api/COM1.json",
+        ]
+        for path in paths:
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as temporary:
+                archive, target = self.make_bundle(Path(temporary), extra=path)
+                with self.assertRaisesRegex(ValueError, "path"):
+                    extract_verified(archive, target)
+                self.assertEqual([], list(target.iterdir()))
+
+    def test_case_insensitive_and_file_directory_collisions_are_rejected_before_extraction(self):
+        for path in ["API/FIXTURE", "api", "api/fixture/child"]:
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as temporary:
+                archive, target = self.make_bundle(Path(temporary), extra=path)
+                with self.assertRaisesRegex(ValueError, "collision"):
+                    extract_verified(archive, target)
+                self.assertEqual([], list(target.iterdir()))
+
     def test_symlink_is_rejected_before_extraction(self):
         with tempfile.TemporaryDirectory() as temporary:
             archive, target = self.make_bundle(Path(temporary))
