@@ -67,6 +67,43 @@
   "replayExport": "Bestätigtes Ergebnis herunterladen",
   "snapshotEncodingError": "Die Datei enthält kein gültiges UTF-8. Wähle einen unveränderten JSON-Prüfsnapshot.",
   "snapshotChooseFile": "Datei auswählen",
+  "workQueues": {
+    "heading": "Synthetische Arbeitsvorräte",
+    "help": "Read-only Übersicht über deterministisch geroutete synthetische Fälle und technische Ausnahmen.",
+    "notice": "Nur synthetische In-Memory-Daten. Diese Ansicht führt keine Freigabe, Ablehnung, Korrektur oder Batch-Aktion aus.",
+    "queues": {
+      "approval": "Zur Freigabe",
+      "clarification": "Angaben nachfordern",
+      "review": "Manuelle Prüfung",
+      "technical": "Technische Klärung"
+    },
+    "states": {
+      "awaiting-approval": "Wartet auf Freigabe",
+      "waiting-information": "Wartet auf ergänzende Angaben",
+      "manual-review": "Manuelle Prüfung",
+      "integration-error": "Integrationsfehler"
+    },
+    "routing": {
+      "READY_FOR_APPROVAL": "Bereit zur Freigabe",
+      "INCOMPLETE": "Angaben unvollständig",
+      "HUMAN_REVIEW": "Manuelle Prüfung erforderlich"
+    },
+    "unknownQueue": "Unbekannter Arbeitsvorrat",
+    "unknownState": "Unbekannter Vorgangsstand",
+    "openCase": "Fall {caseId} öffnen",
+    "revisions": "Fallrevision {caseRevision} · Prozessrevision {processRevision}",
+    "loadingDetail": "Falldetails werden geladen …",
+    "detail": "Falldetails",
+    "caseId": "Synthetische Fall-ID",
+    "queue": "Arbeitsvorrat",
+    "state": "Vorgangsstand",
+    "caseRevision": "Fallrevision",
+    "processRevision": "Prozessrevision",
+    "assessment": "Aufgezeichnete Prüfung",
+    "routing": "Weiterleitung",
+    "noAssessment": "Noch keine fachliche Prüfung aufgezeichnet",
+    "noAssessmentHelp": "Dieser synthetische Fall liegt wegen eines technischen Vorgangsstands im Arbeitsvorrat. Es wurde dafür kein Prüfergebnis erfunden."
+  },
   "workflow": {
     "heading": "Vorgang bearbeiten",
     "help": "Synthetische Abläufe mit expliziten Übergängen und nachvollziehbarer Historie. Die Fallauswertung löst keinen Übergang automatisch aus.",
