@@ -31,6 +31,26 @@ public sealed class WorkflowExecutionSnapshotJsonTests
             restored.Source.ContentHash);
     }
 
+    [Fact]
+    public void Serialize_rejects_a_semantically_invalid_snapshot()
+    {
+        var sample = Sample();
+        var invalid = new WorkflowExecutionSnapshot(
+            sample.KnowledgePackId,
+            sample.KnowledgeRelease,
+            sample.Source,
+            sample.WorkflowId,
+            sample.WorkflowVersion,
+            sample.InitialStateId,
+            sample.States,
+            sample.Transitions,
+            "missing-state",
+            sample.Revision);
+
+        Assert.Throws<ArgumentException>(
+            () => WorkflowExecutionSnapshotJson.Serialize(invalid));
+    }
+
     [Theory]
     [InlineData("version")]
     [InlineData("unknown")]
