@@ -47,6 +47,16 @@ public sealed class SyntheticAuthenticationTests
         Assert.ThrowsAny<Exception>(() => mixed.CreateClient());
     }
 
+    [Fact]
+    public async Task Administrator_configuration_requires_persistent_multi_user_mode()
+    {
+        await using var host = MultiUserHost(Token, Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)))
+            .WithWebHostBuilder(builder => builder.UseSetting(
+                "SyntheticReview:Administrator:Credential",
+                Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))));
+        Assert.ThrowsAny<Exception>(() => host.CreateClient());
+    }
+
     private static WebApplicationFactory<Program> MultiUserHost(string first, string second, bool legacy = false)
         => new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(

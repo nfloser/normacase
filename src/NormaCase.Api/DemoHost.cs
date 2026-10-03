@@ -39,6 +39,15 @@ public static class DemoHost
                 throw new InvalidOperationException("Persistent synthetic review requires an explicit PostgreSQL connection.");
             return Npgsql.NpgsqlDataSource.Create(reviewConnection);
         });
+        builder.Services.AddSingleton(services =>
+        {
+            var configuration = services.GetRequiredService<IConfiguration>();
+            return new SyntheticIdentityAccessGate(
+                configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled")
+                    ? new NormaCase.Persistence.PostgreSql.PostgresIdentityAccessAdministrationStore(
+                        services.GetRequiredService<Npgsql.NpgsqlDataSource>())
+                    : null);
+        });
         builder.Services.AddAuthentication(SyntheticReviewAuthentication.SchemeName)
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
@@ -96,7 +105,10 @@ public static class DemoHost
                 Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId }))
                 .RequireAuthorization();
             if (persistentReviewEnabled)
+            {
                 SyntheticReviewEndpoints.Map(app, packs, platformVersion);
+                SyntheticIdentityAdministrationEndpoints.Map(app);
+            }
         }
 
         app.UseDefaultFiles();
