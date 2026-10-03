@@ -68,10 +68,11 @@ transaction/authorization failure, cancellation during authorization and queue m
 is a test contract fixture only, not runtime persistence or a database substitute.
 Existing assessment replay remains independent from appended human decisions.
 
-Issue #134 covers this boundary. Issues #119 and #116 remain open for the durable
-PostgreSQL aggregate adapter, reviewed authentication/authorization adapter, German
-HTTP/UI error mapping and productive multi-user integration. No real patient data or
-claim of productive approval readiness is introduced.
+Issue #134 covers the application boundary, #136 the durable PostgreSQL aggregate
+adapter and #139 the local synthetic authentication seam. #140 connects those pieces
+through a bounded local HTTP adapter; #138 still owns browser integration while #119
+and #116 remain open for productive identity/privacy and broader queue integration.
+No real patient data or claim of productive approval readiness is introduced.
 
 ## PostgreSQL aggregate adapter
 
@@ -95,13 +96,18 @@ write the same case's review history through both stores. Existing history is no
 silently adopted. No migration of old independently recorded reviews is implied.
 Full historical verification currently reads the case's retained versions; indexing
 and snapshot optimization require measured need and must preserve these invariants.
-This adapter supplies persistence, not authentication or a public mutation API.
+This adapter supplies persistence, not authentication. The opt-in synthetic HTTP
+adapter may initialize a missing demo aggregate, but once an aggregate or assessment
+is committed it is treated as historical state and is never regenerated under the
+currently running platform/knowledge version.
 
 ## Synthetic HTTP authentication seam
 
 Issue #139 supplies an opt-in ASP.NET Core bearer identity adapter and a protected
 session probe. It derives the fixed authority-qualified synthetic actor from its
 own verified authentication scheme, never from command bodies or caller actor
-headers. The preview remains anonymous/read-only by default. This seam provides no
-case permissions or review mutations; persistent API/UI integration remains #138.
+headers. The preview remains anonymous/read-only by default. The separately enabled
+#140 adapter adds PostgreSQL-backed synthetic queue/detail and review commands with
+explicit revision checks and fail-closed process-state authorization. Browser review
+controls remain #138.
 See [synthetic host security design](../security/SYNTHETIC_REVIEW_HOST.md).
