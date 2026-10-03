@@ -1,8 +1,7 @@
 # Lokale Authentifizierung für synthetische Fallprüfung
 
-Status: Authentifizierungsgrenze implementiert; die persistente synthetische
-HTTP-Fallprüfung ist separat opt-in. Die Oberflächenanbindung folgt in #138.
-Ausschließlich synthetische Daten.
+Status: Authentifizierungsgrenze, persistente synthetische HTTP-Fallprüfung und
+optionale Workbench-Anbindung sind implementiert. Ausschließlich synthetische Daten.
 
 ## Betriebsmodi
 
@@ -10,7 +9,8 @@ Ohne `SyntheticReview:Enabled=true` bleibt die lokale Vorschau anonym und ohne
 Review-Session-Endpunkt. Die bestehenden Vorschau-Endpunkte bleiben unverändert.
 Der opt-in Modus fügt `GET /api/review-session` hinzu; er benötigt
 `Authorization: Bearer <Schlüssel>` und liefert ausschließlich die bestätigte
-technische Identität `synthetic-local:reviewer`. Er erlaubt noch keine Falländerung.
+technische Identität `synthetic-local:reviewer`. Falländerungen sind nur zusätzlich
+bei aktivierter Persistenz über die geschützten `/api/review/*`-Endpunkte möglich.
 
 Konfiguration über die Betreiberumgebung:
 
@@ -63,7 +63,13 @@ Case-/Process-/Audit-Revisionen und einen Grund; Actor, Review-ID und UTC-Zeitpu
 stammen ausschließlich von der vertrauenswürdigen Servergrenze. Veraltete Revisionen
 werden mit 409 abgewiesen.
 
-#138 verbindet diesen Backend-Slice als Nächstes mit der deutschen Oberfläche.
+Die deutsche Workbench verwendet denselben Vertrag. Der Schlüssel bleibt nur im
+React-Arbeitsspeicher und wird ausschließlich als Authorization-Header gesendet;
+kein Browser-Speicher, Cookie, URL-Parameter oder lokaler Actor-Wert dient als
+Identitätsquelle. 401 löscht den Review-Browserzustand, 403 behält den committed
+Falldetailstand und 409 lädt den aktuellen committed Zustand neu. Erfolgreiche
+Aktionen werden ebenfalls vollständig vom Server neu geladen.
+
 Produktiver Betrieb benötigt weiterhin eine institutionell geprüfte Identitäts-,
 Berechtigungs- und Datenschutzkonzeption (#119).
 
@@ -73,3 +79,7 @@ HTTP-Integrationstests prüfen deaktivierten Standardmodus, gültige Anmeldung,
 fehlende/falsche/ungültige Schlüssel, doppelte Header, ignorierte Query-Schlüssel,
 serverseitige Identitätsbindung, Fremd-Origin-Abweisung, no-store und ungültige
 Startkonfiguration. Die unveränderten Vorschau-Tests laufen ebenfalls weiter.
+Zusätzlich prüft Playwright gegen einen echten PostgreSQL-Dienst Anmeldung,
+Accept, Override, konkurrierende veraltete Revisionen, Logout und den Verzicht auf
+Browser-Speicher. Der CI-Schlüssel wird pro Lauf flüchtig erzeugt und nicht im
+Repository hinterlegt.
