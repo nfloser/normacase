@@ -24,6 +24,16 @@ public static class CliRunner
         try
         {
             var options = Parse(args);
+
+            if (args[0] == "validate")
+            {
+                var packJson = ReadBoundedFile(options["--pack"]);
+                _ = new KnowledgePackLoader().LoadFromJson(packJson);
+                output.WriteLine(Messages.Get("ValidationSuccess"));
+                output.WriteLine(Messages.Get("ValidationDisclaimer"));
+                return 0;
+            }
+
             AssessmentDocument document;
             if (args[0] == "replay")
             {
@@ -84,6 +94,19 @@ public static class CliRunner
             error.WriteLine(Messages.Get("ReplayError"));
             return 4;
         }
+        catch (KnowledgeValidationException exception) when (args.Length > 0 && args[0] == "validate")
+        {
+            error.WriteLine(Messages.Get("ValidationError"));
+            foreach (var code in exception.Errors
+                .Select(item => item.Code)
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(code => code, StringComparer.Ordinal)
+                .Take(20))
+            {
+                error.WriteLine(code);
+            }
+            return 2;
+        }
         catch (Exception exception) when (exception is JsonException or KnowledgeValidationException or ArgumentException or OverflowException or DecoderFallbackException)
         {
             error.WriteLine(Messages.Get("InputError"));
@@ -115,26 +138,44 @@ public static class CliRunner
 
     private static Dictionary<string, string> Parse(string[] args)
     {
-        if (args.Length == 0 || args[0] is not ("evaluate" or "snapshot" or "replay"))
+        if (args.Length == 0 || args[0] is not ("evaluate" or "snapshot" or "replay" or "validate"))
             throw new ArgumentException("Command required.");
         var options = new Dictionary<string, string>(StringComparer.Ordinal);
         for (var index = 1; index < args.Length; index++)
         {
             var key = args[index];
-            if (key == "--json" && args[0] != "snapshot")
+            if (key == "--json" && args[0] is not ("snapshot" or "validate"))
             {
                 if (!options.TryAdd(key, "true"))
                     throw new ArgumentException("Duplicate option.");
                 continue;
             }
-            if (!(key == "--platform-version" || (args[0] == "replay" ? key == "--snapshot" : key is "--pack" or "--case"))
+            var allowedValueOption = args[0] switch
+            {
+                "validate" => key == "--pack",
+                "replay" => key is "--snapshot" or "--platform-version",
+                _ => key is "--pack" or "--case" or "--platform-version"
+            };
+            if (!allowedValueOption
                 || ++index >= args.Length || string.IsNullOrWhiteSpace(args[index])
                 || args[index].StartsWith("--", StringComparison.Ordinal)
                 || !options.TryAdd(key, args[index]))
                 throw new ArgumentException("Invalid options.");
         }
-        if (!options.ContainsKey("--platform-version") || (args[0] == "replay" ? !options.ContainsKey("--snapshot") : !options.ContainsKey("--pack") || !options.ContainsKey("--case")))
+        if (args[0] == "validate")
+        {
+            if (options.Count != 1 || !options.ContainsKey("--pack"))
+                throw new ArgumentException("Required option missing.");
+            return options;
+        }
+
+        if (!options.ContainsKey("--platform-version")
+            || (args[0] == "replay"
+                ? !options.ContainsKey("--snapshot")
+                : !options.ContainsKey("--pack") || !options.ContainsKey("--case")))
+        {
             throw new ArgumentException("Required option missing.");
+        }
         return options;
     }
 
