@@ -26,7 +26,7 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-001"),
-                "case-json-001",
+                new CaseId("case-json-001"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 30, 0, TimeSpan.Zero)));
 
@@ -41,6 +41,8 @@ public sealed class AssessmentRecordJsonTests
         Assert.Equal(record.Result.RuleTrace!.Source, restored.Result.RuleTrace!.Source);
         Assert.Equal("assessment-json-001", restored.AssessmentId.Value);
         Assert.Contains("\"assessmentId\":\"assessment-json-001\"", json, StringComparison.Ordinal);
+        Assert.Equal(new CaseId("case-json-001"), restored.CaseId);
+        Assert.Contains("\"caseId\":\"case-json-001\"", json, StringComparison.Ordinal);
         Assert.Equal("synthetic.demo-b", restored.KnowledgePackId);
         Assert.Equal("test-platform-2", restored.PlatformVersion);
     }
@@ -63,7 +65,7 @@ public sealed class AssessmentRecordJsonTests
             },
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-002"),
-                "case-json-002",
+                new CaseId("case-json-002"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 31, 0, TimeSpan.Zero)));
 
@@ -92,7 +94,7 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-default-time"),
-                "case-json-default-time",
+                new CaseId("case-json-default-time"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
 
@@ -118,13 +120,67 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-id"),
-                "case-json-id",
+                new CaseId("case-json-id"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
 
         var node = System.Text.Json.Nodes.JsonNode.Parse(
             AssessmentRecordJson.Serialize(record))!;
         node["record"]!["assessmentId"] = "";
+
+        Assert.Throws<JsonException>(
+            () => AssessmentRecordJson.Deserialize(node.ToJsonString()));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void Blank_case_identity_is_rejected_on_restore(string invalidCaseId)
+    {
+        var record = new AssessmentRecorder().Evaluate(
+            Load("demo-a"),
+            new Dictionary<string, CaseValue>
+            {
+                ["criterion_a"] = TruthValue.Yes,
+                ["criterion_b"] = TruthValue.Yes
+            },
+            new DateOnly(2026, 10, 2),
+            evidence: null,
+            new AssessmentExecutionContext(
+                new AssessmentId("assessment-json-case-id"),
+                new CaseId("case-json-case-id"),
+                "test-platform-2",
+                new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
+
+        var node = System.Text.Json.Nodes.JsonNode.Parse(
+            AssessmentRecordJson.Serialize(record))!;
+        node["record"]!["caseId"] = invalidCaseId;
+
+        Assert.Throws<JsonException>(
+            () => AssessmentRecordJson.Deserialize(node.ToJsonString()));
+    }
+
+    [Fact]
+    public void Non_string_case_identity_is_rejected_on_restore()
+    {
+        var record = new AssessmentRecorder().Evaluate(
+            Load("demo-a"),
+            new Dictionary<string, CaseValue>
+            {
+                ["criterion_a"] = TruthValue.Yes,
+                ["criterion_b"] = TruthValue.Yes
+            },
+            new DateOnly(2026, 10, 2),
+            evidence: null,
+            new AssessmentExecutionContext(
+                new AssessmentId("assessment-json-case-id-type"),
+                new CaseId("case-json-case-id-type"),
+                "test-platform-2",
+                new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
+
+        var node = System.Text.Json.Nodes.JsonNode.Parse(
+            AssessmentRecordJson.Serialize(record))!;
+        node["record"]!["caseId"] = 42;
 
         Assert.Throws<JsonException>(
             () => AssessmentRecordJson.Deserialize(node.ToJsonString()));
@@ -144,7 +200,7 @@ public sealed class AssessmentRecordJsonTests
             evidence: null,
             new AssessmentExecutionContext(
                 new AssessmentId("assessment-json-003"),
-                "case-json-003",
+                new CaseId("case-json-003"),
                 "test-platform-2",
                 new DateTimeOffset(2026, 10, 2, 20, 32, 0, TimeSpan.Zero)));
 
