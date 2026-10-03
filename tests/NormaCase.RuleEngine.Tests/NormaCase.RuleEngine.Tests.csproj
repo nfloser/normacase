@@ -35,5 +35,11 @@
     <None Include="../../knowledge/demo-e/pack.json"
           Link="Fixtures/demo-e-pack.json"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-a/presentation.de-DE.json"
+          Link="Fixtures/demo-a-presentation.de-DE.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../knowledge/demo-e/presentation.de-DE.json"
+          Link="Fixtures/demo-e-presentation.de-DE.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
