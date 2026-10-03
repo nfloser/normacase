@@ -142,3 +142,13 @@ committed queues/case without automatic retry. A 401 clears identity, credential
 forms and case data. German status messages are locally bounded, rather than echoing
 arbitrary server text that could expose credentials. The browser controls are not
 an authorization boundary: the server remains responsible for every case action.
+
+### Reviewed outbound result substitution
+
+A syntactically valid outbound message is not a delivery receipt, signature or actor
+identity. The factory binds authoritative intake values and knowledge to immutable
+assessment/review state and requires exact revisions plus a reviewed terminal state.
+Imported result JSON still contains unauthenticated assertions. Future exporters must
+perform case-scoped export authorization, preserve the original message on retries,
+verify sink receipts and avoid logging payloads. No external destination or document
+fetch is enabled by this contract. See [outbound results](../architecture/OUTBOUND_RESULTS.md).
