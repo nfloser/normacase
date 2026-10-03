@@ -1,6 +1,6 @@
 # Threat model
 
-Status: initial baseline. Expand alongside concrete interfaces and persistence.
+Status: maintained synthetic integration baseline. Refine again for each concrete institutional interface, productive identity model and deployment boundary.
 
 ## Assets
 
@@ -114,19 +114,30 @@ workflow code; it does not make the pinned action, GitHub-hosted runner, package
 registry or upstream repository trustworthy by itself. Action-update pull requests
 still require normal review and CI before merge.
 
-## Open work
+## Current boundary and remaining work
 
-Future slices must refine this model when authentication, persistence, document upload/import, exports and Knowledge Bundle signatures are introduced.
+The local synthetic product path now includes authenticated review, PostgreSQL
+persistence, bounded JSON/XML intake, reviewed outbound delivery, restart replay and
+backup/restore rehearsal. These controls are development acceptance evidence for the
+generic architecture; they do not establish productive identity, privacy approval,
+medical/domain approval or compatibility with any institution.
+
+The threat model must be refined again when a concrete institutional identity provider,
+role/tenant model, real document channel, vendor transport, retention policy,
+Knowledge Bundle signing policy or target deployment environment is selected.
 
 ### Atomic human-review boundary
 
 The Application case-review service requires a trusted authentication-adapter actor
 and an explicit case-scoped authorizer. These types do not authenticate a caller by
-themselves. Future HTTP adapters must never bind actor identity from request DTOs.
-Review commands check case/input/process/audit revisions under one aggregate
-transaction and preserve the original assessment. A store implementation must commit
-process and audit together or roll back both; separate successful writes are unsafe.
-The synthetic contract tests do not replace durable-store or identity-provider review.
+themselves. The local synthetic HTTP host derives its actor only from the verified
+ASP.NET Core principal and uses the PostgreSQL aggregate store so process/audit updates
+commit together with exact case, assessment and revision binding. Request DTOs cannot
+supply actor identity.
+
+That proves the architecture against the fixed synthetic-local identity only.
+A productive adapter still requires reviewed organizational authentication, case-level
+authorization, role/tenant separation, session policy and privacy controls.
 See [CASE_REVIEW.md](../architecture/CASE_REVIEW.md).
 
 ### Synthetic local bearer identity
@@ -154,10 +165,15 @@ an authorization boundary: the server remains responsible for every case action.
 
 ### Reviewed outbound result substitution
 
-A syntactically valid outbound message is not a delivery receipt, signature or actor
-identity. The factory binds authoritative intake values and knowledge to immutable
-assessment/review state and requires exact revisions plus a reviewed terminal state.
-Imported result JSON still contains unauthenticated assertions. Future exporters must
-perform case-scoped export authorization, preserve the original message on retries,
-verify sink receipts and avoid logging payloads. No external destination or document
-fetch is enabled by this contract. See [outbound results](../architecture/OUTBOUND_RESULTS.md).
+A syntactically valid outbound message is not a signature or actor identity. The
+factory binds authoritative intake values and knowledge to immutable assessment/review
+state and requires exact revisions plus a reviewed terminal state. The authenticated
+synthetic host loads persisted authoritative state before export and records durable
+delivery receipts for its synthetic PostgreSQL inbox/file destinations; duplicate
+delivery identity is replay-safe and conflicting reuse fails closed.
+
+These guarantees stop at the synthetic adapter boundary. A productive exporter still
+needs institution-approved case-scoped authorization, destination authentication,
+transport guarantees, retention/logging policy and the authoritative vendor contract.
+Imported result JSON on its own remains an unauthenticated assertion. See
+[outbound results](../architecture/OUTBOUND_RESULTS.md).
