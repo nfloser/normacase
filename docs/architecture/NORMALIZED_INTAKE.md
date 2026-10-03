@@ -48,15 +48,15 @@ atomic contract through an in-memory test adapter, while
 Transactional assessment/process creation and authenticated host orchestration remain
 separate integration concerns.
 
-Two intentionally different reusable adapters in `NormaCase.SyntheticIntegration`
-demonstrate the boundary. `SyntheticJsonIntakeAdapter` maps the alpha answer/document
-shape; `SyntheticXmlIntakeAdapter` maps the beta answer/attachment shape. Both require
-the host to supply platform case/type identity and explicit UTC receipt time, normalize
-identical exact facts/evidence while retaining distinct source/adapter identities, and
-fail closed on unknown fields/elements. Decimal values use invariant decimal parsing,
-unknowns remain explicit, unmapped values fail, and the XML parser rejects DTD/entity
-resolution. These synthetic contracts are not real MD formats and must not be
-advertised as compatible with any external system.
+`SyntheticIntakeAdapters` in `NormaCase.SyntheticIntegration` demonstrates the
+boundary with two intentionally different wire formats over the same normalized
+contract: a strict versioned JSON envelope and a strict XML `SyntheticCase` envelope.
+Both preserve explicit source/adapter provenance, exact decimal values and UNKNOWN,
+reject ambiguous or unknown structure, bound raw input, and prohibit XML DTD/entity
+resolution. The adapter derives only synthetic platform-case identity from its explicit
+synthetic source/order pair; the host supplies the receipt time. These contracts are
+test/demo protocols, not real MD or vendor formats, and must not be advertised as
+compatible with any external system.
 
 The current contract has one authoritative upstream revision stream per platform case.
 Independent sources must receive distinct platform case identities. Multi-source
