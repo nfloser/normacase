@@ -60,6 +60,7 @@ The system grows as a modular monolith. ASP.NET Core, React + TypeScript, Postgr
 
 The current core can:
 - load external JSON Knowledge Packs,
+- retain multiple validated Knowledge Releases in an exact-selection in-memory catalog without implicit latest resolution,
 - validate manifests, fields, sources, rule references and validity intervals,
 - evaluate typed truth and numeric case values,
 - evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
