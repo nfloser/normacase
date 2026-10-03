@@ -32,6 +32,17 @@ NormaCase is a deterministic, auditable and modular decision-support platform fo
 - Do not introduce microservices, secondary databases or other infrastructure without demonstrated need.
 - Preferred baseline: .NET / ASP.NET Core, React + TypeScript, PostgreSQL and Docker.
 
+## Product operating model
+
+- Production operation is integration-first. New cases should normally arrive through explicit upstream adapters; manual file import is a fallback for synthetic demos, testing, administration and exceptional workflows, not the primary assessor workflow.
+- Keep external systems behind adapter / anti-corruption boundaries. MDconnect, MEDIKOS, SPV-MD exchange formats or any future institution-specific system must not leak vendor-specific contracts into the generic Domain or RuleEngine.
+- The target processing flow is: `intake -> normalization -> completeness/evidence checks -> deterministic assessment -> routing -> human approval/review -> outbound integration`.
+- Keep assessment outcomes separate from case/workflow processing states. For example, `SUPPORTED` is an assessment result; a state such as `READY_FOR_APPROVAL` is workflow state.
+- Clear and complete cases may be routed into a review/approval queue, but the platform must not assume that legal or organizational approval can be automated. Approval policy is explicit, configurable and auditable.
+- `INCOMPLETE`, `UNKNOWN`, conflicting evidence and `HUMAN_REVIEW` must route to focused human work rather than be guessed or coerced.
+- Product UI development should optimize for work queues, triage, batch review/approval where policy allows, and detailed case drill-down with append-only review history rather than requiring users to start every case manually.
+- Future AI/document-extraction capabilities are optional upstream adapters. They may propose structured data or draft text, but they must not become the deterministic decision authority and must preserve source/provenance and review boundaries.
+
 ## Knowledge governance
 
 Knowledge is versioned, source-bound, testable, reviewable and historically reproducible.
