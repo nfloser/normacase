@@ -31,11 +31,14 @@ public static class DemoHost
         builder.Logging.ClearProviders();
         var reviewCredential = SyntheticReviewCredential.Load(builder.Configuration);
         builder.Services.AddSingleton(reviewCredential);
-        if (reviewCredential.Enabled)
+        var persistentReviewEnabled = builder.Configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled");
+        if (persistentReviewEnabled)
         {
+            if (!reviewCredential.Enabled)
+                throw new InvalidOperationException("Persistent synthetic review requires the verified review identity boundary.");
             var reviewConnection = builder.Configuration.GetConnectionString("SyntheticReview");
             if (string.IsNullOrWhiteSpace(reviewConnection))
-                throw new InvalidOperationException("Synthetic review mode requires an explicit PostgreSQL connection.");
+                throw new InvalidOperationException("Persistent synthetic review requires an explicit PostgreSQL connection.");
             builder.Services.AddSingleton(Npgsql.NpgsqlDataSource.Create(reviewConnection));
         }
         builder.Services.AddAuthentication(SyntheticReviewAuthentication.SchemeName)
@@ -90,7 +93,8 @@ public static class DemoHost
             app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal user) =>
                 Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId }))
                 .RequireAuthorization();
-            SyntheticReviewEndpoints.Map(app, packs, platformVersion);
+            if (persistentReviewEnabled)
+                SyntheticReviewEndpoints.Map(app, packs, platformVersion);
         }
 
         app.UseDefaultFiles();
