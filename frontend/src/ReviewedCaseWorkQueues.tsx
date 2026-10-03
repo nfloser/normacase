@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { parse } from 'lossless-json';
 import de from './de.json';
 import type { Pack } from './model';
@@ -68,7 +68,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     } catch {setError(de.networkError);return null;}
     finally {setBusy(false);}
   }
-  async function login(event:React.FormEvent){
+  async function login(event:FormEvent){
     event.preventDefault();setError('');setNotice('');
     const candidate=credentialInput;
     if(!candidate){setError(text.credentialRequired);return;}
@@ -105,9 +105,10 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       });
       if(response.status===401){clearSession(text.authenticationExpired);return;}
       if(response.status===409){
-        setError(await message(response,text.conflict));
+        const conflictMessage=await message(response,text.conflict);
         await loadQueues(credential);
         await loadDetail(detail.caseId,credential);
+        setError(conflictMessage);
         return;
       }
       if(response.status===403){setError(await message(response,text.forbidden));return;}
