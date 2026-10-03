@@ -86,6 +86,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     if(result.kind==='unauthorized'){clearSession(text.loginExpired);setAvailable(true);return;}
     if(result.kind==='forbidden'){setMessage(text.forbidden);setBusy(false);return;}
     if(result.kind==='conflict'){
+      setDetail(null);
       setMessage(text.conflict);
       await loadQueues();
       await loadDetail(detail.caseId);
