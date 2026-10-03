@@ -112,6 +112,24 @@ Preferred baseline:
 
 The domain and rule core remain independent from UI, persistence and web-framework details.
 
+## Integration architecture
+
+NormaCase is integration-ready but vendor-neutral. A productive installation may use the NormaCase UI, expose the application headlessly behind an existing host UI, or combine both.
+
+External systems cross an anti-corruption boundary before their data reaches platform contracts:
+
+```text
+external system / standard
+-> versioned adapter contract
+-> validation + identity/provenance mapping
+-> canonical NormaCase case/evidence model
+-> application / deterministic core
+```
+
+Inbound and outbound contracts preserve correlation, idempotency and provenance. REST/HTTP, events/messages and bounded file interchange are transport choices at adapters, not Domain concepts. External vendor field names, status codes and authentication schemes must not become rule or Domain semantics.
+
+Concrete vendor or institution adapters are implemented only from authoritative specifications and approved access. Until then, integration contracts are proven with materially different synthetic adapters and contract tests so external access does not block the generic product critical path.
+
 ## Product language
 
 - German (de-DE) is the default for the complete user-facing product: navigation, forms, field labels, validation and error messages, workflow/status descriptions, human-readable Decision Traces, reports, exports and user help.
@@ -137,12 +155,15 @@ Rule tests must exercise unknown paths and boundaries, not just code coverage.
 4. Generic case/evidence/workflow/audit platform.
 5. At least three materially different synthetic Knowledge Packs.
 6. Public-reference packs based on official sources.
-7. Generic intake/normalization boundary and case lifecycle separated from assessment outcomes.
-8. Work-queue and approval/review product flow using synthetic data.
-9. Standards-based or institution-specific integration adapters only from authoritative interface contracts.
-10. Authentication, authorization, operational persistence and security/privacy hardening.
-11. Domain-expert validation.
-12. Controlled pilot only after security, privacy, integration and domain review.
+7. Generic case lifecycle and normalized intake boundary separated from assessment outcomes.
+8. Versioned deterministic routing from recorded facts into explicit process transitions.
+9. Persistent work-queue and case-drill-down product flow using synthetic data.
+10. Authenticated/authorized human approval with append-only audit and concurrency control.
+11. Versioned outbound integration and a full synthetic inbound-to-outbound roundtrip.
+12. Standards-based or institution-specific adapters only from authoritative interface contracts.
+13. Security/privacy hardening and operational deployment validation.
+14. Domain-expert validation.
+15. Controlled pilot only after security, privacy, integration and domain review.
 
 The first functional slice is synthetic: Knowledge Pack -> schema -> structured case -> rule evaluation -> outcome -> Decision Trace -> source reference.
 
