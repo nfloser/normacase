@@ -24,3 +24,5 @@
 .work-queues article { border-top:1px solid #d8dee5; margin-top:1rem; padding-top:1rem; overflow-wrap:anywhere; }
 @media(max-width:650px) { .queue-grid { grid-template-columns:1fr; } }
 .work-queues { margin:22px 0; }
+
+.reviewed-work-queues{margin:22px 0}.reviewed-work-queues article{border-top:1px solid #d8dee5;margin-top:1rem;padding-top:1rem;overflow-wrap:anywhere}.review-session{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}.review-audit{padding-left:1.25rem}.review-audit li{padding:.6rem 0;overflow-wrap:anywhere}.review-audit span{display:block;font-size:.8rem}.review-actions textarea{font:inherit;min-height:90px;resize:vertical;padding:.7rem;border:1px solid #cad7cf;border-radius:6px;max-width:100%}.review-actions textarea:focus-visible{outline:3px solid #57b4a1;outline-offset:3px}.reviewed-work-queues .actions{flex-wrap:wrap}.review-notice{padding:.8rem;background:#eaf1ed;border-radius:6px}.review-login{max-width:520px}

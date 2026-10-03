@@ -192,3 +192,10 @@ For a repeatable product presentation, use the
 [German synthetic pitch runbook](docs/development/PITCH_DEMO.de.md). It walks the
 same four case states exercised by CI and keeps the demonstration explicitly
 separate from public-reference or production domain knowledge.
+
+## Persistente synthetische Review-Demo
+
+Die [lokale Review-Anleitung](docs/development/SYNTHETIC_REVIEW.de.md) beschreibt
+PostgreSQL-Start, Anmeldung, individuelle Freigabe und append-only Override im
+Browser. Der normale Vorschau-Modus funktioniert weiterhin ohne Datenbank und
+Schlüssel. Ausschließlich synthetische Daten; keine produktive MD-Freigabe.

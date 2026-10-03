@@ -1,7 +1,7 @@
 # Lokale Authentifizierung für synthetische Fallprüfung
 
 Status: Authentifizierungsgrenze implementiert; die persistente synthetische
-HTTP-Fallprüfung ist separat opt-in. Die Oberflächenanbindung folgt in #138.
+HTTP-Fallprüfung ist separat opt-in. Die deutsche Oberfläche ist über den optionalen Review-Modus angebunden.
 Ausschließlich synthetische Daten.
 
 ## Betriebsmodi
@@ -63,7 +63,15 @@ Case-/Process-/Audit-Revisionen und einen Grund; Actor, Review-ID und UTC-Zeitpu
 stammen ausschließlich von der vertrauenswürdigen Servergrenze. Veraltete Revisionen
 werden mit 409 abgewiesen.
 
-#138 verbindet diesen Backend-Slice als Nächstes mit der deutschen Oberfläche.
+Die Oberfläche hält den Schlüssel ausschließlich im Arbeitsspeicher, entfernt das
+maskierte Eingabefeld nach erfolgreicher Anmeldung und speichert keine Cookies,
+localStorage oder sessionStorage. Abmeldung/Unmount brechen laufende Anfragen ab;
+verspätete Antworten dürfen keinen Fallstand oder Akteur wieder einsetzen.
+Review-Commands verwenden die angezeigten exakten Revisionen als Strings, eine
+Begründung und beim Override ein ausdrücklich gewähltes Ergebnis. Keine
+optimistische Falländerung; 409 lädt den committed Stand neu, 401 beendet die Sitzung.
+403 zeigt einen begrenzten deutschen Hinweis ohne serverseitigen Inhalt zu spiegeln.
+Die Anleitung steht in [synthetischer Review-Demo](../development/SYNTHETIC_REVIEW.de.md).
 Produktiver Betrieb benötigt weiterhin eine institutionell geprüfte Identitäts-,
 Berechtigungs- und Datenschutzkonzeption (#119).
 

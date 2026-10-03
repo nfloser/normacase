@@ -81,3 +81,13 @@ overrides or batch actions. Issue #116 remains open for those subsequent slices.
 Authorized review transactions are specified in [CASE_REVIEW.md](CASE_REVIEW.md).
 The current HTTP demo remains read-only; future queue refreshes must use the
 successfully committed process returned by that boundary.
+
+## Optional persistent synthetic workbench
+
+The separate `ReviewedCaseWorkQueues` consumes only authenticated `/api/review/*`
+read models and server-provided allowed actions. It renders the unchanged original
+assessment separately from the append-only human-review audit. Commands carry exact
+case/process/audit revision strings and explicit reason/outcome; identity and time
+remain server-owned. Queue membership is refreshed from committed state. This does
+not reinterpret UNKNOWN, add batch approval or replace productive authorization.
+See [local synthetic review guide](../development/SYNTHETIC_REVIEW.de.md).

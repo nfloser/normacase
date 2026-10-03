@@ -1,6 +1,8 @@
 import { defineConfig } from '@playwright/test';
+import { randomBytes } from 'node:crypto';
 
-const credential = process.env.NORMACASE_REVIEW_E2E_CREDENTIAL;
+const credential = process.env.NORMACASE_REVIEW_E2E_CREDENTIAL ?? randomBytes(32).toString('base64');
+process.env.NORMACASE_REVIEW_E2E_CREDENTIAL = credential;
 const connection = process.env.NORMACASE_REVIEW_E2E_CONNECTION;
 if (!credential || !connection) throw new Error('Reviewed workbench test configuration is required');
 
