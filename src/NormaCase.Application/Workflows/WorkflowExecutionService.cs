@@ -56,6 +56,30 @@ public sealed class WorkflowExecutionService
             instance);
     }
 
+    public WorkflowExecutionSnapshot Capture(
+        WorkflowExecution execution)
+        => WorkflowExecutionSnapshot.Copy(execution);
+
+    public WorkflowExecution Restore(
+        WorkflowExecutionSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+
+        var definition = snapshot.RestoreDefinition();
+        var instance =
+            NormaCase.Domain.Workflow.WorkflowInstance.Restore(
+                definition,
+                snapshot.StateId,
+                snapshot.Revision);
+
+        return new(
+            snapshot.KnowledgePackId,
+            snapshot.KnowledgeRelease,
+            snapshot.Source,
+            definition,
+            instance);
+    }
+
     public WorkflowExecution Apply(
         WorkflowExecution execution,
         string transitionId)
