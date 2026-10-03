@@ -85,7 +85,14 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       method:'POST',headers:{'Content-Type':'application/json'},body
     });
     if(result.kind==='unauthorized'){clearSession(text.loginExpired);setAvailable(true);return;}
-    if(result.kind==='forbidden'){setMessage(text.forbidden);setBusy(false);return;}
+    if(result.kind==='forbidden'){
+      setDetail(null);
+      setMessage(text.forbidden);
+      await loadQueues();
+      await loadDetail(detail.caseId);
+      setMessage(text.forbidden);
+      setBusy(false);return;
+    }
     if(result.kind==='conflict'){
       setDetail(null);
       setMessage(text.conflict);
