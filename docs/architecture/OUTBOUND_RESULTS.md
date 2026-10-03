@@ -43,16 +43,48 @@ positive revisions and accepted-outcome consistency. Serialization/replay valida
 internal format only; it does not authenticate the producer or re-load current state.
 Historical messages must not be recreated using current knowledge under the same id.
 
-## Remaining delivery work (#120)
+## Delivery boundary
 
-This slice is not delivery. It adds no permissive exporter, public endpoint, durable
-outbox or claim of exactly-once semantics. The next slice must connect the result to
-at least two materially different synthetic sinks and a runnable inbound-to-outbound
-roundtrip, preserving external correlation and explicit replay identity.
+`ReviewedCaseDeliveryService` accepts only a validated `ReviewedCaseResult`, an
+explicit delivery id and an explicit destination id. The pair forms the stable delivery
+key. A committed terminal receipt is returned unchanged for an identical repeat.
+Reusing that key for different result content fails closed.
 
-A sink must distinguish accepted delivery, duplicate identical payload, conflicting
-reuse of identity and retryable transport failure. Transport failures must never alter
-the original assessment or imply a different medical/process outcome. A durable
-transactional outbox/delivery receipt boundary is needed before productive retry claims.
-Synchronous HTTP, asynchronous messages and bounded file interchange remain replaceable
-adapter choices. No MDconnect, MEDIKOS, SAP or other vendor API is invented.
+The application service calls a sink at most once per explicit invocation. It contains
+no timer, automatic retry loop, system clock, random id or network dependency.
+`RetryableFailure` is intentionally not committed, so a host may make a later explicit
+retry under its own bounded policy. `Delivered` and permanent `Rejected` results are
+committed. Delivery status is transport state only and never changes case, assessment,
+workflow or human-review semantics.
+
+Receipt persistence is represented by `IOutboundDeliveryReceiptStore`; Application
+does not choose a database or claim exactly-once delivery. The synthetic in-memory
+store uses atomic key commits. Downstream adapters receive the same stable delivery
+identity and must also suppress duplicate side effects for concurrent or replayed calls.
+
+## Synthetic adapters
+
+`NormaCase.SyntheticIntegration` proves the boundary with two materially different
+offline adapters:
+
+- `InMemoryReviewedCaseResultSink` models an asynchronous/message-style destination.
+  It records one side effect per delivery identity and can expose explicit delivered,
+  retryable-failure and rejected transport outcomes in tests.
+- `BoundedFileReviewedCaseResultSink` writes the strict versioned
+  `ReviewedCaseResultJson` payload to a deterministic SHA-256-derived filename. It
+  never derives a filename from upstream identifiers, caps payloads at 64 KiB and
+  treats an existing different payload under the same delivery identity as a conflict.
+
+These are synthetic adapters, not productive transports. A synchronous HTTP adapter,
+message broker adapter or governed file exchange can implement the same sink contract
+later without entering Domain or RuleEngine. Authentication, authorization, durable
+outbox policy and vendor-specific protocol details remain host/adapter concerns.
+
+## Remaining roundtrip work (#120)
+
+The delivery boundary does not expose a public exporter and does not claim productive
+exactly-once semantics. Issue #120 still needs one runnable synthetic path from inbound
+normalization through deterministic assessment, routing, persistent human review and
+this outbound delivery boundary, preserving correlation and replay identity.
+
+No MDconnect, MEDIKOS, SAP or other vendor API is invented.

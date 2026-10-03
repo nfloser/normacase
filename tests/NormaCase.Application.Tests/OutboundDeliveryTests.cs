@@ -28,6 +28,21 @@ public sealed class OutboundDeliveryTests
     }
 
     [Fact]
+    public async Task Concurrent_identical_delivery_creates_one_message_side_effect()
+    {
+        var sink = new InMemoryReviewedCaseResultSink("synthetic-message-sink");
+        var service = new ReviewedCaseDeliveryService(new InMemoryOutboundDeliveryReceiptStore());
+        var request = new OutboundDeliveryRequest("delivery-concurrent", sink.DestinationId, Sample());
+
+        var results = await Task.WhenAll(
+            Enumerable.Range(0, 8).Select(_ => service.DeliverAsync(request, sink)));
+
+        Assert.All(results, item => Assert.Equal(OutboundDeliveryStatus.Delivered, item.Status));
+        Assert.Single(sink.Deliveries);
+        Assert.All(results, item => Assert.Equal(results[0], item));
+    }
+
+    [Fact]
     public async Task Conflicting_reuse_of_delivery_identity_fails_closed()
     {
         var sink = new InMemoryReviewedCaseResultSink("synthetic-message-sink");

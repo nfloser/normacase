@@ -28,7 +28,9 @@ src/
   NormaCase.Domain/       framework-independent case/decision/workflow/audit contracts
   NormaCase.Knowledge/    Knowledge Pack model, loader and validation
   NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
-  NormaCase.Application/  storage-neutral assessment execution records
+  NormaCase.Application/  storage-neutral assessment, review and outbound contracts
+  NormaCase.SyntheticIntegration/
+                         offline synthetic message/file integration adapters
   NormaCase.Replay/       portable snapshot capture and verified offline replay
   NormaCase.Persistence.PostgreSql/
                          append-only PostgreSQL assessment record adapter
