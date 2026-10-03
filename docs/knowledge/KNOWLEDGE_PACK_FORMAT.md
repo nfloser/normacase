@@ -32,6 +32,11 @@ All five packs are `SYNTHETIC`.
 
 Release lifecycle and validation level are independent. Lifecycle states are `DRAFT`, `IN_REVIEW`, `APPROVED`, `ACTIVE`, `DEPRECATED` and `RETIRED`.
 
+The platform's in-memory release catalog treats `packId` + `releaseId` as the exact
+historical identity. Several releases of one pack may coexist; there is deliberately
+no implicit latest/current selection. Registering different JSON under an existing
+identity is rejected, while an exact-byte duplicate is idempotent.
+
 Validation levels currently recognized by the loader are:
 - `SYNTHETIC`
 - `PUBLIC_REFERENCE`
