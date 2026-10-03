@@ -28,7 +28,7 @@ endpoint. The existing synthetic demo remains read-only.
 ## One atomic aggregate
 
 `ICaseReviewTransactionStore.ExecuteAsync` must lock the authoritative case aggregate,
-load its current immutable assessment, assessment's recorded case-input revision,
+verify stored integrity, then load its current immutable assessment, assessment's recorded case-input revision,
 process and audit trail, invoke the update once and atomically commit process plus audit.
 The assessment-to-case revision association is persisted metadata, never reconstructed
 from the incoming command or current process revision. Missing aggregates fail rather
@@ -64,7 +64,7 @@ case-input revision/assessment rather than editing the old assessment.
 Synthetic tests cover accepted and overridden reviews, permission denial, stale
 revisions, one winner for competing commands, identity/revision binding, missing
 transition, duplicate review id, invalid override, backward time, cancellation,
-transaction failure and queue movement from the committed state. The lock-based store
+transaction/authorization failure, cancellation during authorization and queue movement from the committed state. The lock-based store
 is a test contract fixture only, not runtime persistence or a database substitute.
 Existing assessment replay remains independent from appended human decisions.
 

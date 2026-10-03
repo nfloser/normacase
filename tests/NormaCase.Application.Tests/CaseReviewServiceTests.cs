@@ -183,6 +183,28 @@ public sealed class CaseReviewServiceTests
     }
 
     [Fact]
+    public async Task Cancellation_during_authorization_and_authorizer_failure_roll_back()
+    {
+        var store = new ReferenceStore(Initial());
+        var original = store.State;
+        using var cancellation = new CancellationTokenSource();
+        var authorizer = new CallbackAuthorizer(() => { cancellation.Cancel(); return true; });
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => new CaseReviewService(store, authorizer)
+            .ReviewAsync(Actor, Command(), Workflow, Policy, cancellation.Token));
+        Assert.Same(original, store.State);
+        authorizer = new CallbackAuthorizer(() => throw new InvalidOperationException("Synthetic authorization failure"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => new CaseReviewService(store, authorizer)
+            .ReviewAsync(Actor, Command(), Workflow, Policy));
+        Assert.Same(original, store.State);
+    }
+
+    private sealed class CallbackAuthorizer(Func<bool> authorize) : ICaseReviewAuthorizer
+    {
+        public bool Authorize(AuthenticatedReviewActor actor, CaseReviewState state, CaseReviewCommand command, CaseReviewPolicy policy)
+            => authorize();
+    }
+
+    [Fact]
     public void Policy_detaches_mapping_and_rejects_unknown_dispositions()
     {
         var mappings = new Dictionary<HumanReviewDisposition, string> { [HumanReviewDisposition.Override] = "correct" };
@@ -228,6 +250,7 @@ public sealed class CaseReviewServiceTests
                 cancellationToken.ThrowIfCancellationRequested();
                 var next = update(State);
                 if (FailBeforeCommit) throw new InvalidOperationException("Synthetic transaction failure");
+                cancellationToken.ThrowIfCancellationRequested();
                 State = next;
                 return Task.FromResult(State);
             }

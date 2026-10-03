@@ -37,7 +37,8 @@ public interface ICaseReviewTransactionStore
 {
     /// <summary>
     /// Lock the authoritative case aggregate, load its assessment/process/audit, invoke update once,
-    /// and atomically commit the returned process and audit. Preserve the original assessment and audit
+    /// and atomically commit the returned process and audit after a final cancellation check. Verify persisted
+    /// integrity and the authoritative assessment/input-revision association on load. Preserve the original assessment and audit
     /// prefix. Exceptions/cancellation roll back all writes. Serialize competing updates to the same case.
     /// Never silently retry the command against newer revisions. Missing cases must fail, never initialize.
     /// </summary>

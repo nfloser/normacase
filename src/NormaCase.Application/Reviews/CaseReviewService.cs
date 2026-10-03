@@ -52,6 +52,7 @@ public sealed class CaseReviewService
             var audit = current.Audit.Append(AssessmentAuditEvent.HumanReviewRecorded(
                 checked(command.ExpectedAuditRevision + 1), review));
             var process = current.Process.Apply(workflow, command.ExpectedProcessRevision, transition);
+            cancellationToken.ThrowIfCancellationRequested();
             return new(current.Assessment, current.AssessmentCaseRevision, process, audit);
         }, cancellationToken);
     }
