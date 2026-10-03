@@ -56,10 +56,11 @@ Authorization remains outside the domain contract. An application layer must ver
 assessment-record and append-only audit-store contracts without changing either
 domain model.
 
-Initialization requires an already persisted `AssessmentRecord`. The service creates
-sequence 1 from that record's exact assessment id and `RecordedAtUtc`; callers only
-supply the explicit actor id. It refuses duplicate initialization and does not invent
-a timestamp, id or fallback history.
+Initialization requires an already persisted `AssessmentRecord`. The service first
+verifies that the store actually returned the requested assessment identity, then
+creates sequence 1 from that record's exact assessment id and `RecordedAtUtc`;
+callers only supply the explicit actor id. It refuses duplicate initialization and
+does not invent a timestamp, id or fallback history.
 
 Recording a human review first constructs the existing `HumanReviewRecord`, so
 invalid actor, timestamp, disposition, reason or override combinations fail before
