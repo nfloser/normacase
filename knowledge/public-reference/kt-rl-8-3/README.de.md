@@ -50,6 +50,11 @@ Zwischenwerte wie `4,5` werden nicht als Pflegegrad interpretiert. Die historisc
 
 Die Nachweise werden getrennt von den fachlichen Fakten als Evidence-Status geführt.
 Ein fehlender oder widersprüchlicher Nachweis wird nicht in ein Nein umgedeutet.
+Die technischen Evidence-IDs bezeichnen dabei nur, dass die jeweilige strukturierte
+Tatsache belegt wurde; sie behaupten keine von der KT-RL vorgegebene Dokumentenform.
+Insbesondere ist `care_transition_classification_proof` ein technischer Sammelbezug
+für die beiden historischen Einstufungstatsachen und kein erfundener amtlicher
+Nachweistyp.
 
 ## Quellenzuordnung
 
