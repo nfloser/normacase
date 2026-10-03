@@ -169,16 +169,37 @@ public sealed class KnowledgePresentationLoaderTests
                 "de-DE"));
     }
 
-    [Fact]
-    public void Null_collection_entries_are_rejected_as_json()
+    [Theory]
+    [InlineData("example")]
+    [InlineData("field")]
+    [InlineData("output")]
+    public void Null_collection_entries_are_rejected_as_json(
+        string mutation)
     {
+        var demo = mutation == "output"
+            ? "demo-e"
+            : "demo-a";
         var node = JsonNode.Parse(
-            PresentationJson("demo-a"))!;
-        node["examples"]![0] = null;
+            PresentationJson(demo))!;
+
+        switch (mutation)
+        {
+            case "example":
+                node["examples"]![0] = null;
+                break;
+            case "field":
+                node["fields"]![
+                    "criterion_a"] = null;
+                break;
+            case "output":
+                node["outputs"]![
+                    "external_state"] = null;
+                break;
+        }
 
         Assert.Throws<JsonException>(
             () => _presentationLoader.LoadFromJson(
-                LoadPack("demo-a"),
+                LoadPack(demo),
                 node.ToJsonString(),
                 "de-DE"));
     }
