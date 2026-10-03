@@ -184,6 +184,20 @@ public sealed class KnowledgePresentationLoaderTests
     }
 
     [Fact]
+    public void Missing_required_json_property_fails_closed()
+    {
+        var node = JsonNode.Parse(
+            PresentationJson("demo-a"))!;
+        node.AsObject().Remove("description");
+
+        Assert.Throws<JsonException>(
+            () => _presentationLoader.LoadFromJson(
+                LoadPack("demo-a"),
+                node.ToJsonString(),
+                "de-DE"));
+    }
+
+    [Fact]
     public void Unknown_and_duplicate_json_properties_fail_closed()
     {
         var json = PresentationJson("demo-a");
