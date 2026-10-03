@@ -86,6 +86,29 @@ public sealed class SyntheticReviewHostTests
         Assert.Equal(2, persisted.RootElement.GetProperty("audit").GetArrayLength());
     }
 
+    [Fact]
+    public void Persistent_review_requires_verified_authentication()
+    {
+        using var host = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("SyntheticReview:PersistenceEnabled", "true");
+            builder.UseSetting("ConnectionStrings:SyntheticReview", "Host=127.0.0.1;Database=unused");
+        });
+        Assert.ThrowsAny<Exception>(() => host.CreateClient());
+    }
+
+    [Fact]
+    public void Persistent_review_requires_postgresql_configuration()
+    {
+        using var host = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("SyntheticReview:Enabled", "true");
+            builder.UseSetting("SyntheticReview:PersistenceEnabled", "true");
+            builder.UseSetting("SyntheticReview:Credential", Credential);
+        });
+        Assert.ThrowsAny<Exception>(() => host.CreateClient());
+    }
+
     private static WebApplicationFactory<Program> Factory(string connection)
         => new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
