@@ -235,6 +235,51 @@ public sealed class AssessmentReviewServiceTests
     }
 
     [Fact]
+    public async Task Review_metadata_is_validated_before_store_access()
+    {
+        var record = Assessment("assessment-review-invalid-metadata");
+        var records = new MemoryRecordStore(record);
+        var audits = new MemoryAuditStore();
+        var service = new AssessmentReviewService(records, audits);
+
+        await Assert.ThrowsAsync<ArgumentException>(
+            () => service.RecordReviewAsync(
+                new AssessmentReviewRequest(
+                    new ReviewId("review-invalid-metadata"),
+                    record.AssessmentId,
+                    " ",
+                    RecordedAt.AddMinutes(5),
+                    HumanReviewDisposition.AcceptSystemResult,
+                    "Synthetische Bestätigung.")));
+
+        Assert.Equal(0, records.LoadCalls);
+        Assert.Equal(0, audits.LoadCalls);
+        Assert.Equal(0, audits.AppendCalls);
+    }
+
+    [Fact]
+    public async Task Review_rejects_audit_history_not_bound_to_the_persisted_record_timestamp()
+    {
+        var record = Assessment("assessment-review-binding");
+        var mismatched = AssessmentAuditTrail.Start(
+            AssessmentAuditEvent.AssessmentCreated(
+                1,
+                record.AssessmentId,
+                record.RecordedAtUtc.AddMinutes(1),
+                "system:assessment-recorder"));
+        var records = new MemoryRecordStore(record);
+        var audits = new MemoryAuditStore(mismatched);
+        var service = new AssessmentReviewService(records, audits);
+
+        await Assert.ThrowsAsync<AssessmentReviewAuditBindingException>(
+            () => service.RecordReviewAsync(
+                Request(record.AssessmentId.Value)));
+
+        Assert.Equal(0, audits.AppendCalls);
+        Assert.Single(audits.Latest!.Events);
+    }
+
+    [Fact]
     public async Task Storage_conflicts_are_propagated_without_retrying_or_changing_the_event()
     {
         var record = Assessment("assessment-review-008");
@@ -303,6 +348,8 @@ public sealed class AssessmentReviewServiceTests
         private readonly Dictionary<AssessmentId, AssessmentRecord>
             _records = [];
 
+        public int LoadCalls { get; private set; }
+
         public MemoryRecordStore(
             params AssessmentRecord[] records)
         {
@@ -322,6 +369,7 @@ public sealed class AssessmentReviewServiceTests
             AssessmentId assessmentId,
             CancellationToken cancellationToken = default)
         {
+            LoadCalls++;
             _records.TryGetValue(
                 assessmentId,
                 out var record);
@@ -332,11 +380,19 @@ public sealed class AssessmentReviewServiceTests
     private sealed class MemoryAuditStore
         : IAssessmentAuditTrailStore
     {
+        public MemoryAuditStore(
+            AssessmentAuditTrail? latest = null)
+        {
+            Latest = latest;
+        }
+
         public AssessmentAuditTrail? Latest { get; private set; }
 
         public AssessmentAuditTrail? LastAttempted { get; private set; }
 
         public int AppendCalls { get; private set; }
+
+        public int LoadCalls { get; private set; }
 
         public Exception? FailNextAppend { get; set; }
 
@@ -360,10 +416,13 @@ public sealed class AssessmentReviewServiceTests
         public Task<AssessmentAuditTrail?> LoadLatestAsync(
             AssessmentId assessmentId,
             CancellationToken cancellationToken = default)
-            => Task.FromResult(
+        {
+            LoadCalls++;
+            return Task.FromResult(
                 Latest is not null
                     && Latest.AssessmentId == assessmentId
                     ? Latest
                     : null);
+        }
     }
 }
