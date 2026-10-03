@@ -77,3 +77,7 @@ protections cover both endpoints.
 This is deterministic in-memory synthetic demonstration data, recreated on restart.
 It has no authenticated productive case management, persistence, human approval,
 overrides or batch actions. Issue #116 remains open for those subsequent slices.
+
+Authorized review transactions are specified in [CASE_REVIEW.md](CASE_REVIEW.md).
+The current HTTP demo remains read-only; future queue refreshes must use the
+successfully committed process returned by that boundary.
