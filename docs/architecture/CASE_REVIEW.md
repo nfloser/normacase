@@ -72,3 +72,27 @@ Issue #134 covers this boundary. Issues #119 and #116 remain open for the durabl
 PostgreSQL aggregate adapter, reviewed authentication/authorization adapter, German
 HTTP/UI error mapping and productive multi-user integration. No real patient data or
 claim of productive approval readiness is introduced.
+
+## PostgreSQL aggregate adapter
+
+`PostgresCaseReviewStore` stores each committed process/audit aggregate in the
+append-only `case_review_versions` table (migration 004). The referenced immutable
+assessment must already exist in `assessment_records`; initialization compares its
+exact JSON and checksum before establishing the explicit assessment/input-revision
+association. Initialization is trusted intake/application work, never a public DTO.
+
+A transaction-scoped per-case advisory lock serializes initialization and review.
+Each review creates one new aggregate row containing process state and audit together.
+A rejected insert therefore cannot leave one half committed. UPDATE/DELETE are rejected
+by PostgreSQL triggers. Loading verifies contiguous aggregate versions, SHA-256 before
+strict deserialization, unchanged original assessment and input/workflow binding,
+contiguous process revisions, configured state edges and exact retained audit prefixes.
+The host resolves immutable workflow definitions by exact id/version.
+
+This aggregate owns the authoritative audit for its case-review path. The earlier
+independent assessment audit store remains a legacy/separate path; callers must not
+write the same case's review history through both stores. Existing history is not
+silently adopted. No migration of old independently recorded reviews is implied.
+Full historical verification currently reads the case's retained versions; indexing
+and snapshot optimization require measured need and must preserve these invariants.
+This adapter supplies persistence, not authentication or a public mutation API.
