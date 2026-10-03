@@ -41,7 +41,7 @@ public sealed class AssessmentRecorderTests
         evidence["verification"] = EvidenceStatus.Missing;
 
         Assert.Equal("assessment-001", record.AssessmentId.Value);
-        Assert.Equal("case-001", record.CaseId);
+        Assert.Equal(new CaseId("case-001"), record.CaseId);
         Assert.Equal("synthetic.demo-c", record.KnowledgePackId);
         Assert.Equal("test-platform-1", record.PlatformVersion);
         Assert.Equal(context.RecordedAtUtc, record.RecordedAtUtc);
@@ -165,4 +165,21 @@ public sealed class AssessmentRecorderTests
     private static NormaCase.Knowledge.Model.KnowledgePack Load(string demo)
         => new KnowledgePackLoader().LoadFromFile(
             Path.Combine(AppContext.BaseDirectory, "Fixtures", demo + "-pack.json"));
+    [Fact]
+    public void Default_case_identity_is_rejected_by_execution_context()
+    {
+        Assert.Throws<ArgumentException>(
+            () => new AssessmentExecutionContext(
+                new AssessmentId("assessment-default-case"),
+                default,
+                "test-platform",
+                new DateTimeOffset(
+                    2026,
+                    10,
+                    2,
+                    20,
+                    0,
+                    0,
+                    TimeSpan.Zero)));
+    }
 }
