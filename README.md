@@ -47,6 +47,7 @@ knowledge/
   demo-e/                 independent domain-output synthetic pack
   public-reference/
     pflege-adult-score/    narrow MD Bund adult weighted-score PUBLIC_REFERENCE pack
+    kt-rl-8-3/             narrow G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack
 
 docs/
   project/
@@ -80,7 +81,8 @@ The current core can:
 - model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
 - wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
 - persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
-- evaluate a narrowly scoped, source-pinned MD Bund adult weighted-score PUBLIC_REFERENCE pack without assigning a Pflegegrad or implying domain approval.
+- evaluate a narrowly scoped, source-pinned MD Bund adult weighted-score PUBLIC_REFERENCE pack without assigning a Pflegegrad or implying domain approval,
+- evaluate a narrowly scoped, source-pinned G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack without treating it as domain approval.
 
 ## Local verification
 
