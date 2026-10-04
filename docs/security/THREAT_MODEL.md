@@ -217,8 +217,12 @@ duplicate commands, verifies every case/assessment binding before the first muta
 and then reuses the single-case authorization/revision transaction for each item.
 Unknown and unreadable cases share one not-found response; result entries contain only
 case/review ids and bounded status codes. Committed earlier items remain committed on
-later failure. Whole-request idempotency is not yet durable, so automated retry is not
-claimed or exposed by a UI.
+later failure. PostgreSQL binds a stable request id append-only to actor, canonical
+request hash and server time, serializes concurrent retries and retains the exact final
+result separately. Recovery recognizes only a fully matching committed review; a
+newer revision alone is never success. Changed actor/payload reuse fails with a bounded
+409. This is replay safety for the synthetic host, not permission for unattended
+organizational bulk approval.
 
 ### Reviewed outbound result substitution
 

@@ -49,3 +49,10 @@ This is a generic platform control using synthetic data. It is not target deploy
 approval, a credential vault, a high-availability design or an institutional backup,
 update and rollback policy. Target operators remain responsible for secret delivery,
 TLS/network boundaries, monitoring, backups and controlled release orchestration.
+
+Batch request idempotency follows the same insert-only boundary. Request identity,
+actor, canonical hash and server time are inserted into `batch_review_requests`; the
+terminal bounded result is inserted once into `batch_review_results`. No application
+`UPDATE` is required. Database triggers reject mutation of both tables, while a
+session advisory lock only serializes concurrent use of one request identity and does
+not grant additional data privileges.

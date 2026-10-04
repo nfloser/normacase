@@ -1,6 +1,8 @@
 using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using NormaCase.Application.Reviews;
 using NormaCase.Domain.Audit;
 using NormaCase.Domain.Cases;
@@ -11,6 +13,8 @@ namespace NormaCase.Api;
 
 internal static class SyntheticBatchReviewEndpoints
 {
+    private static readonly Regex RequestIdPattern = new(
+        "\\A[A-Za-z0-9][A-Za-z0-9._@:-]*\\z", RegexOptions.CultureInvariant);
     private static readonly BatchReviewPolicy Policy = new(
         "synthetic-reviewed-batch-policy", 1,
         SyntheticReviewEndpoints.ReviewPolicy.Id,
@@ -18,8 +22,8 @@ internal static class SyntheticBatchReviewEndpoints
         BatchReviewPolicy.AbsoluteMaximumCommands,
         BatchReviewFailureMode.Continue);
 
-    internal static void Map(RouteGroupBuilder group, PostgresCaseReviewStore store,
-        SyntheticReviewCredential credential)
+    internal static void Map(RouteGroupBuilder group, Npgsql.NpgsqlDataSource source,
+        PostgresCaseReviewStore store, SyntheticReviewCredential credential)
     {
         group.MapPost("/batch-reviews", async (HttpContext context, CancellationToken token) =>
         {
@@ -46,33 +50,60 @@ internal static class SyntheticBatchReviewEndpoints
                     return DemoHost.Error("unknown_work_case", 404);
             }
 
-            var recordedAt = TimeProvider.System.GetUtcNow();
-            var commands = request.Items.Select(item => new CaseReviewCommand(
-                new(item.CaseId), new(item.AssessmentId), new(item.ReviewId),
-                item.ExpectedCaseRevision, item.ExpectedProcessRevision, item.ExpectedAuditRevision,
-                recordedAt,
-                item.Disposition == "ACCEPT_SYSTEM_RESULT"
-                    ? HumanReviewDisposition.AcceptSystemResult
-                    : HumanReviewDisposition.Override,
-                item.Reason, item.OverrideOutcome)).ToArray();
-
             try
             {
+                await using var lease = await new PostgresBatchReviewRequestStore(source).AcquireAsync(
+                    new(request.RequestId, actor.ActorId, Fingerprint(request),
+                        TimeProvider.System.GetUtcNow()), token);
+                if (lease.ResultJson is not null)
+                    return Results.Content(lease.ResultJson, "application/json", Encoding.UTF8);
+
+                var commands = request.Items.Select(item => new CaseReviewCommand(
+                    new(item.CaseId), new(item.AssessmentId), new(item.ReviewId),
+                    item.ExpectedCaseRevision, item.ExpectedProcessRevision, item.ExpectedAuditRevision,
+                    lease.RecordedAtUtc,
+                    item.Disposition == "ACCEPT_SYSTEM_RESULT"
+                        ? HumanReviewDisposition.AcceptSystemResult
+                        : HumanReviewDisposition.Override,
+                    item.Reason, item.OverrideOutcome)).ToArray();
+                var statuses = new Dictionary<ReviewId, BatchReviewItemStatus>();
+                var pending = new List<CaseReviewCommand>();
+                foreach (var command in commands)
+                {
+                    if (await IsExactCommit(store, actor, command, token))
+                        statuses.Add(command.ReviewId, BatchReviewItemStatus.Committed);
+                    else pending.Add(command);
+                }
+
                 var service = new BatchReviewService(new CaseReviewService(
                     store, new SyntheticReviewEndpoints.SyntheticAuthorizer(credential)));
-                var result = await service.ReviewAsync(actor, commands,
-                    SyntheticReviewEndpoints.Workflow, SyntheticReviewEndpoints.ReviewPolicy, Policy, token);
-                return Results.Json(new
+                if (pending.Count != 0)
                 {
-                    policyId = result.PolicyId,
-                    policyVersion = result.PolicyVersion.ToString(CultureInfo.InvariantCulture),
-                    items = result.Items.Select(item => new
+                    var attempted = await service.ReviewAsync(actor, pending,
+                        SyntheticReviewEndpoints.Workflow, SyntheticReviewEndpoints.ReviewPolicy, Policy, token);
+                    foreach (var item in attempted.Items)
                     {
-                        caseId = item.CaseId.Value,
-                        reviewId = item.ReviewId.Value,
-                        status = Status(item.Status)
-                    }).ToArray()
-                });
+                        var status = item.Status;
+                        if (status == BatchReviewItemStatus.Conflict)
+                        {
+                            var command = pending.Single(command => command.ReviewId == item.ReviewId);
+                            if (await IsExactCommit(store, actor, command, token))
+                                status = BatchReviewItemStatus.Committed;
+                        }
+                        statuses.Add(item.ReviewId, status);
+                    }
+                }
+
+                var result = new BatchReviewResult(Policy.Id, Policy.Version,
+                    commands.Select(command => new BatchReviewItemResult(
+                        command.CaseId, command.ReviewId, statuses[command.ReviewId])).ToArray());
+                var resultJson = SerializeResult(result);
+                await lease.CommitResultAsync(resultJson, token);
+                return Results.Content(resultJson, "application/json", Encoding.UTF8);
+            }
+            catch (BatchReviewRequestConflictException)
+            {
+                return DemoHost.Error("batch_request_conflict", 409);
             }
             catch (Exception exception) when (exception is ArgumentException or OverflowException)
             {
@@ -102,8 +133,10 @@ internal static class SyntheticBatchReviewEndpoints
                 memory.GetBuffer(), 0, checked((int)memory.Length));
             using var document = JsonDocument.Parse(json.StartsWith('\ufeff') ? json[1..] : json);
             var root = document.RootElement;
-            if (!IsObject(root, ["policyId", "policyVersion", "items"])) throw new FormatException();
-            if (RequiredString(root, "policyId", 128) != Policy.Id
+            if (!IsObject(root, ["requestId", "policyId", "policyVersion", "items"])) throw new FormatException();
+            var requestId = RequiredString(root, "requestId", 128);
+            if (!RequestIdPattern.IsMatch(requestId)
+                || RequiredString(root, "policyId", 128) != Policy.Id
                 || ParsePositiveInt(root, "policyVersion") != Policy.Version
                 || !root.TryGetProperty("items", out var itemsElement)
                 || itemsElement.ValueKind != JsonValueKind.Array
@@ -115,7 +148,7 @@ internal static class SyntheticBatchReviewEndpoints
             if (items.Select(item => item.CaseId).Distinct(StringComparer.Ordinal).Count() != items.Count
                 || items.Select(item => item.ReviewId).Distinct(StringComparer.Ordinal).Count() != items.Count)
                 throw new FormatException();
-            return (new(items.ToArray()), null);
+            return (new(requestId, items.ToArray()), null);
         }
         catch (Exception exception) when (exception is JsonException or DecoderFallbackException
             or OverflowException or FormatException or ArgumentException)
@@ -203,7 +236,50 @@ internal static class SyntheticBatchReviewEndpoints
         _ => throw new ArgumentOutOfRangeException(nameof(status))
     };
 
-    private sealed record BatchRequest(IReadOnlyList<BatchItem> Items);
+    private static async Task<bool> IsExactCommit(
+        PostgresCaseReviewStore store, AuthenticatedReviewActor actor,
+        CaseReviewCommand command, CancellationToken token)
+    {
+        var state = await store.LoadAsync(command.CaseId, token);
+        return state is not null && BatchReviewCommitRecognition.IsExact(state, actor, command);
+    }
+
+    private static string Fingerprint(BatchRequest request)
+    {
+        var canonical = JsonSerializer.Serialize(new
+        {
+            policyId = Policy.Id,
+            policyVersion = Policy.Version,
+            items = request.Items.Select(item => new
+            {
+                item.CaseId,
+                item.AssessmentId,
+                item.ReviewId,
+                item.ExpectedCaseRevision,
+                item.ExpectedProcessRevision,
+                item.ExpectedAuditRevision,
+                item.Disposition,
+                item.Reason,
+                overrideOutcome = item.OverrideOutcome?.ToString()
+            }).ToArray()
+        });
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(canonical)))
+            .ToLowerInvariant();
+    }
+
+    private static string SerializeResult(BatchReviewResult result) => JsonSerializer.Serialize(new
+    {
+        policyId = result.PolicyId,
+        policyVersion = result.PolicyVersion.ToString(CultureInfo.InvariantCulture),
+        items = result.Items.Select(item => new
+        {
+            caseId = item.CaseId.Value,
+            reviewId = item.ReviewId.Value,
+            status = Status(item.Status)
+        }).ToArray()
+    });
+
+    private sealed record BatchRequest(string RequestId, IReadOnlyList<BatchItem> Items);
     private sealed record BatchItem(
         string CaseId, string AssessmentId, string ReviewId,
         long ExpectedCaseRevision, long ExpectedProcessRevision, long ExpectedAuditRevision,

@@ -73,7 +73,7 @@ internal static class SyntheticReviewEndpoints
 
         var credential = app.Services.GetRequiredService<SyntheticReviewCredential>();
         var group = app.MapGroup("/api/review").RequireAuthorization();
-        SyntheticBatchReviewEndpoints.Map(group, store, credential);
+        SyntheticBatchReviewEndpoints.Map(group, source, store, credential);
 
         group.MapGet("/work-queues", async (HttpContext context, CancellationToken token) =>
         {

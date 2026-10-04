@@ -188,6 +188,7 @@ public sealed class SyntheticReviewHostTests
         Assert.Equal(new[] { "ACCEPT_SYSTEM_RESULT" }, detail.RootElement.GetProperty("allowedActions").EnumerateArray().Select(item => item.GetString()));
         var hiddenBatch = await client.PostAsJsonAsync("/api/review/batch-reviews", new
         {
+            requestId = "batch-alice-hidden-request",
             policyId = "synthetic-reviewed-batch-policy", policyVersion = "1",
             items = new object[]
             {
@@ -220,6 +221,7 @@ public sealed class SyntheticReviewHostTests
         Assert.Equal(HttpStatusCode.Forbidden,
             (await client.PostAsJsonAsync("/api/review/batch-reviews", new
             {
+                requestId = "batch-bob-no-grant-request",
                 policyId = "synthetic-reviewed-batch-policy", policyVersion = "1",
                 items = new[]
                 {
@@ -243,6 +245,7 @@ public sealed class SyntheticReviewHostTests
 
         var request = new
         {
+            requestId = "batch-review-replay-safe",
             policyId = "synthetic-reviewed-batch-policy",
             policyVersion = "1",
             items = new object[]
@@ -252,6 +255,7 @@ public sealed class SyntheticReviewHostTests
                 BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "batch-review-stale", "0")
             }
         };
+        string terminalBody;
         await using (var legacy = Factory(connection))
         {
             using var client = legacy.CreateClient();
@@ -268,9 +272,14 @@ public sealed class SyntheticReviewHostTests
 
             using var client = host.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
-            var response = await client.PostAsJsonAsync("/api/review/batch-reviews", request);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            var responses = await Task.WhenAll(
+                client.PostAsJsonAsync("/api/review/batch-reviews", request),
+                client.PostAsJsonAsync("/api/review/batch-reviews", request));
+            Assert.All(responses, response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
+            var bodies = await Task.WhenAll(responses.Select(response => response.Content.ReadAsStringAsync()));
+            Assert.Equal(bodies[0], bodies[1]);
+            terminalBody = bodies[0];
+            using var json = JsonDocument.Parse(terminalBody);
             Assert.Equal("synthetic-reviewed-batch-policy", json.RootElement.GetProperty("policyId").GetString());
             Assert.Equal("1", json.RootElement.GetProperty("policyVersion").GetString());
             Assert.Equal(
@@ -285,23 +294,46 @@ public sealed class SyntheticReviewHostTests
             Assert.Equal(HttpStatusCode.BadRequest,
                 (await client.PostAsJsonAsync("/api/review/batch-reviews", new
                 {
-                    policyId = "synthetic-reviewed-batch-policy", policyVersion = "1", items = oversized
+                    requestId = "batch-oversized", policyId = "synthetic-reviewed-batch-policy",
+                    policyVersion = "1", items = oversized
                 })).StatusCode);
             Assert.Equal(HttpStatusCode.BadRequest,
                 (await client.PostAsJsonAsync("/api/review/batch-reviews", new
                 {
-                    policyId = "other-policy", policyVersion = "1", items = new[]
+                    requestId = "batch-wrong-policy", policyId = "other-policy", policyVersion = "1", items = new[]
                     {
                         BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "wrong-policy")
                     }
                 })).StatusCode);
+            var changedReuse = await client.PostAsJsonAsync("/api/review/batch-reviews", new
+            {
+                requestId = "batch-review-replay-safe",
+                policyId = "synthetic-reviewed-batch-policy",
+                policyVersion = "1",
+                items = new[]
+                {
+                    BatchItem("demo-g-supported", "assessment-demo-g-supported", "changed-review-id")
+                }
+            });
+            Assert.Equal(HttpStatusCode.Conflict, changedReuse.StatusCode);
+            using var changedJson = JsonDocument.Parse(await changedReuse.Content.ReadAsStringAsync());
+            Assert.Equal("batch_request_conflict", changedJson.RootElement.GetProperty("code").GetString());
         }
 
         await using var restarted = BatchFactory(connection);
         using var afterRestart = restarted.CreateClient();
         afterRestart.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+        var replayed = await afterRestart.PostAsJsonAsync("/api/review/batch-reviews", request);
+        Assert.Equal(HttpStatusCode.OK, replayed.StatusCode);
+        var replayBody = await replayed.Content.ReadAsStringAsync();
+        Assert.Equal(terminalBody, replayBody);
+        using (var replayJson = JsonDocument.Parse(replayBody))
+            Assert.Equal(new[] { "COMMITTED", "POLICY_REJECTED", "CONFLICT" },
+                replayJson.RootElement.GetProperty("items").EnumerateArray()
+                    .Select(item => item.GetProperty("status").GetString()).ToArray());
         using var committed = JsonDocument.Parse(await afterRestart.GetStringAsync("/api/review/work-cases/demo-g-supported"));
         Assert.Equal("accepted", committed.RootElement.GetProperty("stateId").GetString());
+        Assert.Equal(2, committed.RootElement.GetProperty("audit").GetArrayLength());
         Assert.Equal("synthetic-local:user-batch-reviewer", committed.RootElement.GetProperty("audit")
             .EnumerateArray().Last().GetProperty("actorId").GetString());
         using var untouched = JsonDocument.Parse(await afterRestart.GetStringAsync("/api/review/work-cases/demo-g-incomplete"));

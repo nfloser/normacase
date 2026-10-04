@@ -90,9 +90,13 @@ exakte versionierte Serverpolicy begrenzt eine Anfrage auf 100 Elemente. Unlesba
 und unbekannte Fälle sind nicht unterscheidbar und die vollständige Fall-/Assessment-
 Bindung wird vor der ersten Änderung geprüft. Falltransaktionen bleiben voneinander
 getrennt; bekannte lokale Fehler werden ohne Fallinhalte als begrenzte Statuswerte
-zurückgegeben. Die API speichert noch keine idempotente Gesamtanfrage. Ein Retry kann
-daher bereits übernommene Elemente als Konflikt melden und darf nicht als automatischer
-Erfolg interpretiert werden.
+zurückgegeben. Eine stabile `requestId` wird append-only an Akteur, kanonischen
+Request-Hash und den ersten serverseitigen Zeitpunkt gebunden. Parallele identische
+Anfragen werden per PostgreSQL-Advisory-Lock serialisiert; das terminale Ergebnis wird
+separat append-only gespeichert und bei Retry oder Neustart exakt zurückgegeben.
+Geänderter Inhalt oder ein anderer Akteur unter derselben ID liefert 409. Nach einer
+Unterbrechung gilt ein Fall nur dann als bereits übernommen, wenn sämtliche
+Review-Felder einschließlich ID, Akteur und gespeichertem Zeitpunkt übereinstimmen.
 
 Die Oberfläche hält den Schlüssel ausschließlich im Arbeitsspeicher, entfernt das
 maskierte Eingabefeld nach erfolgreicher Anmeldung und speichert keine Cookies,
