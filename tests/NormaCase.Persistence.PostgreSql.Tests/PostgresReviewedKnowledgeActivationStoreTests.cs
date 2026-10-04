@@ -92,8 +92,8 @@ public sealed class PostgresReviewedKnowledgeActivationStoreTests
             catch (KnowledgeGovernanceConflictException) { return false; }
         }
         var results = await Task.WhenAll(proposals.Select(Attempt));
-        Assert.Single(results.Where(result => result));
-        Assert.Single(results.Where(result => !result));
+        Assert.Single(results, result => result);
+        Assert.Single(results, result => !result);
         Assert.Equal(1, (await store.LoadActiveAsync(artifact.PackId))!.Revision);
         Assert.Null(await store.LoadActivationAsync(artifact.PackId, 2));
     }
