@@ -35,6 +35,22 @@ public sealed class ReviewedEntitlementChangeTests
     }
 
     [Fact]
+    public async Task Pending_query_is_explicitly_bounded()
+    {
+        var store = new RecordingStore();
+        var service = new ReviewedEntitlementChangeService(
+            store, new(RequireDistinctDecisionActor: true));
+        await service.ProposeAsync(Proposal("synthetic-local:administrator"));
+
+        var pending = await service.ListPendingAsync(25);
+
+        Assert.Single(pending);
+        Assert.Equal(25, store.PendingLimit);
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => service.ListPendingAsync(0));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => service.ListPendingAsync(101));
+    }
+
+    [Fact]
     public void Proposal_detaches_and_validates_complete_entitlement_sets()
     {
         var actions = new[] { "READ", "ACCEPT" };
@@ -70,6 +86,7 @@ public sealed class ReviewedEntitlementChangeTests
         private EntitlementChangeProposal? proposal;
         internal EntitlementChangeDecision? Decision { get; private set; }
         internal bool RequireDistinctDecisionActor { get; private set; }
+        internal int PendingLimit { get; private set; }
 
         public Task<EntitlementChangeRecord> ProposeAsync(
             EntitlementChangeProposal proposal, CancellationToken cancellationToken = default)
@@ -90,6 +107,16 @@ public sealed class ReviewedEntitlementChangeTests
         public Task<EntitlementChangeRecord?> LoadChangeAsync(
             string changeId, CancellationToken cancellationToken = default)
             => Task.FromResult(proposal is null ? null : new EntitlementChangeRecord(proposal, Decision));
+
+        public Task<IReadOnlyList<EntitlementChangeRecord>> ListPendingAsync(
+            int limit, CancellationToken cancellationToken = default)
+        {
+            PendingLimit = limit;
+            IReadOnlyList<EntitlementChangeRecord> result = proposal is null || Decision is not null
+                ? []
+                : [new EntitlementChangeRecord(proposal, null)];
+            return Task.FromResult(result);
+        }
 
         public Task<IdentityEntitlementState> LoadEffectiveAsync(
             string actorId, CancellationToken cancellationToken = default)
