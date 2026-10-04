@@ -183,11 +183,12 @@ administrator may suspend or reactivate exact configured users. Current state an
 change are retained as revision-checked append-only PostgreSQL audit. Authentication
 checks current state on every protected request, so restart is not needed for suspension.
 This does not revoke a credential outside NormaCase, provide productive session/token
-revocation or establish institutional administrator roles. Reviewed entitlement-change
-storage can require a distinct proposal and decision actor and rejects stale approvals
-under a per-target transaction lock. Those records are not yet a live authorization
-source: connecting them without transaction-safe current-revision enforcement would
-create a time-of-check/time-of-use gap. See
+revocation or establish institutional administrator roles. Reviewed entitlement changes
+use separately configured proposal and decision credentials; each endpoint rechecks the
+verified server identity. Pending work is bounded, caller-supplied actor/time fields are
+not accepted, and stale approvals fail under a per-target transaction lock. Approved
+records are not yet a live authorization source: connecting them without transaction-safe
+current-revision enforcement would create a time-of-check/time-of-use gap. See
 [identity access administration](../architecture/IDENTITY_ACCESS_ADMINISTRATION.md).
 
 The German administration view is not an authorization boundary. It appears only for

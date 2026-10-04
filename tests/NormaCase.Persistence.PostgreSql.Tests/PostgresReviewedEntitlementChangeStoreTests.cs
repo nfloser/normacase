@@ -59,11 +59,13 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         var rejected = Proposal("entitlement-" + Guid.NewGuid().ToString("N"), actor, 0,
             "synthetic-local:access-proposer", "demo-g-not-supported");
         await store.ProposeAsync(rejected);
+        Assert.Equal(rejected.ChangeId, (await store.ListPendingAsync(100)).Single().Proposal.ChangeId);
         await Assert.ThrowsAsync<EntitlementSeparationOfDutiesException>(() => store.DecideAsync(new(
             rejected.ChangeId, rejected.ProposerActorId,
             new DateTimeOffset(2026, 10, 4, 12, 1, 0, TimeSpan.Zero), true, "Unzulässige Selbstfreigabe"), true));
         await store.DecideAsync(new(rejected.ChangeId, "synthetic-local:access-approver",
             new DateTimeOffset(2026, 10, 4, 12, 2, 0, TimeSpan.Zero), false, "Synthetisch abgelehnt"), true);
+        Assert.Empty(await store.ListPendingAsync(100));
         Assert.Equal(0, (await store.LoadEffectiveAsync(actor)).Revision);
 
         var winner = Proposal("entitlement-" + Guid.NewGuid().ToString("N"), actor, 0,

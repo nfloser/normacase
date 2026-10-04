@@ -164,6 +164,38 @@ public sealed class PostgresReviewedEntitlementChangeStore(
         }
     }
 
+    public async Task<IReadOnlyList<EntitlementChangeRecord>> ListPendingAsync(
+        int limit, CancellationToken cancellationToken = default)
+    {
+        if (limit is < 1 or > 100) throw new ArgumentOutOfRangeException(nameof(limit));
+        try
+        {
+            await using var command = dataSource.CreateCommand(
+                """
+                SELECT c.change_id, c.target_actor_id, c.expected_entitlement_revision,
+                       c.actions, c.case_ids, c.proposer_actor_id, c.proposed_at_utc, c.reason
+                FROM normacase.identity_entitlement_changes c
+                LEFT JOIN normacase.identity_entitlement_decisions d ON d.change_id=c.change_id
+                WHERE d.change_id IS NULL
+                ORDER BY c.proposed_at_utc, c.change_id
+                LIMIT $1;
+                """);
+            command.Parameters.AddWithValue(limit);
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            var result = new List<EntitlementChangeRecord>();
+            while (await reader.ReadAsync(cancellationToken))
+                result.Add(new(new(
+                    reader.GetString(0), reader.GetString(1), reader.GetInt64(2),
+                    reader.GetFieldValue<string[]>(3), reader.GetFieldValue<string[]>(4),
+                    reader.GetString(5), Utc(reader.GetDateTime(6)), reader.GetString(7)), null));
+            return result;
+        }
+        catch (Exception exception) when (exception is NpgsqlException or InvalidOperationException)
+        {
+            throw new EntitlementChangeStorageException();
+        }
+    }
+
     private static async Task<EntitlementChangeProposal?> LoadProposalAsync(
         NpgsqlConnection connection, NpgsqlTransaction? transaction, string changeId,
         bool lockRow, CancellationToken cancellationToken)

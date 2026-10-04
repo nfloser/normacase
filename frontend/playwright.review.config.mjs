@@ -4,9 +4,11 @@ import { randomBytes } from 'node:crypto';
 const credential = process.env.NORMACASE_REVIEW_E2E_CREDENTIAL ?? randomBytes(32).toString('base64');
 const otherCredential = process.env.NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL ?? randomBytes(32).toString('base64');
 const administratorCredential = process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL ?? randomBytes(32).toString('base64');
+const entitlementApproverCredential = process.env.NORMACASE_REVIEW_E2E_ENTITLEMENT_APPROVER_CREDENTIAL ?? randomBytes(32).toString('base64');
 process.env.NORMACASE_REVIEW_E2E_CREDENTIAL = credential;
 process.env.NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL = otherCredential;
 process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL = administratorCredential;
+process.env.NORMACASE_REVIEW_E2E_ENTITLEMENT_APPROVER_CREDENTIAL = entitlementApproverCredential;
 const connection = process.env.NORMACASE_REVIEW_E2E_CONNECTION;
 if (!credential || !connection) throw new Error('Reviewed workbench test configuration is required');
 
@@ -43,6 +45,7 @@ export default defineConfig({
       SyntheticReview__KnowledgeAdministration__PROPOSE: 'synthetic-local:user-alice',
       SyntheticReview__KnowledgeAdministration__REVIEW: 'synthetic-local:user-bob',
       SyntheticReview__KnowledgeAdministration__ACTIVATE: 'synthetic-local:user-bob',
+      SyntheticReview__EntitlementApprover__Credential: entitlementApproverCredential,
       ConnectionStrings__SyntheticReview: connection
     }
   },
