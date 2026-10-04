@@ -112,7 +112,11 @@ folgenden Einstellungen aktiviert:
 ```text
 SyntheticReview__Enabled=true
 SyntheticReview__PersistenceEnabled=true
-SyntheticReview__Credential=<kanonische Base64-Kodierung von 32 Zufallsbytes>
+SyntheticReview__Users__alice__Credential=<kanonische Base64-Kodierung von 32 Zufallsbytes>
+SyntheticReview__Users__alice__Actions__0=READ
+SyntheticReview__Users__alice__CaseIds__0=demo-g-supported
+SyntheticReview__Administrator__Credential=<getrennter Zufallsschlüssel>
+SyntheticReview__EntitlementApprover__Credential=<getrennter Zufallsschlüssel>
 ConnectionStrings__SyntheticReview=<lokale PostgreSQL-Verbindung>
 ConnectionStrings__SyntheticReviewMigrations=<optionale getrennte Migrationsverbindung>
 ```
@@ -131,6 +135,10 @@ Geschützte Endpunkte:
 - `GET /api/review/work-cases/{caseId}`
 - `POST /api/review/work-cases/{caseId}/reviews`
 - `POST /api/review/batch-reviews`
+- `GET /api/review/administration/entitlement-changes/context`
+- `POST /api/review/administration/entitlement-changes/`
+- `GET /api/review/administration/entitlement-changes/pending`
+- `POST /api/review/administration/entitlement-changes/{changeId}/decision`
 
 Die autorisierte Queue-Projektion enthält neben Fall-, Assessment-, Case- und
 Prozessrevision die aktuelle `auditRevision`. `batchAllowed` ist nur dann `true`,

@@ -91,6 +91,11 @@ public sealed class ReviewedEntitlementChangeTests
             string changeId, CancellationToken cancellationToken = default)
             => Task.FromResult(proposal is null ? null : new EntitlementChangeRecord(proposal, Decision));
 
+        public Task<IReadOnlyList<EntitlementChangeRecord>> ListPendingAsync(
+            int limit, CancellationToken cancellationToken = default)
+            => Task.FromResult<IReadOnlyList<EntitlementChangeRecord>>(
+                proposal is null || Decision is not null ? [] : [new(proposal, null)]);
+
         public Task<IdentityEntitlementState> LoadEffectiveAsync(
             string actorId, CancellationToken cancellationToken = default)
             => Task.FromResult(new IdentityEntitlementState(actorId, 0, [], []));

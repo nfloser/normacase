@@ -31,8 +31,12 @@ wildcard permissions or infer organizational roles. The administrator credential
 external configuration and can administer only the explicitly configured synthetic users.
 The storage-neutral and PostgreSQL foundation for complete reviewed case/action grant
 snapshots is described in [reviewed entitlement changes](REVIEWED_ENTITLEMENT_CHANGES.md).
-It retains proposals, distinct decisions and effective revisions append-only, but is not
-yet connected to this host's live authorization or administration UI. That authenticated
-integration and transaction-safe current-revision enforcement remain part of issue #183.
+The host now exposes it through separately authenticated proposer and decision roles.
+Proposal identity and UTC time, and decision identity and UTC time, are server-owned.
+The German workbench can submit a complete snapshot and a distinct synthetic approver
+can list at most 100 pending requests and approve or reject one. Requests and decisions
+remain append-only across restart. Approved revisions are deliberately not yet a live
+authorization source: reconciliation with startup configuration and transaction-safe
+current-revision enforcement remain part of issue #183.
 A productive identity provider,
 session invalidation model and institution-specific roles require separate approval.

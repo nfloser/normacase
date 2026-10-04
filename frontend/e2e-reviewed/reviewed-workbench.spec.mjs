@@ -170,6 +170,30 @@ test('administrator resolves a stale suspension, changes live access and sees th
  await expect(region.getByRole('heading',{name:'Identitäten verwalten'})).toHaveCount(0);
  await noStoredSession(page);
 });
+test('separate administrators propose and approve a durable entitlement snapshot',async({page})=>{
+ const administrator=process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL;
+ const approver=process.env.NORMACASE_REVIEW_E2E_ENTITLEMENT_APPROVER_CREDENTIAL;
+ if(!administrator||!approver)throw new Error('Entitlement administration credentials are required');
+ await page.goto('/');const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
+ await region.getByLabel('Lokaler Review-Schlüssel').fill(administrator);
+ await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
+ const entitlements=region.getByRole('region',{name:'Fall- und Aktionsberechtigungen verwalten'});
+ await expect(entitlements.getByText('synthetic-local:user-alice',{exact:true})).toBeVisible();
+ await entitlements.getByLabel('Begründung des Antrags').fill('Synthetischer Browser-Antrag');
+ await entitlements.getByRole('button',{name:'Änderung beantragen'}).click();
+ await expect(entitlements.getByText('Berechtigungsänderung wurde zur getrennten Prüfung eingereicht.')).toBeVisible();
+ await region.getByRole('button',{name:'Review-Modus abmelden'}).click();
+ await region.getByLabel('Lokaler Review-Schlüssel').fill(approver);
+ await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
+ await expect(region.getByRole('heading',{name:'Identitäten verwalten'})).toHaveCount(0);
+ const decisions=region.getByRole('region',{name:'Fall- und Aktionsberechtigungen verwalten'});
+ await expect(decisions.getByText('Synthetischer Browser-Antrag',{exact:true})).toBeVisible();
+ await decisions.getByLabel('Begründung der Entscheidung').fill('Synthetische Browser-Gegenprüfung');
+ await decisions.getByRole('button',{name:'Antrag freigeben'}).click();
+ await expect(decisions.getByText('Berechtigungsantrag wurde freigegeben und dauerhaft gespeichert.')).toBeVisible();
+ await expect(decisions.getByText('Es liegen keine offenen Berechtigungsanträge vor.')).toBeVisible();
+ await region.getByRole('button',{name:'Review-Modus abmelden'}).click();await noStoredSession(page);
+});
 test('override requires explicit selection; unknown/incomplete cases expose no review actions',async({page})=>{
  const region=await login(page);
  for(const id of ['demo-g-incomplete','demo-g-review']){

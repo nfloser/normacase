@@ -15,6 +15,7 @@ public sealed class SyntheticIdentityAdministrationTests
     private static readonly string Alice = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
     private static readonly string Bob = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
     private static readonly string Administrator = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+    private static readonly string EntitlementApprover = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 
     [Fact]
     public async Task Administrator_suspends_and_reactivates_a_user_live_with_persistent_audit()
@@ -70,6 +71,49 @@ public sealed class SyntheticIdentityAdministrationTests
             new { expectedRevision = "1", suspended = false, reason = "Synthetische Reaktivierung" });
         Assert.Equal(HttpStatusCode.OK, active.StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await stillSuspended.GetAsync("/api/review-session")).StatusCode);
+
+        var changeId = "entitlement-" + Guid.NewGuid().ToString("N");
+        var proposed = await adminAfterRestart.PostAsJsonAsync(
+            "/api/review/administration/entitlement-changes/", new
+            {
+                changeId,
+                targetActorId = actor,
+                expectedEntitlementRevision = "0",
+                actions = new[] { "READ", "ACCEPT" },
+                caseIds = new[] { "demo-g-supported" },
+                reason = "Synthetischer Berechtigungsantrag"
+            });
+        Assert.Equal(HttpStatusCode.Created, proposed.StatusCode);
+        using (var proposalJson = JsonDocument.Parse(await proposed.Content.ReadAsStringAsync()))
+        {
+            Assert.Equal("synthetic-local:administrator",
+                proposalJson.RootElement.GetProperty("proposerActorId").GetString());
+            Assert.True(DateTimeOffset.TryParse(proposalJson.RootElement.GetProperty("proposedAtUtc").GetString(), out _));
+        }
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await adminAfterRestart.GetAsync("/api/review/administration/entitlement-changes/pending")).StatusCode);
+
+        using var approver = Client(restarted, EntitlementApprover);
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await approver.GetAsync("/api/review/administration/identities")).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await approver.PostAsJsonAsync(
+            "/api/review/administration/entitlement-changes/", new
+            {
+                changeId = "entitlement-" + Guid.NewGuid().ToString("N"), targetActorId = actor,
+                expectedEntitlementRevision = "0", actions = new[] { "READ" },
+                caseIds = new[] { "demo-g-supported" }, reason = "Unzulässiger Antrag"
+            })).StatusCode);
+        using var pending = JsonDocument.Parse(await approver.GetStringAsync(
+            "/api/review/administration/entitlement-changes/pending"));
+        Assert.Equal(changeId, pending.RootElement.GetProperty("changes").EnumerateArray().Single()
+            .GetProperty("changeId").GetString());
+        var decided = await approver.PostAsJsonAsync(
+            "/api/review/administration/entitlement-changes/" + changeId + "/decision",
+            new { approved = true, reason = "Synthetische Gegenprüfung" });
+        Assert.Equal(HttpStatusCode.OK, decided.StatusCode);
+        await using var verificationSource = NpgsqlDataSource.Create(connection);
+        Assert.Empty(await new NormaCase.Persistence.PostgreSql.PostgresReviewedEntitlementChangeStore(
+            verificationSource).ListPendingAsync(100));
     }
 
     private static HttpClient Client(WebApplicationFactory<Program> host, string token)
@@ -93,6 +137,7 @@ public sealed class SyntheticIdentityAdministrationTests
             builder.UseSetting("SyntheticReview:Users:bob:Actions:0", "READ");
             builder.UseSetting("SyntheticReview:Users:bob:CaseIds:0", "demo-g-not-supported");
             builder.UseSetting("SyntheticReview:Administrator:Credential", Administrator);
+            builder.UseSetting("SyntheticReview:EntitlementApprover:Credential", EntitlementApprover);
         });
 
     private static async Task ResetDatabase(string connection)

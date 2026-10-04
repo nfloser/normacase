@@ -20,8 +20,10 @@ Docker Compose kann ausschließlich die Demo-Datenbank bereitstellen:
 3. Setze die folgenden Umgebungsvariablen nur im Terminal des lokalen API-Prozesses:
    - `SyntheticReview__Enabled=true`
    - `SyntheticReview__PersistenceEnabled=true`
-   - `SyntheticReview__Credential`: Base64-Kodierung von 32 kryptografisch zufälligen
-     Bytes, ohne Leerzeichen; kein Passwort aus Beispielen verwenden.
+   - Für den Mehrbenutzermodus je Testidentität `SyntheticReview__Users__<name>__Credential`,
+     `__Actions` und `__CaseIds`; zusätzlich getrennte Zufallsschlüssel in
+     `SyntheticReview__Administrator__Credential` und
+     `SyntheticReview__EntitlementApprover__Credential`.
    - `ConnectionStrings__SyntheticReview`:
      `Host=127.0.0.1;Port=54329;Database=normacase_synthetic;Username=normacase_runtime;Password=<externes Laufzeitpasswort>`
    - `ConnectionStrings__SyntheticReviewMigrations`:
@@ -77,6 +79,14 @@ ein und sperre oder reaktiviere sie. Der angezeigte Zustand und die Historie sta
 aus PostgreSQL; Schlüssel werden nicht angezeigt. Die nächste geschützte Anfrage der
 gesperrten Identität erhält 401. Dieser Ablauf ändert keine Fallzuweisung oder Aktion.
 
+Der Verwaltungsschlüssel zeigt außerdem „Fall- und Aktionsberechtigungen verwalten“.
+Wähle eine synthetische Identität, ändere den vollständigen Aktions-/Fallschnappschuss
+und begründe den Antrag. Melde dich danach mit dem getrennten Berechtigungsfreigabe-
+Schlüssel an, prüfe den offenen Antrag und genehmige oder lehne ihn begründet ab. Die
+Oberfläche weist ausdrücklich darauf hin, dass der freigegebene Stand zwar dauerhaft
+gespeichert ist, bis zur transaktionssicheren Live-Umschaltung aber noch nicht die
+Startkonfiguration ersetzt.
+
 Zwei Browser können denselben noch offenen Fall laden. Nach einer Entscheidung im
 ersten Browser wird der alte Versuch im zweiten mit 409 abgewiesen. Die Oberfläche
 lädt den gespeicherten Stand neu; sie wiederholt keine Entscheidung automatisch.
@@ -90,7 +100,8 @@ Setze davor `NORMACASE_REVIEW_E2E_CONNECTION` auf eine **eigene leere synthetisc
 Testdatenbank**. Die Tests erzeugen getrennte zufällige Benutzer-, zweite Benutzer-
 und Verwaltungsschlüssel im Arbeitsspeicher. Optional können
 `NORMACASE_REVIEW_E2E_CREDENTIAL`, `NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL` und
-`NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL` extern gesetzt werden.
+`NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL` und
+`NORMACASE_REVIEW_E2E_ENTITLEMENT_APPROVER_CREDENTIAL` extern gesetzt werden.
 Die Tests verändern ihre Fälle absichtlich; wiederholte Läufe brauchen eine frische
 Testdatenbank. Eine produktive oder persönliche Datenbank ist hierfür unzulässig.
 

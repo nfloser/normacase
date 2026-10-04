@@ -12,6 +12,7 @@ using NormaCase.Knowledge.Validation;
 using NormaCase.RuleEngine.Evaluation;
 using NormaCase.Serialization;
 using NormaCase.Replay;
+using NormaCase.Application.Authorization;
 
 namespace NormaCase.Api;
 
@@ -54,6 +55,12 @@ public static class DemoHost
         builder.Services.AddAuthorization();
         builder.Services.AddSingleton(services => new SyntheticKnowledgePermissions(
             services.GetRequiredService<IConfiguration>(), services.GetRequiredService<SyntheticReviewCredential>()));
+        builder.Services.AddSingleton<IReviewedEntitlementChangeStore>(services =>
+            new NormaCase.Persistence.PostgreSql.PostgresReviewedEntitlementChangeStore(
+                services.GetRequiredService<Npgsql.NpgsqlDataSource>()));
+        builder.Services.AddSingleton(services => new ReviewedEntitlementChangeService(
+            services.GetRequiredService<IReviewedEntitlementChangeStore>(),
+            new EntitlementAdministrationPolicy(RequireDistinctDecisionActor: true)));
         builder.Services.AddSingleton<OperationalReadinessProbe>(services =>
             new OperationalReadinessProbe(
                 services.GetRequiredService<IConfiguration>()
@@ -132,14 +139,24 @@ public static class DemoHost
         if (reviewCredential.Enabled)
         {
             app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal user) =>
-                Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId,
-                    knowledgeActions = persistentReviewEnabled ? knowledgePermissions.Actions(SyntheticReviewAuthentication.ResolveActor(user)) : [] }))
+            {
+                var actor = SyntheticReviewAuthentication.ResolveActor(user);
+                return Results.Json(new
+                {
+                    actorId = actor.ActorId,
+                    knowledgeActions = persistentReviewEnabled ? knowledgePermissions.Actions(actor) : [],
+                    identityAdministrator = reviewCredential.IsAdministrator(actor),
+                    entitlementProposer = reviewCredential.IsEntitlementProposer(actor),
+                    entitlementApprover = reviewCredential.IsEntitlementApprover(actor)
+                });
+            })
                 .RequireAuthorization();
             if (persistentReviewEnabled)
             {
                 SyntheticReviewEndpoints.Map(app, packs, platformVersion);
                 SyntheticIdentityAdministrationEndpoints.Map(app);
                 SyntheticKnowledgeGovernance.Map(app);
+                SyntheticEntitlementAdministrationEndpoints.Map(app);
             }
         }
 

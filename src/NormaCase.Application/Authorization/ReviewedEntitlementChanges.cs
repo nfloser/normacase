@@ -127,6 +127,8 @@ public interface IReviewedEntitlementChangeStore
         CancellationToken cancellationToken = default);
     Task<EntitlementChangeRecord?> LoadChangeAsync(
         string changeId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<EntitlementChangeRecord>> ListPendingAsync(
+        int limit, CancellationToken cancellationToken = default);
     Task<IdentityEntitlementState> LoadEffectiveAsync(
         string actorId, CancellationToken cancellationToken = default);
 }

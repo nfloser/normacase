@@ -24,6 +24,8 @@
   <data name="batch_request_conflict" xml:space="preserve"><value>Diese Sammelanfrage wurde bereits mit anderem Inhalt verwendet.</value></data>
   <data name="unknown_identity" xml:space="preserve"><value>Die synthetische Identität wurde nicht gefunden.</value></data>
   <data name="identity_revision_conflict" xml:space="preserve"><value>Der Berechtigungsstand wurde zwischenzeitlich geändert. Lade den aktuellen Stand neu.</value></data>
+  <data name="entitlement_change_conflict" xml:space="preserve"><value>Der Berechtigungsantrag oder Berechtigungsstand wurde zwischenzeitlich geändert.</value></data>
+  <data name="entitlement_change_not_found" xml:space="preserve"><value>Der Berechtigungsantrag wurde nicht gefunden.</value></data>
   <data name="outbound_retryable" xml:space="preserve"><value>Die Rückgabe konnte nicht abgeschlossen werden. Bitte dieselbe Nachricht erneut übertragen.</value></data>
   <data name="health_live" xml:space="preserve"><value>verfügbar</value></data>
   <data name="health_ready" xml:space="preserve"><value>bereit</value></data>

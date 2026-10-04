@@ -12,7 +12,9 @@ internal sealed class SyntheticReviewCredential
 {
     internal bool Enabled { get; }
     private const string AdministratorActorId = "synthetic-local:administrator";
-    private sealed record Entry(string ActorId, byte[] Credential, HashSet<string> Actions, HashSet<string> Cases, bool Administrator = false);
+    private const string EntitlementApproverActorId = "synthetic-local:entitlement-approver";
+    private sealed record Entry(string ActorId, byte[] Credential, HashSet<string> Actions, HashSet<string> Cases,
+        bool Administrator = false, bool EntitlementApprover = false);
     private readonly Entry[] entries;
     private readonly bool legacy;
     private static readonly HashSet<string> ValidActions = ["READ", "ACCEPT", "OVERRIDE", "EXPORT", "INTAKE", "BATCH"];
@@ -29,9 +31,15 @@ internal sealed class SyntheticReviewCredential
         if (!enabled) return new(false, []);
         var users = configuration.GetSection("SyntheticReview:Users").GetChildren().ToArray();
         var administrator = configuration["SyntheticReview:Administrator:Credential"];
+        var entitlementApprover = configuration["SyntheticReview:EntitlementApprover:Credential"];
+        if (configuration.GetSection("SyntheticReview:Administrator").GetChildren()
+                .Any(item => item.Key != "Credential")
+            || configuration.GetSection("SyntheticReview:EntitlementApprover").GetChildren()
+                .Any(item => item.Key != "Credential"))
+            throw new InvalidOperationException("Invalid synthetic administration configuration.");
         if (users.Length == 0)
         {
-            if (administrator is not null)
+            if (administrator is not null || entitlementApprover is not null)
                 throw new InvalidOperationException("Identity administration requires separate synthetic users.");
             if (!TryDecode(configuration["SyntheticReview:Credential"], out var bytes))
                 throw new InvalidOperationException("Synthetic review requires an external canonical 256-bit credential.");
@@ -63,6 +71,15 @@ internal sealed class SyntheticReviewCredential
                 throw new InvalidOperationException("Invalid synthetic administrator configuration.");
             entries.Add(new(AdministratorActorId, bytes, [], [], true));
         }
+        if (entitlementApprover is not null)
+        {
+            if (administrator is null
+                || !configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled")
+                || !TryDecode(entitlementApprover, out var bytes)
+                || entries.Any(entry => CryptographicOperations.FixedTimeEquals(entry.Credential, bytes)))
+                throw new InvalidOperationException("Invalid synthetic entitlement approver configuration.");
+            entries.Add(new(EntitlementApproverActorId, bytes, [], [], EntitlementApprover: true));
+        }
         return new(true, entries.ToArray());
     }
 
@@ -92,13 +109,41 @@ internal sealed class SyntheticReviewCredential
             && actor.ActorId == AdministratorActorId
             && entries.Any(entry => entry.ActorId == actor.ActorId && entry.Administrator);
 
+    internal bool IsEntitlementProposer(AuthenticatedReviewActor actor) => IsAdministrator(actor);
+
+    internal bool IsEntitlementApprover(AuthenticatedReviewActor actor)
+        => actor.AuthenticationAuthority == "synthetic-local"
+            && actor.ActorId == EntitlementApproverActorId
+            && entries.Any(entry => entry.ActorId == actor.ActorId && entry.EntitlementApprover);
+
     internal bool IsConfiguredUser(string actorId)
-        => entries.Any(entry => entry.ActorId == actorId && !entry.Administrator)
+        => entries.Any(entry => entry.ActorId == actorId && !entry.Administrator && !entry.EntitlementApprover)
             && actorId != "synthetic-local:reviewer";
 
     internal IReadOnlyList<string> ConfiguredUsers()
-        => entries.Where(entry => !entry.Administrator && entry.ActorId != "synthetic-local:reviewer")
+        => entries.Where(entry => !entry.Administrator && !entry.EntitlementApprover
+                && entry.ActorId != "synthetic-local:reviewer")
             .Select(entry => entry.ActorId).OrderBy(id => id, StringComparer.Ordinal).ToArray();
+
+    internal (IReadOnlyList<string> Actions, IReadOnlyList<string> CaseIds)? ConfiguredEntitlements(string actorId)
+    {
+        var entry = entries.SingleOrDefault(item => item.ActorId == actorId
+            && !item.Administrator && !item.EntitlementApprover);
+        return entry is null ? null : (
+            entry.Actions.OrderBy(value => value, StringComparer.Ordinal).ToArray(),
+            entry.Cases.OrderBy(value => value, StringComparer.Ordinal).ToArray());
+    }
+
+    internal bool IsConfiguredEntitlementAction(string action) => ValidActions.Contains(action);
+
+    internal bool IsConfiguredCase(string caseId)
+        => entries.Any(entry => !entry.Administrator && !entry.EntitlementApprover
+            && entry.Cases.Contains(caseId));
+
+    internal IReadOnlyList<string> ConfiguredCases()
+        => entries.Where(entry => !entry.Administrator && !entry.EntitlementApprover)
+            .SelectMany(entry => entry.Cases).Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal).ToArray();
 
     internal IReadOnlyCollection<NormaCase.Domain.Cases.CaseId>? ReadScope(AuthenticatedReviewActor actor)
     {
