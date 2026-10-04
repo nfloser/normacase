@@ -101,7 +101,7 @@ function App() {
   const title=pack?.presentation?.title??selected;
   return <><header className="top"><a className="brand" href="/"><span className="brandmark">N</span>{de.app}<span className="brand-divider">/</span><span className="sub">{de.subtitle}</span></a><span className="local"><span/>{de.local}</span></header>
     <main><div className="intro"><p className="eyebrow">{de.kicker}</p><h1>{de.hero}</h1><p>{de.intro}</p><div className="notice">{de.notice}</div></div>
-    <div className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
+    <CaseWorkQueues packs={packs}/><div className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
       <form onSubmit={evaluate}>
         <label className="field">{de.pack}<select aria-label={de.pack} value={selected} onChange={event=>changePack(event.target.value)}>{packs.map(item=><option key={item.packId} value={item.packId}>{item.presentation?.title??item.packId}</option>)}</select></label>
         <div className="example"><label className="field">{de.example}<select value={example} onChange={event=>{clear();setExample(event.target.value);}}><option value="">{de.emptyExample}</option>{pack?.presentation?.examples.map(item=><option key={item.file} value={item.file}>{item.label}</option>)}</select></label><button type="button" className="secondary" onClick={loadExample} disabled={!example||busy}>{de.loadExample}</button></div>
@@ -136,7 +136,7 @@ function App() {
         <DecisionTrace rule={result.assessment.ruleTrace} outputs={result.assessment.domainOutputs} presentation={pack?.presentation}/><details><summary>{de.trace}</summary><pre>{raw}</pre></details><button className="secondary export" onClick={download}>{de.export}</button><button className="secondary export" onClick={()=>saveFile(snapshot,'normacase-snapshot.json')} disabled={!snapshot}>{de.snapshotExport}</button>
       </>}
     </section></div>
-    <CaseWorkQueues packs={packs}/><ReviewedCaseWorkQueues packs={packs}/><section className="card snapshot-tools" aria-live="polite">
+    <ReviewedCaseWorkQueues packs={packs}/><section className="card snapshot-tools" aria-live="polite">
       <h2>{de.snapshotHeading}</h2><p>{de.snapshotHelp}</p>
       <div className="field"><span>{de.snapshotSelect}</span>
         <input ref={snapshotFile} aria-label={de.snapshotSelect} type="file" hidden accept=".json,application/json" onChange={verifySnapshot} disabled={busy}/>

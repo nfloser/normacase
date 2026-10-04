@@ -21,10 +21,14 @@ public sealed class WorkQueueTests : IClassFixture<WebApplicationFactory<Program
         var text = await response.Content.ReadAsStringAsync();
         Assert.Equal(text, await client.GetStringAsync("/api/work-queues"));
         using var document = JsonDocument.Parse(text);
+        Assert.Equal(100, document.RootElement.GetProperty("totalCases").GetInt32());
         var queues = document.RootElement.GetProperty("queues").EnumerateArray().ToArray();
         Assert.Equal(4, queues.Length);
-        Assert.Equal(new[] { 2, 1, 1, 1 }, queues.Select(q => q.GetProperty("items").GetArrayLength()));
-        foreach (var item in queues.SelectMany(q => q.GetProperty("items").EnumerateArray()))
+        Assert.Equal(new[] { 60, 20, 15, 5 }, queues.Select(q => q.GetProperty("items").GetArrayLength()));
+        var items = queues.SelectMany(q => q.GetProperty("items").EnumerateArray()).ToArray();
+        Assert.Equal(100, items.Length);
+        Assert.Equal(100, items.Select(item => item.GetProperty("caseId").GetString()!).Distinct(StringComparer.Ordinal).Count());
+        foreach (var item in items)
         {
             Assert.Equal("1", item.GetProperty("caseRevision").GetString());
             Assert.Equal("1", item.GetProperty("processRevision").GetString());

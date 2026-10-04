@@ -16,6 +16,14 @@ dotnet run --project src/NormaCase.Api
 Angaben vorbelegt. Danach kann der Fall verändert und mit „Jetzt prüfen“ ausgewertet
 werden. Fehlendes bleibt unbekannt; fehlende Evidenz kann manuelle Prüfung auslösen.
 
+Die schreibgeschützte Sektion „Fallwarteschlangen“ zeigt zusätzlich einen
+deterministischen 100-Fall-Vorführbestand. 60 Fälle werden zur Freigabe vorbereitet,
+20 zur Informationsklärung, 15 zur Gegenprüfung und 5 als technische Ausnahme
+geroutet. Diese Verteilung entsteht serverseitig aus der bestehenden Bewertungs- und
+Routing-Logik; die Oberfläche zeigt keine erfundenen UI-Zähler. Für eine kompakte
+Vorführung werden pro Arbeitsliste nur fünf repräsentative Fälle als Drill-down
+angeboten. Der Bestand wird bei jedem Start neu aufgebaut und nicht persistiert.
+
 Die Oberfläche zeigt Wissens-/Plattformstand und Quellenrevision. „Technische
 Prüfspur“ zeigt das originale Server-JSON. Der JSON-Download exportiert genau diesen
 Text. Dezimalwerte werden verlustfrei transportiert; JavaScript Number wird nicht
