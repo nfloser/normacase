@@ -14,6 +14,9 @@ namespace NormaCase.Api;
 // Read-only synthetic fixtures, rebuilt deterministically for each demo host.
 internal static class WorkQueueEndpoints
 {
+    private const int ScenarioCopies = 20;
+    private const int PreviewLimitPerQueue = 5;
+
     internal static void Map(WebApplication app, IReadOnlyDictionary<string, KnowledgePack> packs, string platformVersion)
     {
         var workflow = new WorkflowDefinition("synthetic-queue-process", 1, "received",
@@ -39,41 +42,76 @@ internal static class WorkQueueEndpoints
              new("review", workflow.Id, workflow.Version, ["manual-review"]),
              new("technical", workflow.Id, workflow.Version, ["integration-error"])]);
         var projection = new CaseWorkQueueProjectionService();
-        var items = new List<Detail>();
-        foreach (var id in new[] { "demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review" })
+        var recorder = new AssessmentRecorder();
+        var triageService = new AssessmentTriageService();
+        var routingService = new CaseProcessingRoutingService();
+        var scenarioTemplates = new[]
         {
-            var input = CaseInputJson.Deserialize(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", id + ".json")));
-            var record = new AssessmentRecorder().Evaluate(packs["synthetic.demo-g"], input.Facts,
-                input.AssessmentDate, input.Evidence,
-                new(new("assessment-" + id), new(id), platformVersion, new DateTimeOffset(2026, 10, 3, 13, 0, 0, TimeSpan.Zero)));
-            var triage = new AssessmentTriageService().Route(record, triagePolicy);
-            var process = CaseProcessingInstance.Start(record.CaseId, 1, workflow);
-            var applied = new CaseProcessingRoutingService().Apply(triage, process, workflow, routingPolicy, 1, 0);
-            if (applied.Status != CaseProcessingRoutingStatus.Applied)
-                throw new InvalidOperationException("Synthetic queue fixture could not be routed.");
-            var enriched = projection.Project(record, triage, applied.Process, configuration);
-            items.Add(Create(enriched.Membership, record));
+            "demo-g-supported",
+            "demo-g-not-supported",
+            "demo-g-incomplete",
+            "demo-g-review"
+        }.Select(id => new
+        {
+            Id = id,
+            Input = CaseInputJson.Deserialize(
+                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", id + ".json")))
+        }).ToArray();
+
+        var items = new List<Detail>(ScenarioCopies * 5);
+        var recordedAt = new DateTimeOffset(2026, 10, 3, 13, 0, 0, TimeSpan.Zero);
+        for (var copy = 1; copy <= ScenarioCopies; copy++)
+        {
+            foreach (var template in scenarioTemplates)
+            {
+                var caseId = ReplicaId(template.Id, copy);
+                var record = recorder.Evaluate(packs["synthetic.demo-g"], template.Input.Facts,
+                    template.Input.AssessmentDate, template.Input.Evidence,
+                    new(new("assessment-" + caseId), new(caseId), platformVersion,
+                        recordedAt.AddMinutes(items.Count)));
+                var triage = triageService.Route(record, triagePolicy);
+                var process = CaseProcessingInstance.Start(record.CaseId, 1, workflow);
+                var applied = routingService.Apply(triage, process, workflow, routingPolicy, 1, 0);
+                if (applied.Status != CaseProcessingRoutingStatus.Applied)
+                    throw new InvalidOperationException("Synthetic queue fixture could not be routed.");
+                var enriched = projection.Project(record, triage, applied.Process, configuration);
+                items.Add(Create(enriched.Membership, record));
+            }
+
+            var technicalCaseId = ReplicaId("demo-technical", copy);
+            var technical = CaseProcessingInstance.Start(new(technicalCaseId), 1, workflow)
+                .Apply(workflow, 0, "technical-error");
+            items.Add(Create(projection.Project(technical, configuration), null));
         }
-        var technical = CaseProcessingInstance.Start(new("demo-technical"), 1, workflow)
-            .Apply(workflow, 0, "technical-error");
-        items.Add(Create(projection.Project(technical, configuration), null));
+
         var details = items.ToDictionary(item => item.CaseId, StringComparer.Ordinal);
         app.MapGet("/api/work-queues", () => Results.Json(new
         {
-            configurationId = configuration.Id, configurationVersion = configuration.Version,
-            queues = configuration.Queues.Select(queue => new
+            configurationId = configuration.Id,
+            configurationVersion = configuration.Version,
+            totalCases = items.Count,
+            previewLimit = PreviewLimitPerQueue,
+            queues = configuration.Queues.Select(queue =>
             {
-                queueId = queue.QueueId,
-                items = items.Where(item => item.QueueId == queue.QueueId).Select(item => new
+                var queueItems = items.Where(item => item.QueueId == queue.QueueId).ToArray();
+                return new
                 {
-                    item.CaseId, item.CaseRevision, item.WorkflowId, item.WorkflowVersion,
-                    item.StateId, item.ProcessRevision, item.AssessmentId
-                }).ToArray()
+                    queueId = queue.QueueId,
+                    totalCount = queueItems.Length,
+                    items = queueItems.Take(PreviewLimitPerQueue).Select(item => new
+                    {
+                        item.CaseId, item.CaseRevision, item.WorkflowId, item.WorkflowVersion,
+                        item.StateId, item.ProcessRevision, item.AssessmentId
+                    }).ToArray()
+                };
             }).ToArray()
         }));
         app.MapGet("/api/work-cases/{caseId}", (string caseId) => details.TryGetValue(caseId, out var detail)
             ? Results.Json(detail) : DemoHost.Error("unknown_work_case", 404));
     }
+
+    private static string ReplicaId(string baseId, int copy)
+        => copy == 1 ? baseId : $"{baseId}-{copy:00}";
 
     private static Detail Create(CaseWorkQueueMembership membership, AssessmentRecord? record)
         => new(membership.CaseId.ToString(), membership.CaseRevision.ToString(CultureInfo.InvariantCulture),
