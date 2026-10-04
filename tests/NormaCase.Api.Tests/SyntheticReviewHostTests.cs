@@ -241,20 +241,28 @@ public sealed class SyntheticReviewHostTests
         if (string.IsNullOrWhiteSpace(connection)) return;
         await ResetDatabase(connection);
 
-        await using (var host = Factory(connection))
+        var request = new
+        {
+            policyId = "synthetic-reviewed-batch-policy",
+            policyVersion = "1",
+            items = new object[]
+            {
+                BatchItem("demo-g-supported", "assessment-demo-g-supported", "batch-review-supported"),
+                BatchItem("demo-g-incomplete", "assessment-demo-g-incomplete", "batch-review-incomplete"),
+                BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "batch-review-stale", "0")
+            }
+        };
+        await using (var legacy = Factory(connection))
+        {
+            using var client = legacy.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await client.PostAsJsonAsync("/api/review/batch-reviews", request)).StatusCode);
+        }
+
+        await using (var host = BatchFactory(connection))
         {
             using var anonymous = host.CreateClient();
-            var request = new
-            {
-                policyId = "synthetic-reviewed-batch-policy",
-                policyVersion = "1",
-                items = new object[]
-                {
-                    BatchItem("demo-g-supported", "assessment-demo-g-supported", "batch-review-supported"),
-                    BatchItem("demo-g-incomplete", "assessment-demo-g-incomplete", "batch-review-incomplete"),
-                    BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "batch-review-stale", "0")
-                }
-            };
             Assert.Equal(HttpStatusCode.Unauthorized,
                 (await anonymous.PostAsJsonAsync("/api/review/batch-reviews", request)).StatusCode);
 
@@ -289,12 +297,12 @@ public sealed class SyntheticReviewHostTests
                 })).StatusCode);
         }
 
-        await using var restarted = Factory(connection);
+        await using var restarted = BatchFactory(connection);
         using var afterRestart = restarted.CreateClient();
         afterRestart.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
         using var committed = JsonDocument.Parse(await afterRestart.GetStringAsync("/api/review/work-cases/demo-g-supported"));
         Assert.Equal("accepted", committed.RootElement.GetProperty("stateId").GetString());
-        Assert.Equal("synthetic-local:reviewer", committed.RootElement.GetProperty("audit")
+        Assert.Equal("synthetic-local:user-batch-reviewer", committed.RootElement.GetProperty("audit")
             .EnumerateArray().Last().GetProperty("actorId").GetString());
         using var untouched = JsonDocument.Parse(await afterRestart.GetStringAsync("/api/review/work-cases/demo-g-incomplete"));
         Assert.Equal("1", untouched.RootElement.GetProperty("auditRevision").GetString());
@@ -540,6 +548,23 @@ public sealed class SyntheticReviewHostTests
             builder.UseSetting("ConnectionStrings:SyntheticReview", connection);
             if (outboundDirectory is not null) builder.UseSetting("SyntheticReview:OutboundDirectory", outboundDirectory);
         });
+
+    private static WebApplicationFactory<Program> BatchFactory(string connection)
+        => new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    ["SyntheticReview:Enabled"] = "true",
+                    ["SyntheticReview:PersistenceEnabled"] = "true",
+                    ["ConnectionStrings:SyntheticReview"] = connection,
+                    ["SyntheticReview:Users:batch-reviewer:Credential"] = Credential,
+                    ["SyntheticReview:Users:batch-reviewer:Actions:0"] = "READ",
+                    ["SyntheticReview:Users:batch-reviewer:Actions:1"] = "ACCEPT",
+                    ["SyntheticReview:Users:batch-reviewer:Actions:2"] = "BATCH",
+                    ["SyntheticReview:Users:batch-reviewer:CaseIds:0"] = "demo-g-supported",
+                    ["SyntheticReview:Users:batch-reviewer:CaseIds:1"] = "demo-g-incomplete",
+                    ["SyntheticReview:Users:batch-reviewer:CaseIds:2"] = "demo-g-not-supported"
+                })));
 
     private static async Task ResetDatabase(string connection)
     {

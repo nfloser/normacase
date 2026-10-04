@@ -139,7 +139,8 @@ Revisionen liefern 409, nicht erlaubte Zustände 403. Die ursprüngliche determi
 Bewertung bleibt unverändert und der Review wird append-only auditiert.
 
 Die synthetische Sammelprüfung benötigt zusätzlich die konfigurierte Aktion `BATCH`
-für jeden ausgewählten Fall und die exakte Policy
+für jeden ausgewählten Fall; der alte Ein-Schlüssel-Kompatibilitätsmodus erteilt sie
+nicht. Zusätzlich gilt die exakte Policy
 `synthetic-reviewed-batch-policy`, Version `1`. Sie akzeptiert höchstens 100
 eindeutige Fall-/Review-Kommandos, prüft alle lesbaren Fall-/Assessment-Bindungen vor
 der ersten Änderung und führt anschließend pro Fall dieselbe Autorisierung,

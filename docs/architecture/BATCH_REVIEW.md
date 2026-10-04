@@ -30,7 +30,8 @@ already committed earlier case transactions remain authoritative.
 The opt-in persistent synthetic host exposes this orchestration at
 `POST /api/review/batch-reviews`. It requires the verified server-side identity, exact
 batch-policy id/version and a separate configured `BATCH` action for every requested
-case. Every item carries explicit case, assessment and review identities plus expected
+case. The legacy single-credential compatibility mode does not confer that action.
+Every item carries explicit case, assessment and review identities plus expected
 case/process/audit revisions. Actor and recording time remain server-controlled.
 
 The adapter validates the complete strict JSON envelope, bounds it to 100 items,

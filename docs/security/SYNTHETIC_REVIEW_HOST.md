@@ -84,7 +84,8 @@ Prozesspolicy erlaubt weiterhin ausschließlich Übergänge aus `awaiting-approv
 Ein aktueller Command gegen einen abgeschlossenen Fall bleibt mit 403 gesperrt.
 
 Sammelprüfung ist eine separate synthetische Berechtigung: neben `READ` und der
-jeweiligen `ACCEPT`-/`OVERRIDE`-Aktion ist `BATCH` für jeden Fall erforderlich. Die
+jeweiligen `ACCEPT`-/`OVERRIDE`-Aktion ist `BATCH` für jeden Fall erforderlich. Der
+alte gemeinsame Ein-Schlüssel-Modus erhält `BATCH` ausdrücklich nicht. Die
 exakte versionierte Serverpolicy begrenzt eine Anfrage auf 100 Elemente. Unlesbare
 und unbekannte Fälle sind nicht unterscheidbar und die vollständige Fall-/Assessment-
 Bindung wird vor der ersten Änderung geprüft. Falltransaktionen bleiben voneinander
