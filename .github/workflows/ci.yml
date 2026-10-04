@@ -255,7 +255,7 @@ jobs:
             -e NORMACASE_DEMO_DB_MIGRATION_PASSWORD \
             -e NORMACASE_DEMO_DB_RUNTIME_PASSWORD \
             "$POSTGRES_CONTAINER" psql -v ON_ERROR_STOP=1 -U normacase_test -d normacase_least_privilege \
-            < ops/postgresql/provision_least_privilege.sql
+            < ops/postgresql/provision-least-privilege.sql
           python scripts/smoke_synthetic_roundtrip.py create /tmp/normacase-least-privilege.json
           if docker exec -e PGPASSWORD=synthetic-runtime-password "$POSTGRES_CONTAINER" \
             psql -v ON_ERROR_STOP=1 -U normacase_runtime -d normacase_least_privilege \
@@ -273,7 +273,7 @@ jobs:
             -e NORMACASE_DEMO_DB_MIGRATION_PASSWORD \
             -e NORMACASE_DEMO_DB_RUNTIME_PASSWORD \
             "$POSTGRES_CONTAINER" psql -v ON_ERROR_STOP=1 -U normacase_test -d normacase_least_privilege \
-            < ops/postgresql/provision_least_privilege.sql
+            < ops/postgresql/provision-least-privilege.sql
           python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-least-privilege.json
       - name: Clean install and exact restart replay
         env:
