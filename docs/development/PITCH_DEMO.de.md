@@ -22,8 +22,31 @@ Nachvollziehbarkeit, Versionierung und sichere Unsicherheitsbehandlung.
 
 ## Vorführung in der Prüfwerkstatt
 
-Starte die lokale Vorschau und öffne <http://localhost:5080>. Wähle als
-Prüfbereich **„Pitch-Demo – Synthetische Fallprüfung“**.
+Starte die lokale Vorschau und öffne <http://localhost:5080>.
+
+### 0. Arbeitslast statt Einzelfall-Start
+
+Scrolle zuerst zu **„Fallwarteschlangen“**. Die anonyme Vorschau erzeugt bei jedem
+Start exakt **100 synthetische Fälle** und verarbeitet sie ohne manuelles Anstoßen
+durch dieselbe deterministische Bewertung und Routing-Logik:
+
+- 60 Fälle: **Zur Freigabe vorbereitet**,
+- 20 Fälle: **Informationen nachfordern**,
+- 15 Fälle: **Gegenprüfung erforderlich**,
+- 5 Fälle: **Technische Klärung**.
+
+Die Oberfläche zeigt bewusst nur fünf repräsentative Fälle je Arbeitsliste, damit
+die Vorführung kompakt bleibt. Die Zähler beziehen sich auf den vollständigen
+100-Fall-Bestand. Öffne beispielsweise `demo-g-supported` und
+`demo-technical`, um eine bewertete Entscheidung beziehungsweise eine technische
+Ausnahme im Detail zu zeigen.
+
+Pitch-Punkt: Ein Bearbeiter startet nicht 100 Prüfungen einzeln. NormaCase bereitet
+die gesamte Arbeitslast vor und trennt Routinefälle von Klärungs-, Review- und
+technischen Ausnahmen.
+
+Wähle anschließend als Prüfbereich **„Pitch-Demo – Synthetische Fallprüfung“**, um
+die vier Entscheidungszustände im Detail zu erklären.
 
 ### 1. Unvollständiger Eingang
 
