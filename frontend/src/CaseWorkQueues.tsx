@@ -10,7 +10,7 @@ type Detail = Item & {queueId:string;packId:string|null;assessmentId:string|null
 type Assessment = {assessment:{outcome:string;ruleTrace?:RuleTrace;domainOutputs?:OutputTrace[];missingRequiredFields:string[];knowledgeRelease:string}};
 const outcomes:Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 export function CaseWorkQueues({packs}:{packs:Pack[]}) {
-  const [queues,setQueues]=useState<{queueId:string;items:Item[]}[]>([]);
+  const [workload,setWorkload]=useState<{totalCases:number;previewLimit:number;queues:{queueId:string;totalCount:number;items:Item[]}[]} | null>(null);
   const [selected,setSelected]=useState('');
   const [detail,setDetail]=useState<Detail|null>(null);
   const [error,setError]=useState('');
@@ -18,7 +18,7 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
   useEffect(()=>{
     const controller=new AbortController();
     fetch('/api/work-queues',{signal:controller.signal}).then(response=>{if(!response.ok)throw new Error();return response.json();})
-      .then(data=>{if(!controller.signal.aborted)setQueues(data.queues);})
+      .then(data=>{if(!controller.signal.aborted)setWorkload(data);})
       .catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});
     return()=>controller.abort();
   },[]);
@@ -32,13 +32,16 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
       .finally(()=>{if(!controller.signal.aborted)setBusy(false);});
     return()=>controller.abort();
   },[selected]);
+  const queues=workload?.queues??[];
   const assessment=detail?.assessmentJson ? parse(detail.assessmentJson) as Assessment : null;
   const pack=packs.find(pack=>pack.packId===detail?.packId);
   const statuses:Record<string,string>={PRESENT:de.present,MISSING:de.missing,CONFLICTING:de.conflicting};
   return <section className="card work-queues" aria-label={text.heading}>
     <h2>{text.heading}</h2><p>{text.help}</p>
+    {workload&&<div className="workload-summary" aria-label={text.workload}><strong>{workload.totalCases} {text.cases}</strong><span>{text.preview}</span></div>}
     <div className="queue-grid">{queues.map(queue=><section key={queue.queueId}>
-      <h3>{(text.queues as Record<string,string>)[queue.queueId]??de.unknown} ({queue.items.length})</h3>
+      <h3>{(text.queues as Record<string,string>)[queue.queueId]??de.unknown} ({queue.totalCount})</h3>
+      <p className="queue-preview-note">{text.representative}: {queue.items.length} {text.of} {queue.totalCount}</p>
       <ul>{queue.items.map(item=><li key={item.caseId}><button type="button" className="secondary" aria-pressed={selected===item.caseId} onClick={()=>{if(selected!==item.caseId){setDetail(null);setSelected(item.caseId);}}}>{text.select}: {item.caseId}</button></li>)}</ul>
     </section>)}</div>
     <div aria-live="polite">{busy&&<p>{text.loading}</p>}{error&&<p role="alert">{error}</p>}
