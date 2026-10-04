@@ -178,7 +178,7 @@ test('separate administrators propose and approve a durable entitlement snapshot
  await region.getByLabel('Lokaler Review-Schlüssel').fill(administrator);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
  const entitlements=region.getByRole('region',{name:'Fall- und Aktionsberechtigungen verwalten'});
- await expect(entitlements.getByText('synthetic-local:user-alice',{exact:true})).toBeVisible();
+ await expect(entitlements.getByLabel('Synthetische Identität')).toHaveValue('synthetic-local:user-alice');
  await entitlements.getByLabel('Begründung des Antrags').fill('Synthetischer Browser-Antrag');
  await entitlements.getByRole('button',{name:'Änderung beantragen'}).click();
  await expect(entitlements.getByText('Berechtigungsänderung wurde zur getrennten Prüfung eingereicht.')).toBeVisible();
