@@ -62,6 +62,29 @@ public sealed record BatchReviewResult(
     int PolicyVersion,
     IReadOnlyList<BatchReviewItemResult> Items);
 
+public static class BatchReviewCommitRecognition
+{
+    public static bool IsExact(
+        CaseReviewState state,
+        AuthenticatedReviewActor actor,
+        CaseReviewCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(actor);
+        ArgumentNullException.ThrowIfNull(command);
+        var review = state.Audit.Events.Select(item => item.Review)
+            .SingleOrDefault(item => item?.ReviewId == command.ReviewId);
+        return review is not null
+            && review.AssessmentId == command.AssessmentId
+            && string.Equals(review.ActorId, actor.ActorId, StringComparison.Ordinal)
+            && review.RecordedAt == command.RecordedAtUtc
+            && review.Disposition == command.Disposition
+            && string.Equals(review.Reason, command.Reason, StringComparison.Ordinal)
+            && review.OverrideOutcome == command.OverrideOutcome
+            && review.Reference is null;
+    }
+}
+
 /// <summary>
 /// Bounded orchestration over the existing single-case transaction. A batch is not
 /// atomic as a whole: every committed item remains committed if a later item fails.

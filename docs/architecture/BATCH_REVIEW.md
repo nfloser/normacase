@@ -42,9 +42,21 @@ existing PostgreSQL aggregate store and per-case review transaction. The respons
 contains only ordered case/review ids and the stable technical status codes
 `COMMITTED`, `DENIED`, `CONFLICT`, `POLICY_REJECTED` or `NOT_ATTEMPTED`.
 
+Each API request additionally carries a bounded stable `requestId`. PostgreSQL binds
+that identity append-only to the verified actor, a canonical SHA-256 request
+fingerprint and the first server-assigned UTC review time. Request metadata and the
+terminal ordered result live in separate insert-only tables. A session advisory lock
+serializes concurrent uses of the same identity; equal completed retries return the
+exact retained result, while changed content or actor reuse fails with 409.
+
+An interruption can leave registered request metadata without a terminal result. A
+retry reuses the retained server time and recognizes an earlier case commit only when
+review id, assessment, actor, time, disposition, reason and override all match the
+retained command exactly. Merely observing a newer case revision never counts as
+success. Remaining commands still pass through the normal single-case transaction,
+and the reconstructed terminal result is appended before it is returned.
+
 This changes no assessment, UNKNOWN, Knowledge or Domain semantics and does not confer
-organizational permission for batch review. A repeated request is not yet a durable
-idempotent batch operation: already committed items return revision conflicts. Issue
-#186 therefore still requires durable whole-request identity/result retention and the
-German selection/result workflow before the larger capability can be considered
-complete.
+organizational permission for batch review. Issue #186 still requires the German
+selection/result workflow with browser coverage before the larger capability can be
+considered complete.

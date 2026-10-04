@@ -134,6 +134,26 @@ public sealed class BatchReviewServiceTests
         Assert.Throws<ArgumentOutOfRangeException>(() => Policy((BatchReviewFailureMode)999));
     }
 
+    [Fact]
+    public async Task Recovery_recognizes_only_the_exact_committed_review()
+    {
+        var store = Store("case-a");
+        var command = Command("case-a");
+        await Service(store, new SelectiveAuthorizer()).ReviewAsync(
+            Actor, [command], Workflow, ReviewPolicy, Policy(BatchReviewFailureMode.Continue));
+        var committed = store.States["case-a"];
+
+        Assert.True(BatchReviewCommitRecognition.IsExact(committed, Actor, command));
+        Assert.False(BatchReviewCommitRecognition.IsExact(committed, Actor,
+            command with { Reason = "Andere synthetische Begründung" }));
+        Assert.False(BatchReviewCommitRecognition.IsExact(committed, Actor,
+            command with { RecordedAtUtc = command.RecordedAtUtc.AddSeconds(1) }));
+        Assert.False(BatchReviewCommitRecognition.IsExact(committed,
+            new("synthetic-local:user-bob", "synthetic-local"), command));
+        Assert.False(BatchReviewCommitRecognition.IsExact(committed, Actor,
+            command with { ReviewId = new("other-review") }));
+    }
+
     private static BatchReviewPolicy Policy(BatchReviewFailureMode mode, int maximum = 10)
         => new("synthetic-batch-policy", 3, ReviewPolicy.Id, ReviewPolicy.Version, maximum, mode);
 
