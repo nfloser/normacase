@@ -204,6 +204,16 @@ internal static class SyntheticReviewEndpoints
         string platformVersion)
     {
         var assessmentStore = new PostgresAssessmentRecordStore(source);
+        var examplesDirectory = Path.Combine(AppContext.BaseDirectory, "Examples");
+        var inputJsonByCaseId = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["demo-g-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-supported.json")),
+            ["demo-g-not-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-not-supported.json")),
+            ["demo-g-incomplete"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-incomplete.json")),
+            ["demo-g-review"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-review.json")),
+            ["demo-g-batch-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-supported.json")),
+            ["demo-g-batch-not-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-not-supported.json"))
+        };
         foreach (var id in CaseIds)
         {
             var caseId = new CaseId(id);
@@ -224,9 +234,7 @@ internal static class SyntheticReviewEndpoints
             var record = await assessmentStore.LoadAsync(assessmentId);
             if (record is null)
             {
-                var exampleId = id.Replace("demo-g-batch-", "demo-g-", StringComparison.Ordinal);
-                var input = CaseInputJson.Deserialize(
-                    File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", exampleId + ".json")));
+                var input = CaseInputJson.Deserialize(inputJsonByCaseId[id]);
                 record = new AssessmentRecorder().Evaluate(
                     packs["synthetic.demo-g"], input.Facts, input.AssessmentDate, input.Evidence,
                     new(assessmentId, caseId, platformVersion,
