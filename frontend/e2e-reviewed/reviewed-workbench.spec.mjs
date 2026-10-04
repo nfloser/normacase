@@ -29,7 +29,7 @@ test('bounded queue pages use the real API and refresh without retaining a sessi
  }
  await expect(region.getByRole('button',{name:'Weitere Fälle anzeigen',exact:true})).toHaveCount(0);
  await region.getByRole('button',{name:'Arbeitsliste aktualisieren',exact:true}).click();
- await expect(region.getByRole('button',{name:'Fall öffnen: demo-g-incomplete',exact:true})).toBeVisible();
+ await expect(region.getByRole('button',{name:'Fall öffnen: demo-g-batch-not-supported',exact:true})).toBeVisible();
  await region.getByRole('button',{name:'Review-Modus abmelden',exact:true}).click();
  await expect(region.getByRole('button',{name:/^Fall öffnen:/})).toHaveCount(0);
  await noStoredSession(page);
@@ -98,7 +98,7 @@ test('two browsers review, recover a real stale conflict and preserve immutable 
  const original=(await before.json()).assessmentJson;
  await region.getByRole('button',{name:'Systemergebnis übernehmen',exact:true}).click();
  await expect(region.getByText('Review wurde persistent gespeichert.',{exact:true})).toBeVisible();
- await expect(region.getByRole('heading',{name:'Abgeschlossen (1)'})).toBeVisible();
+ await expect(region.getByRole('heading',{name:'Abgeschlossen (3)'})).toBeVisible();
  await otherRegion.getByLabel('Begründung der Review-Entscheidung').fill('Synthetischer konkurrierender Versuch');
  await otherRegion.getByRole('button',{name:'Systemergebnis übernehmen',exact:true}).click();
  await expect(otherRegion.getByRole('alert')).toContainText('zwischenzeitlich geändert');
