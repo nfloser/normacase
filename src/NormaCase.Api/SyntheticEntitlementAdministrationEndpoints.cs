@@ -178,9 +178,13 @@ internal static class SyntheticEntitlementAdministrationEndpoints
         return value.Length != 0;
     }
     private static bool Revision(JsonElement root, string name, out long value)
-        => root.GetProperty(name).ValueKind == JsonValueKind.String
-            && long.TryParse(root.GetProperty(name).GetString(), NumberStyles.None, CultureInfo.InvariantCulture, out value)
+    {
+        value = -1;
+        return root.GetProperty(name).ValueKind == JsonValueKind.String
+            && long.TryParse(root.GetProperty(name).GetString(), NumberStyles.None,
+                CultureInfo.InvariantCulture, out value)
             && value >= 0;
+    }
     private static bool Strings(JsonElement root, string name, int maximum, out string[] values)
     {
         values = [];
