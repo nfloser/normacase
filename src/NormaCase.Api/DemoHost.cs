@@ -52,6 +52,12 @@ public static class DemoHost
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
         builder.Services.AddAuthorization();
+        builder.Services.AddSingleton<OperationalReadinessProbe>(services =>
+            new OperationalReadinessProbe(
+                services.GetRequiredService<IConfiguration>()
+                    .GetValue<bool>("SyntheticReview:PersistenceEnabled")
+                    ? services.GetRequiredService<Npgsql.NpgsqlDataSource>()
+                    : null));
         var catalog = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Knowledge"), "*.json")
             .Select(path => File.ReadAllText(path, new UTF8Encoding(false, true)))
             .Select(json => (Json: json, Pack: new KnowledgePackLoader().LoadFromJson(json)))
@@ -113,6 +119,7 @@ public static class DemoHost
 
         app.UseAuthentication();
         app.UseAuthorization();
+        OperationalHealthEndpoints.Map(app);
         if (reviewCredential.Enabled)
         {
             app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal user) =>

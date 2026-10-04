@@ -97,6 +97,15 @@ Startkonfiguration. PostgreSQL-/HTTP-Tests prüfen außerdem konkurrierende
 Revisionsänderungen, append-only Audit, Live-Sperrung, Neustart und Reaktivierung.
 Die unveränderten Vorschau-Tests laufen ebenfalls weiter.
 
+Die anonymen Endpunkte `/health/live` und `/health/ready` bleiben ebenfalls an die
+Loopback-/Host-/Origin-Grenze gebunden. Ihre Antworten bestehen nur aus festen
+deutschen Ressourcen. Im persistenten Modus prüft Readiness eine neue
+PostgreSQL-Verbindung und den exakten Migrationsstand mit einem Zwei-Sekunden-Limit;
+Fehler liefern 503 ohne Ausnahme-, Verbindungs-, Schema- oder Inhaltsdetails.
+Liveness greift nicht auf Falldaten, Knowledge Packs oder PostgreSQL zu. Details und
+Betriebsgrenzen stehen unter
+[Operational health probes](../architecture/OPERATIONAL_HEALTH.md).
+
 
 ## Frische Testeingänge und Rückgabe
 

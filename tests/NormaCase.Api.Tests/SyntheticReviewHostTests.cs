@@ -5,6 +5,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Xunit;
 
@@ -13,6 +14,44 @@ namespace NormaCase.Api.Tests;
 public sealed class SyntheticReviewHostTests
 {
     private const string Credential = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=";
+
+    [Fact]
+    public async Task Readiness_tracks_the_current_persistent_store_without_exposing_failure_details()
+    {
+        var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if (string.IsNullOrWhiteSpace(connection)) return;
+        await ResetDatabase(connection);
+        await using var host = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    ["SyntheticReview:Enabled"] = "true",
+                    ["SyntheticReview:PersistenceEnabled"] = "true",
+                    ["ConnectionStrings:SyntheticReview"] = connection,
+                    ["SyntheticReview:Credential"] = Credential
+                })));
+        using var client = host.CreateClient();
+
+        var ready = await client.GetAsync("/health/ready");
+        Assert.Equal(HttpStatusCode.OK, ready.StatusCode);
+        using (var readyJson = JsonDocument.Parse(await ready.Content.ReadAsStringAsync()))
+        {
+            Assert.Equal("bereit", readyJson.RootElement.GetProperty("status").GetString());
+            Assert.Equal("lokaler Dienst", readyJson.RootElement.GetProperty("scope").GetString());
+        }
+
+        await host.Services.GetRequiredService<NpgsqlDataSource>().DisposeAsync();
+        var unavailable = await client.GetAsync("/health/ready");
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, unavailable.StatusCode);
+        var body = await unavailable.Content.ReadAsStringAsync();
+        using var unavailableJson = JsonDocument.Parse(body);
+        Assert.Equal("nicht bereit", unavailableJson.RootElement.GetProperty("status").GetString());
+        Assert.Equal("lokaler Dienst", unavailableJson.RootElement.GetProperty("scope").GetString());
+        Assert.Equal(2, unavailableJson.RootElement.EnumerateObject().Count());
+        Assert.DoesNotContain("Host=", body, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Npgsql", body, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("no-store", unavailable.Headers.CacheControl!.ToString());
+    }
 
     [Fact]
     public async Task Distinct_identities_filter_cases_actions_and_preserve_actual_review_actor()
