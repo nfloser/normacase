@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import de from './de.json';
-import {identityAccessChangeRequest,type IdentityAccessState} from './identityAdministration';
+import {identityAccessChangeRequest,type IdentityAccessState} from './identityAccessAdministration';
 
 const text=de.identityAdministration;
 type AuditEntry=IdentityAccessState&{administratorActorId:string;changedAtUtc:string;reason:string};

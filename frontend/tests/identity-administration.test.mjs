@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {identityAccessChangeRequest} from '../src/identityAdministration.ts';
+import {identityAccessChangeRequest} from '../src/identityAccessAdministration.ts';
 
 const active={actorId:'synthetic-local:user-alice',revision:'9007199254740993',suspended:false};
 
