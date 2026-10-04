@@ -16,6 +16,101 @@ public sealed class SyntheticReviewHostTests
     private const string Credential = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=";
 
     [Fact]
+    public async Task Separate_migration_connection_keeps_runtime_role_without_schema_or_mutation_rights()
+    {
+        var migrationConnection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if (string.IsNullOrWhiteSpace(migrationConnection)) return;
+
+        await ResetDatabase(migrationConnection);
+        var suffix = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(8)).ToLowerInvariant();
+        var migrationRole = "normacase_migrator_" + suffix;
+        var runtimeRole = "normacase_runtime_" + suffix;
+        var migrationPassword = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(24));
+        var runtimePassword = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(24));
+        var migrationBuilder = new NpgsqlConnectionStringBuilder(migrationConnection);
+        migrationBuilder.Username = migrationRole;
+        migrationBuilder.Password = migrationPassword;
+        migrationBuilder.Pooling = false;
+        var runtimeBuilder = new NpgsqlConnectionStringBuilder(migrationConnection)
+        {
+            Username = runtimeRole,
+            Password = runtimePassword,
+            Pooling = false
+        };
+
+        await using (var source = NpgsqlDataSource.Create(migrationConnection))
+        {
+            await using var provision = source.CreateCommand($$"""
+                CREATE ROLE {{migrationRole}} LOGIN PASSWORD '{{migrationPassword}}'
+                    NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+                CREATE ROLE {{runtimeRole}} LOGIN PASSWORD '{{runtimePassword}}'
+                    NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+                REVOKE CREATE ON SCHEMA public FROM {{runtimeRole}};
+                CREATE SCHEMA normacase AUTHORIZATION {{migrationRole}};
+                REVOKE ALL ON SCHEMA normacase FROM PUBLIC;
+                GRANT USAGE ON SCHEMA normacase TO {{runtimeRole}};
+                ALTER DEFAULT PRIVILEGES FOR ROLE {{migrationRole}} IN SCHEMA normacase
+                    GRANT SELECT, INSERT ON TABLES TO {{runtimeRole}};
+                """);
+            await provision.ExecuteNonQueryAsync();
+        }
+
+        try
+        {
+            await using var host = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+                builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+                    new Dictionary<string, string?>
+                    {
+                        ["SyntheticReview:Enabled"] = "true",
+                        ["SyntheticReview:PersistenceEnabled"] = "true",
+                        ["ConnectionStrings:SyntheticReview"] = runtimeBuilder.ConnectionString,
+                        ["ConnectionStrings:SyntheticReviewMigrations"] = migrationBuilder.ConnectionString,
+                        ["SyntheticReview:Credential"] = Credential
+                    })));
+            using var client = host.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+            Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/review/work-queues")).StatusCode);
+
+            await using var runtime = NpgsqlDataSource.Create(runtimeBuilder.ConnectionString);
+            await using (var privileges = runtime.CreateCommand("""
+                SELECT
+                    has_schema_privilege(current_user, 'normacase', 'USAGE'),
+                    has_schema_privilege(current_user, 'normacase', 'CREATE'),
+                    has_table_privilege(current_user, 'normacase.case_review_versions', 'SELECT'),
+                    has_table_privilege(current_user, 'normacase.case_review_versions', 'INSERT'),
+                    has_table_privilege(current_user, 'normacase.case_review_versions', 'UPDATE'),
+                    has_table_privilege(current_user, 'normacase.case_review_versions', 'DELETE');
+                """))
+            await using (var reader = await privileges.ExecuteReaderAsync())
+            {
+                Assert.True(await reader.ReadAsync());
+                Assert.True(reader.GetBoolean(0));
+                Assert.False(reader.GetBoolean(1));
+                Assert.True(reader.GetBoolean(2));
+                Assert.True(reader.GetBoolean(3));
+                Assert.False(reader.GetBoolean(4));
+                Assert.False(reader.GetBoolean(5));
+            }
+
+            await AssertDenied(runtime, "CREATE TABLE normacase.runtime_must_not_create(id integer)");
+            await AssertDenied(runtime, "UPDATE normacase.case_review_versions SET case_id = case_id WHERE false");
+            await AssertDenied(runtime, "DELETE FROM normacase.case_review_versions WHERE false");
+        }
+        finally
+        {
+            await using var source = NpgsqlDataSource.Create(migrationConnection);
+            await using var cleanup = source.CreateCommand($$"""
+                DROP SCHEMA IF EXISTS normacase CASCADE;
+                DROP OWNED BY {{runtimeRole}};
+                DROP OWNED BY {{migrationRole}};
+                DROP ROLE IF EXISTS {{runtimeRole}};
+                DROP ROLE IF EXISTS {{migrationRole}};
+                """);
+            await cleanup.ExecuteNonQueryAsync();
+        }
+    }
+
+    [Fact]
     public async Task Readiness_tracks_the_current_persistent_store_without_exposing_failure_details()
     {
         var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
@@ -363,5 +458,12 @@ public sealed class SyntheticReviewHostTests
         await using var source = NpgsqlDataSource.Create(connection);
         await using var command = source.CreateCommand("DROP SCHEMA IF EXISTS normacase CASCADE");
         await command.ExecuteNonQueryAsync();
+    }
+
+    private static async Task AssertDenied(NpgsqlDataSource source, string sql)
+    {
+        await using var command = source.CreateCommand(sql);
+        var exception = await Assert.ThrowsAsync<PostgresException>(() => command.ExecuteNonQueryAsync());
+        Assert.Equal(PostgresErrorCodes.InsufficientPrivilege, exception.SqlState);
     }
 }

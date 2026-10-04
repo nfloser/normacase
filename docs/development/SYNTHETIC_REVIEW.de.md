@@ -11,7 +11,10 @@ Nur die vom Server erlaubten Aktionen erscheinen in der Oberfläche.
 Für den Quellcode: .NET 10, Node.js 24 und eine lokale PostgreSQL-Instanz.
 Docker Compose kann ausschließlich die Demo-Datenbank bereitstellen:
 
-1. Setze `NORMACASE_DEMO_DB_PASSWORD` auf ein außerhalb von Git erzeugtes Passwort.
+1. Setze `NORMACASE_DEMO_DB_PASSWORD`,
+   `NORMACASE_DEMO_DB_MIGRATION_PASSWORD` und
+   `NORMACASE_DEMO_DB_RUNTIME_PASSWORD` auf drei unterschiedliche, außerhalb von
+   Git erzeugte Passwörter.
 2. Starte `docker compose -f compose.synthetic-review.yml up -d --wait`.
 3. Setze die folgenden Umgebungsvariablen nur im Terminal des lokalen API-Prozesses:
    - `SyntheticReview__Enabled=true`
@@ -19,7 +22,9 @@ Docker Compose kann ausschließlich die Demo-Datenbank bereitstellen:
    - `SyntheticReview__Credential`: Base64-Kodierung von 32 kryptografisch zufälligen
      Bytes, ohne Leerzeichen; kein Passwort aus Beispielen verwenden.
    - `ConnectionStrings__SyntheticReview`:
-     `Host=127.0.0.1;Port=54329;Database=normacase_synthetic;Username=normacase_synthetic;Password=<externes Passwort>`
+     `Host=127.0.0.1;Port=54329;Database=normacase_synthetic;Username=normacase_runtime;Password=<externes Laufzeitpasswort>`
+   - `ConnectionStrings__SyntheticReviewMigrations`:
+     `Host=127.0.0.1;Port=54329;Database=normacase_synthetic;Username=normacase_migrator;Password=<externes Migrationspasswort>`
 4. Baue die Oberfläche mit `npm --prefix frontend ci` und
    `npm --prefix frontend run build`.
 5. Starte `dotnet run --project src/NormaCase.Api --configuration Release`.
@@ -31,6 +36,15 @@ Erzeuge den Review-Schlüssel lokal mit einem Secret-Werkzeug oder beispielsweis
 für die lokale Demonstration auf. Nicht in Git, URLs, Screenshots oder Logs kopieren.
 Die Datenbank ist ausschließlich an Loopback gebunden. Veröffentliche den API-Host
 nicht über Reverse Proxy oder Portfreigabe.
+
+Compose richtet die getrennten Rollen nur beim Initialisieren eines neuen Volumes
+ein. Bei einem bestehenden Volume muss ein berechtigter Betreiber nach Sicherung und
+Wiederherstellungsprobe `ops/postgresql/provision-least-privilege.sql` mit den beiden
+Passwörtern in der Prozessumgebung ausführen. Das Skript ist wiederholbar und
+überträgt bestehende Objekte im Schema `normacase` an die Migrationsrolle. Der
+Bootstrap-Benutzer `normacase_synthetic` dient nur Einrichtung, Sicherung und
+Wiederherstellung; seine Verbindung darf nicht an den API-Prozess gehen. Details:
+[PostgreSQL least-privilege host boundary](../architecture/POSTGRESQL_LEAST_PRIVILEGE.md).
 
 Auch selbstständige Vorschaupakete können mit diesen Umgebungsvariablen im Terminal
 und einer separat bereitgestellten PostgreSQL-Instanz gestartet werden. Der normale

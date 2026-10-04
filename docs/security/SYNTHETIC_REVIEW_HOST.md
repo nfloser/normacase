@@ -61,7 +61,11 @@ Netzwerk veröffentlicht werden. Keine echten Patientendaten verwenden.
 Mit `SyntheticReview:PersistenceEnabled=true` wird zusätzlich die persistente
 Review-API aktiviert. Dafür müssen die oben beschriebene Authentifizierung aktiv und
 `ConnectionStrings:SyntheticReview` auf eine lokale PostgreSQL-Datenbank gesetzt
-sein. Der Host migriert sein Schema und initialisiert die vier synthetischen `demo-g`-Fixtures,
+sein. Optional trennt `ConnectionStrings:SyntheticReviewMigrations` die nur beim
+Start verwendete Migrationsverbindung von der eingeschränkten Laufzeitverbindung.
+Ohne diesen Wert bleibt der bisherige Ein-Verbindungs-Entwicklungsmodus kompatibel;
+ein Betrieb mit minimalen Datenbankrechten muss beide Werte setzen. Der Host schließt
+Migrationen vor Laufzeitzugriffen ab und initialisiert die vier synthetischen `demo-g`-Fixtures,
 falls sie noch nicht vorhanden sind. Authentifizierte JSON-/XML-Testeingänge können
 zusätzlich frische synthetische Fälle anlegen.
 
@@ -87,6 +91,14 @@ optimistische Falländerung; 409 lädt den committed Stand neu, 401 beendet die 
 Die Anleitung steht in [synthetischer Review-Demo](../development/SYNTHETIC_REVIEW.de.md).
 Produktiver Betrieb benötigt weiterhin eine institutionell geprüfte Identitäts-,
 Berechtigungs- und Datenschutzkonzeption (#119).
+
+Das mitgelieferte PostgreSQL-Provisioning gibt der Laufzeitrolle nur Schema-Nutzung
+sowie `SELECT` und `INSERT`; Migration, DDL, `UPDATE` und `DELETE` bleiben ihr
+entzogen. Die Migrationsrolle wird nach dem Start nicht vom Host gehalten. Der
+privilegierte Bootstrap-Benutzer bleibt außerhalb des API-Prozesses. Rollenmodell,
+Wiederholbarkeit und CI-Nachweis sind in
+[PostgreSQL least-privilege host boundary](../architecture/POSTGRESQL_LEAST_PRIVILEGE.md)
+dokumentiert.
 
 ## Verifikation
 

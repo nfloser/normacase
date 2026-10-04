@@ -6,10 +6,14 @@ services:
       POSTGRES_DB: normacase_synthetic
       POSTGRES_USER: normacase_synthetic
       POSTGRES_PASSWORD: ${NORMACASE_DEMO_DB_PASSWORD:?Set an external synthetic database password}
+      NORMACASE_DEMO_DB_MIGRATION_PASSWORD: ${NORMACASE_DEMO_DB_MIGRATION_PASSWORD:?Set an external migration-role password}
+      NORMACASE_DEMO_DB_RUNTIME_PASSWORD: ${NORMACASE_DEMO_DB_RUNTIME_PASSWORD:?Set an external runtime-role password}
     ports:
       - "127.0.0.1:54329:5432"
     volumes:
       - synthetic-review-data:/var/lib/postgresql
+      - ./ops/postgresql/010-provision-least-privilege.sh:/docker-entrypoint-initdb.d/010-provision-least-privilege.sh:ro
+      - ./ops/postgresql/provision-least-privilege.sql:/opt/normacase/provision-least-privilege.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U normacase_synthetic -d normacase_synthetic"]
       interval: 5s

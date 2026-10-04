@@ -39,7 +39,7 @@ and must not be classified as externally blocked. Track completion in
 | Knowledge governance | Exact validated release artifacts are retained append-only in PostgreSQL and restored by exact identity; no implicit latest selection or validation promotion | Persistent change/review/approval history, authorized activation, historical replay and synthetic separation-of-duties tests |
 | Corrections and clarification | Intake accepts only revision 1; incomplete/manual-review paths are not complete work cycles | Append-only corrected revisions/reassessment, configurable synthetic clarification and review policy, preserved historical inputs/results |
 | Batch review | Individual review only | Explicit opt-in policy, bounded commands, per-case authorization/revision checks, audited results and German UI |
-| Operational scale and installation | Local host, bounded and authorized paginated queues, native previews, restore rehearsal, privacy-safe liveness and live PostgreSQL/schema readiness | Documented reproducible target deployment/update, rollback/recovery and broader failure-path validation |
+| Operational scale and installation | Local host, bounded and authorized paginated queues, native previews, restore rehearsal, privacy-safe liveness, live PostgreSQL/schema readiness and separately tested migration/runtime database roles | Documented reproducible target deployment/update, rollback/recovery and broader failure-path validation |
 
 Institutional role mappings, actual medical/process policies, vendor contracts and
 external approvals remain external. Their generic configurable mechanisms remain

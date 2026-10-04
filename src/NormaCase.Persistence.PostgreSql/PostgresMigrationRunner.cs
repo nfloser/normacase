@@ -9,6 +9,8 @@ public sealed class PostgresMigrationRunner
 {
     private const string ResourcePrefix =
         "NormaCase.Persistence.PostgreSql.Migrations.";
+    private const string LegacySchemaBootstrap =
+        "CREATE SCHEMA IF NOT EXISTS normacase;";
 
     private readonly NpgsqlDataSource _dataSource;
 
@@ -28,9 +30,27 @@ public sealed class PostgresMigrationRunner
             await using var transaction =
                 await connection.BeginTransactionAsync(cancellationToken);
 
+            await using (var schemaLookup = new NpgsqlCommand(
+                """
+                SELECT 1
+                FROM pg_namespace
+                WHERE nspname = 'normacase';
+                """,
+                connection,
+                transaction))
+            {
+                if (await schemaLookup.ExecuteScalarAsync(cancellationToken) is null)
+                {
+                    await using var createSchema = new NpgsqlCommand(
+                        "CREATE SCHEMA normacase;",
+                        connection,
+                        transaction);
+                    await createSchema.ExecuteNonQueryAsync(cancellationToken);
+                }
+            }
+
             await using (var bootstrap = new NpgsqlCommand(
                 """
-                CREATE SCHEMA IF NOT EXISTS normacase;
                 CREATE TABLE IF NOT EXISTS normacase.schema_migrations (
                     version integer PRIMARY KEY,
                     checksum text NOT NULL
@@ -131,7 +151,7 @@ public sealed class PostgresMigrationRunner
         }
 
         await using (var command = new NpgsqlCommand(
-            migration.Sql,
+            ExecutableSql(migration),
             connection,
             transaction))
         {
@@ -148,6 +168,20 @@ public sealed class PostgresMigrationRunner
         insert.Parameters.AddWithValue(migration.Version);
         insert.Parameters.AddWithValue(migration.Checksum);
         await insert.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    private static string ExecutableSql(Migration migration)
+    {
+        // Migration 001 predates the separately provisioned schema owner and repeats
+        // the runner bootstrap. Keep its original bytes/checksum for existing ledgers,
+        // but do not require database-wide CREATE after the schema is already present.
+        if (migration.Version == 1
+            && migration.Sql.StartsWith(LegacySchemaBootstrap, StringComparison.Ordinal))
+        {
+            return migration.Sql[LegacySchemaBootstrap.Length..];
+        }
+
+        return migration.Sql;
     }
 
     private static IReadOnlyList<Migration> LoadMigrations()

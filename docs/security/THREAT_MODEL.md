@@ -108,6 +108,20 @@ schema mismatch. It does not evaluate knowledge, cases or approvals and is expli
 not evidence of medical, privacy, backup or disaster-recovery readiness. See
 [operational health probes](../architecture/OPERATIONAL_HEALTH.md).
 
+### Database credential over-privilege
+
+A long-lived host connection with schema-owner rights would let an application
+compromise bypass append-only controls by altering or dropping database objects.
+
+Baseline: persistent review can use a separate startup-only migration connection.
+The provisioned runtime role has schema usage and table `SELECT`/`INSERT`, but no
+DDL, `UPDATE`, `DELETE`, sequence or direct routine rights. Public database/schema
+privileges are reduced, and the bootstrap owner is not an application credential.
+Real PostgreSQL CI exercises the full host with separated roles and proves forbidden
+DDL/deletion fail. Single-connection configuration remains only a compatibility mode,
+not the least-privilege deployment profile. See
+[PostgreSQL least-privilege host boundary](../architecture/POSTGRESQL_LEAST_PRIVILEGE.md).
+
 ### Web attacks
 Future web interfaces face XSS, CSRF, injection, SSRF, session and upload threats.
 
