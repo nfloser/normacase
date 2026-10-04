@@ -197,7 +197,6 @@ internal static class SyntheticReviewEndpoints
         IReadOnlyDictionary<string, KnowledgePack> packs,
         string platformVersion)
     {
-        await new PostgresMigrationRunner(source).MigrateAsync();
         var assessmentStore = new PostgresAssessmentRecordStore(source);
         foreach (var id in CaseIds)
         {

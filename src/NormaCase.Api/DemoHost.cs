@@ -75,8 +75,14 @@ public static class DemoHost
 
         if (persistentReviewEnabled)
         {
+            var migrationConnection = app.Configuration.GetConnectionString("SyntheticReviewMigrations")
+                ?? app.Configuration.GetConnectionString("SyntheticReview");
+            if (string.IsNullOrWhiteSpace(migrationConnection))
+                throw new InvalidOperationException("Persistent synthetic review requires an explicit PostgreSQL migration connection.");
+            using var migrationSource = Npgsql.NpgsqlDataSource.Create(migrationConnection);
+            new NormaCase.Persistence.PostgreSql.PostgresMigrationRunner(migrationSource).MigrateAsync().GetAwaiter().GetResult();
+
             var source = app.Services.GetRequiredService<Npgsql.NpgsqlDataSource>();
-            new NormaCase.Persistence.PostgreSql.PostgresMigrationRunner(source).MigrateAsync().GetAwaiter().GetResult();
             var releases = new NormaCase.Persistence.PostgreSql.PostgresKnowledgeReleaseStore(source);
             foreach (var entry in catalog)
             {

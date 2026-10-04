@@ -114,12 +114,16 @@ SyntheticReview__Enabled=true
 SyntheticReview__PersistenceEnabled=true
 SyntheticReview__Credential=<kanonische Base64-Kodierung von 32 Zufallsbytes>
 ConnectionStrings__SyntheticReview=<lokale PostgreSQL-Verbindung>
+ConnectionStrings__SyntheticReviewMigrations=<optionale getrennte Migrationsverbindung>
 ```
 
 Ohne `PersistenceEnabled=true` werden keine persistenten Review-Endpunkte registriert
 und PostgreSQL wird nicht benötigt. Bei aktivierter Persistenz migriert der Host das
 vorhandene NormaCase-Schema und initialisiert nur synthetische `demo-g`-Fixtures,
-sofern sie noch nicht vorhanden sind.
+sofern sie noch nicht vorhanden sind. Für den Betrieb mit minimalen Datenbankrechten
+sind beide Verbindungen erforderlich; die Laufzeitverbindung erhält kein DDL-,
+UPDATE- oder DELETE-Recht. Siehe
+[PostgreSQL least-privilege host boundary](../architecture/POSTGRESQL_LEAST_PRIVILEGE.md).
 
 Geschützte Endpunkte:
 

@@ -242,6 +242,39 @@ jobs:
         run: |
           docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_roundtrip
           docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_restored
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_least_privilege
+      - name: Provision and exercise separate least-privilege database roles
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+          NORMACASE_DEMO_DB_MIGRATION_PASSWORD: synthetic-migration-password
+          NORMACASE_DEMO_DB_RUNTIME_PASSWORD: synthetic-runtime-password
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_least_privilege;Username=normacase_runtime;Password=synthetic-runtime-password;Pooling=true
+          NORMACASE_POSTGRES_MIGRATION_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_least_privilege;Username=normacase_migrator;Password=synthetic-migration-password;Pooling=true
+        run: |
+          docker exec -i \
+            -e NORMACASE_DEMO_DB_MIGRATION_PASSWORD \
+            -e NORMACASE_DEMO_DB_RUNTIME_PASSWORD \
+            "$POSTGRES_CONTAINER" psql -v ON_ERROR_STOP=1 -U normacase_test -d normacase_least_privilege \
+            < ops/postgresql/provision_least_privilege.sql
+          python scripts/smoke_synthetic_roundtrip.py create /tmp/normacase-least-privilege.json
+          if docker exec -e PGPASSWORD=synthetic-runtime-password "$POSTGRES_CONTAINER" \
+            psql -v ON_ERROR_STOP=1 -U normacase_runtime -d normacase_least_privilege \
+            -c 'CREATE TABLE normacase.runtime_must_not_create(id integer)'; then
+            echo "Restricted runtime role unexpectedly created a table" >&2
+            exit 1
+          fi
+          if docker exec -e PGPASSWORD=synthetic-runtime-password "$POSTGRES_CONTAINER" \
+            psql -v ON_ERROR_STOP=1 -U normacase_runtime -d normacase_least_privilege \
+            -c 'DELETE FROM normacase.case_review_versions WHERE false'; then
+            echo "Restricted runtime role unexpectedly deleted rows" >&2
+            exit 1
+          fi
+          docker exec -i \
+            -e NORMACASE_DEMO_DB_MIGRATION_PASSWORD \
+            -e NORMACASE_DEMO_DB_RUNTIME_PASSWORD \
+            "$POSTGRES_CONTAINER" psql -v ON_ERROR_STOP=1 -U normacase_test -d normacase_least_privilege \
+            < ops/postgresql/provision_least_privilege.sql
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-least-privilege.json
       - name: Clean install and exact restart replay
         env:
           NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_roundtrip;Username=normacase_test;Password=synthetic-test-password;Pooling=true

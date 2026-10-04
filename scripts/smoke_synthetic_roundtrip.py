@@ -48,6 +48,9 @@ def run(mode, manifest_path):
     env.update({"SyntheticReview__Enabled": "true", "SyntheticReview__PersistenceEnabled": "true",
                 "SyntheticReview__Credential": token, "ConnectionStrings__SyntheticReview": connection,
                 "SyntheticReview__OutboundDirectory": str(outbound_directory)})
+    migration_connection = os.environ.get("NORMACASE_POSTGRES_MIGRATION_TEST_CONNECTION")
+    if migration_connection:
+        env["ConnectionStrings__SyntheticReviewMigrations"] = migration_connection
     command = ["dotnet", str(ROOT / "src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll")]
     process = subprocess.Popen(command, env=env, cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
