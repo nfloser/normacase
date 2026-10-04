@@ -135,6 +135,7 @@ public static class DemoHost
             {
                 SyntheticReviewEndpoints.Map(app, packs, platformVersion);
                 SyntheticIdentityAdministrationEndpoints.Map(app);
+                SyntheticEntitlementAdministrationEndpoints.Map(app);
             }
         }
 
