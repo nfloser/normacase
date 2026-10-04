@@ -54,11 +54,19 @@ und einen Grund. Ziel, Zustand, Verwaltungsidentität, UTC-Zeit und Grund werden
 append-only in PostgreSQL gespeichert. Eine Sperre gilt ab der nächsten geschützten
 Serveranfrage und bleibt nach einem Neustart erhalten.
 
-Normale Testpersonen erhalten auf diesen Endpunkten 403. Unbekannte Ziele liefern
-404, veraltete Revisionen 409. Schlüsselwerte werden weder gespeichert noch
-zurückgegeben. Das ist eine geprüfte Live-Sperre mit Verwaltungs-Audit, aber noch
-keine vollständige Berechtigungsoberfläche: Änderungen der Fall-/Aktionszuweisung,
-eine konfigurierbare Trennung administrativer Aufgaben und die deutsche Admin-UI
+Nach Anmeldung mit der getrennten Verwaltungsidentität zeigt die deutsche Workbench
+nur die konfigurierten Testpersonen, ihren aktuellen Zugriffsstatus, die exakte
+Berechtigungsrevision und die unveränderliche Änderungshistorie. Sperren oder
+Reaktivieren verlangt eine ausdrückliche Begründung. Bei 409 lädt die Oberfläche den
+gespeicherten Stand neu und wiederholt die Änderung nicht. Abmeldung, 401 und das
+Verlassen der Ansicht entfernen Schlüssel, Auswahl, Formular und Historie aus dem
+Browser-Arbeitsspeicher. Normale Testpersonen sehen diese Ansicht nicht und erhalten
+auf den Verwaltungsendpunkten weiterhin 403.
+
+Unbekannte Ziele liefern 404. Schlüsselwerte werden weder gespeichert noch
+zurückgegeben. Das ist eine geprüfte Live-Sperre mit Verwaltungs-Audit und deutscher
+Bedienoberfläche, aber noch keine vollständige Berechtigungsverwaltung: Änderungen
+der Fall-/Aktionszuweisung und eine konfigurierbare Trennung administrativer Aufgaben
 bleiben in [Issue #183](https://github.com/nfloser/normacase/issues/183) offen.
 Auch konkrete institutionelle Rollen und ein produktiver Identity Provider sind
 dadurch nicht festgelegt.
