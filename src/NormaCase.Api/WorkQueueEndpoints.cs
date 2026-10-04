@@ -39,28 +39,69 @@ internal static class WorkQueueEndpoints
              new("review", workflow.Id, workflow.Version, ["manual-review"]),
              new("technical", workflow.Id, workflow.Version, ["integration-error"])]);
         var projection = new CaseWorkQueueProjectionService();
-        var items = new List<Detail>();
-        foreach (var id in new[] { "demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review" })
+        var items = new List<Detail>(100);
+        var examplesDirectory = Path.Combine(AppContext.BaseDirectory, "Examples");
+        var inputJson = new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            var input = CaseInputJson.Deserialize(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", id + ".json")));
-            var record = new AssessmentRecorder().Evaluate(packs["synthetic.demo-g"], input.Facts,
-                input.AssessmentDate, input.Evidence,
-                new(new("assessment-" + id), new(id), platformVersion, new DateTimeOffset(2026, 10, 3, 13, 0, 0, TimeSpan.Zero)));
+            ["demo-g-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-supported.json")),
+            ["demo-g-not-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-not-supported.json")),
+            ["demo-g-incomplete"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-incomplete.json")),
+            ["demo-g-review"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-review.json"))
+        };
+        var recordedAt = new DateTimeOffset(2026, 10, 3, 13, 0, 0, TimeSpan.Zero);
+
+        void AddAssessed(string caseId, string templateId)
+        {
+            var input = CaseInputJson.Deserialize(inputJson[templateId]);
+            var record = new AssessmentRecorder().Evaluate(
+                packs["synthetic.demo-g"], input.Facts, input.AssessmentDate, input.Evidence,
+                new(new("assessment-" + caseId), new(caseId), platformVersion, recordedAt));
             var triage = new AssessmentTriageService().Route(record, triagePolicy);
             var process = CaseProcessingInstance.Start(record.CaseId, 1, workflow);
-            var applied = new CaseProcessingRoutingService().Apply(triage, process, workflow, routingPolicy, 1, 0);
+            var applied = new CaseProcessingRoutingService().Apply(
+                triage, process, workflow, routingPolicy, 1, 0);
             if (applied.Status != CaseProcessingRoutingStatus.Applied)
                 throw new InvalidOperationException("Synthetic queue fixture could not be routed.");
-            var enriched = projection.Project(record, triage, applied.Process, configuration);
-            items.Add(Create(enriched.Membership, record));
+            items.Add(Create(projection.Project(record, triage, applied.Process, configuration).Membership, record));
         }
-        var technical = CaseProcessingInstance.Start(new("demo-technical"), 1, workflow)
-            .Apply(workflow, 0, "technical-error");
-        items.Add(Create(projection.Project(technical, configuration), null));
+
+        void AddTechnical(string caseId)
+        {
+            var process = CaseProcessingInstance.Start(new(caseId), 1, workflow)
+                .Apply(workflow, 0, "technical-error");
+            items.Add(Create(projection.Project(process, configuration), null));
+        }
+
+        // Keep the four named pitch cases first so a presenter can open them directly.
+        AddAssessed("demo-g-supported", "demo-g-supported");
+        AddAssessed("demo-g-not-supported", "demo-g-not-supported");
+        for (var index = 1; index <= 29; index++)
+        {
+            AddAssessed($"demo-volume-supported-{index:00}", "demo-g-supported");
+            AddAssessed($"demo-volume-not-supported-{index:00}", "demo-g-not-supported");
+        }
+
+        AddAssessed("demo-g-incomplete", "demo-g-incomplete");
+        for (var index = 1; index <= 19; index++)
+            AddAssessed($"demo-volume-incomplete-{index:00}", "demo-g-incomplete");
+
+        AddAssessed("demo-g-review", "demo-g-review");
+        for (var index = 1; index <= 14; index++)
+            AddAssessed($"demo-volume-review-{index:00}", "demo-g-review");
+
+        AddTechnical("demo-technical");
+        for (var index = 1; index <= 4; index++)
+            AddTechnical($"demo-volume-technical-{index:00}");
+
+        if (items.Count != 100)
+            throw new InvalidOperationException("Synthetic workload fixture must contain exactly 100 cases.");
+
         var details = items.ToDictionary(item => item.CaseId, StringComparer.Ordinal);
         app.MapGet("/api/work-queues", () => Results.Json(new
         {
-            configurationId = configuration.Id, configurationVersion = configuration.Version,
+            configurationId = configuration.Id,
+            configurationVersion = configuration.Version,
+            totalCases = items.Count,
             queues = configuration.Queues.Select(queue => new
             {
                 queueId = queue.QueueId,
