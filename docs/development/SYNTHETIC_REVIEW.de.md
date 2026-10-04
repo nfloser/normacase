@@ -118,3 +118,29 @@ stehen in [Synthetischer Gesamtablauf](SYNTHETIC_ROUNDTRIP.de.md).
 `docker compose -f compose.synthetic-review.yml down` beendet die Demo-Datenbank
 und erhält die synthetische Historie im Volume. Ein vollständiger Reset würde dieses
 Volume löschen; sichere benötigte Demo-Historie vor einem bewusst gewählten Reset.
+
+## Synthetisches Wissen verwalten
+
+Für vorhandene getrennte Benutzer können zusätzliche Wissensrechte ausdrücklich
+zugewiesen werden, zum Beispiel im API-Terminal:
+
+- `SyntheticReview__KnowledgeAdministration__PROPOSE=synthetic-local:user-alice`
+- `SyntheticReview__KnowledgeAdministration__REVIEW=synthetic-local:user-bob`
+- `SyntheticReview__KnowledgeAdministration__ACTIVATE=synthetic-local:user-bob`
+
+Alice und Bob müssen bereits mit unterschiedlichen externen Schlüsseln im
+Mehrbenutzermodus konfiguriert sein. Vorschlag und Prüfung dürfen nicht dieselbe
+Identität haben. Die Zuweisung erzeugt keine zusätzlichen Fallrechte. Eine gesperrte
+Identität kann auch die Wissensverwaltung nicht benutzen.
+
+Nach Anmeldung erscheint „Wissen verwalten“. Alice wählt einen vorhandenen
+synthetischen Release und gibt Quellen-, Auswirkungs- und Testreferenzen an. Bob
+öffnet den Vorschlag, prüft die referenzierten Nachweise und gibt mit Begründung frei
+oder lehnt ab. Eine Freigabe kann anschließend ausdrücklich protokolliert aktiviert
+werden. Prüfsumme, Beteiligte, Zeiten und Aktivierungsrevision bleiben erhalten.
+Die Liste zeigt höchstens 25 Vorschläge pro Seite; „Weitere Wissensänderungen“ lädt
+die nächste Seite. Bei Konflikt wird der gespeicherte Stand neu geladen.
+
+Referenzangaben sind keine gespeicherten Quellendokumente und keine fachliche
+MD-Freigabe. Die Aktivierung stellt den laufenden Host nicht um und bewertet keine
+historischen Fälle neu. Diese technische Wissensverwaltung bleibt synthetisch.

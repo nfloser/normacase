@@ -29,4 +29,6 @@
   <data name="health_ready" xml:space="preserve"><value>bereit</value></data>
   <data name="health_not_ready" xml:space="preserve"><value>nicht bereit</value></data>
   <data name="health_scope" xml:space="preserve"><value>lokaler Dienst</value></data>
+  <data name="unknown_knowledge_change" xml:space="preserve"><value>Die Wissensänderung ist nicht verfügbar.</value></data>
+  <data name="knowledge_change_conflict" xml:space="preserve"><value>Der Wissensstand wurde geändert oder die Aktion ist nicht zulässig. Bitte neu laden.</value></data>
 </root>

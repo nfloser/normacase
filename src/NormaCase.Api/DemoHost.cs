@@ -52,6 +52,8 @@ public static class DemoHost
             .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
                 SyntheticReviewAuthentication>(SyntheticReviewAuthentication.SchemeName, _ => { });
         builder.Services.AddAuthorization();
+        builder.Services.AddSingleton(services => new SyntheticKnowledgePermissions(
+            services.GetRequiredService<IConfiguration>(), services.GetRequiredService<SyntheticReviewCredential>()));
         builder.Services.AddSingleton<OperationalReadinessProbe>(services =>
             new OperationalReadinessProbe(
                 services.GetRequiredService<IConfiguration>()
@@ -69,6 +71,7 @@ public static class DemoHost
         var platformVersion = typeof(DemoHost).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
         var app = builder.Build();
         var reviewCredential = app.Services.GetRequiredService<SyntheticReviewCredential>();
+        var knowledgePermissions = app.Services.GetRequiredService<SyntheticKnowledgePermissions>();
         var persistentReviewEnabled = app.Configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled");
         if (persistentReviewEnabled && !reviewCredential.Enabled)
             throw new InvalidOperationException("Persistent synthetic review requires the verified review identity boundary.");
@@ -129,12 +132,14 @@ public static class DemoHost
         if (reviewCredential.Enabled)
         {
             app.MapGet("/api/review-session", (System.Security.Claims.ClaimsPrincipal user) =>
-                Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId }))
+                Results.Json(new { actorId = SyntheticReviewAuthentication.ResolveActor(user).ActorId,
+                    knowledgeActions = persistentReviewEnabled ? knowledgePermissions.Actions(SyntheticReviewAuthentication.ResolveActor(user)) : [] }))
                 .RequireAuthorization();
             if (persistentReviewEnabled)
             {
                 SyntheticReviewEndpoints.Map(app, packs, platformVersion);
                 SyntheticIdentityAdministrationEndpoints.Map(app);
+                SyntheticKnowledgeGovernance.Map(app);
             }
         }
 
