@@ -23,7 +23,7 @@ internal static class OperationalHealthEndpoints
                 status = ApiMessages.Get(persistence.Ready
                     ? "health_ready"
                     : "health_not_ready"),
-                persistence = ApiMessages.Get(persistence.StateResource)
+                scope = ApiMessages.Get("health_scope")
             }, statusCode: persistence.Ready ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable);
         });
     }
@@ -36,7 +36,7 @@ internal sealed class OperationalReadinessProbe(NpgsqlDataSource? source)
     internal async Task<OperationalReadiness> CheckAsync(CancellationToken cancellationToken)
     {
         if (source is null)
-            return new(true, "health_persistence_disabled");
+            return new(true);
 
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(Timeout);
@@ -44,18 +44,16 @@ internal sealed class OperationalReadinessProbe(NpgsqlDataSource? source)
         {
             var current = await new PostgresMigrationRunner(source)
                 .IsCurrentAsync(timeout.Token);
-            return current
-                ? new(true, "health_persistence_available")
-                : new(false, "health_persistence_unavailable");
+            return new(current);
         }
         catch (Exception exception) when (exception is NpgsqlException
             or IOException
             or InvalidOperationException
             or OperationCanceledException)
         {
-            return new(false, "health_persistence_unavailable");
+            return new(false);
         }
     }
 }
 
-internal sealed record OperationalReadiness(bool Ready, string StateResource);
+internal sealed record OperationalReadiness(bool Ready);

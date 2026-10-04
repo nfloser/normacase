@@ -99,8 +99,9 @@ Baseline: log technical identifiers and error codes rather than case contents; s
 Health endpoints could disclose infrastructure details, claim readiness from a stale
 startup result or accidentally turn a domain check into a production-validity claim.
 
-Baseline: the loopback guard executes first; payloads contain only fixed German
-resources and no identifiers, versions, counts or exceptions. Liveness has no
+Baseline: the loopback guard executes first; payloads contain only a fixed German
+status and local scope, with no persistence mode, dependency type, identifiers,
+versions, counts or exceptions. Liveness has no
 dependencies. Persistent readiness opens a current bounded PostgreSQL connection and
 compares the complete migration ledger, failing closed on timeout, connectivity or
 schema mismatch. It does not evaluate knowledge, cases or approvals and is explicitly

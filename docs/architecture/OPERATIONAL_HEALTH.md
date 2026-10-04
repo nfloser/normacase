@@ -15,9 +15,9 @@ The host exposes two unauthenticated, loopback-only `GET` endpoints:
   version has the repository checksum and that no unexpected migration exists.
   A connectivity, timeout, disposal or schema mismatch returns `503`.
 
-Both responses contain only fixed German resource strings. They expose no connection
-string, database/server name, exception, migration version, credential, case count or
-knowledge identity. Existing host/origin restrictions and `no-store`, CSP, frame,
+Both responses contain only a fixed German status and local scope. They expose no
+persistence mode, dependency type, connection string, database/server name, exception,
+migration version, credential, case count or knowledge identity. Existing host/origin restrictions and `no-store`, CSP, frame,
 referrer and content-type security headers apply before the endpoint executes.
 
 ## Failure and timing semantics

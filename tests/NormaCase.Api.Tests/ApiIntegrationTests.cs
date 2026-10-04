@@ -28,7 +28,7 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
         using var readyJson = JsonDocument.Parse(await ready.Content.ReadAsStringAsync());
         Assert.Equal("verfügbar", liveJson.RootElement.GetProperty("status").GetString());
         Assert.Equal("bereit", readyJson.RootElement.GetProperty("status").GetString());
-        Assert.Equal("nicht aktiviert", readyJson.RootElement.GetProperty("persistence").GetString());
+        Assert.Equal("lokaler Dienst", readyJson.RootElement.GetProperty("scope").GetString());
         Assert.Equal(2, liveJson.RootElement.EnumerateObject().Count());
         Assert.Equal(2, readyJson.RootElement.EnumerateObject().Count());
         Assert.Equal("no-store", live.Headers.CacheControl!.ToString());

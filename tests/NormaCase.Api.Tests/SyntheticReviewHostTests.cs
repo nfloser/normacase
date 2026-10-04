@@ -37,7 +37,7 @@ public sealed class SyntheticReviewHostTests
         using (var readyJson = JsonDocument.Parse(await ready.Content.ReadAsStringAsync()))
         {
             Assert.Equal("bereit", readyJson.RootElement.GetProperty("status").GetString());
-            Assert.Equal("verfügbar", readyJson.RootElement.GetProperty("persistence").GetString());
+            Assert.Equal("lokaler Dienst", readyJson.RootElement.GetProperty("scope").GetString());
         }
 
         await host.Services.GetRequiredService<NpgsqlDataSource>().DisposeAsync();
@@ -46,7 +46,7 @@ public sealed class SyntheticReviewHostTests
         var body = await unavailable.Content.ReadAsStringAsync();
         using var unavailableJson = JsonDocument.Parse(body);
         Assert.Equal("nicht bereit", unavailableJson.RootElement.GetProperty("status").GetString());
-        Assert.Equal("nicht verfügbar", unavailableJson.RootElement.GetProperty("persistence").GetString());
+        Assert.Equal("lokaler Dienst", unavailableJson.RootElement.GetProperty("scope").GetString());
         Assert.Equal(2, unavailableJson.RootElement.EnumerateObject().Count());
         Assert.DoesNotContain("Host=", body, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Npgsql", body, StringComparison.OrdinalIgnoreCase);
