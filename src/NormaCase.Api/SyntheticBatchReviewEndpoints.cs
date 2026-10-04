@@ -37,7 +37,7 @@ internal static class SyntheticBatchReviewEndpoints
 
             try
             {
-                return await entitlements.ExecuteMutationAsync<IResult>(actor,
+                return await entitlements.ExecuteAuthorizedAsync<IResult>(actor,
                     (entitlement, lockedToken) => Execute(source, store, actor, entitlement, request, lockedToken), token);
             }
             catch (BatchReviewRequestConflictException)

@@ -79,7 +79,6 @@ internal static class SyntheticReviewEndpoints
         group.MapGet("/work-queues", async (HttpContext context, CancellationToken token) =>
         {
             var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
-            var entitlement = await entitlements.LoadAsync(actor, token);
             var sizeText = context.Request.Query["pageSize"];
             var cursorText = context.Request.Query["afterCaseId"];
             if (sizeText.Count > 1 || cursorText.Count > 1) return DemoHost.Error("invalid_input", 400);
@@ -88,53 +87,56 @@ internal static class SyntheticReviewEndpoints
                 return DemoHost.Error("invalid_input", 400);
             var cursor = cursorText.Count == 0 ? null : cursorText[0];
             if (cursor is not null && !PermittedCaseId(cursor)) return DemoHost.Error("invalid_input", 400);
-            var ids = await store.ListCasePageAsync(size, cursor, entitlement.ReadScope(), token);
-            var page = ids.Take(size).ToArray();
-            var states = new List<CaseReviewState>();
-            foreach (var id in page)
+            return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
             {
-                if (!PermittedCaseId(id.Value) || !entitlement.Allows(id.Value, "READ")) continue;
-                states.Add(await store.LoadAsync(id, token) ?? throw new CaseReviewIntegrityException());
-            }
-            var projection = new CaseWorkQueueProjectionService();
-            return Results.Json(new
-            {
-                configurationId = QueueConfiguration.Id,
-                configurationVersion = QueueConfiguration.Version,
-                nextPageCursor = ids.Count > size ? page[^1].Value : null,
-                queues = QueueConfiguration.Queues.Select(queue => new
+                var ids = await store.ListCasePageAsync(size, cursor, entitlement.ReadScope(), lockedToken);
+                var page = ids.Take(size).ToArray();
+                var states = new List<CaseReviewState>();
+                foreach (var id in page)
                 {
-                    queueId = queue.QueueId,
-                    items = states
-                        .Select(state => (State: state, Membership: projection.Project(state.Process, QueueConfiguration)))
-                        .Where(item => item.Membership.QueueId == queue.QueueId)
-                        .Select(item => new
-                        {
-                            caseId = item.State.Process.CaseId.Value,
-                            caseRevision = item.State.Process.CaseRevision.ToString(CultureInfo.InvariantCulture),
-                            processRevision = item.State.Process.Revision.ToString(CultureInfo.InvariantCulture),
-                            stateId = item.State.Process.StateId,
-                            assessmentId = item.State.Assessment.AssessmentId.Value,
-                            auditRevision = item.State.Audit.Events[^1].Sequence.ToString(CultureInfo.InvariantCulture),
-                            batchAllowed = item.State.Process.StateId == "awaiting-approval"
-                                && entitlement.Allows(item.State.Process.CaseId.Value, "ACCEPT")
-                                && entitlement.Allows(item.State.Process.CaseId.Value, "BATCH")
-                        }).ToArray()
-                }).ToArray()
-            });
+                    if (!PermittedCaseId(id.Value) || !entitlement.Allows(id.Value, "READ")) continue;
+                    states.Add(await store.LoadAsync(id, lockedToken) ?? throw new CaseReviewIntegrityException());
+                }
+                var projection = new CaseWorkQueueProjectionService();
+                return Results.Json(new
+                {
+                    configurationId = QueueConfiguration.Id,
+                    configurationVersion = QueueConfiguration.Version,
+                    nextPageCursor = ids.Count > size ? page[^1].Value : null,
+                    queues = QueueConfiguration.Queues.Select(queue => new
+                    {
+                        queueId = queue.QueueId,
+                        items = states
+                            .Select(state => (State: state, Membership: projection.Project(state.Process, QueueConfiguration)))
+                            .Where(item => item.Membership.QueueId == queue.QueueId)
+                            .Select(item => new
+                            {
+                                caseId = item.State.Process.CaseId.Value,
+                                caseRevision = item.State.Process.CaseRevision.ToString(CultureInfo.InvariantCulture),
+                                processRevision = item.State.Process.Revision.ToString(CultureInfo.InvariantCulture),
+                                stateId = item.State.Process.StateId,
+                                assessmentId = item.State.Assessment.AssessmentId.Value,
+                                auditRevision = item.State.Audit.Events[^1].Sequence.ToString(CultureInfo.InvariantCulture),
+                                batchAllowed = item.State.Process.StateId == "awaiting-approval"
+                                    && entitlement.Allows(item.State.Process.CaseId.Value, "ACCEPT")
+                                    && entitlement.Allows(item.State.Process.CaseId.Value, "BATCH")
+                            }).ToArray()
+                    }).ToArray()
+                });
+            }, token);
         });
 
         group.MapGet("/work-cases/{caseId}", async (string caseId, HttpContext context, CancellationToken token) =>
         {
             var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
-            var entitlement = await entitlements.LoadAsync(actor, token);
-            if (!PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
-                return DemoHost.Error("unknown_work_case", 404);
-
-            var state = await store.LoadAsync(new(caseId), token);
-            return state is null
-                ? DemoHost.Error("unknown_work_case", 404)
-                : Results.Json(Detail(state, entitlement));
+            return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
+            {
+                if (!PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
+                    return DemoHost.Error("unknown_work_case", 404);
+                var state = await store.LoadAsync(new(caseId), lockedToken);
+                return state is null ? DemoHost.Error("unknown_work_case", 404)
+                    : Results.Json(Detail(state, entitlement));
+            }, token);
         });
 
         group.MapPost("/work-cases/{caseId}/reviews", async (string caseId, HttpContext context, CancellationToken token) =>
@@ -155,7 +157,7 @@ internal static class SyntheticReviewEndpoints
 
             try
             {
-                return await entitlements.ExecuteMutationAsync<IResult>(actor, async (entitlement, lockedToken) =>
+                return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
                 {
                     if (!PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
                         return DemoHost.Error("unknown_work_case", 404);

@@ -31,9 +31,9 @@ snapshot; an unexplained configuration mismatch fails startup instead of silentl
 changing authority. Approved versions supersede that baseline and are the live source
 for queue scoping, case detail, review, batch, intake and outbound authorization.
 
-Protected mutations acquire the same transaction-scoped per-identity advisory lock as
-approval. The effective snapshot is loaded only after that lock is held and the lock is
-retained until the protected operation has committed or failed. Concurrent revocation
+Protected reads and mutations acquire the same transaction-scoped per-identity advisory
+lock as approval. The effective snapshot is loaded only after that lock is held and the
+lock is retained until the protected read or mutation has completed. Concurrent revocation
 therefore orders entirely before or after the operation; a stale pre-check cannot cross
 the change boundary. Read-only projections remain bounded by the current exact case set.
 The non-persistent legacy preview retains its historical local configuration behavior

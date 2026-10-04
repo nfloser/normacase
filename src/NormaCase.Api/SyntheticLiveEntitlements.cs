@@ -31,16 +31,7 @@ internal sealed class SyntheticLiveEntitlements(
             await store.ReconcileBaselineAsync(credential.ConfiguredEntitlementState(actorId), token);
     }
 
-    internal async Task<SyntheticEntitlementSnapshot> LoadAsync(
-        AuthenticatedReviewActor actor, CancellationToken token = default)
-    {
-        EnsureLocal(actor);
-        if (!persistent || credential.IsLegacyActor(actor.ActorId))
-            return credential.ConfiguredEntitlementSnapshot(actor.ActorId);
-        return new(await store.LoadEffectiveAsync(actor.ActorId, token));
-    }
-
-    internal async Task<T> ExecuteMutationAsync<T>(AuthenticatedReviewActor actor,
+    internal async Task<T> ExecuteAuthorizedAsync<T>(AuthenticatedReviewActor actor,
         Func<SyntheticEntitlementSnapshot, CancellationToken, Task<T>> action,
         CancellationToken token = default)
     {

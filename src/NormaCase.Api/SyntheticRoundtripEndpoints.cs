@@ -42,7 +42,7 @@ internal static class SyntheticRoundtripEndpoints
                 var text = await ReadBody(context.Request, token);
                 var request = format == "json" ? SyntheticIntakeAdapters.Json(text, TimeProvider.System.GetUtcNow()) : SyntheticIntakeAdapters.Xml(text, TimeProvider.System.GetUtcNow());
                 var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
-                return await entitlements.ExecuteMutationAsync<IResult>(actor, async (entitlement, lockedToken) =>
+                return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
                 {
                 if (!entitlement.Allows(request.CaseId.Value, "INTAKE")) return DemoHost.Error("review_forbidden", 403);
                 // New upstream revisions need a separately approved correction policy.
@@ -76,7 +76,7 @@ internal static class SyntheticRoundtripEndpoints
             try
             {
                 var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
-                return await entitlements.ExecuteMutationAsync<IResult>(actor, async (entitlement, lockedToken) =>
+                return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
                 {
                 if (!SyntheticReviewEndpoints.PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
                     return DemoHost.Error("unknown_work_case", 404);
