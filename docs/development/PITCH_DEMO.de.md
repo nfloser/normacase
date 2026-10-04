@@ -25,6 +25,28 @@ Nachvollziehbarkeit, Versionierung und sichere Unsicherheitsbehandlung.
 Starte die lokale Vorschau und öffne <http://localhost:5080>. Wähle als
 Prüfbereich **„Pitch-Demo – Synthetische Fallprüfung“**.
 
+### Arbeitsvorrat zuerst zeigen
+
+Scrolle zunächst zu **„Fallwarteschlangen“**. Die schreibgeschützte Vorschau baut bei
+jedem Start exakt **100 synthetische Fälle** über dieselbe Assessment-, Triage-,
+Routing- und Queue-Projektion auf:
+
+- **40** zur Freigabe vorbereitet,
+- **20** Informationen nachfordern,
+- **20** Gegenprüfung erforderlich,
+- **20** technische Klärung.
+
+Die Oberfläche zeigt absichtlich nur fünf repräsentative Fälle je Warteschlange statt
+100 einzelne Buttons. Die Zählwerte stammen trotzdem aus allen gerouteten Fällen.
+Öffne beispielsweise `demo-g-supported`, um das aufgezeichnete Ergebnis, Evidenz und
+den Decision Trace zu zeigen. `demo-technical` demonstriert dagegen eine technische
+Ausnahme ohne erfundene Bewertung.
+
+Damit lässt sich im Pitch zuerst das eigentliche Produktbild erklären: NormaCase
+bereitet einen Arbeitsvorrat automatisch vor; ein Gutachter muss nicht jeden Eingang
+manuell einzeln starten. Die vier Einzelfälle darunter bleiben anschließend die
+kompakte Erklärung der deterministischen Semantik.
+
 ### 1. Unvollständiger Eingang
 
 Wähle **„1 · Pflichtangabe fehlt“**, lade das Beispiel und starte die Prüfung.
