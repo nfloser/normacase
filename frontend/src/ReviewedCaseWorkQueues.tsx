@@ -4,6 +4,7 @@ import de from './de.json';
 import { reviewRequest } from './review';
 import type { Pack } from './model';
 import { DecisionTrace } from './DecisionTrace';
+import { IdentityAdministration } from './IdentityAdministration';
 import type { RuleTrace, OutputTrace } from './trace';
 
 const text = de.reviewedWorkQueues;
@@ -97,8 +98,8 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     try{
       const response=await request('/api/review-session',candidate,controller);
       const data=await response.json() as {actorId:string};
-      const queueResponse=await request('/api/review/work-queues',candidate,controller);
-      const next=await queueResponse.json() as QueuePage;
+      const administrator=data.actorId==='synthetic-local:administrator';
+      const next=administrator?{queues:[],nextPageCursor:null}:await (await request('/api/review/work-queues',candidate,controller)).json() as QueuePage;
       if(active(controller)){
         setCredential(candidate);setActorId(data.actorId);setQueues(next.queues);setNextCursor(next.nextPageCursor??null);
         setSelected('');setDetail(null);clearReviewForm();setNotice(text.authenticated);
@@ -131,6 +132,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   const pack=packs.find(item=>item.packId===detail?.packId);
   const canAccept=detail?.allowedActions.includes('ACCEPT_SYSTEM_RESULT')??false;
   const canOverride=detail?.allowedActions.includes('OVERRIDE')??false;
+  const administrator=actorId==='synthetic-local:administrator';
 
   return <section className="card reviewed-work-queues" aria-label={text.heading}>
     <h2>{text.heading}</h2><p>{text.help}</p>
@@ -149,6 +151,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       </div>
       {notice&&<p className="review-notice" role="status">{notice}</p>}
       {error&&<div className="error" role="alert"><strong>{de.errorHeading}</strong><p>{error}</p></div>}
+      {administrator?<IdentityAdministration credential={credential} onUnauthorized={clearSession}/>:<>
       <div className="actions"><button type="button" className="secondary" disabled={busy} onClick={()=>loadPage(null)}>{text.refreshQueues}</button>
         {nextCursor&&<button type="button" className="secondary" disabled={busy} onClick={()=>loadPage(nextCursor)}>{text.nextPage}</button>}
       </div>
@@ -195,7 +198,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
               onClick={()=>submitReview('OVERRIDE')}>{text.override}</button>}
           </div>
         </div>}
-      </article>}
+      </article>}</>}
     </>}
   </section>;
 }

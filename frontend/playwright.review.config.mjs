@@ -2,7 +2,11 @@ import { defineConfig } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
 
 const credential = process.env.NORMACASE_REVIEW_E2E_CREDENTIAL ?? randomBytes(32).toString('base64');
+const otherCredential = process.env.NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL ?? randomBytes(32).toString('base64');
+const administratorCredential = process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL ?? randomBytes(32).toString('base64');
 process.env.NORMACASE_REVIEW_E2E_CREDENTIAL = credential;
+process.env.NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL = otherCredential;
+process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL = administratorCredential;
 const connection = process.env.NORMACASE_REVIEW_E2E_CONNECTION;
 if (!credential || !connection) throw new Error('Reviewed workbench test configuration is required');
 
@@ -19,7 +23,20 @@ export default defineConfig({
       ...process.env,
       SyntheticReview__Enabled: 'true',
       SyntheticReview__PersistenceEnabled: 'true',
-      SyntheticReview__Credential: credential,
+      SyntheticReview__Users__alice__Credential: credential,
+      SyntheticReview__Users__alice__Actions__0: 'READ',
+      SyntheticReview__Users__alice__Actions__1: 'ACCEPT',
+      SyntheticReview__Users__alice__Actions__2: 'OVERRIDE',
+      SyntheticReview__Users__alice__Actions__3: 'EXPORT',
+      SyntheticReview__Users__alice__Actions__4: 'INTAKE',
+      SyntheticReview__Users__alice__CaseIds__0: 'demo-g-incomplete',
+      SyntheticReview__Users__alice__CaseIds__1: 'demo-g-not-supported',
+      SyntheticReview__Users__alice__CaseIds__2: 'demo-g-review',
+      SyntheticReview__Users__alice__CaseIds__3: 'demo-g-supported',
+      SyntheticReview__Users__bob__Credential: otherCredential,
+      SyntheticReview__Users__bob__Actions__0: 'READ',
+      SyntheticReview__Users__bob__CaseIds__0: 'demo-g-review',
+      SyntheticReview__Administrator__Credential: administratorCredential,
       ConnectionStrings__SyntheticReview: connection
     }
   },

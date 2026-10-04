@@ -51,6 +51,13 @@ Doppelklick-/Vorschau-Start bleibt ohne Datenbank und ohne Review-Modus verwendb
   entfernt. Der Browser speichert weder Schlüssel noch Sitzung dauerhaft.
 - Starte den Host erneut: bereits gespeicherte Prüfungen und Reviews bleiben erhalten.
 
+Im Mehrbenutzermodus meldest du dich mit dem getrennt konfigurierten
+Verwaltungsschlüssel am selben Formular an. Statt der Fallarbeitsliste erscheint
+„Identitäten verwalten“. Öffne eine konfigurierte Testidentität, gib eine Begründung
+ein und sperre oder reaktiviere sie. Der angezeigte Zustand und die Historie stammen
+aus PostgreSQL; Schlüssel werden nicht angezeigt. Die nächste geschützte Anfrage der
+gesperrten Identität erhält 401. Dieser Ablauf ändert keine Fallzuweisung oder Aktion.
+
 Zwei Browser können denselben noch offenen Fall laden. Nach einer Entscheidung im
 ersten Browser wird der alte Versuch im zweiten mit 409 abgewiesen. Die Oberfläche
 lädt den gespeicherten Stand neu; sie wiederholt keine Entscheidung automatisch.
@@ -61,14 +68,17 @@ optimistisch zu ändern. Abmeldung bricht laufende Anfragen ab.
 
 `npm --prefix frontend run test:e2e:review` startet den realen lokalen API-Prozess.
 Setze davor `NORMACASE_REVIEW_E2E_CONNECTION` auf eine **eigene leere synthetische
-Testdatenbank**. Die Tests erzeugen einen zufälligen Testschlüssel im Arbeitsspeicher.
-Optional kann `NORMACASE_REVIEW_E2E_CREDENTIAL` extern gesetzt werden.
+Testdatenbank**. Die Tests erzeugen getrennte zufällige Benutzer-, zweite Benutzer-
+und Verwaltungsschlüssel im Arbeitsspeicher. Optional können
+`NORMACASE_REVIEW_E2E_CREDENTIAL`, `NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL` und
+`NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL` extern gesetzt werden.
 Die Tests verändern ihre Fälle absichtlich; wiederholte Läufe brauchen eine frische
 Testdatenbank. Eine produktive oder persönliche Datenbank ist hierfür unzulässig.
 
 CI stellt eine eigene PostgreSQL-Datenbank bereit und prüft Browser → API → Datenbank,
 Freigabe/Override, echte 401/403/409-Antworten, parallele Browser, unveränderte
-Originalprüfungen, Abmeldung während einer Anfrage und leeren Browserspeicher.
+Originalprüfungen, Live-Sperrung/Reaktivierung mit Verwaltungshistorie, Abmeldung
+während einer Anfrage und leeren Browserspeicher.
 
 ## Grenzen
 

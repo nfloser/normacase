@@ -173,6 +173,14 @@ revocation or establish institutional administrator roles. Case/action grant cha
 administrative separation of duties remain open. See
 [identity access administration](../architecture/IDENTITY_ACCESS_ADMINISTRATION.md).
 
+The German administration view is not an authorization boundary. It appears only for
+the exact verified synthetic administrator, while every list/detail/change endpoint
+checks the same server identity independently. Commands contain no caller-selected
+administrator or time. Credentials remain in React memory; logout, unmount and 401
+abort active requests and clear displayed administrative state. A stale 409 reloads
+committed state without automatic retry. The UI shows technical synthetic actor ids,
+status, revisions and bounded audit, but never credential material or case content.
+
 ### Delayed authenticated browser responses
 
 Review credentials exist only in React memory; no cookies or browser storage are

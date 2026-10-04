@@ -6,8 +6,9 @@ async function login(page){
  const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
  await region.getByLabel('Lokaler Review-Schlüssel').fill(credential);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
- await expect(region.getByText('Angemeldet als synthetic-local:reviewer',{exact:true})).toBeVisible();
+ await expect(region.getByText('Angemeldet als synthetic-local:user-alice',{exact:true})).toBeVisible();
  await expect(region.getByLabel('Lokaler Review-Schlüssel')).toHaveCount(0);
+ await expect(region.getByRole('heading',{name:'Identitäten verwalten'})).toHaveCount(0);
  return region;
 }
 async function noStoredSession(page){
@@ -66,7 +67,64 @@ test('two browsers review, recover a real stale conflict and preserve immutable 
  await otherContext.close();
  await region.getByRole('button',{name:'Review-Modus abmelden'}).click();
  await expect(region.getByLabel('Lokaler Review-Schlüssel')).toHaveValue('');
- await expect(region.getByText('synthetic-local:reviewer',{exact:true})).toHaveCount(0);
+ await expect(region.getByText('synthetic-local:user-alice',{exact:true})).toHaveCount(0);
+ await noStoredSession(page);
+});
+
+test('administrator resolves a stale suspension, changes live access and sees the audit',async({page})=>{
+ const administrator=process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL;
+ if(!administrator)throw new Error('Administrator test credential is required');
+ await page.goto('/');
+ const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
+ await region.getByLabel('Lokaler Review-Schlüssel').fill(administrator);
+ await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
+ await expect(region.getByText('Angemeldet als synthetic-local:administrator',{exact:true})).toBeVisible();
+ await expect(region.getByRole('heading',{name:'Identitäten verwalten'})).toBeVisible();
+ const administration=region.getByRole('region',{name:'Identitäten verwalten'});
+ await expect(administration.getByText('synthetic-local:user-bob',{exact:true})).toBeVisible();
+ await administration.getByRole('button',{name:'Identität verwalten: synthetic-local:user-alice',exact:true}).click();
+ const detail=administration.locator('article');
+ await expect(detail.getByText('Aktiv',{exact:true})).toBeVisible();
+
+ const target=encodeURIComponent('synthetic-local:user-alice');
+ const external=await page.request.post('/api/review/administration/identities/'+target+'/status',{
+  headers:{Authorization:'Bearer '+administrator},
+  data:{expectedRevision:'0',suspended:true,reason:'Synthetische konkurrierende Sperre'}
+ });
+ expect(external.ok()).toBeTruthy();
+ await administration.getByLabel('Begründung der Zugriffsänderung').fill('Veralteter Browserversuch');
+ await administration.getByRole('button',{name:'Identität sperren'}).click();
+ await expect(administration.getByRole('alert')).toContainText('zwischenzeitlich geändert');
+ await expect(detail.getByText('Gesperrt',{exact:true})).toBeVisible();
+ await expect(detail.getByText('Synthetische konkurrierende Sperre',{exact:true})).toBeVisible();
+
+ await administration.getByLabel('Begründung der Zugriffsänderung').fill('Synthetische Browser-Reaktivierung');
+ await administration.getByRole('button',{name:'Identität reaktivieren'}).click();
+ await expect(administration.getByText('Identität wurde reaktiviert.',{exact:true})).toBeVisible();
+ await administration.getByLabel('Begründung der Zugriffsänderung').fill('Synthetische Browser-Sperre');
+ await administration.getByRole('button',{name:'Identität sperren'}).click();
+ await expect(administration.getByText('Identität wurde gesperrt.',{exact:true})).toBeVisible();
+ const denied=await page.request.get('/api/review-session',{headers:{Authorization:'Bearer '+credential}});
+ expect(denied.status()).toBe(401);
+ await expect(detail.getByText('Synthetische Browser-Sperre',{exact:true})).toBeVisible();
+
+ await administration.getByLabel('Begründung der Zugriffsänderung').fill('Synthetische Abschluss-Reaktivierung');
+ await administration.getByRole('button',{name:'Identität reaktivieren'}).click();
+ await expect(administration.getByText('Identität wurde reaktiviert.',{exact:true})).toBeVisible();
+ const restored=await page.request.get('/api/review-session',{headers:{Authorization:'Bearer '+credential}});
+ expect(restored.ok()).toBeTruthy();
+
+ let release;const hold=new Promise(resolve=>{release=resolve;});
+ let reached;const started=new Promise(resolve=>{reached=resolve;});
+ await page.route('**/api/review/administration/identities/synthetic-local%3Auser-alice',async route=>{
+  const response=await route.fetch();reached();await hold;
+  await route.fulfill({response}).catch(()=>{});
+ });
+ await administration.getByRole('button',{name:'Identität verwalten: synthetic-local:user-alice',exact:true}).click();await started;
+ await region.getByRole('button',{name:'Review-Modus abmelden'}).click();
+ release();
+ await expect(region.getByLabel('Lokaler Review-Schlüssel')).toHaveValue('');
+ await expect(region.getByRole('heading',{name:'Identitäten verwalten'})).toHaveCount(0);
  await noStoredSession(page);
 });
 test('override requires explicit selection; unknown/incomplete cases expose no review actions',async({page})=>{
@@ -111,6 +169,6 @@ test('logout cancels a delayed case response so it cannot restore sensitive UI',
  await region.getByRole('button',{name:'Review-Modus abmelden'}).click();release();
  await expect(region.getByLabel('Lokaler Review-Schlüssel')).toHaveValue('');
  await expect(region.getByRole('heading',{name:/Gespeicherter Fall:/})).toHaveCount(0);
- await expect(region.getByText('Angemeldet als synthetic-local:reviewer',{exact:true})).toHaveCount(0);
+ await expect(region.getByText('Angemeldet als synthetic-local:user-alice',{exact:true})).toHaveCount(0);
  await noStoredSession(page);
 });
