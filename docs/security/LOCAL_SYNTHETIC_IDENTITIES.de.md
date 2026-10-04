@@ -65,9 +65,12 @@ auf den Verwaltungsendpunkten weiterhin 403.
 
 Unbekannte Ziele liefern 404. Schlüsselwerte werden weder gespeichert noch
 zurückgegeben. Das ist eine geprüfte Live-Sperre mit Verwaltungs-Audit und deutscher
-Bedienoberfläche, aber noch keine vollständige Berechtigungsverwaltung: Änderungen
-der Fall-/Aktionszuweisung und eine konfigurierbare Trennung administrativer Aufgaben
-bleiben in [Issue #183](https://github.com/nfloser/normacase/issues/183) offen.
+Bedienoberfläche, aber noch keine vollständige Berechtigungsverwaltung. Der technische
+PostgreSQL-Unterbau kann vollständige Fall-/Aktions-Snapshots bereits als Antrag,
+getrennte Entscheidung und wirksame Revision unveränderlich speichern. Er ist bewusst
+noch nicht mit dieser Verwaltungsoberfläche oder der laufenden Autorisierung verbunden.
+Diese Integration einschließlich transaktionssicherer aktueller Rechte bleibt in
+[Issue #183](https://github.com/nfloser/normacase/issues/183) offen.
 Auch konkrete institutionelle Rollen und ein produktiver Identity Provider sind
 dadurch nicht festgelegt.
 

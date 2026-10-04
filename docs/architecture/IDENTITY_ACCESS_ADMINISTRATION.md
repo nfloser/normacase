@@ -29,6 +29,10 @@ denied by the API.
 This slice deliberately does not store credentials, expose credential values, introduce
 wildcard permissions or infer organizational roles. The administrator credential remains
 external configuration and can administer only the explicitly configured synthetic users.
-General action/case-grant changes and configurable administrative separation-of-duties
-policy remain part of issue #183. A productive identity provider,
+The storage-neutral and PostgreSQL foundation for complete reviewed case/action grant
+snapshots is described in [reviewed entitlement changes](REVIEWED_ENTITLEMENT_CHANGES.md).
+It retains proposals, distinct decisions and effective revisions append-only, but is not
+yet connected to this host's live authorization or administration UI. That authenticated
+integration and transaction-safe current-revision enforcement remain part of issue #183.
+A productive identity provider,
 session invalidation model and institution-specific roles require separate approval.
