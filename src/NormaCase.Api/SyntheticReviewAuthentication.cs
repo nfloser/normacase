@@ -109,7 +109,7 @@ internal sealed class SyntheticReviewCredential
     {
         var configured = ConfiguredEntitlements(actorId)
             ?? throw new InvalidOperationException("Configured synthetic identity required.");
-        return new(actorId, 0, configured.Value.Actions, configured.Value.CaseIds);
+        return new(actorId, 0, configured.Actions, configured.CaseIds);
     }
 
     internal SyntheticEntitlementSnapshot ConfiguredEntitlementSnapshot(string actorId)
