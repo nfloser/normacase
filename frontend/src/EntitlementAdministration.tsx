@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import de from './de.json';
 import {entitlementDecisionRequest,entitlementProposalRequest,
-  type EntitlementChange,type EntitlementContext} from './entitlementAdministration';
+  type EntitlementChange,type EntitlementContext} from './entitlementAdministrationRequest';
 
 const text=de.entitlementAdministration;
 type Props={credential:string;canPropose:boolean;canDecide:boolean;onUnauthorized:(message:string)=>void};

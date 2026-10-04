@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {entitlementProposalRequest,entitlementDecisionRequest} from '../src/entitlementAdministration.ts';
+import {entitlementProposalRequest,entitlementDecisionRequest} from '../src/entitlementAdministrationRequest.ts';
 
 test('entitlement proposal preserves exact revision and excludes server-owned audit fields',()=>{
  const body=JSON.parse(entitlementProposalRequest({actorId:'synthetic-local:user-alice',effectiveRevision:'9007199254740993',
