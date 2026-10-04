@@ -26,7 +26,7 @@ Starte die lokale Vorschau und öffne <http://localhost:5080>.
 
 ### 0. Arbeitslast statt Einzelfall-Start
 
-Scrolle zuerst zu **„Fallwarteschlangen“**. Die anonyme Vorschau erzeugt bei jedem
+Direkt unter dem Einstieg siehst du **„Fallwarteschlangen“**. Die anonyme Vorschau erzeugt bei jedem
 Start exakt **100 synthetische Fälle** und verarbeitet sie ohne manuelles Anstoßen
 durch dieselbe deterministische Bewertung und Routing-Logik:
 
