@@ -215,3 +215,50 @@ test('logout cancels a delayed case response so it cannot restore sensitive UI',
  await expect(region.getByText('Angemeldet als synthetic-local:user-alice',{exact:true})).toHaveCount(0);
  await noStoredSession(page);
 });
+
+
+test('administrator proposes and distinct entitlement approver decides reviewed grants',async({page})=>{
+ const administrator=process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL;
+ const approver=process.env.NORMACASE_REVIEW_E2E_ENTITLEMENT_APPROVER_CREDENTIAL;
+ if(!administrator||!approver)throw new Error('Entitlement administration test credentials are required');
+ const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
+
+ await page.goto('/');
+ await region.getByLabel('Lokaler Review-Schlüssel').fill(administrator);
+ await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
+ await expect(region.getByText('Angemeldet als synthetic-local:administrator',{exact:true})).toBeVisible();
+ const entitlements=region.getByRole('region',{name:'Geprüfte Berechtigungsänderungen'});
+ await expect(entitlements).toBeVisible();
+ await entitlements.getByLabel('Zielidentität').selectOption('synthetic-local:user-alice');
+ await expect(entitlements.getByText('Geprüfte Revision: 0',{exact:true})).toBeVisible();
+ await entitlements.getByLabel('Aktion READ').check();
+ await entitlements.getByLabel('Aktion ACCEPT').check();
+ await entitlements.getByLabel('Fall demo-g-supported').check();
+ await entitlements.getByLabel('Begründung des Berechtigungsantrags').fill('Synthetischer Browser-Rechteantrag');
+ await entitlements.getByRole('button',{name:'Berechtigungsantrag speichern'}).click();
+ await expect(entitlements.getByText('Berechtigungsantrag wurde gespeichert.',{exact:true})).toBeVisible();
+ await expect(entitlements.getByText('Synthetischer Browser-Rechteantrag',{exact:true})).toBeVisible();
+ await region.getByRole('button',{name:'Review-Modus abmelden'}).click();
+
+ await region.getByLabel('Lokaler Review-Schlüssel').fill(approver);
+ await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
+ await expect(region.getByText('Angemeldet als synthetic-local:entitlement-approver',{exact:true})).toBeVisible();
+ await expect(region.getByRole('heading',{name:'Identitäten verwalten'})).toHaveCount(0);
+ const approval=region.getByRole('region',{name:'Geprüfte Berechtigungsänderungen'});
+ await expect(approval.getByText('Synthetischer Browser-Rechteantrag',{exact:true})).toBeVisible();
+ await approval.getByRole('button',{name:'Antrag prüfen'}).click();
+ await approval.getByLabel('Begründung der Berechtigungsentscheidung').fill('Synthetische unabhängige Browser-Freigabe');
+ await approval.getByRole('button',{name:'Berechtigungsantrag freigeben'}).click();
+ await expect(approval.getByText('Berechtigungsantrag wurde freigegeben.',{exact:true})).toBeVisible();
+ await expect(approval.getByText('Keine offenen Berechtigungsanträge.',{exact:true})).toBeVisible();
+ await region.getByRole('button',{name:'Review-Modus abmelden'}).click();
+
+ await region.getByLabel('Lokaler Review-Schlüssel').fill(administrator);
+ await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
+ const after=region.getByRole('region',{name:'Geprüfte Berechtigungsänderungen'});
+ await after.getByLabel('Zielidentität').selectOption('synthetic-local:user-alice');
+ await expect(after.getByText('Geprüfte Revision: 1',{exact:true})).toBeVisible();
+ await expect(after.getByText('Genehmigte Rechte sind in dieser Ausbaustufe noch keine Live-Autorisierung.',{exact:true})).toBeVisible();
+ await region.getByRole('button',{name:'Review-Modus abmelden'}).click();
+ await noStoredSession(page);
+});
