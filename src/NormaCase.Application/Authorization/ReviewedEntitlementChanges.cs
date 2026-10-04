@@ -127,6 +127,8 @@ public interface IReviewedEntitlementChangeStore
         CancellationToken cancellationToken = default);
     Task<EntitlementChangeRecord?> LoadChangeAsync(
         string changeId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<EntitlementChangeRecord>> ListPendingAsync(
+        int limit, CancellationToken cancellationToken = default);
     Task<IdentityEntitlementState> LoadEffectiveAsync(
         string actorId, CancellationToken cancellationToken = default);
 }
@@ -147,6 +149,13 @@ public sealed class ReviewedEntitlementChangeService(
     {
         ArgumentNullException.ThrowIfNull(decision);
         return DecideValidatedAsync(decision, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<EntitlementChangeRecord>> ListPendingAsync(
+        int limit, CancellationToken cancellationToken = default)
+    {
+        if (limit is < 1 or > 100) throw new ArgumentOutOfRangeException(nameof(limit));
+        return store.ListPendingAsync(limit, cancellationToken);
     }
 
     private async Task<EntitlementChangeRecord> DecideValidatedAsync(
