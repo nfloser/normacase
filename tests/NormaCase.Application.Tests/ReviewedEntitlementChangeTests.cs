@@ -19,6 +19,11 @@ public sealed class ReviewedEntitlementChangeTests
                 new DateTimeOffset(2026, 10, 4, 12, 1, 0, TimeSpan.Zero), true,
                 "Synthetische Selbstfreigabe")));
         Assert.Null(store.Decision);
+        await Assert.ThrowsAsync<EntitlementChangeConflictException>(() =>
+            service.DecideAsync(new(proposal.ChangeId, "synthetic-local:access-approver",
+                new DateTimeOffset(2026, 10, 4, 11, 59, 0, TimeSpan.Zero), true,
+                "Synthetische Entscheidung mit widersprüchlicher Zeit")));
+        Assert.Null(store.Decision);
 
         var decision = new EntitlementChangeDecision(
             proposal.ChangeId, "synthetic-local:access-approver",

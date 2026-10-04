@@ -157,6 +157,8 @@ public sealed class ReviewedEntitlementChangeService(
         if (policy.RequireDistinctDecisionActor
             && string.Equals(existing.Proposal.ProposerActorId, decision.DecisionActorId, StringComparison.Ordinal))
             throw new EntitlementSeparationOfDutiesException();
+        if (decision.DecidedAtUtc < existing.Proposal.ProposedAtUtc)
+            throw new EntitlementChangeConflictException();
         return await store.DecideAsync(
             decision, policy.RequireDistinctDecisionActor, cancellationToken);
     }

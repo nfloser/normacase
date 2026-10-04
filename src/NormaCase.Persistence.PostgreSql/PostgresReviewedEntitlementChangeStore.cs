@@ -47,6 +47,8 @@ public sealed class PostgresReviewedEntitlementChangeStore(
             if (requireDistinctDecisionActor
                 && string.Equals(proposal.ProposerActorId, decision.DecisionActorId, StringComparison.Ordinal))
                 throw new EntitlementSeparationOfDutiesException();
+            if (decision.DecidedAtUtc < proposal.ProposedAtUtc)
+                throw new EntitlementChangeConflictException();
 
             await using (var decisionLookup = new NpgsqlCommand(
                 "SELECT 1 FROM normacase.identity_entitlement_decisions WHERE change_id=$1;",

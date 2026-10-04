@@ -10,7 +10,8 @@ authenticated adapter; the storage contract never invents them.
 duties explicit. When enabled, the proposal actor cannot approve or reject the same
 change. PostgreSQL repeats that check inside the decision transaction so bypassing the
 Application service cannot remove the boundary. A decision is append-only and exactly
-one decision can win for a proposal.
+one decision can win for a proposal. A decision timestamp before its proposal is rejected
+at both boundaries instead of producing contradictory audit chronology.
 
 Approval obtains a transaction-scoped advisory lock for the target identity and compares
 the proposal's expected revision with the latest effective revision. Only an exact match
