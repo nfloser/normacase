@@ -58,9 +58,11 @@ verglichen und der Beleg nachgetragen. Betriebssystem-/Hardware-Garantien für
 Stromausfall sowie Verzeichnisrechte müssen im Zielbetrieb geprüft werden.
 
 Eingänge und Rückgabeanforderungen sind auf 64 KiB begrenzt. Die synthetische
-Arbeitsliste begrenzt sich auf 500 gespeicherte Fälle und schlägt bei Überschreitung
-fehl, statt Fälle still auszublenden. Produktive Pagination, Rollen-/Mandantengrenzen
-und Korrekturpolitik sind eigene Anforderungen. Geheimnisse niemals in URLs,
+Arbeitsliste wird stabil nach Fall-ID mit höchstens 100 Einträgen pro Seite gelesen
+und vor der Ausgabe auf die genaue Fallberechtigung begrenzt. Änderungen an späteren
+Seiten werden beim nächsten Seitenaufruf aus dem dann committed Zustand projiziert;
+historische Fälle werden dadurch nicht gelöscht. Produktive Mandantengrenzen und
+Korrekturpolitik sind eigene Anforderungen. Geheimnisse niemals in URLs,
 Screenshots, Shell-Historie oder Repository ablegen.
 
 ## Wiederherstellungsprobe
