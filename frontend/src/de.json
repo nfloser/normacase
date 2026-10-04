@@ -132,7 +132,7 @@
   },
   "workQueues": {
     "heading": "Fallwarteschlangen",
-    "help": "Fünf synthetische Fälle durchlaufen Prüfung und Routing automatisch. Diese Ansicht ist schreibgeschützt und wird bei jedem Neustart neu aufgebaut. Eine Freigabe wurde noch nicht erteilt.",
+    "help": "Ein deterministischer Arbeitsvorrat mit 100 synthetischen Fällen durchläuft Prüfung und Routing automatisch. Diese Ansicht ist schreibgeschützt und wird bei jedem Neustart neu aufgebaut. Eine Freigabe wurde noch nicht erteilt.",
     "queues": {
       "approval": "Zur Freigabe vorbereitet",
       "clarification": "Informationen nachfordern",
@@ -151,7 +151,12 @@
     "processRevision": "Prozessrevision",
     "noAssessment": "Für diesen technischen Fehler liegt keine Bewertung vor. Ergebnis, Entscheidungsweg und Nachweise wurden nicht erzeugt.",
     "recorded": "Aufgezeichnet am",
-    "loading": "Fall wird geladen …"
+    "loading": "Fall wird geladen …",
+    "workload": "Synthetischer Arbeitsvorrat",
+    "cases": "Fälle",
+    "preview": "Die Falllisten zeigen nur eine begrenzte repräsentative Auswahl. Die Zählwerte beziehen sich auf den gesamten gerouteten Arbeitsvorrat.",
+    "representative": "Repräsentative Auswahl",
+    "of": "von"
   },
   "identityAdministration": {
     "heading": "Identitäten verwalten",
