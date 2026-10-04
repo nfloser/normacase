@@ -53,7 +53,7 @@ internal static class SyntheticReviewEndpoints
          new("review", Workflow.Id, Workflow.Version, ["manual-review"]),
          new("completed", Workflow.Id, Workflow.Version, ["accepted", "overridden"])]);
 
-    private static readonly CaseReviewPolicy ReviewPolicy = new(
+    internal static readonly CaseReviewPolicy ReviewPolicy = new(
         "synthetic-reviewed-policy", 1, Workflow.Id, Workflow.Version,
         new Dictionary<HumanReviewDisposition, string>
         {
@@ -73,6 +73,7 @@ internal static class SyntheticReviewEndpoints
 
         var credential = app.Services.GetRequiredService<SyntheticReviewCredential>();
         var group = app.MapGroup("/api/review").RequireAuthorization();
+        SyntheticBatchReviewEndpoints.Map(group, store, credential);
 
         group.MapGet("/work-queues", async (HttpContext context, CancellationToken token) =>
         {
@@ -394,7 +395,7 @@ internal static class SyntheticReviewEndpoints
         string Reason,
         AssessmentOutcome? OverrideOutcome);
 
-    private sealed class SyntheticAuthorizer(SyntheticReviewCredential credential) : ICaseReviewAuthorizer
+    internal sealed class SyntheticAuthorizer(SyntheticReviewCredential credential) : ICaseReviewAuthorizer
     {
         public bool Authorize(
             AuthenticatedReviewActor actor,

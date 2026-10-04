@@ -27,9 +27,24 @@ invalid commands and mismatched policies fail before mutation. Cancellation and
 unexpected storage, binding or integrity failures propagate and stop orchestration;
 already committed earlier case transactions remain authoritative.
 
-This slice is storage- and transport-neutral and changes no assessment, UNKNOWN,
-Knowledge or Domain semantics. It does not expose an API or user interface and does
-not confer organizational permission for batch review. Issue #186 still requires
-durable batch-request idempotency, authenticated API integration, per-case PostgreSQL
-tests, explicit synthetic grants and a German selection/result workflow before the
-larger capability can be considered complete.
+The opt-in persistent synthetic host exposes this orchestration at
+`POST /api/review/batch-reviews`. It requires the verified server-side identity, exact
+batch-policy id/version and a separate configured `BATCH` action for every requested
+case. The legacy single-credential compatibility mode does not confer that action.
+Every item carries explicit case, assessment and review identities plus expected
+case/process/audit revisions. Actor and recording time remain server-controlled.
+
+The adapter validates the complete strict JSON envelope, bounds it to 100 items,
+rejects duplicate identities and verifies that all requested cases are readable,
+batch-enabled, present and bound to the supplied assessment before the first mutation.
+Unreadable cases return the same not-found response as unknown cases. It then uses the
+existing PostgreSQL aggregate store and per-case review transaction. The response
+contains only ordered case/review ids and the stable technical status codes
+`COMMITTED`, `DENIED`, `CONFLICT`, `POLICY_REJECTED` or `NOT_ATTEMPTED`.
+
+This changes no assessment, UNKNOWN, Knowledge or Domain semantics and does not confer
+organizational permission for batch review. A repeated request is not yet a durable
+idempotent batch operation: already committed items return revision conflicts. Issue
+#186 therefore still requires durable whole-request identity/result retention and the
+German selection/result workflow before the larger capability can be considered
+complete.

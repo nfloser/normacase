@@ -15,7 +15,7 @@ internal sealed class SyntheticReviewCredential
     private sealed record Entry(string ActorId, byte[] Credential, HashSet<string> Actions, HashSet<string> Cases, bool Administrator = false);
     private readonly Entry[] entries;
     private readonly bool legacy;
-    private static readonly HashSet<string> ValidActions = ["READ", "ACCEPT", "OVERRIDE", "EXPORT", "INTAKE"];
+    private static readonly HashSet<string> ValidActions = ["READ", "ACCEPT", "OVERRIDE", "EXPORT", "INTAKE", "BATCH"];
 
     private SyntheticReviewCredential(bool enabled, Entry[] entries, bool legacy = false)
         => (Enabled, this.entries, this.legacy) = (enabled, entries, legacy);
@@ -83,7 +83,9 @@ internal sealed class SyntheticReviewCredential
     internal bool Allows(AuthenticatedReviewActor actor, string caseId, string action)
         => actor.AuthenticationAuthority == "synthetic-local"
             && entries.Any(entry => entry.ActorId == actor.ActorId
-                && (legacy || entry.Actions.Contains(action) && entry.Cases.Contains(caseId)));
+                && (legacy
+                    ? action != "BATCH"
+                    : entry.Actions.Contains(action) && entry.Cases.Contains(caseId)));
 
     internal bool IsAdministrator(AuthenticatedReviewActor actor)
         => actor.AuthenticationAuthority == "synthetic-local"

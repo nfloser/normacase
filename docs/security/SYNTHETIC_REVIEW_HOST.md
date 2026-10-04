@@ -70,15 +70,29 @@ falls sie noch nicht vorhanden sind. Authentifizierte JSON-/XML-Testeingänge k�
 zusätzlich frische synthetische Fälle anlegen.
 
 Die geschützten Endpunkte `/api/review/work-queues`,
-`/api/review/work-cases/{caseId}` und
-`/api/review/work-cases/{caseId}/reviews` lesen den committed PostgreSQL-Zustand.
+`/api/review/work-cases/{caseId}`, `/api/review/work-cases/{caseId}/reviews` und
+`/api/review/batch-reviews` lesen den committed PostgreSQL-Zustand.
 Accept/Override ist nur aus `awaiting-approval` erlaubt. Commands enthalten explizite
-Case-/Process-/Audit-Revisionen und einen Grund; Actor, Review-ID und UTC-Zeitpunkt
-stammen ausschließlich von der vertrauenswürdigen Servergrenze. Veraltete Revisionen
+Case-/Process-/Audit-Revisionen und einen Grund; Actor und UTC-Zeitpunkt stammen
+ausschließlich von der vertrauenswürdigen Servergrenze. Einzelreviews erhalten ihre
+Review-ID serverseitig. Die Sammelprüfung verlangt eindeutige, caller-seitig stabile
+Review-IDs, die innerhalb der Falltransaktion auf Wiederverwendung geprüft werden.
+Veraltete Revisionen
 werden mit 409 abgewiesen, auch wenn der Fall inzwischen abgeschlossen wurde.
 Die Fallberechtigung wird vor der Revisionsprüfung kontrolliert; die explizite
 Prozesspolicy erlaubt weiterhin ausschließlich Übergänge aus `awaiting-approval`.
 Ein aktueller Command gegen einen abgeschlossenen Fall bleibt mit 403 gesperrt.
+
+Sammelprüfung ist eine separate synthetische Berechtigung: neben `READ` und der
+jeweiligen `ACCEPT`-/`OVERRIDE`-Aktion ist `BATCH` für jeden Fall erforderlich. Der
+alte gemeinsame Ein-Schlüssel-Modus erhält `BATCH` ausdrücklich nicht. Die
+exakte versionierte Serverpolicy begrenzt eine Anfrage auf 100 Elemente. Unlesbare
+und unbekannte Fälle sind nicht unterscheidbar und die vollständige Fall-/Assessment-
+Bindung wird vor der ersten Änderung geprüft. Falltransaktionen bleiben voneinander
+getrennt; bekannte lokale Fehler werden ohne Fallinhalte als begrenzte Statuswerte
+zurückgegeben. Die API speichert noch keine idempotente Gesamtanfrage. Ein Retry kann
+daher bereits übernommene Elemente als Konflikt melden und darf nicht als automatischer
+Erfolg interpretiert werden.
 
 Die Oberfläche hält den Schlüssel ausschließlich im Arbeitsspeicher, entfernt das
 maskierte Eingabefeld nach erfolgreicher Anmeldung und speichert keine Cookies,
