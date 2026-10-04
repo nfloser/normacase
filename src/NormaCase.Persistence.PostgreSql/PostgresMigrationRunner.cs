@@ -28,9 +28,27 @@ public sealed class PostgresMigrationRunner
             await using var transaction =
                 await connection.BeginTransactionAsync(cancellationToken);
 
+            await using (var schemaLookup = new NpgsqlCommand(
+                """
+                SELECT 1
+                FROM pg_namespace
+                WHERE nspname = 'normacase';
+                """,
+                connection,
+                transaction))
+            {
+                if (await schemaLookup.ExecuteScalarAsync(cancellationToken) is null)
+                {
+                    await using var createSchema = new NpgsqlCommand(
+                        "CREATE SCHEMA normacase;",
+                        connection,
+                        transaction);
+                    await createSchema.ExecuteNonQueryAsync(cancellationToken);
+                }
+            }
+
             await using (var bootstrap = new NpgsqlCommand(
                 """
-                CREATE SCHEMA IF NOT EXISTS normacase;
                 CREATE TABLE IF NOT EXISTS normacase.schema_migrations (
                     version integer PRIMARY KEY,
                     checksum text NOT NULL

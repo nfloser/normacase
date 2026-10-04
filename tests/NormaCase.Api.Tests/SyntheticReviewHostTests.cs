@@ -23,9 +23,14 @@ public sealed class SyntheticReviewHostTests
 
         await ResetDatabase(migrationConnection);
         var suffix = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(8)).ToLowerInvariant();
+        var migrationRole = "normacase_migrator_" + suffix;
         var runtimeRole = "normacase_runtime_" + suffix;
+        var migrationPassword = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(24));
         var runtimePassword = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(24));
         var migrationBuilder = new NpgsqlConnectionStringBuilder(migrationConnection);
+        migrationBuilder.Username = migrationRole;
+        migrationBuilder.Password = migrationPassword;
+        migrationBuilder.Pooling = false;
         var runtimeBuilder = new NpgsqlConnectionStringBuilder(migrationConnection)
         {
             Username = runtimeRole,
@@ -36,13 +41,15 @@ public sealed class SyntheticReviewHostTests
         await using (var source = NpgsqlDataSource.Create(migrationConnection))
         {
             await using var provision = source.CreateCommand($$"""
+                CREATE ROLE {{migrationRole}} LOGIN PASSWORD '{{migrationPassword}}'
+                    NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
                 CREATE ROLE {{runtimeRole}} LOGIN PASSWORD '{{runtimePassword}}'
                     NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
                 REVOKE CREATE ON SCHEMA public FROM {{runtimeRole}};
-                CREATE SCHEMA normacase;
+                CREATE SCHEMA normacase AUTHORIZATION {{migrationRole}};
                 REVOKE ALL ON SCHEMA normacase FROM PUBLIC;
                 GRANT USAGE ON SCHEMA normacase TO {{runtimeRole}};
-                ALTER DEFAULT PRIVILEGES IN SCHEMA normacase
+                ALTER DEFAULT PRIVILEGES FOR ROLE {{migrationRole}} IN SCHEMA normacase
                     GRANT SELECT, INSERT ON TABLES TO {{runtimeRole}};
                 """);
             await provision.ExecuteNonQueryAsync();
@@ -95,7 +102,9 @@ public sealed class SyntheticReviewHostTests
             await using var cleanup = source.CreateCommand($$"""
                 DROP SCHEMA IF EXISTS normacase CASCADE;
                 DROP OWNED BY {{runtimeRole}};
+                DROP OWNED BY {{migrationRole}};
                 DROP ROLE IF EXISTS {{runtimeRole}};
+                DROP ROLE IF EXISTS {{migrationRole}};
                 """);
             await cleanup.ExecuteNonQueryAsync();
         }
