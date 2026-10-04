@@ -67,7 +67,7 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
             "synthetic-local:administrator",
             new DateTimeOffset(2026, 10, 4, 13, 0, 0, TimeSpan.Zero), "Erster Antrag"));
 
-        var pending = await new PostgresReviewedEntitlementChangeStore(source).ListPendingAsync(2);
+        var pending = await new PostgresReviewedEntitlementChangeStore(source).ListPendingAsync(100);
         var ours = pending.Where(item => item.Proposal.ChangeId.StartsWith(prefix, StringComparison.Ordinal)).ToArray();
 
         Assert.Equal(2, ours.Length);
