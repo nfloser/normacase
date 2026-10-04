@@ -61,11 +61,18 @@ roles or operational process states.
 ## Read-only synthetic workbench
 
 The loopback API exposes `GET /api/work-queues` and `GET /api/work-cases/{caseId}`.
-The fixed demo-g examples run through AssessmentRecorder, AssessmentTriageService,
-CaseProcessingRoutingService and CaseWorkQueueProjectionService at host startup.
-Both complete positive and negative results await human approval. Missing input and
-human-review results enter separate queues. A fifth technical case uses process-only
-membership and has null assessment identity/JSON and no evidence.
+The demo-g scenario templates run through AssessmentRecorder, AssessmentTriageService,
+CaseProcessingRoutingService and CaseWorkQueueProjectionService at host startup. The
+anonymous preview deterministically creates 20 copies of each of the four assessment
+templates plus 20 process-only technical exceptions: exactly 100 routed synthetic cases.
+This yields 40 approval candidates, 20 clarification cases, 20 human-review cases and
+20 technical exceptions. Counts are derived from the real projected memberships, not
+from presentation-only fixture totals.
+
+The queue endpoint exposes the total workload and per-queue counts but returns only five
+representative items per queue. All 100 case details remain addressable by exact case id,
+so representative rows can drill into their real assessment/evidence/Decision Trace data.
+Technical exceptions intentionally retain null assessment identity/JSON and no evidence.
 
 Case and process revisions are invariant decimal strings at the HTTP boundary.
 The detail contains the original serialized immutable assessment and recorded evidence
