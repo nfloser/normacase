@@ -4,13 +4,19 @@ import de from './de.json';
 import type { Pack } from './model';
 import { DecisionTrace } from './DecisionTrace';
 import type { RuleTrace, OutputTrace } from './trace';
+
 const text = de.workQueues;
 type Item = {caseId:string;caseRevision:string;processRevision:string;stateId:string};
+type Queue = {queueId:string;items:Item[]};
+type QueuePage = {totalCases:number;queues:Queue[]};
 type Detail = Item & {queueId:string;packId:string|null;assessmentId:string|null;assessmentJson:string|null;recordedAtUtc:string|null;evidence:Record<string,string>};
 type Assessment = {assessment:{outcome:string;ruleTrace?:RuleTrace;domainOutputs?:OutputTrace[];missingRequiredFields:string[];knowledgeRelease:string}};
 const outcomes:Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
+const representativeLimit=5;
+
 export function CaseWorkQueues({packs}:{packs:Pack[]}) {
-  const [queues,setQueues]=useState<{queueId:string;items:Item[]}[]>([]);
+  const [queues,setQueues]=useState<Queue[]>([]);
+  const [totalCases,setTotalCases]=useState(0);
   const [selected,setSelected]=useState('');
   const [detail,setDetail]=useState<Detail|null>(null);
   const [error,setError]=useState('');
@@ -18,7 +24,7 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
   useEffect(()=>{
     const controller=new AbortController();
     fetch('/api/work-queues',{signal:controller.signal}).then(response=>{if(!response.ok)throw new Error();return response.json();})
-      .then(data=>{if(!controller.signal.aborted)setQueues(data.queues);})
+      .then((data:QueuePage)=>{if(!controller.signal.aborted){setQueues(data.queues);setTotalCases(data.totalCases);}})
       .catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});
     return()=>controller.abort();
   },[]);
@@ -35,11 +41,20 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
   const assessment=detail?.assessmentJson ? parse(detail.assessmentJson) as Assessment : null;
   const pack=packs.find(pack=>pack.packId===detail?.packId);
   const statuses:Record<string,string>={PRESENT:de.present,MISSING:de.missing,CONFLICTING:de.conflicting};
+  const queueLabels=text.queues as Record<string,string>;
   return <section className="card work-queues" aria-label={text.heading}>
     <h2>{text.heading}</h2><p>{text.help}</p>
+    {!!totalCases&&<div className="workload-summary" aria-label={text.summaryHeading}>
+      <div className="workload-total"><strong>{totalCases} {text.summaryTotal}</strong><span>{text.summaryHelp}</span></div>
+      <div className="workload-counts">{queues.map(queue=><div key={queue.queueId}>
+        <strong>{queue.items.length}</strong><span>{queueLabels[queue.queueId]??de.unknown}</span>
+      </div>)}</div>
+    </div>}
     <div className="queue-grid">{queues.map(queue=><section key={queue.queueId}>
-      <h3>{(text.queues as Record<string,string>)[queue.queueId]??de.unknown} ({queue.items.length})</h3>
-      <ul>{queue.items.map(item=><li key={item.caseId}><button type="button" className="secondary" aria-pressed={selected===item.caseId} onClick={()=>{if(selected!==item.caseId){setDetail(null);setSelected(item.caseId);}}}>{text.select}: {item.caseId}</button></li>)}</ul>
+      <h3>{queueLabels[queue.queueId]??de.unknown} ({queue.items.length})</h3>
+      <ul>{queue.items.slice(0,representativeLimit).map(item=><li key={item.caseId}><button type="button" className="secondary" aria-pressed={selected===item.caseId} onClick={()=>{if(selected!==item.caseId){setDetail(null);setSelected(item.caseId);}}}>{text.select}: {item.caseId}</button></li>)}
+        {queue.items.length>representativeLimit&&<li className="queue-more">{text.moreCases.replace('{count}',String(queue.items.length-representativeLimit))}</li>}
+      </ul>
     </section>)}</div>
     <div aria-live="polite">{busy&&<p>{text.loading}</p>}{error&&<p role="alert">{error}</p>}
     {detail&&<article><h3>{text.detail}: {detail.caseId}</h3>
