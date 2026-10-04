@@ -130,9 +130,20 @@ Geschützte Endpunkte:
 - `GET /api/review/work-queues`
 - `GET /api/review/work-cases/{caseId}`
 - `POST /api/review/work-cases/{caseId}/reviews`
+- `POST /api/review/batch-reviews`
 
 Review-Kommandos enthalten erwartete Case-, Prozess- und Audit-Revisionen, Disposition
 und Begründung. Actor, Review-ID und Aufzeichnungszeit stammen vom Server. Der
 synthetische Authorizer erlaubt Accept/Override nur aus `awaiting-approval`; stale
 Revisionen liefern 409, nicht erlaubte Zustände 403. Die ursprüngliche deterministische
 Bewertung bleibt unverändert und der Review wird append-only auditiert.
+
+Die synthetische Sammelprüfung benötigt zusätzlich die konfigurierte Aktion `BATCH`
+für jeden ausgewählten Fall und die exakte Policy
+`synthetic-reviewed-batch-policy`, Version `1`. Sie akzeptiert höchstens 100
+eindeutige Fall-/Review-Kommandos, prüft alle lesbaren Fall-/Assessment-Bindungen vor
+der ersten Änderung und führt anschließend pro Fall dieselbe Autorisierung,
+Revisionsprüfung und PostgreSQL-Transaktion wie die Einzelprüfung aus. Die technischen
+Ergebnisstatus sind stabil, enthalten aber keine Falldaten oder Fehlerdetails. Eine
+wiederholte Gesamtanfrage ist derzeit nicht idempotent; bereits übernommene Elemente
+liefern einen Revisionskonflikt.

@@ -207,6 +207,19 @@ forms and case data. German status messages are locally bounded, rather than ech
 arbitrary server text that could expose credentials. The browser controls are not
 an authorization boundary: the server remains responsible for every case action.
 
+### Batch review amplification and partial completion
+
+A batch endpoint can amplify one authorization or stale-state mistake across many
+cases, leak case existence through mixed results or encourage unsafe automatic retry
+after partial completion. The synthetic host therefore requires an explicit `BATCH`
+grant per readable case and an exact versioned policy, rejects more than 100 or
+duplicate commands, verifies every case/assessment binding before the first mutation
+and then reuses the single-case authorization/revision transaction for each item.
+Unknown and unreadable cases share one not-found response; result entries contain only
+case/review ids and bounded status codes. Committed earlier items remain committed on
+later failure. Whole-request idempotency is not yet durable, so automated retry is not
+claimed or exposed by a UI.
+
 ### Reviewed outbound result substitution
 
 A syntactically valid outbound message is not a signature or actor identity. The

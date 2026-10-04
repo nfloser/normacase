@@ -166,6 +166,7 @@ public sealed class SyntheticReviewHostTests
                     ["SyntheticReview:Users:alice:Credential"] = Credential,
                     ["SyntheticReview:Users:alice:Actions:0"] = "READ",
                     ["SyntheticReview:Users:alice:Actions:1"] = "ACCEPT",
+                    ["SyntheticReview:Users:alice:Actions:2"] = "BATCH",
                     ["SyntheticReview:Users:alice:CaseIds:0"] = "demo-g-supported",
                     ["SyntheticReview:Users:bob:Credential"] = second,
                     ["SyntheticReview:Users:bob:Actions:0"] = "READ",
@@ -185,6 +186,18 @@ public sealed class SyntheticReviewHostTests
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-cases/demo-g-not-supported")).StatusCode);
         using var detail = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-cases/demo-g-supported"));
         Assert.Equal(new[] { "ACCEPT_SYSTEM_RESULT" }, detail.RootElement.GetProperty("allowedActions").EnumerateArray().Select(item => item.GetString()));
+        var hiddenBatch = await client.PostAsJsonAsync("/api/review/batch-reviews", new
+        {
+            policyId = "synthetic-reviewed-batch-policy", policyVersion = "1",
+            items = new object[]
+            {
+                BatchItem("demo-g-supported", "assessment-demo-g-supported", "batch-alice-visible"),
+                BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "batch-alice-hidden")
+            }
+        });
+        Assert.Equal(HttpStatusCode.NotFound, hiddenBatch.StatusCode);
+        using (var unchanged = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-cases/demo-g-supported")))
+            Assert.Equal("1", unchanged.RootElement.GetProperty("processRevision").GetString());
         Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/outbound", new { })).StatusCode);
         var deniedOverride = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews", new
         {
@@ -204,12 +217,87 @@ public sealed class SyntheticReviewHostTests
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-cases/demo-g-supported")).StatusCode);
         using var bob = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-cases/demo-g-not-supported"));
         Assert.Empty(bob.RootElement.GetProperty("allowedActions").EnumerateArray());
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await client.PostAsJsonAsync("/api/review/batch-reviews", new
+            {
+                policyId = "synthetic-reviewed-batch-policy", policyVersion = "1",
+                items = new[]
+                {
+                    BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "batch-bob-no-grant")
+                }
+            })).StatusCode);
         var deniedReview = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-not-supported/reviews", new
         {
             expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1",
             disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetischer nicht erlaubter Review"
         });
         Assert.Equal(HttpStatusCode.Forbidden, deniedReview.StatusCode);
+    }
+
+    [Fact]
+    public async Task Batch_review_returns_ordered_per_case_results_and_persists_commits()
+    {
+        var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if (string.IsNullOrWhiteSpace(connection)) return;
+        await ResetDatabase(connection);
+
+        await using (var host = Factory(connection))
+        {
+            using var anonymous = host.CreateClient();
+            var request = new
+            {
+                policyId = "synthetic-reviewed-batch-policy",
+                policyVersion = "1",
+                items = new object[]
+                {
+                    BatchItem("demo-g-supported", "assessment-demo-g-supported", "batch-review-supported"),
+                    BatchItem("demo-g-incomplete", "assessment-demo-g-incomplete", "batch-review-incomplete"),
+                    BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "batch-review-stale", "0")
+                }
+            };
+            Assert.Equal(HttpStatusCode.Unauthorized,
+                (await anonymous.PostAsJsonAsync("/api/review/batch-reviews", request)).StatusCode);
+
+            using var client = host.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+            var response = await client.PostAsJsonAsync("/api/review/batch-reviews", request);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            Assert.Equal("synthetic-reviewed-batch-policy", json.RootElement.GetProperty("policyId").GetString());
+            Assert.Equal("1", json.RootElement.GetProperty("policyVersion").GetString());
+            Assert.Equal(
+                new[] { "COMMITTED", "POLICY_REJECTED", "CONFLICT" },
+                json.RootElement.GetProperty("items").EnumerateArray()
+                    .Select(item => item.GetProperty("status").GetString()).ToArray());
+            Assert.All(json.RootElement.GetProperty("items").EnumerateArray(), item =>
+                Assert.Equal(3, item.EnumerateObject().Count()));
+
+            var oversized = Enumerable.Range(0, 101).Select(index =>
+                BatchItem("demo-g-supported", "assessment-demo-g-supported", $"oversized-{index}")).ToArray();
+            Assert.Equal(HttpStatusCode.BadRequest,
+                (await client.PostAsJsonAsync("/api/review/batch-reviews", new
+                {
+                    policyId = "synthetic-reviewed-batch-policy", policyVersion = "1", items = oversized
+                })).StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest,
+                (await client.PostAsJsonAsync("/api/review/batch-reviews", new
+                {
+                    policyId = "other-policy", policyVersion = "1", items = new[]
+                    {
+                        BatchItem("demo-g-not-supported", "assessment-demo-g-not-supported", "wrong-policy")
+                    }
+                })).StatusCode);
+        }
+
+        await using var restarted = Factory(connection);
+        using var afterRestart = restarted.CreateClient();
+        afterRestart.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+        using var committed = JsonDocument.Parse(await afterRestart.GetStringAsync("/api/review/work-cases/demo-g-supported"));
+        Assert.Equal("accepted", committed.RootElement.GetProperty("stateId").GetString());
+        Assert.Equal("synthetic-local:reviewer", committed.RootElement.GetProperty("audit")
+            .EnumerateArray().Last().GetProperty("actorId").GetString());
+        using var untouched = JsonDocument.Parse(await afterRestart.GetStringAsync("/api/review/work-cases/demo-g-incomplete"));
+        Assert.Equal("1", untouched.RootElement.GetProperty("auditRevision").GetString());
     }
 
     [Fact]
@@ -466,4 +554,17 @@ public sealed class SyntheticReviewHostTests
         var exception = await Assert.ThrowsAsync<PostgresException>(() => command.ExecuteNonQueryAsync());
         Assert.Equal(PostgresErrorCodes.InsufficientPrivilege, exception.SqlState);
     }
+
+    private static object BatchItem(string caseId, string assessmentId, string reviewId,
+        string expectedProcessRevision = "1") => new
+        {
+            caseId,
+            assessmentId,
+            reviewId,
+            expectedCaseRevision = "1",
+            expectedProcessRevision,
+            expectedAuditRevision = "1",
+            disposition = "ACCEPT_SYSTEM_RESULT",
+            reason = "Synthetische Sammelprüfung"
+        };
 }
