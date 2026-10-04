@@ -20,7 +20,8 @@ namespace NormaCase.Api;
 internal static class SyntheticReviewEndpoints
 {
     private static readonly string[] CaseIds =
-        ["demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review"];
+        ["demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review",
+         "demo-g-batch-supported", "demo-g-batch-not-supported"];
 
     internal static readonly WorkflowDefinition Workflow = new(
         "synthetic-reviewed-queue-process", 1, "received",
@@ -112,7 +113,11 @@ internal static class SyntheticReviewEndpoints
                             caseRevision = item.State.Process.CaseRevision.ToString(CultureInfo.InvariantCulture),
                             processRevision = item.State.Process.Revision.ToString(CultureInfo.InvariantCulture),
                             stateId = item.State.Process.StateId,
-                            assessmentId = item.State.Assessment.AssessmentId.Value
+                            assessmentId = item.State.Assessment.AssessmentId.Value,
+                            auditRevision = item.State.Audit.Events[^1].Sequence.ToString(CultureInfo.InvariantCulture),
+                            batchAllowed = item.State.Process.StateId == "awaiting-approval"
+                                && credential.Allows(actor, item.State.Process.CaseId.Value, "ACCEPT")
+                                && credential.Allows(actor, item.State.Process.CaseId.Value, "BATCH")
                         }).ToArray()
                 }).ToArray()
             });
@@ -199,6 +204,16 @@ internal static class SyntheticReviewEndpoints
         string platformVersion)
     {
         var assessmentStore = new PostgresAssessmentRecordStore(source);
+        var examplesDirectory = Path.Combine(AppContext.BaseDirectory, "Examples");
+        var inputJsonByCaseId = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["demo-g-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-supported.json")),
+            ["demo-g-not-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-not-supported.json")),
+            ["demo-g-incomplete"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-incomplete.json")),
+            ["demo-g-review"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-review.json")),
+            ["demo-g-batch-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-supported.json")),
+            ["demo-g-batch-not-supported"] = File.ReadAllText(Path.Combine(examplesDirectory, "demo-g-not-supported.json"))
+        };
         foreach (var id in CaseIds)
         {
             var caseId = new CaseId(id);
@@ -219,8 +234,7 @@ internal static class SyntheticReviewEndpoints
             var record = await assessmentStore.LoadAsync(assessmentId);
             if (record is null)
             {
-                var input = CaseInputJson.Deserialize(
-                    File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Examples", id + ".json")));
+                var input = CaseInputJson.Deserialize(inputJsonByCaseId[id]);
                 record = new AssessmentRecorder().Evaluate(
                     packs["synthetic.demo-g"], input.Facts, input.AssessmentDate, input.Evidence,
                     new(assessmentId, caseId, platformVersion,

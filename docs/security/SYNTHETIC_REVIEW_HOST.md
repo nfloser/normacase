@@ -65,7 +65,7 @@ sein. Optional trennt `ConnectionStrings:SyntheticReviewMigrations` die nur beim
 Start verwendete Migrationsverbindung von der eingeschränkten Laufzeitverbindung.
 Ohne diesen Wert bleibt der bisherige Ein-Verbindungs-Entwicklungsmodus kompatibel;
 ein Betrieb mit minimalen Datenbankrechten muss beide Werte setzen. Der Host schließt
-Migrationen vor Laufzeitzugriffen ab und initialisiert die vier synthetischen `demo-g`-Fixtures,
+Migrationen vor Laufzeitzugriffen ab und initialisiert die sechs synthetischen `demo-g`-Fixtures,
 falls sie noch nicht vorhanden sind. Authentifizierte JSON-/XML-Testeingänge können
 zusätzlich frische synthetische Fälle anlegen.
 
@@ -106,6 +106,11 @@ Review-Commands verwenden die angezeigten exakten Revisionen als Strings, eine
 Begründung und beim Override ein ausdrücklich gewähltes Ergebnis. Keine
 optimistische Falländerung; 409 lädt den committed Stand neu, 401 beendet die Sitzung.
 403 zeigt einen begrenzten deutschen Hinweis ohne serverseitigen Inhalt zu spiegeln.
+Die Queue markiert Sammelauswahl nur bei aktuellen `ACCEPT`- und `BATCH`-Grants. Bei
+unklarem Abschluss hält React den exakten Request ausschließlich im Arbeitsspeicher
+fest und erlaubt nur dessen bewusste identische Wiederholung; Auswahl und IDs können
+dabei nicht verändert werden. Deutsche Einzelergebnisse bilden ausschließlich die
+begrenzten Serverstatus ab. Abmeldung oder 401 löschen auch diesen Zustand.
 Die Anleitung steht in [synthetischer Review-Demo](../development/SYNTHETIC_REVIEW.de.md).
 Produktiver Betrieb benötigt weiterhin eine institutionell geprüfte Identitäts-,
 Berechtigungs- und Datenschutzkonzeption (#119).

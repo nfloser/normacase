@@ -132,6 +132,12 @@ Geschützte Endpunkte:
 - `POST /api/review/work-cases/{caseId}/reviews`
 - `POST /api/review/batch-reviews`
 
+Die autorisierte Queue-Projektion enthält neben Fall-, Assessment-, Case- und
+Prozessrevision die aktuelle `auditRevision`. `batchAllowed` ist nur dann `true`,
+wenn der lesbare Fall im Zustand `awaiting-approval` steht und der aktuelle Akteur
+für genau diesen Fall sowohl `ACCEPT` als auch `BATCH` besitzt. Das Feld unterstützt
+die Darstellung; der POST-Endpunkt autorisiert und prüft jeden Fall unabhängig erneut.
+
 Einzelreview-Kommandos enthalten erwartete Case-, Prozess- und Audit-Revisionen,
 Disposition und Begründung. Actor, Review-ID und Aufzeichnungszeit stammen dort vom Server. Der
 synthetische Authorizer erlaubt Accept/Override nur aus `awaiting-approval`; stale

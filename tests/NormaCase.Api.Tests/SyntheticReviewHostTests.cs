@@ -175,10 +175,13 @@ public sealed class SyntheticReviewHostTests
         using var client = host.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
         using var queues = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues"));
-        var cases = queues.RootElement.GetProperty("queues").EnumerateArray()
+        var queueItems = queues.RootElement.GetProperty("queues").EnumerateArray()
             .SelectMany(queue => queue.GetProperty("items").EnumerateArray())
-            .Select(item => item.GetProperty("caseId").GetString()).ToArray();
+            .ToArray();
+        var cases = queueItems.Select(item => item.GetProperty("caseId").GetString()).ToArray();
         Assert.Equal(new[] { "demo-g-supported" }, cases);
+        Assert.Equal("1", queueItems[0].GetProperty("auditRevision").GetString());
+        Assert.True(queueItems[0].GetProperty("batchAllowed").GetBoolean());
         using var scopedPage = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues?pageSize=1"));
         Assert.Equal(JsonValueKind.Null, scopedPage.RootElement.GetProperty("nextPageCursor").ValueKind);
         Assert.Equal(HttpStatusCode.BadRequest, (await client.GetAsync("/api/review/work-queues?pageSize=101")).StatusCode);
@@ -216,6 +219,13 @@ public sealed class SyntheticReviewHostTests
         Assert.Equal("synthetic-local:user-alice", result.RootElement.GetProperty("audit").EnumerateArray().Last().GetProperty("actorId").GetString());
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", second);
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-cases/demo-g-supported")).StatusCode);
+        using (var bobQueues = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues")))
+        {
+            var bobItem = bobQueues.RootElement.GetProperty("queues").EnumerateArray()
+                .SelectMany(queue => queue.GetProperty("items").EnumerateArray()).Single();
+            Assert.Equal("1", bobItem.GetProperty("auditRevision").GetString());
+            Assert.False(bobItem.GetProperty("batchAllowed").GetBoolean());
+        }
         using var bob = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-cases/demo-g-not-supported"));
         Assert.Empty(bob.RootElement.GetProperty("allowedActions").EnumerateArray());
         Assert.Equal(HttpStatusCode.Forbidden,
@@ -381,11 +391,12 @@ public sealed class SyntheticReviewHostTests
                     .SelectMany(queue => queue.GetProperty("items").EnumerateArray())
                     .Select(item => item.GetProperty("caseId").GetString()!));
                 cursor = page.RootElement.GetProperty("nextPageCursor").GetString();
-                Assert.True(seen.Count <= 4);
+                Assert.True(seen.Count <= 6);
             } while (cursor is not null);
-            Assert.Equal(new[] { "demo-g-incomplete", "demo-g-not-supported", "demo-g-review", "demo-g-supported" }, seen);
+            Assert.Equal(new[] { "demo-g-batch-not-supported", "demo-g-batch-supported", "demo-g-incomplete",
+                "demo-g-not-supported", "demo-g-review", "demo-g-supported" }, seen);
             using var queues = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues"));
-            Assert.Equal(new[] { 2, 1, 1, 0 },
+            Assert.Equal(new[] { 4, 1, 1, 0 },
                 queues.RootElement.GetProperty("queues").EnumerateArray()
                     .Select(item => item.GetProperty("items").GetArrayLength()).ToArray());
 

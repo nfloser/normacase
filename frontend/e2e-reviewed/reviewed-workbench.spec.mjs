@@ -21,7 +21,7 @@ test('bounded queue pages use the real API and refresh without retaining a sessi
   return route.continue({url:url.toString()});
  });
  const region=await login(page);
- const ids=['demo-g-incomplete','demo-g-not-supported','demo-g-review','demo-g-supported'];
+ const ids=['demo-g-batch-not-supported','demo-g-batch-supported','demo-g-incomplete','demo-g-not-supported','demo-g-review','demo-g-supported'];
  for(let index=0;index<ids.length;index++){
   await expect(region.getByRole('button',{name:'Fall öffnen: '+ids[index],exact:true})).toBeVisible();
   await expect(region.getByRole('button',{name:/^Fall öffnen:/})).toHaveCount(1);
@@ -29,9 +29,52 @@ test('bounded queue pages use the real API and refresh without retaining a sessi
  }
  await expect(region.getByRole('button',{name:'Weitere Fälle anzeigen',exact:true})).toHaveCount(0);
  await region.getByRole('button',{name:'Arbeitsliste aktualisieren',exact:true}).click();
- await expect(region.getByRole('button',{name:'Fall öffnen: demo-g-incomplete',exact:true})).toBeVisible();
+ await expect(region.getByRole('button',{name:'Fall öffnen: demo-g-batch-not-supported',exact:true})).toBeVisible();
  await region.getByRole('button',{name:'Review-Modus abmelden',exact:true}).click();
  await expect(region.getByRole('button',{name:/^Fall öffnen:/})).toHaveCount(0);
+ await noStoredSession(page);
+});
+test('cancelled batch is retried with the same identity and shows German per-case results',async({page})=>{
+ const region=await login(page);
+ for(const id of ['demo-g-batch-not-supported','demo-g-batch-supported'])
+  await region.getByLabel('Für Sammelfreigabe auswählen: '+id,{exact:true}).check();
+ await expect(region.getByText('Ausgewählte Fälle: 2',{exact:true})).toBeVisible();
+ await region.getByLabel('Gemeinsame Begründung der Sammelfreigabe').fill('Synthetische Browser-Sammelfreigabe');
+
+ let release;const hold=new Promise(resolve=>{release=resolve;});
+ let reached;const completed=new Promise(resolve=>{reached=resolve;});
+ let retainedRequest='';
+ await page.route('**/api/review/batch-reviews',async route=>{
+  retainedRequest=route.request().postData()??'';
+  const response=await route.fetch();reached();await hold;
+  await route.fulfill({response}).catch(()=>{});
+ });
+ await region.getByRole('button',{name:'Ausgewählte Systemergebnisse übernehmen',exact:true}).click();
+ await completed;
+ await region.getByRole('button',{name:'Übertragung abbrechen',exact:true}).click();
+ await expect(region.getByRole('alert')).toContainText('Abschluss ist unbekannt');
+ await expect(region.getByRole('button',{name:'Dieselbe Sammelanfrage erneut senden',exact:true})).toBeVisible();
+ release();await page.unroute('**/api/review/batch-reviews');
+
+ let retriedRequest='';
+ await page.route('**/api/review/batch-reviews',async route=>{
+  retriedRequest=route.request().postData()??'';await route.continue();
+ });
+ await region.getByRole('button',{name:'Dieselbe Sammelanfrage erneut senden',exact:true}).click();
+ await expect(region.getByText('Sammelfreigabe abgeschlossen. Prüfe die Einzelergebnisse.',{exact:true})).toBeVisible();
+ expect(retriedRequest).toBe(retainedRequest);
+ const result=region.getByRole('heading',{name:'Einzelergebnisse der Sammelfreigabe'}).locator('..');
+ await expect(result.getByText('demo-g-batch-not-supported',{exact:true})).toBeVisible();
+ await expect(result.getByText('demo-g-batch-supported',{exact:true})).toBeVisible();
+ await expect(result.getByText('Freigabe gespeichert',{exact:true})).toHaveCount(2);
+ for(const id of ['demo-g-batch-not-supported','demo-g-batch-supported']){
+  const response=await page.request.get('/api/review/work-cases/'+id,{headers:{Authorization:'Bearer '+credential}});
+  const detail=await response.json();
+  expect(detail.audit.filter(item=>item.kind==='HUMAN_REVIEW_RECORDED')).toHaveLength(1);
+  expect(detail.audit.at(-1).reason).toBe('Synthetische Browser-Sammelfreigabe');
+ }
+ await region.getByRole('button',{name:'Review-Modus abmelden'}).click();
+ await expect(region.getByRole('heading',{name:'Einzelergebnisse der Sammelfreigabe'})).toHaveCount(0);
  await noStoredSession(page);
 });
 test('two browsers review, recover a real stale conflict and preserve immutable assessment',async({page,browser})=>{
@@ -55,7 +98,7 @@ test('two browsers review, recover a real stale conflict and preserve immutable 
  const original=(await before.json()).assessmentJson;
  await region.getByRole('button',{name:'Systemergebnis übernehmen',exact:true}).click();
  await expect(region.getByText('Review wurde persistent gespeichert.',{exact:true})).toBeVisible();
- await expect(region.getByRole('heading',{name:'Abgeschlossen (1)'})).toBeVisible();
+ await expect(region.getByRole('heading',{name:'Abgeschlossen (3)'})).toBeVisible();
  await otherRegion.getByLabel('Begründung der Review-Entscheidung').fill('Synthetischer konkurrierender Versuch');
  await otherRegion.getByRole('button',{name:'Systemergebnis übernehmen',exact:true}).click();
  await expect(otherRegion.getByRole('alert')).toContainText('zwischenzeitlich geändert');

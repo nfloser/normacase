@@ -1,9 +1,10 @@
 # Persistente synthetische Fallprüfung vorführen
 
 Diese lokale Demonstration benötigt keine MD-Daten oder interne Schnittstelle.
-Vier synthetische Fälle werden beim ersten Start bewertet, geroutet und mit ihrer
-Originalprüfung in PostgreSQL gespeichert. Zwei vollständige Fälle warten auf
-menschliche Freigabe, ein Fall benötigt Angaben und einer eine Gegenprüfung.
+Sechs synthetische Fälle werden beim ersten Start bewertet, geroutet und mit ihrer
+Originalprüfung in PostgreSQL gespeichert. Vier vollständige Fälle warten auf
+menschliche Freigabe, darunter zwei getrennte Browser-Testfälle für die
+Sammelfreigabe; ein Fall benötigt Angaben und einer eine Gegenprüfung.
 Nur die vom Server erlaubten Aktionen erscheinen in der Oberfläche.
 
 ## Voraussetzungen und Start
@@ -61,6 +62,10 @@ Doppelklick-/Vorschau-Start bleibt ohne Datenbank und ohne Review-Modus verwendb
   ursprüngliche deterministische Prüfergebnis bleibt sichtbar und unverändert.
 - Öffne die beiden übrigen Fälle. Fehlende Angaben bzw. nötige Gegenprüfung erzeugen
   keine Freigabe-Schaltflächen. UNKNOWN wird nicht umgedeutet.
+- Im Mehrbenutzermodus mit ausdrücklich konfigurierter `BATCH`-Aktion wähle die beiden
+  `demo-g-batch-*`-Fälle, gib eine gemeinsame Begründung ein und übernimm die
+  Systemergebnisse. Die deutsche Ergebnisliste zeigt jeden Fall getrennt. Ein bewusst
+  abgebrochener Request bleibt mit derselben ID für eine sichere Wiederholung erhalten.
 - Melde dich ab. Schlüssel, Fallansicht und Eingaben werden aus der aktiven Sitzung
   entfernt. Der Browser speichert weder Schlüssel noch Sitzung dauerhaft.
 - Starte den Host erneut: bereits gespeicherte Prüfungen und Reviews bleiben erhalten.
@@ -91,8 +96,9 @@ Testdatenbank. Eine produktive oder persönliche Datenbank ist hierfür unzuläs
 
 CI stellt eine eigene PostgreSQL-Datenbank bereit und prüft Browser → API → Datenbank,
 Freigabe/Override, echte 401/403/409-Antworten, parallele Browser, unveränderte
-Originalprüfungen, Live-Sperrung/Reaktivierung mit Verwaltungshistorie, Abmeldung
-während einer Anfrage und leeren Browserspeicher.
+Originalprüfungen, Live-Sperrung/Reaktivierung mit Verwaltungshistorie, Auswahl und
+persistierte Sammelfreigabe, exakte Wiederholung nach Abbruch, Abmeldung während einer
+Anfrage und leeren Browserspeicher.
 
 ## Grenzen
 
@@ -101,10 +107,12 @@ Für getrennte lokale Testidentitäten und genaue Fall-/Aktionsrechte siehe
 Die folgende Grenze beschreibt den bisherigen gemeinsamen Demo-Schlüssel;
 auch der Mehrbenutzermodus ist keine produktive Personenverwaltung.
 
-Das ist ein gemeinsamer synthetischer Akteur, keine produktive Personenverwaltung
-oder fachliche MD-Freigabe. Es gibt keine Batch-Freigabe. Institutionelle Rollen,
+Das ist ein synthetischer lokaler Akteur, keine produktive Personenverwaltung oder
+fachliche MD-Freigabe. Die Sammelfreigabe erscheint nur im Mehrbenutzermodus mit der
+separaten Aktion `BATCH`; der gemeinsame Kompatibilitätsschlüssel erhält sie nicht.
+Institutionelle Rollen, organisatorische Sammelfreigabepolicy,
 Datenschutz-/Betriebsfreigabe und verbindliche Schnittstellen bleiben gesonderte
-Arbeit. Der implementierte generische Ein-/Ausgang und die Wiederherstellungsprobe
+externe Vorgaben. Der implementierte generische Ein-/Ausgang und die Wiederherstellungsprobe
 stehen in [Synthetischer Gesamtablauf](SYNTHETIC_ROUNDTRIP.de.md).
 
 `docker compose -f compose.synthetic-review.yml down` beendet die Demo-Datenbank

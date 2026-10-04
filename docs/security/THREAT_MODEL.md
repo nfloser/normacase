@@ -222,7 +222,13 @@ request hash and server time, serializes concurrent retries and retains the exac
 result separately. Recovery recognizes only a fully matching committed review; a
 newer revision alone is never success. Changed actor/payload reuse fails with a bounded
 409. This is replay safety for the synthetic host, not permission for unattended
-organizational bulk approval.
+organizational bulk approval. The workbench exposes selection only when the readable
+queue projection reports current `ACCEPT` plus `BATCH` eligibility, but treats this as
+presentation rather than an authorization decision. An ambiguous cancellation or
+network failure locks the exact in-memory request for an intentional identical retry;
+it never creates a fresh request identity automatically. Logout and 401 erase this
+state, and bounded German labels prevent raw server errors or technical statuses from
+becoming user-visible diagnostics.
 
 ### Reviewed outbound result substitution
 

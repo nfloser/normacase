@@ -56,7 +56,19 @@ retained command exactly. Merely observing a newer case revision never counts as
 success. Remaining commands still pass through the normal single-case transaction,
 and the reconstructed terminal result is appended before it is returned.
 
+The German workbench projects `batchAllowed` only for readable approval-queue cases
+that currently have both `ACCEPT` and `BATCH` grants. It submits one shared explicit
+reason and exact string revisions for at most 100 selected cases. Selection never
+changes the server authorization boundary. Ordered technical statuses are rendered as
+bounded German per-case results rather than exposed as untranslated UI text.
+
+The browser keeps an in-flight request body only in component memory. If cancellation
+or a network failure makes completion ambiguous, selection and identities are locked
+and the operator can send the exact same request again. A new identity is never
+generated implicitly for that retry. Terminal results clear the retained request;
+logout, authentication loss and unmount remove request, selection and result state.
+
 This changes no assessment, UNKNOWN, Knowledge or Domain semantics and does not confer
-organizational permission for batch review. Issue #186 still requires the German
-selection/result workflow with browser coverage before the larger capability can be
-considered complete.
+organizational permission for batch review. The generic technical capability in #186
+is covered by Application, API, PostgreSQL and real browser tests; productive use still
+requires an institution-approved batch policy and role mapping.
