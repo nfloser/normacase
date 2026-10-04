@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { parse } from 'lossless-json';
 import de from './de.json';
+import { batchReviewRequest, batchReviewResult, type BatchReviewCandidate, type BatchReviewResult } from './batchReview';
 import { reviewRequest } from './review';
 import type { Pack } from './model';
 import { DecisionTrace } from './DecisionTrace';
@@ -8,7 +9,7 @@ import { IdentityAdministration } from './IdentityAdministration';
 import type { RuleTrace, OutputTrace } from './trace';
 
 const text = de.reviewedWorkQueues;
-type Item = {caseId:string;caseRevision:string;processRevision:string;stateId:string;assessmentId:string};
+type Item = BatchReviewCandidate & {stateId:string};
 type Queue = {queueId:string;items:Item[]};
 type QueuePage = {queues:Queue[];nextPageCursor?:string|null};
 type AuditItem = {sequence:string;kind:string;occurredAtUtc:string;actorId:string;disposition:string|null;reason:string|null;overrideOutcome:string|null};
@@ -40,6 +41,11 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   const [error,setError]=useState('');
   const [notice,setNotice]=useState('');
   const [busy,setBusy]=useState(false);
+  const [batchSelection,setBatchSelection]=useState<Item[]>([]);
+  const [batchReason,setBatchReason]=useState('');
+  const [retainedBatchRequest,setRetainedBatchRequest]=useState<string|null>(null);
+  const [batchResult,setBatchResult]=useState<BatchReviewResult|null>(null);
+  const [batchRunning,setBatchRunning]=useState(false);
 
   const pending=useRef<AbortController|null>(null);
   useEffect(()=>()=>pending.current?.abort(),[]);
@@ -47,10 +53,11 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   function active(controller:AbortController){return pending.current===controller&&!controller.signal.aborted;}
   function finish(controller:AbortController){if(active(controller))setBusy(false);}
   function clearReviewForm(){setReason('');setOverrideOutcome('');}
+  function clearBatch(){setBatchSelection([]);setBatchReason('');setRetainedBatchRequest(null);setBatchResult(null);setBatchRunning(false);}
   function clearSession(message=''){
     pending.current?.abort();pending.current=null;setBusy(false);
     setCredential('');setCredentialInput('');setActorId('');setQueues([]);setNextCursor(null);
-    setSelected('');setDetail(null);clearReviewForm();setNotice('');setError(message);
+    setSelected('');setDetail(null);clearReviewForm();clearBatch();setNotice('');setError(message);
   }
   async function request(path:string,token:string,controller:AbortController,body?:string){
     const response=await fetch(path,{signal:controller.signal,cache:'no-store',credentials:'omit',
@@ -102,7 +109,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       const next=administrator?{queues:[],nextPageCursor:null}:await (await request('/api/review/work-queues',candidate,controller)).json() as QueuePage;
       if(active(controller)){
         setCredential(candidate);setActorId(data.actorId);setQueues(next.queues);setNextCursor(next.nextPageCursor??null);
-        setSelected('');setDetail(null);clearReviewForm();setNotice(text.authenticated);
+        setSelected('');setDetail(null);clearReviewForm();clearBatch();setNotice(text.authenticated);
       }
     }catch(exception){failure(exception,controller);}
     finally{finish(controller);}
@@ -115,7 +122,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     const caseId=detail.caseId;const token=credential;const controller=begin();
     try{
       await request('/api/review/work-cases/'+encodeURIComponent(caseId)+'/reviews',token,controller,body);
-      if(active(controller)){setDetail(null);clearReviewForm();}
+      if(active(controller)){setDetail(null);clearReviewForm();setBatchSelection(items=>items.filter(item=>item.caseId!==caseId));}
       await refresh(caseId,token,controller);
       if(active(controller))setNotice(text.saved);
     }catch(exception){
@@ -128,11 +135,62 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     }finally{finish(controller);}
   }
 
+  function toggleBatch(item:Item){
+    if(retainedBatchRequest||busy)return;
+    if(!batchSelection.some(candidate=>candidate.caseId===item.caseId)&&batchSelection.length>=100){setError(text.batchSelectionTooLarge);return;}
+    setBatchResult(null);
+    setBatchSelection(items=>items.some(candidate=>candidate.caseId===item.caseId)
+      ?items.filter(candidate=>candidate.caseId!==item.caseId):[...items,item]);
+  }
+  function cancelBatch(){
+    if(!batchRunning)return;
+    pending.current?.abort();pending.current=null;setBusy(false);setBatchRunning(false);
+    setError(text.batchCancelled);setNotice('');
+  }
+  async function submitBatch(){
+    if(!credential||busy)return;
+    let body=retainedBatchRequest;
+    if(body===null){
+      try{
+        body=batchReviewRequest(batchSelection,batchReason,'workbench-batch-'+crypto.randomUUID());
+        setRetainedBatchRequest(body);
+      }catch(exception){
+        const code=exception instanceof Error?exception.message:'';
+        setError(code==='selection_required'?text.batchSelectionRequired:code==='reason_required'?text.batchReasonRequired:text.batchUnavailable);
+        return;
+      }
+    }
+    const controller=begin();setBatchRunning(true);
+    try{
+      const response=await request('/api/review/batch-reviews',credential,controller,body);
+      const result=batchReviewResult(await response.text(),body);
+      if(!active(controller))return;
+      setBatchResult(result);setRetainedBatchRequest(null);setBatchSelection([]);setBatchReason('');
+      const queueResponse=await request('/api/review/work-queues',credential,controller);
+      const page=await queueResponse.json() as QueuePage;
+      if(active(controller)){
+        setQueues(page.queues);setNextCursor(page.nextPageCursor??null);setDetail(null);setSelected('');
+        setNotice(text.batchCompleted);
+      }
+    }catch(exception){
+      if(!active(controller))return;
+      if(exception instanceof ReviewHttpError){
+        if(exception.status===401){clearSession(text.authenticationExpired);return;}
+        setRetainedBatchRequest(null);
+        setError(exception.status===403?text.forbidden:exception.status===409?text.batchRequestConflict
+          :exception.status===404?text.unavailable:de.inputError);
+      }else setError(text.batchCompletionUnknown);
+    }finally{
+      setBatchRunning(false);finish(controller);
+    }
+  }
+
   const assessment=detail?.assessmentJson?parse(detail.assessmentJson) as Assessment:null;
   const pack=packs.find(item=>item.packId===detail?.packId);
   const canAccept=detail?.allowedActions.includes('ACCEPT_SYSTEM_RESULT')??false;
   const canOverride=detail?.allowedActions.includes('OVERRIDE')??false;
   const administrator=actorId==='synthetic-local:administrator';
+  const batchStatuses=text.batchStatuses as Record<string,string>;
 
   return <section className="card reviewed-work-queues" aria-label={text.heading}>
     <h2>{text.heading}</h2><p>{text.help}</p>
@@ -156,11 +214,32 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
         {nextCursor&&<button type="button" className="secondary" disabled={busy} onClick={()=>loadPage(nextCursor)}>{text.nextPage}</button>}
       </div>
       <p>{text.pageHelp}</p>
+      {(queues.some(queue=>queue.items.some(item=>item.batchAllowed))||batchSelection.length>0||retainedBatchRequest||batchResult)&&
+        <section className="batch-review" aria-label={text.batchHeading}>
+          <h3>{text.batchHeading}</h3><p>{text.batchHelp}</p>
+          <p><strong>{text.batchSelected}: {batchSelection.length}</strong></p>
+          {retainedBatchRequest&&<p className="batch-warning" role="status">{text.batchRetryHelp}</p>}
+          <label className="field">{text.batchReason}<textarea value={batchReason} maxLength={1000}
+            disabled={busy||retainedBatchRequest!==null} onChange={event=>setBatchReason(event.target.value)}
+            aria-label={text.batchReason}/></label>
+          <div className="actions">
+            <button type="button" className="primary" disabled={busy||(!retainedBatchRequest&&batchSelection.length===0)}
+              onClick={submitBatch}>{retainedBatchRequest?text.batchRetry:text.batchSubmit}</button>
+            {batchRunning&&<button type="button" className="secondary" onClick={cancelBatch}>{text.batchCancel}</button>}
+          </div>
+          {batchResult&&<div className="batch-result" aria-live="polite"><h4>{text.batchResult}</h4>
+            <ol>{batchResult.items.map(item=><li key={item.reviewId}><strong>{item.caseId}</strong>
+              <span>{batchStatuses[item.status]??de.unknown}</span></li>)}</ol></div>}
+        </section>}
       <div className="queue-grid">{queues.map(queue=><section key={queue.queueId}>
         <h3>{(text.queues as Record<string,string>)[queue.queueId]??de.unknown} ({queue.items.length})</h3>
-        <ul>{queue.items.map(item=><li key={item.caseId}><button type="button" className="secondary"
-          disabled={busy} aria-pressed={selected===item.caseId}
-          onClick={()=>loadDetail(item.caseId)}>{text.select}: {item.caseId}</button></li>)}</ul>
+        <ul>{queue.items.map(item=><li key={item.caseId} className="queue-item">
+          {item.batchAllowed&&<label className="batch-choice"><input type="checkbox"
+            checked={batchSelection.some(candidate=>candidate.caseId===item.caseId)}
+            disabled={busy||retainedBatchRequest!==null} onChange={()=>toggleBatch(item)}
+            aria-label={text.batchSelect+': '+item.caseId}/><span>{text.batchSelect}</span></label>}
+          <button type="button" className="secondary" disabled={busy} aria-pressed={selected===item.caseId}
+            onClick={()=>loadDetail(item.caseId)}>{text.select}: {item.caseId}</button></li>)}</ul>
       </section>)}</div>
       {busy&&<p>{text.loading}</p>}
       {detail&&<article><h3>{text.detail}: {detail.caseId}</h3>

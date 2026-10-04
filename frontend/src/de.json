@@ -229,6 +229,31 @@
     "chooseOutcome": "Ergebnis ausdrücklich auswählen",
     "overrideRequired": "Wähle das abweichende Ergebnis ausdrücklich aus.",
     "accept": "Systemergebnis übernehmen",
-    "override": "Ergebnis übersteuern"
+    "override": "Ergebnis übersteuern",
+    "batchHeading": "Ausgewählte Fälle gemeinsam freigeben",
+    "batchHelp": "Nur ausdrücklich berechtigte Fälle im Stand „Wartet auf menschliche Freigabe“ können ausgewählt werden. Jeder Fall wird mit seinem angezeigten Revisionsstand einzeln geprüft und gespeichert; Teilergebnisse bleiben bestehen.",
+    "batchSelect": "Für Sammelfreigabe auswählen",
+    "batchSelected": "Ausgewählte Fälle",
+    "batchReason": "Gemeinsame Begründung der Sammelfreigabe",
+    "batchReasonRequired": "Gib eine gemeinsame ausdrückliche Begründung mit höchstens 1.000 Zeichen und ohne Steuerzeichen ein.",
+    "batchSelectionRequired": "Wähle mindestens einen ausdrücklich berechtigten Fall aus.",
+    "batchSelectionTooLarge": "Eine Sammelfreigabe ist auf 100 Fälle begrenzt.",
+    "batchSubmit": "Ausgewählte Systemergebnisse übernehmen",
+    "batchCancel": "Übertragung abbrechen",
+    "batchCancelled": "Die Übertragung wurde abgebrochen. Der Abschluss ist unbekannt; sende exakt dieselbe Sammelanfrage erneut.",
+    "batchRetry": "Dieselbe Sammelanfrage erneut senden",
+    "batchRetryHelp": "Der Abschluss der letzten Übertragung ist unbekannt. Auswahl, Begründung und technische Anforderungs-ID bleiben unverändert; eine Wiederholung erzeugt keine zweite Review-Entscheidung.",
+    "batchCompletionUnknown": "Die Antwort der Sammelfreigabe konnte nicht bestätigt werden. Sende exakt dieselbe Sammelanfrage erneut.",
+    "batchRequestConflict": "Diese Sammelanfrage wurde bereits mit anderem Inhalt verwendet. Die Auswahl wurde nicht automatisch mit neuer ID wiederholt.",
+    "batchUnavailable": "Die Sammelfreigabe konnte aus den ausgewählten Fallständen nicht erstellt werden. Aktualisiere die Arbeitsliste und wähle erneut.",
+    "batchCompleted": "Sammelfreigabe abgeschlossen. Prüfe die Einzelergebnisse.",
+    "batchResult": "Einzelergebnisse der Sammelfreigabe",
+    "batchStatuses": {
+      "COMMITTED": "Freigabe gespeichert",
+      "DENIED": "Berechtigung abgelehnt",
+      "CONFLICT": "Fallstand zwischenzeitlich geändert",
+      "POLICY_REJECTED": "Durch die Freigaberichtlinie ausgeschlossen",
+      "NOT_ATTEMPTED": "Nicht bearbeitet"
+    }
   }
 }

@@ -50,6 +50,23 @@ UNKNOWN/unvollständige Angaben, manuelle Prüfung, genaue Dezimalwerte,
 Ergebnis-Reset und mobile Darstellung. npm Restore/Browserinstallation benötigen
 beim Einrichten Netzwerkzugriff; die gebündelte Anwendung benötigt ihn nicht.
 
+## Berechtigte Sammelfreigabe
+
+Im opt-in PostgreSQL-Reviewmodus zeigt die Arbeitsliste eine Auswahl ausschließlich
+für lesbare Fälle, die im Freigabestand stehen und serverseitig sowohl `ACCEPT` als
+auch `BATCH` besitzen. Eine gemeinsame ausdrückliche Begründung gilt für alle
+ausgewählten Systemergebnisse. Die Oberfläche überträgt höchstens 100 Fallbefehle mit
+den angezeigten exakten Revisionen; jeder Fall bleibt eine eigene Transaktion.
+
+Nach Abschluss erscheinen geordnete deutsche Einzelergebnisse für gespeichert,
+abgelehnt, zwischenzeitlich geändert, policy-seitig ausgeschlossen oder nicht
+bearbeitet. Die Oberfläche deutet UNKNOWN nicht um und führt keine automatische
+Wiederholung gegen einen neueren Fallstand aus. Wird eine Übertragung abgebrochen oder
+bleibt ihre Antwort wegen eines Netzfehlers unklar, bleibt exakt derselbe Request im
+Arbeitsspeicher für eine bewusste idempotente Wiederholung gesperrt. Abmeldung oder
+401 löschen Auswahl, Wiederholungsdaten und Ergebnis. Details stehen in
+[Sammelfreigabe](../architecture/BATCH_REVIEW.md).
+
 ## Prüfsnapshots herunterladen und wiederholen
 
 Nach „Jetzt prüfen“ steht zusätzlich „Prüfsnapshot herunterladen“ bereit. Die Datei
