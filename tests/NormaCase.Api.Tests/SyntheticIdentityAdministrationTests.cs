@@ -79,7 +79,7 @@ public sealed class SyntheticIdentityAdministrationTests
                 changeId,
                 targetActorId = actor,
                 expectedEntitlementRevision = "0",
-                actions = new[] { "READ", "ACCEPT" },
+                actions = new[] { "READ" },
                 caseIds = new[] { "demo-g-supported" },
                 reason = "Synthetischer Berechtigungsantrag"
             });
@@ -111,6 +111,12 @@ public sealed class SyntheticIdentityAdministrationTests
             "/api/review/administration/entitlement-changes/" + changeId + "/decision",
             new { approved = true, reason = "Synthetische Gegenprüfung" });
         Assert.Equal(HttpStatusCode.OK, decided.StatusCode);
+        using (var context = JsonDocument.Parse(await adminAfterRestart.GetStringAsync(
+            "/api/review/administration/entitlement-changes/context")))
+            Assert.True(context.RootElement.GetProperty("authorizationActive").GetBoolean());
+        using (var effective = JsonDocument.Parse(await stillSuspended.GetStringAsync(
+            "/api/review/work-cases/demo-g-supported")))
+            Assert.Empty(effective.RootElement.GetProperty("allowedActions").EnumerateArray());
         await using var verificationSource = NpgsqlDataSource.Create(connection);
         Assert.Empty(await new NormaCase.Persistence.PostgreSql.PostgresReviewedEntitlementChangeStore(
             verificationSource).ListPendingAsync(100));

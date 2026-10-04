@@ -23,7 +23,7 @@ internal static class SyntheticBatchReviewEndpoints
         BatchReviewFailureMode.Continue);
 
     internal static void Map(RouteGroupBuilder group, Npgsql.NpgsqlDataSource source,
-        PostgresCaseReviewStore store, SyntheticReviewCredential credential)
+        PostgresCaseReviewStore store, SyntheticLiveEntitlements entitlements)
     {
         group.MapPost("/batch-reviews", async (HttpContext context, CancellationToken token) =>
         {
@@ -35,23 +35,39 @@ internal static class SyntheticBatchReviewEndpoints
             try { actor = SyntheticReviewAuthentication.ResolveActor(context.User); }
             catch (InvalidOperationException) { return DemoHost.Error("review_forbidden", 403); }
 
-            if (request.Items.Any(item => !SyntheticReviewEndpoints.PermittedCaseId(item.CaseId)
-                    || !credential.Allows(actor, item.CaseId, "READ")))
-                return DemoHost.Error("unknown_work_case", 404);
-            if (request.Items.Any(item => !credential.Allows(actor, item.CaseId, "BATCH")))
-                return DemoHost.Error("review_forbidden", 403);
-
-            // Resolve every caller-visible aggregate before the first independent mutation.
-            // This avoids a partial batch when one requested case/assessment is unknown.
-            foreach (var item in request.Items)
-            {
-                var current = await store.LoadAsync(new CaseId(item.CaseId), token);
-                if (current is null || current.Assessment.AssessmentId.Value != item.AssessmentId)
-                    return DemoHost.Error("unknown_work_case", 404);
-            }
-
             try
             {
+                return await entitlements.ExecuteMutationAsync<IResult>(actor,
+                    (entitlement, lockedToken) => Execute(source, store, actor, entitlement, request, lockedToken), token);
+            }
+            catch (BatchReviewRequestConflictException)
+            {
+                return DemoHost.Error("batch_request_conflict", 409);
+            }
+            catch (Exception exception) when (exception is ArgumentException or OverflowException)
+            {
+                return DemoHost.Error("invalid_input", 400);
+            }
+        });
+    }
+
+    private static async Task<IResult> Execute(Npgsql.NpgsqlDataSource source,
+        PostgresCaseReviewStore store, AuthenticatedReviewActor actor,
+        SyntheticEntitlementSnapshot entitlement, BatchRequest request, CancellationToken token)
+    {
+        if (request.Items.Any(item => !SyntheticReviewEndpoints.PermittedCaseId(item.CaseId)
+                || !entitlement.Allows(item.CaseId, "READ")))
+            return DemoHost.Error("unknown_work_case", 404);
+        if (request.Items.Any(item => !entitlement.Allows(item.CaseId, "BATCH")))
+            return DemoHost.Error("review_forbidden", 403);
+
+        foreach (var item in request.Items)
+        {
+            var current = await store.LoadAsync(new CaseId(item.CaseId), token);
+            if (current is null || current.Assessment.AssessmentId.Value != item.AssessmentId)
+                return DemoHost.Error("unknown_work_case", 404);
+        }
+
                 await using var lease = await new PostgresBatchReviewRequestStore(source).AcquireAsync(
                     new(request.RequestId, actor.ActorId, Fingerprint(request),
                         TimeProvider.System.GetUtcNow()), token);
@@ -76,7 +92,7 @@ internal static class SyntheticBatchReviewEndpoints
                 }
 
                 var service = new BatchReviewService(new CaseReviewService(
-                    store, new SyntheticReviewEndpoints.SyntheticAuthorizer(credential)));
+                    store, new SyntheticReviewEndpoints.SyntheticAuthorizer(entitlement)));
                 if (pending.Count != 0)
                 {
                     var attempted = await service.ReviewAsync(actor, pending,
@@ -100,16 +116,6 @@ internal static class SyntheticBatchReviewEndpoints
                 var resultJson = SerializeResult(result);
                 await lease.CommitResultAsync(resultJson, token);
                 return Results.Content(resultJson, "application/json", Encoding.UTF8);
-            }
-            catch (BatchReviewRequestConflictException)
-            {
-                return DemoHost.Error("batch_request_conflict", 409);
-            }
-            catch (Exception exception) when (exception is ArgumentException or OverflowException)
-            {
-                return DemoHost.Error("invalid_input", 400);
-            }
-        });
     }
 
     private static async Task<(BatchRequest? Request, IResult? Error)> ReadRequest(

@@ -25,9 +25,19 @@ are opaque. It does not infer roles, medical authority, wildcard scope or permis
 the requested actor. Empty snapshots are valid and represent removal of every managed
 grant once an approved change becomes effective.
 
-This slice intentionally does not change live authorization yet. Startup configuration
-remains authoritative until a following #183 slice exposes the authenticated proposal /
-decision API, German administration UI, seeds or explicitly reconciles the initial
-configuration, and binds every protected mutation transaction-safely to the current
-effective revision. A productive identity provider and institution role mapping remain
-external prerequisites.
+The persistent synthetic host reconciles each configured review identity into an
+immutable revision-zero baseline. A restart accepts the equivalent sorted action/case
+snapshot; an unexplained configuration mismatch fails startup instead of silently
+changing authority. Approved versions supersede that baseline and are the live source
+for queue scoping, case detail, review, batch, intake and outbound authorization.
+
+Protected mutations acquire the same transaction-scoped per-identity advisory lock as
+approval. The effective snapshot is loaded only after that lock is held and the lock is
+retained until the protected operation has committed or failed. Concurrent revocation
+therefore orders entirely before or after the operation; a stale pre-check cannot cross
+the change boundary. Read-only projections remain bounded by the current exact case set.
+The non-persistent legacy preview retains its historical local configuration behavior
+and receives no implicit `BATCH` permission.
+
+A productive identity provider and institution-specific role mapping remain external
+prerequisites; they do not alter this generic version/locking contract.

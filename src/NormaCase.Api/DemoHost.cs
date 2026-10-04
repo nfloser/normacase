@@ -61,6 +61,7 @@ public static class DemoHost
         builder.Services.AddSingleton(services => new ReviewedEntitlementChangeService(
             services.GetRequiredService<IReviewedEntitlementChangeStore>(),
             new EntitlementAdministrationPolicy(RequireDistinctDecisionActor: true)));
+        builder.Services.AddSingleton<SyntheticLiveEntitlements>();
         builder.Services.AddSingleton<OperationalReadinessProbe>(services =>
             new OperationalReadinessProbe(
                 services.GetRequiredService<IConfiguration>()
@@ -101,6 +102,8 @@ public static class DemoHost
                     ?? throw new NormaCase.Persistence.PostgreSql.KnowledgeReleaseIntegrityException();
                 packs[entry.Key] = restored.LoadPack();
             }
+            app.Services.GetRequiredService<SyntheticLiveEntitlements>()
+                .ReconcileAsync().GetAwaiter().GetResult();
         }
 
         app.UseExceptionHandler(handler => handler.Run(async context =>

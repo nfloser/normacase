@@ -83,6 +83,13 @@ Die Fallberechtigung wird vor der Revisionsprüfung kontrolliert; die explizite
 Prozesspolicy erlaubt weiterhin ausschließlich Übergänge aus `awaiting-approval`.
 Ein aktueller Command gegen einen abgeschlossenen Fall bleibt mit 403 gesperrt.
 
+Im persistenten Mehrbenutzermodus wird die konfigurierte Ausgangsberechtigung einmalig
+als unveränderliche Revision null gespeichert. Eine abweichende Startkonfiguration
+bricht einen späteren Start ab. Freigegebene vollständige Snapshots steuern danach alle
+Live-Prüfungen. Mutierende Requests halten denselben identitätsbezogenen PostgreSQL-Lock
+wie die Berechtigungsfreigabe bis zum Abschluss der Fachtransaktion; eine parallele
+Entziehung ist daher eindeutig vor oder nach dem Request wirksam.
+
 Sammelprüfung ist eine separate synthetische Berechtigung: neben `READ` und der
 jeweiligen `ACCEPT`-/`OVERRIDE`-Aktion ist `BATCH` für jeden Fall erforderlich. Der
 alte gemeinsame Ein-Schlüssel-Modus erhält `BATCH` ausdrücklich nicht. Die

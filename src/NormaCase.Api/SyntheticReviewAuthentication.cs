@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using NormaCase.Application.Authorization;
 using NormaCase.Application.Reviews;
 
 namespace NormaCase.Api;
@@ -103,6 +104,23 @@ internal sealed class SyntheticReviewCredential
                 && (legacy
                     ? action != "BATCH"
                     : entry.Actions.Contains(action) && entry.Cases.Contains(caseId)));
+
+    internal IdentityEntitlementState ConfiguredEntitlementState(string actorId)
+    {
+        var configured = ConfiguredEntitlements(actorId)
+            ?? throw new InvalidOperationException("Configured synthetic identity required.");
+        return new(actorId, 0, configured.Value.Actions, configured.Value.CaseIds);
+    }
+
+    internal SyntheticEntitlementSnapshot ConfiguredEntitlementSnapshot(string actorId)
+    {
+        if (legacy && actorId == "synthetic-local:reviewer")
+            return new(new(actorId, 0, [], []), legacy: true);
+        return new(ConfiguredEntitlementState(actorId));
+    }
+
+    internal bool IsLegacyActor(string actorId)
+        => legacy && actorId == "synthetic-local:reviewer";
 
     internal bool IsAdministrator(AuthenticatedReviewActor actor)
         => actor.AuthenticationAuthority == "synthetic-local"

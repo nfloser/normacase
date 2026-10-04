@@ -6,6 +6,41 @@ namespace NormaCase.Persistence.PostgreSql;
 public sealed class PostgresReviewedEntitlementChangeStore(
     NpgsqlDataSource dataSource) : IReviewedEntitlementChangeStore
 {
+    public async Task ReconcileBaselineAsync(
+        IdentityEntitlementState baseline, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(baseline);
+        if (baseline.Revision != 0) throw new ArgumentException("Baseline revision must be zero.", nameof(baseline));
+        try
+        {
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await LockActor(connection, transaction, baseline.ActorId, cancellationToken);
+            await using var insert = new NpgsqlCommand(
+                "INSERT INTO normacase.identity_entitlement_baselines(actor_id,actions,case_ids) VALUES($1,$2,$3) ON CONFLICT DO NOTHING;",
+                connection, transaction);
+            insert.Parameters.AddWithValue(baseline.ActorId);
+            insert.Parameters.AddWithValue(baseline.Actions.ToArray());
+            insert.Parameters.AddWithValue(baseline.CaseIds.ToArray());
+            await insert.ExecuteNonQueryAsync(cancellationToken);
+            await using (var retained = new NpgsqlCommand(
+                "SELECT actions,case_ids FROM normacase.identity_entitlement_baselines WHERE actor_id=$1;",
+                connection, transaction))
+            {
+                retained.Parameters.AddWithValue(baseline.ActorId);
+                await using var reader = await retained.ExecuteReaderAsync(cancellationToken);
+                if (!await reader.ReadAsync(cancellationToken)
+                    || !reader.GetFieldValue<string[]>(0).SequenceEqual(baseline.Actions, StringComparer.Ordinal)
+                    || !reader.GetFieldValue<string[]>(1).SequenceEqual(baseline.CaseIds, StringComparer.Ordinal))
+                    throw new EntitlementChangeConflictException();
+            }
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (EntitlementChangeConflictException) { throw; }
+        catch (NpgsqlException)
+        { throw new EntitlementChangeStorageException(); }
+    }
+
     public async Task<EntitlementChangeRecord> ProposeAsync(
         EntitlementChangeProposal proposal, CancellationToken cancellationToken = default)
     {
@@ -61,12 +96,7 @@ public sealed class PostgresReviewedEntitlementChangeStore(
 
             if (decision.Approved)
             {
-                await using (var actorLock = new NpgsqlCommand(
-                    "SELECT pg_advisory_xact_lock(hashtextextended($1, 117));", connection, transaction))
-                {
-                    actorLock.Parameters.AddWithValue(proposal.TargetActorId);
-                    await actorLock.ExecuteNonQueryAsync(cancellationToken);
-                }
+                await LockActor(connection, transaction, proposal.TargetActorId, cancellationToken);
                 var currentRevision = await CurrentRevisionAsync(
                     connection, transaction, proposal.TargetActorId, cancellationToken);
                 if (currentRevision != proposal.ExpectedEntitlementRevision)
@@ -146,22 +176,33 @@ public sealed class PostgresReviewedEntitlementChangeStore(
         EntitlementChangeProposal.ValidateIdentity(actorId, nameof(actorId));
         try
         {
-            await using var command = dataSource.CreateCommand(
-                """
-                SELECT revision, actions, case_ids
-                FROM normacase.identity_entitlement_versions
-                WHERE actor_id=$1 ORDER BY revision DESC LIMIT 1;
-                """);
-            command.Parameters.AddWithValue(actorId);
-            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-            return await reader.ReadAsync(cancellationToken)
-                ? new(actorId, reader.GetInt64(0), reader.GetFieldValue<string[]>(1), reader.GetFieldValue<string[]>(2))
-                : new(actorId, 0, [], []);
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+            return await LoadEffectiveAsync(connection, null, actorId, cancellationToken);
         }
         catch (Exception exception) when (exception is NpgsqlException or InvalidOperationException)
         {
             throw new EntitlementChangeStorageException();
         }
+    }
+
+    public async Task<T> ExecuteWithEffectiveLockAsync<T>(string actorId,
+        Func<IdentityEntitlementState, CancellationToken, Task<T>> action,
+        CancellationToken cancellationToken = default)
+    {
+        EntitlementChangeProposal.ValidateIdentity(actorId, nameof(actorId));
+        ArgumentNullException.ThrowIfNull(action);
+        try
+        {
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await LockActor(connection, transaction, actorId, cancellationToken);
+            var state = await LoadEffectiveAsync(connection, transaction, actorId, cancellationToken);
+            var result = await action(state, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return result;
+        }
+        catch (NpgsqlException)
+        { throw new EntitlementChangeStorageException(); }
     }
 
     public async Task<IReadOnlyList<EntitlementChangeRecord>> ListPendingAsync(
@@ -224,6 +265,35 @@ public sealed class PostgresReviewedEntitlementChangeStore(
             connection, transaction);
         command.Parameters.AddWithValue(actorId);
         return (long)(await command.ExecuteScalarAsync(cancellationToken))!;
+    }
+
+    private static async Task<IdentityEntitlementState> LoadEffectiveAsync(
+        NpgsqlConnection connection, NpgsqlTransaction? transaction, string actorId,
+        CancellationToken cancellationToken)
+    {
+        await using var command = new NpgsqlCommand(
+            """
+            SELECT revision, actions, case_ids FROM (
+                SELECT revision, actions, case_ids
+                FROM normacase.identity_entitlement_versions WHERE actor_id=$1
+                UNION ALL
+                SELECT 0::bigint, actions, case_ids
+                FROM normacase.identity_entitlement_baselines WHERE actor_id=$1
+            ) effective ORDER BY revision DESC LIMIT 1;
+            """, connection, transaction);
+        command.Parameters.AddWithValue(actorId);
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        if (!await reader.ReadAsync(cancellationToken)) throw new EntitlementChangeStorageException();
+        return new(actorId, reader.GetInt64(0), reader.GetFieldValue<string[]>(1), reader.GetFieldValue<string[]>(2));
+    }
+
+    private static async Task LockActor(NpgsqlConnection connection, NpgsqlTransaction transaction,
+        string actorId, CancellationToken cancellationToken)
+    {
+        await using var actorLock = new NpgsqlCommand(
+            "SELECT pg_advisory_xact_lock(hashtextextended($1, 117));", connection, transaction);
+        actorLock.Parameters.AddWithValue(actorId);
+        await actorLock.ExecuteNonQueryAsync(cancellationToken);
     }
 
     private static void AddProposal(NpgsqlCommand command, EntitlementChangeProposal proposal)
