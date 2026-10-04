@@ -38,8 +38,13 @@ Für eine reproduzierbare Präsentation liegt im Paket zusätzlich
 `PITCH-DEMO.de.md`. Sie beschreibt die feste Reihenfolge der Pitch-Beispiele
 und die erwarteten Ergebnisse.
 
-Wähle einen Prüfbereich und ein Beispiel. Klicke auf „Beispiel laden“ und danach
-auf „Jetzt prüfen“. Ändere anschließend Angaben oder Evidenzzustände, um
+Scrolle für die Produktvorführung zuerst zu „Fallwarteschlangen“. Dort werden bei
+jedem Start exakt 100 synthetische Fälle automatisch bewertet beziehungsweise als
+technische Ausnahme eingeordnet und auf vier Arbeitslisten verteilt. Die Oberfläche
+zeigt die vollständigen Zähler und je Liste nur fünf repräsentative Fälle.
+
+Wähle danach einen Prüfbereich und ein Beispiel. Klicke auf „Beispiel laden“ und
+danach auf „Jetzt prüfen“. Ändere anschließend Angaben oder Evidenzzustände, um
 unvollständige Fälle und manuelle Prüfung auszuprobieren. Fehlendes bleibt
 unbekannt. Die vollständige technische Prüfspur und ein selbstständiger
 Prüfsnapshot können heruntergeladen werden. Über „Gespeicherte Prüfung offline
