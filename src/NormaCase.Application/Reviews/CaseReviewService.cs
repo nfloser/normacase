@@ -18,16 +18,9 @@ public sealed class CaseReviewService
     public Task<CaseReviewState> ReviewAsync(AuthenticatedReviewActor actor, CaseReviewCommand command,
         WorkflowDefinition workflow, CaseReviewPolicy policy, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(actor);
-        ArgumentNullException.ThrowIfNull(command);
+        var review = ValidateCommand(actor, command);
         ArgumentNullException.ThrowIfNull(workflow);
         ArgumentNullException.ThrowIfNull(policy);
-        if (command.CaseId.IsEmpty) throw new ArgumentException("Explicit case id required.", nameof(command));
-        if (command.ExpectedCaseRevision < 1 || command.ExpectedProcessRevision < 0 || command.ExpectedAuditRevision < 1)
-            throw new ArgumentOutOfRangeException(nameof(command));
-        // Validation reuses Domain semantics; actor is taken only from the trusted authentication context.
-        var review = new HumanReviewRecord(command.ReviewId, command.AssessmentId, actor.ActorId,
-            command.RecordedAtUtc, command.Disposition, command.Reason, command.OverrideOutcome, command.Reference);
         return store.ExecuteAsync(command.CaseId, current =>
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -55,5 +48,19 @@ public sealed class CaseReviewService
             cancellationToken.ThrowIfCancellationRequested();
             return new(current.Assessment, current.AssessmentCaseRevision, process, audit);
         }, cancellationToken);
+    }
+
+    internal static HumanReviewRecord ValidateCommand(
+        AuthenticatedReviewActor actor,
+        CaseReviewCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(actor);
+        ArgumentNullException.ThrowIfNull(command);
+        if (command.CaseId.IsEmpty) throw new ArgumentException("Explicit case id required.", nameof(command));
+        if (command.ExpectedCaseRevision < 1 || command.ExpectedProcessRevision < 0 || command.ExpectedAuditRevision < 1)
+            throw new ArgumentOutOfRangeException(nameof(command));
+        // Validation reuses Domain semantics; actor is taken only from the trusted authentication context.
+        return new HumanReviewRecord(command.ReviewId, command.AssessmentId, actor.ActorId,
+            command.RecordedAtUtc, command.Disposition, command.Reason, command.OverrideOutcome, command.Reference);
     }
 }
