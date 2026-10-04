@@ -21,6 +21,7 @@ public sealed class WorkQueueTests : IClassFixture<WebApplicationFactory<Program
         var text = await response.Content.ReadAsStringAsync();
         Assert.Equal(text, await client.GetStringAsync("/api/work-queues"));
         using var document = JsonDocument.Parse(text);
+        Assert.Equal(100, document.RootElement.GetProperty("totalCases").GetInt32());
         var queues = document.RootElement.GetProperty("queues").EnumerateArray().ToArray();
         Assert.Equal(4, queues.Length);
         Assert.Equal(new[] { 60, 20, 15, 5 }, queues.Select(q => q.GetProperty("items").GetArrayLength()));
