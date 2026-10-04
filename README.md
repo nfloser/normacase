@@ -147,6 +147,9 @@ The ASP.NET Core development host listens on loopback port 5080 and provides
 lossless assessment contract as the CLI. See [the German API guide](docs/development/LOCAL_API.md)
 for curl examples, limits and security boundaries. Synthetic knowledge only;
 the default preview remains anonymous/read-only. A separate synthetic authentication and PostgreSQL review mode exists only for local development; productive identity/privacy remain open work.
+Loopback-only `/health/live` and `/health/ready` probes distinguish a running process
+from a currently usable persistent store without exposing infrastructure details; see
+[operational health probes](docs/architecture/OPERATIONAL_HEALTH.md).
 
 ## German synthetic workbench
 

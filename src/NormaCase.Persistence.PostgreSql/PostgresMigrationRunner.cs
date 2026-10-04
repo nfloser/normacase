@@ -67,6 +67,39 @@ public sealed class PostgresMigrationRunner
         }
     }
 
+    public async Task<bool> IsCurrentAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var expected = LoadMigrations();
+        await using var connection =
+            await _dataSource.OpenConnectionAsync(cancellationToken);
+        await using var command = new NpgsqlCommand(
+            """
+            SELECT version, checksum
+            FROM normacase.schema_migrations
+            ORDER BY version;
+            """,
+            connection);
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        var index = 0;
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            if (index >= expected.Count
+                || reader.GetInt32(0) != expected[index].Version
+                || !string.Equals(
+                    reader.GetString(1),
+                    expected[index].Checksum,
+                    StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            index++;
+        }
+
+        return index == expected.Count;
+    }
+
     private static async Task ApplyAsync(
         NpgsqlConnection connection,
         NpgsqlTransaction transaction,

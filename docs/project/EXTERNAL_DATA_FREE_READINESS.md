@@ -39,7 +39,7 @@ and must not be classified as externally blocked. Track completion in
 | Knowledge governance | Exact validated release artifacts are retained append-only in PostgreSQL and restored by exact identity; no implicit latest selection or validation promotion | Persistent change/review/approval history, authorized activation, historical replay and synthetic separation-of-duties tests |
 | Corrections and clarification | Intake accepts only revision 1; incomplete/manual-review paths are not complete work cycles | Append-only corrected revisions/reassessment, configurable synthetic clarification and review policy, preserved historical inputs/results |
 | Batch review | Individual review only | Explicit opt-in policy, bounded commands, per-case authorization/revision checks, audited results and German UI |
-| Operational scale and installation | Local host, bounded queue, native previews and restore rehearsal | Paginated authorized queues, documented reproducible deployment/update, rollback/recovery and failure-path validation |
+| Operational scale and installation | Local host, bounded and authorized paginated queues, native previews, restore rehearsal, privacy-safe liveness and live PostgreSQL/schema readiness | Documented reproducible target deployment/update, rollback/recovery and broader failure-path validation |
 
 Institutional role mappings, actual medical/process policies, vendor contracts and
 external approvals remain external. Their generic configurable mechanisms remain
@@ -50,10 +50,15 @@ platform scope and is not introduced as a requirement for completion.
 
 ## Access-independent completion boundary
 
-At this repository state, no known open implementation item is required to prove the
-generic synthetic product path. Further substantive product integration now needs at
-least one external authority: an institutional interface specification, approved
-identity/role model, correction/clarification policy, target deployment constraints or
-domain-approved knowledge. New generic work remains appropriate when a concrete defect
-or architecture gap is discovered, but NormaCase must not invent those external
-requirements merely to keep development moving.
+At this repository state, the synthetic integration path is proved, but known generic
+platform work remains in #183–#187. It includes configurable authorization and
+separation of duties, durable knowledge approval/activation, correction and
+clarification cycles, policy-controlled batch review, and reproducible operational
+update/rollback behavior. These mechanisms can continue with synthetic identities,
+policies and packs; they are not blocked by missing MD data.
+
+External authority becomes necessary for concrete institutional interface mappings,
+productive identity/role assignments, binding medical/process policy, target-specific
+deployment approval and domain-approved knowledge. The repository must not invent
+those external requirements, but must also not treat them as blockers for the generic
+mechanisms tracked above.

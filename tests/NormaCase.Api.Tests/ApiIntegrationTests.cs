@@ -17,6 +17,29 @@ public sealed class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Pr
     public ApiIntegrationTests(WebApplicationFactory<Program> factory) => _client = factory.CreateClient();
 
     [Fact]
+    public async Task Operational_health_is_local_bounded_and_ready_without_persistence()
+    {
+        var live = await _client.GetAsync("/health/live");
+        var ready = await _client.GetAsync("/health/ready");
+
+        Assert.Equal(HttpStatusCode.OK, live.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, ready.StatusCode);
+        using var liveJson = JsonDocument.Parse(await live.Content.ReadAsStringAsync());
+        using var readyJson = JsonDocument.Parse(await ready.Content.ReadAsStringAsync());
+        Assert.Equal("verfügbar", liveJson.RootElement.GetProperty("status").GetString());
+        Assert.Equal("bereit", readyJson.RootElement.GetProperty("status").GetString());
+        Assert.Equal("nicht aktiviert", readyJson.RootElement.GetProperty("persistence").GetString());
+        Assert.Equal(2, liveJson.RootElement.EnumerateObject().Count());
+        Assert.Equal(2, readyJson.RootElement.EnumerateObject().Count());
+        Assert.Equal("no-store", live.Headers.CacheControl!.ToString());
+        Assert.Equal("no-store", ready.Headers.CacheControl!.ToString());
+
+        using var nonLocal = new HttpRequestMessage(HttpMethod.Get, "/health/live");
+        nonLocal.Headers.Host = "example.invalid";
+        Assert.Equal(HttpStatusCode.Forbidden, (await _client.SendAsync(nonLocal)).StatusCode);
+    }
+
+    [Fact]
     public async Task Catalog_contains_only_synthetic_external_packs()
     {
         var response = await _client.GetAsync("/api/packs");
