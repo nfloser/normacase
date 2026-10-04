@@ -69,7 +69,7 @@ public sealed class PostgresKnowledgeReleaseStore(NpgsqlDataSource dataSource) :
         catch (NpgsqlException) { throw new KnowledgeReleaseStorageException(); }
     }
 
-    private static async Task<KnowledgeReleaseArtifact?> Read(NpgsqlConnection connection, NpgsqlTransaction? transaction,
+    internal static async Task<KnowledgeReleaseArtifact?> Read(NpgsqlConnection connection, NpgsqlTransaction? transaction,
         string packId, string releaseId, CancellationToken token)
     {
         await using var command = new NpgsqlCommand("""

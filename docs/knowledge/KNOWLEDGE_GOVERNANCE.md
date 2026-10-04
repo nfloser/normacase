@@ -85,3 +85,9 @@ approval administration, signatures and key management remain separate boundarie
 A Knowledge Release must be internally consistent and validated before activation. Validation will grow to cover schemas, references, operators, validity intervals, dependencies, unreachable nodes, missing tests and manifest integrity.
 
 Regression cases are synthetic.
+
+The durable technical review and explicit activation boundary is described in
+[Reviewed Knowledge activation](../architecture/REVIEWED_KNOWLEDGE_ACTIVATION.md).
+It records exact release/hash, review and per-pack activation revisions without
+changing validation level. Authenticated administration and host consumption remain
+open implementation work; no productive domain approval is implied.
