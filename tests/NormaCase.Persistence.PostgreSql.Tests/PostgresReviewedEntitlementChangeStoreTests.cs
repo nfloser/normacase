@@ -19,6 +19,8 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
 
         Assert.Equal(0, (await store.LoadEffectiveAsync(actor)).Revision);
         await store.ProposeAsync(proposal);
+        var pending = await new PostgresReviewedEntitlementChangeStore(source).ListPendingAsync(10);
+        Assert.Contains(pending, item => item.Proposal.ChangeId == changeId && item.Decision is null);
         var decided = await store.DecideAsync(new(
             changeId, "synthetic-local:access-approver",
             new DateTimeOffset(2026, 10, 4, 12, 1, 0, TimeSpan.Zero), true,
@@ -31,6 +33,8 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         Assert.Equal(new[] { "ACCEPT", "READ" }, effective.Actions);
         Assert.Equal(new[] { "demo-g-supported" }, effective.CaseIds);
         Assert.NotNull((await restarted.LoadChangeAsync(changeId))!.Decision);
+        Assert.DoesNotContain(await restarted.ListPendingAsync(100),
+            item => item.Proposal.ChangeId == changeId);
 
         await using var connection = await source.OpenConnectionAsync();
         foreach (var sql in new[]
@@ -46,6 +50,29 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
             var exception = await Assert.ThrowsAsync<PostgresException>(() => command.ExecuteNonQueryAsync());
             Assert.Equal("55000", exception.SqlState);
         }
+    }
+
+    [Fact]
+    public async Task Pending_changes_are_bounded_and_ordered_across_restart()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var actor = "synthetic-local:user-" + Guid.NewGuid().ToString("N");
+        var store = new PostgresReviewedEntitlementChangeStore(source);
+        var prefix = "pending-" + Guid.NewGuid().ToString("N") + "-";
+        await store.ProposeAsync(new(prefix + "b", actor, 0, ["READ"], ["demo-g-review"],
+            "synthetic-local:administrator",
+            new DateTimeOffset(2026, 10, 4, 13, 1, 0, TimeSpan.Zero), "Zweiter Antrag"));
+        await store.ProposeAsync(new(prefix + "a", actor, 0, ["READ"], ["demo-g-supported"],
+            "synthetic-local:administrator",
+            new DateTimeOffset(2026, 10, 4, 13, 0, 0, TimeSpan.Zero), "Erster Antrag"));
+
+        var pending = await new PostgresReviewedEntitlementChangeStore(source).ListPendingAsync(2);
+        var ours = pending.Where(item => item.Proposal.ChangeId.StartsWith(prefix, StringComparison.Ordinal)).ToArray();
+
+        Assert.Equal(2, ours.Length);
+        Assert.Equal(prefix + "a", ours[0].Proposal.ChangeId);
+        Assert.Equal(prefix + "b", ours[1].Proposal.ChangeId);
     }
 
     [Fact]
