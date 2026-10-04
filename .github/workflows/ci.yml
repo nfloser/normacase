@@ -235,6 +235,8 @@ jobs:
         run: dotnet test tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-build
       - name: Persistent synthetic review API
         run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --filter FullyQualifiedName~SyntheticReviewHostTests
+      - name: Authenticated synthetic Knowledge governance API
+        run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --filter FullyQualifiedName~SyntheticKnowledgeGovernanceTests
 
       - name: Create clean synthetic rehearsal databases
         env:

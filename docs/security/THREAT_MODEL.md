@@ -247,3 +247,21 @@ needs institution-approved case-scoped authorization, destination authentication
 transport guarantees, retention/logging policy and the authoritative vendor contract.
 Imported result JSON on its own remains an unauthenticated assertion. See
 [outbound results](../architecture/OUTBOUND_RESULTS.md).
+
+
+### Synthetic Knowledge administration
+
+Exact configured synthetic users receive independent PROPOSE/REVIEW/ACTIVATE
+assignments. Unknown users and shared proposer/reviewer fail startup; every endpoint
+checks the verified actor and the current authentication suspension gate. Server-owned
+IDs/times/hash cannot be supplied through strict bounded command bodies. Only verified
+SYNTHETIC artifacts can enter this host's mutation path. Technical approval never
+promotes domain validation. Activation is optimistic and transaction-serialized; a
+stale UI cannot replace history. This configuration is a trusted local adapter, not
+productive role mapping or evidence authentication. References do not prove the
+contents or quality of source/test documents. Direct privileged database inserts
+remain outside the application trust boundary. The German UI discards delayed responses
+on logout and stores no credentials; it is not an authorization boundary. The host
+does not automatically consume recorded activations. Transaction-safe live permission
+administration and institution-approved authority remain separate implementation and
+external policy concerns.

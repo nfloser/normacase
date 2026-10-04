@@ -79,6 +79,31 @@ public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource da
         }, token);
     }
 
+    public async Task<IReadOnlyList<KnowledgeChangeRecord>> ListChangesAsync(int pageSize, string? afterChangeId = null, CancellationToken token = default)
+    {
+        if (pageSize is < 1 or > 100) throw new ArgumentOutOfRangeException(nameof(pageSize));
+        if (afterChangeId is not null) KnowledgeGovernanceValidation.Text(afterChangeId);
+        return await Read(async connection =>
+        {
+            var ids = new List<string>();
+            await using (var query = new NpgsqlCommand(
+                "SELECT change_id FROM normacase.knowledge_changes"
+                + (afterChangeId is null ? "" : " WHERE change_id COLLATE \"C\">$2 COLLATE \"C\"")
+                + " ORDER BY change_id COLLATE \"C\" LIMIT $1", connection))
+            {
+                Add(query, pageSize);
+                if (afterChangeId is not null) Add(query, afterChangeId);
+                await using var reader = await query.ExecuteReaderAsync(token);
+                while (await reader.ReadAsync(token)) ids.Add(reader.GetString(0));
+            }
+            var records = new List<KnowledgeChangeRecord>();
+            foreach (var id in ids)
+                records.Add((await ReadChange(connection, null, id, false, token))
+                    ?? throw new KnowledgeGovernanceNotFoundException());
+            return (IReadOnlyList<KnowledgeChangeRecord>)records.AsReadOnly();
+        }, token);
+    }
+
     public async Task<KnowledgeChangeRecord?> LoadChangeAsync(string changeId, CancellationToken token = default)
     {
         KnowledgeGovernanceValidation.Text(changeId);

@@ -1,8 +1,8 @@
 # Reviewed exact Knowledge activation
 
 This is the durable headless governance boundary for #184. It supplements the
-immutable release store; it does not yet change the synthetic host's configured
-release selection or expose authenticated administration endpoints or a workbench.
+immutable release store; it does not change the synthetic host's configured
+release selection. The authenticated administration adapter is described below.
 
 `IReviewedKnowledgeActivationStore` accepts bounded immutable proposals containing
 exact pack/release/SHA-256, source, impact-analysis and test-evidence references,
@@ -36,8 +36,41 @@ self-review, stale/competing commands and mutation triggers. Application tests c
 bounded contracts and lossless audit timestamps. CI also rehearses migration/runtime
 roles and synthetic dump/restore against the expanded schema.
 
-Remaining integration: authenticated server-owned actors, separate administration
-permissions, bounded discovery of pending changes and history, German administration
-views, retained evidence/source management and explicit host consumption of the selected
-activation. These are institution-independent implementation work. Actual domain
+Remaining integration: retained evidence/source management and explicit host
+consumption of the selected activation. These are institution-independent implementation work. Actual domain
 approval and institution-specific policy remain external inputs. #184 remains open.
+
+## Authenticated synthetic administration
+
+The persistent synthetic host now exposes `/api/review/knowledge/changes`, exact
+change detail, `/decision` and `/activate`. Bearer authentication and live identity
+suspension apply. Separate external assignments under
+`SyntheticReview:KnowledgeAdministration` name existing configured synthetic users:
+`PROPOSE`, `REVIEW`, `ACTIVATE`. Unknown users, unknown assignment keys and a shared
+proposer/reviewer fail startup. Knowledge assignments confer no new case permissions
+or identity-administration rights. The review-session response advertises permitted
+Knowledge actions for presentation; each endpoint checks server configuration itself.
+
+Proposal bodies contain only exact pack/release and bounded source/impact/test
+references. The server creates the change ID, actor, timestamp and hash from an
+existing verified SYNTHETIC artifact. Decisions accept only approval/reason; activation
+accepts only the expected revision as an exact decimal string. Unexpected/duplicate
+JSON keys, non-JSON, invalid UTF-8 and bodies over 4 KiB fail. The host cannot propose,
+review or activate a non-synthetic artifact. The running host keeps its configured
+release selection. Governance activation records are not hot-reload instructions.
+
+The change list uses C-collated immutable ID keyset pagination, at most 25 displayed
+records and a separate next-page cursor. Concurrent insertions before a cursor appear
+on refresh, not retroactively on an already viewed page. Review status is loaded
+currently; opening detail reads current activation independently. A stale activation
+still fails under the write transaction. No history is deleted or hidden by pagination.
+The German workbench supports proposal, approve/reject and explicit activation, displays
+exact hash/evidence references/actor times and reloads detail after 409 without retry.
+Credentials and data remain in React memory. Logout, unmount and 401 abort requests;
+controller checks after JSON parsing reject delayed responses. Network errors never
+resubmit proposals or decisions automatically: reconcile the saved list/detail first.
+
+CI exercises real API/PostgreSQL authorization, 27-record pagination, server-owned
+metadata, restart and stale activation, plus a two-user German browser journey and
+delayed-list logout. Source document/evidence retention, controlled consumption of
+activation by future intake and productive institution/domain approval remain open.

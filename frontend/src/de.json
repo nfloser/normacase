@@ -259,5 +259,37 @@
       "POLICY_REJECTED": "Durch die Freigaberichtlinie ausgeschlossen",
       "NOT_ATTEMPTED": "Nicht bearbeitet"
     }
+  },
+  "knowledgeAdministration": {
+    "heading": "Wissen verwalten",
+    "help": "Synthetische Wissensänderungen mit getrennter Prüfung und protokollierter Aktivierung. Die laufende Fallverarbeitung wird dadurch nicht umgestellt. Referenzen ersetzen keine fachliche Freigabe.",
+    "proposal": "Neue Wissensänderung",
+    "pack": "Wissenspaket und Release",
+    "source": "Quellenreferenz",
+    "impact": "Referenz der Auswirkungsanalyse",
+    "tests": "Referenz der Testnachweise",
+    "propose": "Wissensänderung vorschlagen",
+    "refresh": "Wissensänderungen neu laden",
+    "next": "Weitere Wissensänderungen",
+    "open": "Wissensänderung öffnen",
+    "empty": "Keine Wissensänderungen auf dieser Seite.",
+    "detail": "Wissensänderung",
+    "hash": "Prüfsumme des unveränderlichen Releases",
+    "status": "Prüfstatus",
+    "pending": "Prüfung offen",
+    "approved": "Technisch freigegeben",
+    "rejected": "Abgelehnt",
+    "proposedBy": "Vorgeschlagen von",
+    "reviewedBy": "Geprüft von",
+    "reason": "Begründung der Wissensprüfung",
+    "review": "Getrennte Wissensprüfung",
+    "approve": "Wissensänderung freigeben",
+    "reject": "Wissensänderung ablehnen",
+    "activeRevision": "Aktivierungsrevision",
+    "activeRelease": "Protokollierter aktiver Release",
+    "activatedBy": "Aktiviert von",
+    "activate": "Freigegebenen Release protokolliert aktivieren",
+    "saved": "Wissensvorgang gespeichert.",
+    "conflict": "Der Wissensstand hat sich geändert oder die Aktion ist nicht zulässig. Der gespeicherte Stand wurde neu geladen; bitte erneut prüfen."
   }
 }

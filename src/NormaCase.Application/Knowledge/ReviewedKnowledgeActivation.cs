@@ -77,6 +77,7 @@ public interface IReviewedKnowledgeActivationStore
     Task<KnowledgeChangeRecord> ProposeAsync(KnowledgeChangeProposal proposal, CancellationToken token = default);
     Task<KnowledgeChangeRecord> DecideAsync(KnowledgeChangeDecision decision, CancellationToken token = default);
     Task<KnowledgeActivationRecord> ActivateAsync(KnowledgeActivationCommand command, CancellationToken token = default);
+    Task<IReadOnlyList<KnowledgeChangeRecord>> ListChangesAsync(int pageSize, string? afterChangeId = null, CancellationToken token = default);
     Task<KnowledgeChangeRecord?> LoadChangeAsync(string changeId, CancellationToken token = default);
     Task<KnowledgeActivationRecord?> LoadActiveAsync(string packId, CancellationToken token = default);
     // Historical access is bounded and exact; there is no implicit "latest release" lookup.

@@ -40,6 +40,9 @@ export default defineConfig({
       SyntheticReview__Users__bob__Actions__0: 'READ',
       SyntheticReview__Users__bob__CaseIds__0: 'demo-g-review',
       SyntheticReview__Administrator__Credential: administratorCredential,
+      SyntheticReview__KnowledgeAdministration__PROPOSE: 'synthetic-local:user-alice',
+      SyntheticReview__KnowledgeAdministration__REVIEW: 'synthetic-local:user-bob',
+      SyntheticReview__KnowledgeAdministration__ACTIVATE: 'synthetic-local:user-bob',
       ConnectionStrings__SyntheticReview: connection
     }
   },

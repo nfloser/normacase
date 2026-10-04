@@ -5,6 +5,7 @@ import { batchReviewRequest, batchReviewResult, type BatchReviewCandidate, type 
 import { reviewRequest } from './review';
 import type { Pack } from './model';
 import { DecisionTrace } from './DecisionTrace';
+import { KnowledgeAdministration } from './KnowledgeAdministration';
 import { IdentityAdministration } from './IdentityAdministration';
 import type { RuleTrace, OutputTrace } from './trace';
 
@@ -32,6 +33,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   const [credentialInput,setCredentialInput]=useState('');
   const [credential,setCredential]=useState('');
   const [actorId,setActorId]=useState('');
+  const [knowledgeActions,setKnowledgeActions]=useState<string[]>([]);
   const [queues,setQueues]=useState<Queue[]>([]);
   const [nextCursor,setNextCursor]=useState<string|null>(null);
   const [selected,setSelected]=useState('');
@@ -56,7 +58,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   function clearBatch(){setBatchSelection([]);setBatchReason('');setRetainedBatchRequest(null);setBatchResult(null);setBatchRunning(false);}
   function clearSession(message=''){
     pending.current?.abort();pending.current=null;setBusy(false);
-    setCredential('');setCredentialInput('');setActorId('');setQueues([]);setNextCursor(null);
+    setCredential('');setCredentialInput('');setActorId('');setKnowledgeActions([]);setQueues([]);setNextCursor(null);
     setSelected('');setDetail(null);clearReviewForm();clearBatch();setNotice('');setError(message);
   }
   async function request(path:string,token:string,controller:AbortController,body?:string){
@@ -104,11 +106,11 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
     const controller=begin();
     try{
       const response=await request('/api/review-session',candidate,controller);
-      const data=await response.json() as {actorId:string};
+      const data=await response.json() as {actorId:string;knowledgeActions?:string[]};
       const administrator=data.actorId==='synthetic-local:administrator';
       const next=administrator?{queues:[],nextPageCursor:null}:await (await request('/api/review/work-queues',candidate,controller)).json() as QueuePage;
       if(active(controller)){
-        setCredential(candidate);setActorId(data.actorId);setQueues(next.queues);setNextCursor(next.nextPageCursor??null);
+        setCredential(candidate);setActorId(data.actorId);setKnowledgeActions(data.knowledgeActions??[]);setQueues(next.queues);setNextCursor(next.nextPageCursor??null);
         setSelected('');setDetail(null);clearReviewForm();clearBatch();setNotice(text.authenticated);
       }
     }catch(exception){failure(exception,controller);}
@@ -209,6 +211,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       </div>
       {notice&&<p className="review-notice" role="status">{notice}</p>}
       {error&&<div className="error" role="alert"><strong>{de.errorHeading}</strong><p>{error}</p></div>}
+      {knowledgeActions.length>0&&<KnowledgeAdministration credential={credential} actions={knowledgeActions} packs={packs} onUnauthorized={clearSession}/>}
       {administrator?<IdentityAdministration credential={credential} onUnauthorized={clearSession}/>:<>
       <div className="actions"><button type="button" className="secondary" disabled={busy} onClick={()=>loadPage(null)}>{text.refreshQueues}</button>
         {nextCursor&&<button type="button" className="secondary" disabled={busy} onClick={()=>loadPage(nextCursor)}>{text.nextPage}</button>}
