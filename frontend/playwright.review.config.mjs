@@ -47,6 +47,7 @@ export default defineConfig({
       SyntheticReview__Users__corrector__Actions__2: 'CORRECT',
       SyntheticReview__Users__corrector__Actions__3: 'ACCEPT',
       SyntheticReview__Users__corrector__Actions__4: 'EXPORT',
+      SyntheticReview__Users__corrector__Actions__5: 'CLARIFY',
       SyntheticReview__Users__corrector__CaseIds__0: correctionCaseId,
       SyntheticReview__Users__bob__Credential: otherCredential,
       SyntheticReview__Users__bob__Actions__0: 'READ',

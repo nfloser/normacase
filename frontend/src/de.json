@@ -370,6 +370,20 @@
     "changedBy": "Korrigiert von",
     "correctionReason": "Aufgezeichnete Korrekturbegründung",
     "inputRevision": "Neue Eingaberevision",
-    "conflict": "Der Fall wurde zwischenzeitlich geändert. Lade den aktuellen Fallstand und prüfe die Angaben erneut."
+    "conflict": "Der Fall wurde zwischenzeitlich geändert. Lade den aktuellen Fallstand und prüfe die Angaben erneut.",
+    "clarifications": "Gezielte Klärungsanfragen",
+    "loadClarifications": "Klärungsanfragen laden",
+    "requestClarification": "Angaben oder Nachweise nachfordern",
+    "fieldTarget": "Angabe nachfordern",
+    "evidenceTarget": "Nachweis nachfordern",
+    "clarificationReason": "Begründung der Klärungsanfrage",
+    "sendClarification": "Klärungsanfrage speichern",
+    "resolveClarification": "Klärungsanfrage mit dieser Korrektur beantworten",
+    "noClarification": "Keine Klärungsanfrage zuordnen",
+    "clarificationStatuses": {
+      "OPEN": "Offen",
+      "RESOLVED": "Durch neue Fallrevision beantwortet",
+      "SUPERSEDED": "Frühere Fallrevision · nicht beantwortet"
+    }
   }
 }

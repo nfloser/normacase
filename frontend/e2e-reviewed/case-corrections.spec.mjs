@@ -17,6 +17,11 @@ test('correct an incomplete intake, inspect readonly history and reapprove throu
  const revisions=region.getByRole('region',{name:'Fallrevisionen und Korrekturen'});
  const form=revisions.getByRole('group',{name:'Angaben als neue Revision korrigieren'});
  await expect(form).toBeVisible();
+ await revisions.getByRole('checkbox',{name:/^Angabe nachfordern:/}).first().check();
+ await revisions.getByLabel('Begründung der Klärungsanfrage').fill('Synthetische gezielte Browser-Rückfrage');
+ await revisions.getByRole('button',{name:'Klärungsanfrage speichern'}).click();
+ await expect(revisions.getByText('Synthetische gezielte Browser-Rückfrage',{exact:true}).first()).toBeVisible();
+ await expect(form.getByLabel('Klärungsanfrage mit dieser Korrektur beantworten')).not.toHaveValue('');
  const supported=JSON.parse(readFileSync('../examples/cases/demo-g-supported.json','utf8'));
  const catalog=await (await page.request.get('/api/packs')).json();
  const pack=catalog.find(item=>item.packId==='synthetic.demo-g');
@@ -40,6 +45,8 @@ test('correct an incomplete intake, inspect readonly history and reapprove throu
  await region.getByLabel('Begründung der Review-Entscheidung').fill('Synthetische Freigabe der neuen Revision');
  await region.getByRole('button',{name:'Systemergebnis übernehmen',exact:true}).click();
  await expect(region.getByText('Freigegeben',{exact:true}).first()).toBeVisible();
+ await region.getByRole('button',{name:'Klärungsanfragen laden'}).click();
+ await expect(region.getByText('Durch neue Fallrevision beantwortet',{exact:true})).toBeVisible();
  const delivered=await page.request.post('/api/review/work-cases/'+caseId+'/outbound',{headers:{Authorization:'Bearer '+credential},
   data:{messageId:'browser-corrected-result',correlationId:'browser-correction',destinationId:'synthetic-inbox',
    expectedCaseRevision:'2',expectedProcessRevision:'2',expectedAuditRevision:'2'}});
