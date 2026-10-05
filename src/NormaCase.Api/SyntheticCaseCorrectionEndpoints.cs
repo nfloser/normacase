@@ -17,6 +17,8 @@ internal static class SyntheticCaseCorrectionEndpoints
         SyntheticReviewEndpoints.Workflow.Id, SyntheticReviewEndpoints.Workflow.Version, ["waiting-information"]);
     private static readonly CaseCorrectionPolicy Manual = new("synthetic-manual-correction", 1,
         SyntheticReviewEndpoints.Workflow.Id, SyntheticReviewEndpoints.Workflow.Version, ["manual-review"]);
+    private static readonly CaseCorrectionPolicy Reviewed = new("synthetic-reviewed-correction", 1,
+        SyntheticReviewEndpoints.Workflow.Id, SyntheticReviewEndpoints.Workflow.Version, ["awaiting-approval","accepted","overridden"]);
     private static readonly CaseClarificationPolicy MissingQuestions = new("synthetic-missing-information", 1,
         SyntheticReviewEndpoints.Workflow.Id, SyntheticReviewEndpoints.Workflow.Version, ["waiting-information"], true);
     private static readonly CaseClarificationPolicy ReviewQuestions = new("synthetic-review-questions", 1,
@@ -24,7 +26,7 @@ internal static class SyntheticCaseCorrectionEndpoints
     private static CaseClarificationPolicy? Questions(string stateId) => stateId switch {
         "waiting-information" => MissingQuestions, "manual-review" => ReviewQuestions, _ => null };
     private static CaseCorrectionPolicy? Policy(string stateId) => stateId switch {
-        "waiting-information" => Information, "manual-review" => Manual, _ => null };
+        "waiting-information" => Information, "manual-review" => Manual, "awaiting-approval" or "accepted" or "overridden" => Reviewed, _ => null };
 
     internal static void Map(RouteGroupBuilder group, NpgsqlDataSource source, PostgresCaseReviewStore reviews,
         SyntheticLiveEntitlements entitlements, string platformVersion)
