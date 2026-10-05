@@ -9,8 +9,8 @@ CI are the acceptance evidence; completing a checkbox requires integration and r
 | Deterministic rule/knowledge core | Multiple structurally different synthetic packs, UNKNOWN/evidence semantics, exact decimals, versioned source traces and offline replay | Continue rule/domain regression coverage as new packs arrive |
 | German preview and pitch examples | German browser pitch E2E and exact-commit Windows/Linux archive CLI/API pitch rehearsal | Live presentation in the target environment |
 | Normalized upstream boundary | Strict synthetic JSON/XML host intake and append-only PostgreSQL original receipts (#153, #158) | Real institutional adapter specifications and approved access |
-| Recorded assessment, routing and queue projections | Atomic fresh assessment/process initialization, immutable original and persisted queues (#158) | Institutionally approved correction/clarification policy |
-| Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review and explicit missing-information/correction policies remain external |
+| Recorded assessment, routing and queue projections | Atomic fresh assessment/process initialization, immutable original and persisted queues (#158) | Real institution-specific correction/clarification policy; generic mechanisms are integrated (#185) |
+| Persistent human review | PostgreSQL aggregate, authenticated local synthetic actor, append-only review, strict revisions, German browser accept/override and actual database E2E (#149) | Productive identity/role/privacy review and actual institutional policy remain external; synthetic correction/clarification is complete |
 | Versioned reviewed outbound result | Exact original/review binding, strict JSON, two sinks, durable receipts and authenticated full roundtrip (#150, #152, #158) | Concrete vendor delivery contracts and approved access |
 | Local review operation | Opt-in local operation, clean database install, exact restart and pg_dump/pg_restore rehearsal (#160) | Target-specific deployment/update approval |
 | Independent security/deployment assessment | Fail-closed guards, maintained threat model, CodeQL for C#/JS/TS/Python, immutable GitHub Action pins and weekly NuGet/npm/Actions dependency updates | Target-specific operational, identity, privacy and security review remains required beyond repository acceptance |
@@ -36,10 +36,10 @@ and must not be classified as externally blocked. Track completion in
 | Technical scope | Current limitation | Required completion evidence |
 |---|---|---|
 | Distinct identities and case/action permissions | Multiple exact case/action-scoped synthetic identities, persistent audited live suspension/reactivation, immutable reconciled revision-zero baselines and separate proposal/approval roles | Approved exact live grants and account suspension are transaction-bound; backend-loss, rollback and persistent legacy rejection regressions pass (#222); productive IdP/role mapping remains external |
-| Knowledge governance | Exact validated release artifacts are retained append-only in PostgreSQL and restored by exact identity; durable proposal/distinct-review/activation history with exact hashes and retained typed evidence | Authenticated synthetic API and German governance UI are integrated; explicit exact activation consumption for new intake and original-release replay is integrated; bounded exact synthetic release import, retained release selection/content/provenance and the evidence/review/activation workflow are integrated; operational adoption remains under assessment |
-| Corrections and clarification | Intake accepts only revision 1; incomplete/manual-review paths are not complete work cycles | Append-only corrected revisions/reassessment, configurable synthetic clarification and review policy, preserved historical inputs/results |
+| Knowledge governance | Exact validated release artifacts are retained append-only in PostgreSQL and restored by exact identity; durable proposal/distinct-review/activation history with exact hashes and retained typed evidence | Authenticated synthetic API and German governance UI are integrated; explicit exact activation consumption for new intake and original-release replay is integrated; bounded exact synthetic release import, retained release selection/content/provenance and the evidence/review/activation workflow are integrated; exact intake adoption and historical replay are verified; real institutional authority remains external |
+| Corrections and clarification | Append-only consecutive input/assessment revisions; explicit information/manual/reviewed correction and targeted clarification policies; atomic resolution, German readonly history/correction UI; exact original reviewed intake/outbound replay (#232–#240) | Institution-specific policy and approved sensitive pilot data |
 | Batch review | Versioned opt-in policy, bounded unique commands, separate synthetic `BATCH` grants, authenticated API, PostgreSQL aggregate checks inside the shared HTTP authorization transaction, append-only request/result idempotency with concurrency/restart recovery, German selection/cancellation/retry UX and real browser/database proof | Institution-approved permission and role mapping for productive batch use |
-| Operational scale and installation | Local host, bounded and authorized paginated queues, native previews, restore rehearsal, privacy-safe liveness, live PostgreSQL/schema readiness and separately tested migration/runtime database roles | Documented reproducible target deployment/update, rollback/recovery and broader failure-path validation |
+| Operational scale and installation | Bounded authorized queues, native Windows/Linux runtime/assets, least-privilege PostgreSQL roles and readiness; exact immutable package staging, explicit stopped-service activation, previous-to-candidate native update and original/corrected/clarification backup/restore/recovery rehearsal (#241) | Target-specific TLS, retention, RPO/RTO, identity/privacy/security and deployment approval |
 
 Institutional role mappings, actual medical/process policies, vendor contracts and
 external approvals remain external. Their generic configurable mechanisms remain
@@ -50,15 +50,18 @@ platform scope and is not introduced as a requirement for completion.
 
 ## Access-independent completion boundary
 
-At this repository state, the synthetic integration path is proved, but generic
-platform work remains in #184, #185 and #187. The generic identity slice #183 is complete. Exact case/action authorization
-and account suspension are transaction-bound in the review/intake/outbound paths.
-The same failure boundary now covers configured Knowledge administration roles,
-including retained evidence and activation mutations. Durable Knowledge approval/evidence and explicit activation
-consumption and exact release import/selection are integrated; correction and clarification
-cycles, and reproducible operational update/rollback behavior remain. These mechanisms
-can continue with synthetic identities, policies and packs; they are not blocked by
-missing MD data.
+The institution-independent scopes #183 (identity), #184 (Knowledge), #185
+(correction/clarification), #186 (batch) and #187 (operations) have executable
+application, persistence, API, German workbench and native-operation acceptance.
+Repository CI and separately recorded technical reviews are the evidence. Exact
+account/case/action authority and append-only history are transaction-bound; new
+input revisions require fresh assessment and human approval. Original input,
+Knowledge, review and outbound replay remains exact across update and restore.
+
+The operational package is still explicitly local and synthetic. The completed
+engineering boundary does not authorize real institutional access or a productive
+sensitive-data deployment. Optional AI extraction is not part of this deterministic
+platform completion boundary.
 
 External authority becomes necessary for concrete institutional interface mappings,
 productive identity/role assignments, binding medical/process policy, target-specific

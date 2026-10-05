@@ -97,7 +97,12 @@ def check(archive, rid, commit):
                                  .read_text(encoding="utf-8"))["runtimeOptions"]
             assert options.get("includedFrameworks"), "Self-contained runtime configuration missing"
             assert "framework" not in options and "frameworks" not in options
-        environment = {**os.environ, "DOTNET_ROOT": str(root / "absent-runtime"),
+        # Preview verification never inherits an operator's persistent database credentials.
+        clean_environment = {key: value for key,value in os.environ.items()
+                             if not key.lower().startswith(("syntheticreview__", "syntheticreview:",
+                                                            "connectionstrings__syntheticreview", "connectionstrings:syntheticreview"))}
+        environment = {**clean_environment, "SyntheticReview__Enabled": "false",
+                       "SyntheticReview__PersistenceEnabled": "false", "DOTNET_ROOT": str(root / "absent-runtime"),
                        "DOTNET_ROOT_X64": str(root / "absent-runtime"),
                        "DOTNET_MULTILEVEL_LOOKUP": "0", "ASPNETCORE_ENVIRONMENT": "Production"}
         cli = root / "cli" / ("NormaCase.Cli" + suffix)

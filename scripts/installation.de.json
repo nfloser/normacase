@@ -1,0 +1,15 @@
+{
+  "description": "Geprüfte NormaCase-Pakete getrennt installieren und ausdrücklich aktivieren.",
+  "stage": "Paket prüfen und neben vorhandenen Versionen bereitstellen",
+  "activate": "Geprüfte Version bei beendetem Dienst aktivieren",
+  "run": "Aktivierte Version mit der Betreiberumgebung starten",
+  "status": "Aktivierten Versionsstand anzeigen",
+  "root": "Installationsverzeichnis",
+  "archive": "Unverändertes Paketarchiv mit Prüfsummendatei",
+  "commit": "Vollständiger geprüfter Quellcommit",
+  "rid": "Passende Laufzeitplattform",
+  "failed": "Die Installation konnte nicht ausgeführt werden. Prüfe Paket, Prüfsumme, Berechtigungen und ob der Dienst beendet ist. Bestehende Versionen und Datenbanken werden nicht überschrieben.",
+  "staged": "Version geprüft und getrennt bereitgestellt:",
+  "activated": "Version aktiviert:",
+  "none": "Es ist noch keine Version aktiviert."
+}
