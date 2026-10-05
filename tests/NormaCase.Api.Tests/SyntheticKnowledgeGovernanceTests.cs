@@ -52,6 +52,9 @@ public sealed class SyntheticKnowledgeGovernanceTests
             }
             Assert.Equal(HttpStatusCode.BadRequest, (await alice.PostAsJsonAsync("/api/review/knowledge/evidence", new { kind = "SOURCE", title = "Synthetic", content = "text", recordedByActorId = "spoofed" })).StatusCode);
             Assert.Equal(HttpStatusCode.BadRequest, (await alice.PostAsJsonAsync("/api/review/knowledge/evidence", new { kind = "SOURCE", title = "Synthetic", content = new string('ä', 32769) })).StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, (await alice.PostAsync("/api/review/knowledge/evidence",
+                new StringContent("""{"kind":"SOURCE","title":"Synthetic","content":"\ud800"}""", System.Text.Encoding.UTF8, "application/json"))).StatusCode);
+
             var request = new { packId = pack.GetProperty("packId").GetString(), releaseId = pack.GetProperty("releaseId").GetString(), sourceReference = evidenceIds[0], impactReference = evidenceIds[1], testReference = evidenceIds[2] };
             Assert.Equal(HttpStatusCode.Forbidden, (await bob.PostAsJsonAsync(Path, request)).StatusCode);
             Assert.Equal(HttpStatusCode.BadRequest, (await alice.PostAsJsonAsync(Path, new { request.packId, request.releaseId, request.sourceReference, request.impactReference, request.testReference, proposerActorId = "spoofed" })).StatusCode);

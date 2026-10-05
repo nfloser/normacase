@@ -179,8 +179,14 @@ internal static class SyntheticKnowledgeGovernance
         return new(time.Ticks - time.Ticks % 10, TimeSpan.Zero);
     }
     private static string Text(JsonElement root, string key)
-        => root.GetProperty(key).ValueKind == JsonValueKind.String
-            ? root.GetProperty(key).GetString()! : throw new ArgumentException("Invalid governance request.");
+    {
+        try
+        {
+            return root.GetProperty(key).ValueKind == JsonValueKind.String
+                ? root.GetProperty(key).GetString()! : throw new ArgumentException("Invalid governance request.");
+        }
+        catch (InvalidOperationException) { throw new ArgumentException("Invalid governance text encoding."); }
+    }
     private static async Task<JsonDocument?> Body(HttpRequest request, string[] keys, CancellationToken token, int maximumBytes = 4096)
     {
         if (!request.HasJsonContentType() || request.ContentLength > maximumBytes) return null;
