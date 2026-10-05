@@ -53,8 +53,8 @@ platform scope and is not introduced as a requirement for completion.
 At this repository state, the synthetic integration path is proved, but generic
 platform work remains in #183, #184, #185 and #187. Exact case/action authorization
 and account suspension are transaction-bound in the review/intake/outbound paths.
-The same failure boundary still needs acceptance review for configured Knowledge
-administration roles. Durable Knowledge approval/evidence and explicit activation
+The same failure boundary now covers configured Knowledge administration roles,
+including retained evidence and activation mutations. Durable Knowledge approval/evidence and explicit activation
 consumption are integrated; release authoring/import, correction and clarification
 cycles, and reproducible operational update/rollback behavior remain. These mechanisms
 can continue with synthetic identities, policies and packs; they are not blocked by

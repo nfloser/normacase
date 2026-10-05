@@ -48,3 +48,8 @@ public sealed class IdentityAccessStorageException : Exception
     public IdentityAccessStorageException()
         : base("Identity access storage operation failed.") { }
 }
+
+public sealed class IdentityAccessDeniedException : Exception
+{
+    public IdentityAccessDeniedException() : base("Identity access is suspended.") { }
+}

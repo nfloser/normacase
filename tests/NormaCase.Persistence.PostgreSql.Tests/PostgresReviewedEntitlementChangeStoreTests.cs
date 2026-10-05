@@ -147,12 +147,8 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         release.SetResult();
         Assert.True(await operation);
         Assert.True((await suspension).Suspended);
-        await store.ExecuteWithEffectiveLockAsync(actor, (state, _) =>
-        {
-            Assert.Empty(state.Actions);
-            Assert.Empty(state.CaseIds);
-            return Task.FromResult(true);
-        });
+        await Assert.ThrowsAsync<IdentityAccessDeniedException>(() => store.ExecuteWithEffectiveLockAsync(actor,
+            (_, _) => Task.FromResult(true)));
     }
 
     private static EntitlementChangeProposal Proposal(

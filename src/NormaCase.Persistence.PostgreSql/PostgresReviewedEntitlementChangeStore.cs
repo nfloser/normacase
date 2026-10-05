@@ -203,7 +203,7 @@ public sealed class PostgresReviewedEntitlementChangeStore(
             {
                 access.Parameters.AddWithValue(actorId);
                 if (await access.ExecuteScalarAsync(cancellationToken) is true)
-                    state = new(actorId, state.Revision, [], []);
+                    throw new IdentityAccessDeniedException();
             }
             var result = await PostgresAuthorizedOperation.RunAsync(
                 new(dataSource, connection, transaction, state), () => action(state, cancellationToken));

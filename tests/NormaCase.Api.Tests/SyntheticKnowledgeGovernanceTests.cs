@@ -102,6 +102,28 @@ public sealed class SyntheticKnowledgeGovernanceTests
     }
 
     [Fact]
+    public async Task Suspended_Knowledge_subject_cannot_read_or_append_governance()
+    {
+        var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if (string.IsNullOrWhiteSpace(connection)) return;
+        await using var source = NpgsqlDataSource.Create(connection);
+        await using (var reset = source.CreateCommand("DROP SCHEMA IF EXISTS normacase CASCADE"))
+            await reset.ExecuteNonQueryAsync();
+        await using var host = Factory(connection);
+        using var client = Client(host, Alice);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync(Path)).StatusCode);
+        await new NormaCase.Persistence.PostgreSql.PostgresIdentityAccessAdministrationStore(source).ChangeAsync(
+            new("synthetic-local:user-alice", 0, true, "synthetic-local:administrator", DateTimeOffset.UnixEpoch, "Synthetische Sperre"));
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(Path)).StatusCode);
+        using var append = await client.PostAsJsonAsync("/api/review/knowledge/evidence",
+            new { kind = "SOURCE", title = "Synthetisch", content = "Kein erlaubter neuer Beleg" });
+        Assert.Equal(HttpStatusCode.Unauthorized, append.StatusCode);
+        Assert.Contains("Anmeldung", await append.Content.ReadAsStringAsync());
+        await using var count = source.CreateCommand("SELECT count(*) FROM normacase.knowledge_evidence_artifacts");
+        Assert.Equal(0L, await count.ExecuteScalarAsync());
+    }
+
+    [Fact]
     public void Unknown_and_self_review_assignments_fail_closed_at_startup()
     {
         using var same = Factory("Host=127.0.0.1;Database=unused", "synthetic-local:user-alice");

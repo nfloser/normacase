@@ -10,8 +10,9 @@ public sealed class PostgresKnowledgeEvidenceStore(NpgsqlDataSource dataSource) 
         ArgumentNullException.ThrowIfNull(artifact);
         try
         {
-            await using var connection = await dataSource.OpenConnectionAsync(token);
-            await using var transaction = await connection.BeginTransactionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(dataSource, token);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             await using (var insert = new NpgsqlCommand("""
                 INSERT INTO normacase.knowledge_evidence_artifacts
                 (evidence_id,kind,title,content,content_sha256,recorded_by_actor_id,recorded_at_utc)
@@ -26,7 +27,7 @@ public sealed class PostgresKnowledgeEvidenceStore(NpgsqlDataSource dataSource) 
                 ?? throw new KnowledgeEvidenceIntegrityException();
             if (stored != artifact) throw new KnowledgeGovernanceConflictException();
             token.ThrowIfCancellationRequested();
-            await transaction.CommitAsync(token);
+            await session.CommitAsync(token);
             return stored;
         }
         catch (NpgsqlException) { throw new KnowledgeGovernanceStorageException(); }
@@ -36,7 +37,8 @@ public sealed class PostgresKnowledgeEvidenceStore(NpgsqlDataSource dataSource) 
         KnowledgeGovernanceValidation.Text(evidenceId);
         try
         {
-            await using var connection = await dataSource.OpenConnectionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(dataSource, token);
+            var connection = session.Connection;
             return await Read(connection, null, evidenceId, token);
         }
         catch (NpgsqlException) { throw new KnowledgeGovernanceStorageException(); }

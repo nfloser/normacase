@@ -128,11 +128,12 @@ public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource da
     {
         try
         {
-            await using var connection = await dataSource.OpenConnectionAsync(token);
-            await using var transaction = await connection.BeginTransactionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(dataSource, token);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             var result = await operation(connection, transaction);
             token.ThrowIfCancellationRequested();
-            await transaction.CommitAsync(token);
+            await session.CommitAsync(token);
             return result;
         }
         catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.UniqueViolation)
@@ -143,7 +144,8 @@ public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource da
     {
         try
         {
-            await using var connection = await dataSource.OpenConnectionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(dataSource, token);
+            var connection = session.Connection;
             return await operation(connection);
         }
         catch (NpgsqlException) { throw new KnowledgeGovernanceStorageException(); }

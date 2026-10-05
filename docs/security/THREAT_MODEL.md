@@ -289,3 +289,12 @@ evidence; metadata is server-owned. Exact content hashes do not authenticate sou
 quality or defend against privileged wholesale database insertion/schema compromise.
 Legacy reference-only history remains visible without being silently promoted into
 new approval eligibility. See [Knowledge evidence retention](../architecture/KNOWLEDGE_EVIDENCE_RETENTION.md).
+
+Synthetic Knowledge requests also retain the per-actor operation lock through their
+shared PostgreSQL commit. Evidence and governance stores cannot reconnect after lease
+loss. Suspension is rechecked inside that transaction, including for a request already
+authenticated. A late suspension denial returns the normal bounded German 401 response
+without exception text; clients clear their authenticated state. Knowledge roles remain
+explicit separate assignments and are never inferred from case entitlements. Real
+PostgreSQL tests prove failed-backend rollback and a one-connection operation with no
+case grants; API/browser journeys retain separate proposer/reviewer/activator checks.

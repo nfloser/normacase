@@ -112,13 +112,17 @@ public static class DemoHost
 
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
-            context.Response.StatusCode = 500;
+            var denied = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error
+                is IdentityAccessDeniedException;
+            var code = denied ? "review_authentication_required" : "internal_error";
+            context.Response.StatusCode = denied ? 401 : 500;
+            if (denied) context.Response.Headers.WWWAuthenticate = "Bearer";
             context.Response.Headers.CacheControl = "no-store";
             context.Response.Headers["X-Content-Type-Options"] = "nosniff";
             context.Response.Headers["Referrer-Policy"] = "no-referrer";
             context.Response.Headers["X-Frame-Options"] = "DENY";
             context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
-            await context.Response.WriteAsJsonAsync(new { code = "internal_error", message = ApiMessages.Get("internal_error") });
+            await context.Response.WriteAsJsonAsync(new { code, message = ApiMessages.Get(code) });
         }));
         app.Use(async (context, next) =>
         {
