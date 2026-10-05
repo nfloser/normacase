@@ -197,6 +197,14 @@ public sealed class PostgresReviewedEntitlementChangeStore(
             await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
             await LockActor(connection, transaction, actorId, cancellationToken);
             var state = await LoadEffectiveAsync(connection, transaction, actorId, cancellationToken);
+            await using (var access = new NpgsqlCommand(
+                "SELECT suspended FROM normacase.identity_access_audit WHERE actor_id=$1 ORDER BY revision DESC LIMIT 1;",
+                connection, transaction))
+            {
+                access.Parameters.AddWithValue(actorId);
+                if (await access.ExecuteScalarAsync(cancellationToken) is true)
+                    state = new(actorId, state.Revision, [], []);
+            }
             var result = await PostgresAuthorizedOperation.RunAsync(
                 new(dataSource, connection, transaction, state), () => action(state, cancellationToken));
             await transaction.CommitAsync(cancellationToken);

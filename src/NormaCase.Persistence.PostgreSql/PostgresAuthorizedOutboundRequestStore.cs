@@ -19,6 +19,10 @@ public sealed class PostgresAuthorizedOutboundRequestStore(NpgsqlDataSource sour
             ?? throw new InvalidOperationException("Verified authorized transaction required.");
         if (!ReferenceEquals(source, context.Source))
             throw new InvalidOperationException("Authorized outbound cannot cross data sources.");
+        if (!context.State.Actions.Contains("READ", StringComparer.Ordinal)
+            || !context.State.Actions.Contains("EXPORT", StringComparer.Ordinal)
+            || !context.State.CaseIds.Contains(request.Result.CaseId, StringComparer.Ordinal))
+            throw new OutboundResultBindingException();
         var json = ReviewedCaseResultJson.Serialize(request.Result);
         var hash = PostgresBatchReviewRequestStore.Hash(json);
         try

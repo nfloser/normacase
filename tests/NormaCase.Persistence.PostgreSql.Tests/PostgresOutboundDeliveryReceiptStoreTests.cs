@@ -19,7 +19,7 @@ public sealed class PostgresOutboundDeliveryReceiptStoreTests
         var request = new OutboundDeliveryRequest(id, "synthetic-file", Sample(id));
         var actor = "synthetic-local:file-" + Guid.NewGuid().ToString("N");
         var entitlements = new PostgresReviewedEntitlementChangeStore(source);
-        await entitlements.ReconcileBaselineAsync(new(actor, 0, ["READ", "EXPORT"], [request.Result.CaseId.Value]));
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, ["READ", "EXPORT"], [request.Result.CaseId]));
         var commands = new PostgresAuthorizedOutboundRequestStore(source);
         await Assert.ThrowsAsync<InvalidOperationException>(() => commands.RegisterAsync(request, DateTimeOffset.UnixEpoch));
         await Assert.ThrowsAsync<InvalidOperationException>(() => entitlements.ExecuteWithEffectiveLockAsync<int>(actor,

@@ -122,6 +122,39 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         Assert.Equal(1, (await store.LoadEffectiveAsync(actor)).Revision);
     }
 
+    [Fact]
+    public async Task Account_suspension_serializes_with_operation_and_rechecks_after_authentication()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var actor = "synthetic-local:suspend-" + Guid.NewGuid().ToString("N");
+        var store = new PostgresReviewedEntitlementChangeStore(source);
+        await store.ReconcileBaselineAsync(new(actor, 0, ["READ"], ["demo-g-supported"]));
+        var access = new PostgresIdentityAccessAdministrationStore(source);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var operation = store.ExecuteWithEffectiveLockAsync(actor, async (state, _) =>
+        {
+            Assert.NotEmpty(state.Actions);
+            entered.SetResult();
+            await release.Task.WaitAsync(TimeSpan.FromSeconds(15));
+            return true;
+        });
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        var suspension = access.ChangeAsync(new(actor, 0, true, "synthetic-local:administrator",
+            DateTimeOffset.UnixEpoch, "Synthetische Sperre"));
+        Assert.False(suspension.IsCompleted);
+        release.SetResult();
+        Assert.True(await operation);
+        Assert.True((await suspension).Suspended);
+        await store.ExecuteWithEffectiveLockAsync(actor, (state, _) =>
+        {
+            Assert.Empty(state.Actions);
+            Assert.Empty(state.CaseIds);
+            return Task.FromResult(true);
+        });
+    }
+
     private static EntitlementChangeProposal Proposal(
         string changeId, string actor, long revision, string proposer, string caseId) => new(
             changeId, actor, revision, ["READ", "ACCEPT"], [caseId], proposer,

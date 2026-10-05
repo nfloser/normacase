@@ -40,7 +40,9 @@ A connection loss therefore rolls back all protected writes instead of allowing 
 stale callback to reconnect and commit separately. A protected operation uses one
 pooled connection, including bounded batches. Concurrent revocation
 therefore orders entirely before or after the operation; a stale pre-check cannot cross
-the change boundary. Read-only projections remain bounded by the current exact case set.
+the change boundary. Read-only projections remain bounded by the current exact case set. Account suspension
+uses the same per-actor lock and is rechecked inside the operation transaction; a
+request authenticated before a suspension cannot enter with stale live authority.
 File delivery is deliberately outside the database transaction: an exact immutable
 outbound command (payload hash, authenticated actor, entitlement revision and UTC time)
 is committed under the authorization lock before any file side effect. If that commit

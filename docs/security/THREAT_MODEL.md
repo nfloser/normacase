@@ -190,7 +190,13 @@ not accepted, and stale approvals fail under a per-target transaction lock. An i
 revision-zero baseline makes configuration drift fail startup. Approved snapshots are
 the live source for case/action checks. Mutations retain the same per-target transaction
 lock from snapshot loading through the protected commit, so approval/revocation cannot
-cross a stale time-of-check/time-of-use window. See
+cross a stale time-of-check/time-of-use window. Nested protected PostgreSQL stores use
+that exact backend and transaction; connection loss rolls them back rather than
+reconnecting. Account suspension uses the same actor lock and is rechecked after
+acquiring it, closing the earlier authentication-to-write gap. Persistent legacy
+wildcard credentials are rejected. File dispatch begins only after an exact immutable
+authorized outbound command commits; committed commands may complete after later
+revocation. See
 [identity access administration](../architecture/IDENTITY_ACCESS_ADMINISTRATION.md).
 
 The German administration view is not an authorization boundary. It appears only for

@@ -43,7 +43,7 @@ public sealed class PostgresIdentityAccessAdministrationStore(
             await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
             await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
             await using (var actorLock = new NpgsqlCommand(
-                "SELECT pg_advisory_xact_lock(hashtextextended($1, 0));",
+                "SELECT pg_advisory_xact_lock(hashtextextended($1, 117));",
                 connection, transaction))
             {
                 actorLock.Parameters.AddWithValue(change.ActorId);
