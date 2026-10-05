@@ -366,7 +366,8 @@
     "policy": "Korrekturverfahren",
     "policies": {
       "synthetic-information-completion": "Fehlende Angaben nachreichen",
-      "synthetic-manual-correction": "Angaben nach manueller Prüfung korrigieren"
+      "synthetic-manual-correction": "Angaben nach manueller Prüfung korrigieren",
+      "synthetic-reviewed-correction": "Bereits geprüfte Angaben als neue Revision korrigieren"
     },
     "unavailable": "Für diesen Fallstand ist keine Eingabekorrektur verfügbar.",
     "changedBy": "Korrigiert von",

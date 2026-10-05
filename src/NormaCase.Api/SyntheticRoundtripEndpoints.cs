@@ -74,7 +74,12 @@ internal static class SyntheticRoundtripEndpoints
                     state = await reviews.InitializeRecordedAsync(new(record, 1, routed.Process,
                         AssessmentAuditTrail.Start(AssessmentAuditEvent.AssessmentCreated(1, record.AssessmentId, record.RecordedAtUtc, "synthetic-intake"))), lockedToken);
                 }
-                return Results.Json(new { acceptance = receipt.Acceptance.ToString().ToUpperInvariant(), workCase = SyntheticReviewEndpoints.Detail(state, entitlement) });
+                var historical = state.AssessmentCaseRevision != original.Provenance.UpstreamRevision;
+                if (historical)
+                    state = await reviews.LoadLatestForCaseRevisionAsync(original.CaseId, original.Provenance.UpstreamRevision, lockedToken)
+                        ?? throw new CaseReviewIntegrityException();
+                return Results.Json(new { acceptance = receipt.Acceptance.ToString().ToUpperInvariant(),
+                    workCase = SyntheticReviewEndpoints.Detail(state, entitlement, historical) });
                 }, token);
             }
             catch (IntakeConflictException) { return DemoHost.Error("review_conflict", 409); }
@@ -82,6 +87,23 @@ internal static class SyntheticRoundtripEndpoints
             catch (Exception exception) when (exception is JsonException or XmlException or FormatException or ArgumentException or OverflowException or DecoderFallbackException)
             { return DemoHost.Error("invalid_input", 400); }
         });
+        group.MapGet("/work-cases/{caseId}/outbound/{destinationId}/{messageId}",
+            async(string caseId,string destinationId,string messageId,HttpContext context,CancellationToken token)=>{
+                try
+                {
+                    return await entitlements.ExecuteAuthorizedAsync<IResult>(SyntheticReviewAuthentication.ResolveActor(context.User),
+                        async(grant,locked)=>{
+                            if(!SyntheticReviewEndpoints.PermittedCaseId(caseId)||!grant.Allows(caseId,"READ"))
+                                return DemoHost.Error("unknown_work_case",404);
+                            if(!grant.Allows(caseId,"EXPORT"))return DemoHost.Error("review_forbidden",403);
+                            var receipt=await outbound.FindAsync(new(messageId,destinationId),locked);
+                            if(receipt is null||receipt.Result.CaseId!=caseId)return DemoHost.Error("unknown_work_case",404);
+                            return Results.Json(new{status=receipt.Status.ToString().ToUpperInvariant(),receipt.IsCommitted,
+                                receipt.TransportReference,resultJson=ReviewedCaseResultJson.Serialize(receipt.Result)});
+                        },token);
+                }
+                catch(ArgumentException){return DemoHost.Error("invalid_input",400);}
+            });
         group.MapPost("/work-cases/{caseId}/outbound", async (string caseId, HttpContext context, CancellationToken token) =>
         {
             try

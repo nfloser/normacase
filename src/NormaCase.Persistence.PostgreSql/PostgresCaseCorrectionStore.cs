@@ -125,6 +125,25 @@ public sealed partial class PostgresCaseReviewStore : ICaseCorrectionTransaction
         catch (NpgsqlException) { throw new CaseReviewStorageException(); }
     }
 
+    public async Task<CaseReviewState?> LoadLatestForCaseRevisionAsync(CaseId caseId, long caseRevision, CancellationToken token = default)
+    {
+        if (caseId.IsEmpty || caseRevision < 1) throw new ArgumentException("Explicit input revision required.");
+        try
+        {
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            await Lock(session.Connection, session.Transaction, caseId, token);
+            await Read(session.Connection, session.Transaction, caseId, token);
+            await using var query = new NpgsqlCommand("""
+                SELECT state_json::text FROM normacase.case_review_versions
+                WHERE case_id=$1 AND (state_json->>'assessmentCaseRevision')::bigint=$2 ORDER BY version DESC LIMIT 1;
+                """, session.Connection, session.Transaction);
+            query.Parameters.AddWithValue(caseId.Value); query.Parameters.AddWithValue(caseRevision);
+            var json=(string?)await query.ExecuteScalarAsync(token);
+            return json is null?null:CaseReviewStateJson.Deserialize(json,resolver);
+        }
+        catch(NpgsqlException){throw new CaseReviewStorageException();}
+    }
+
     private async Task VerifyCorrection(NpgsqlConnection connection, NpgsqlTransaction transaction,
         CaseReviewState previous, CaseReviewState next, long version, CancellationToken token)
     {
