@@ -76,19 +76,24 @@ public sealed class PostgresNormalizedIntakeStore(NpgsqlDataSource source) : INo
         {
             await using var session = await PostgresOperationSession.OpenAsync(source, token);
             var connection = session.Connection;
+            return await LoadForCaseOnConnectionAsync(connection, session.Transaction, caseId, token);
+        }
+        catch (NpgsqlException) { throw new IntakeStorageException(); }
+    }
+    internal static async Task<NormalizedIntakeRecord?> LoadForCaseOnConnectionAsync(NpgsqlConnection connection,
+        NpgsqlTransaction transaction, NormaCase.Domain.Cases.CaseId caseId, CancellationToken token)
+    {
             string system; string upstream; long revision;
-            await using (var command = new NpgsqlCommand("SELECT s.source_system_id,s.upstream_case_id,max(r.upstream_revision) FROM normacase.intake_streams s JOIN normacase.intake_records r USING(source_system_id,upstream_case_id) WHERE s.case_id=$1 GROUP BY s.source_system_id,s.upstream_case_id", connection))
+            await using (var command = new NpgsqlCommand("SELECT s.source_system_id,s.upstream_case_id,max(r.upstream_revision) FROM normacase.intake_streams s JOIN normacase.intake_records r USING(source_system_id,upstream_case_id) WHERE s.case_id=$1 GROUP BY s.source_system_id,s.upstream_case_id", connection, transaction))
             {
                 command.Parameters.AddWithValue(caseId.Value);
                 await using var reader = await command.ExecuteReaderAsync(token);
                 if (!await reader.ReadAsync(token)) return null;
                 system = reader.GetString(0); upstream = reader.GetString(1); revision = reader.GetInt64(2);
             }
-            return await Read(connection, null, system, upstream, revision, token);
-        }
-        catch (NpgsqlException) { throw new IntakeStorageException(); }
+            return await Read(connection, transaction, system, upstream, revision, token);
     }
-    private static async Task<NormalizedIntakeRecord?> Read(NpgsqlConnection connection, NpgsqlTransaction? transaction, string system, string upstream, long revision, CancellationToken token)
+    internal static async Task<NormalizedIntakeRecord?> Read(NpgsqlConnection connection, NpgsqlTransaction? transaction, string system, string upstream, long revision, CancellationToken token)
     {
         await using var command = new NpgsqlCommand("SELECT r.record_json::text,r.record_sha256,s.case_id,s.case_type_id FROM normacase.intake_records r JOIN normacase.intake_streams s USING(source_system_id,upstream_case_id) WHERE r.source_system_id=$1 AND r.upstream_case_id=$2 AND r.upstream_revision=$3", connection, transaction);
         command.Parameters.AddWithValue(system); command.Parameters.AddWithValue(upstream); command.Parameters.AddWithValue(revision);
