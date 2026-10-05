@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { randomUUID, createHash } from 'node:crypto';
 async function login(page,credential){
  await page.goto('/');
  const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
@@ -9,6 +11,17 @@ async function login(page,credential){
 test('distinct synthetic users propose review and activate exact Knowledge in German',async({page,browser})=>{
  const proposer=await login(page,process.env.NORMACASE_REVIEW_E2E_CREDENTIAL);
  await expect(proposer.getByRole('heading',{name:'Wissen verwalten'})).toBeVisible();
+ const importedPackId='browser-import-'+randomUUID(),importedReleaseId='browser-release-1';
+ const exactPack=readFileSync(new URL('../../knowledge/demo-c/pack.json',import.meta.url),'utf8')
+  .replace(/("packId"\s*:\s*)"synthetic.demo-c"/,'$1"'+importedPackId+'"')
+  .replace(/("releaseId"\s*:\s*)"[^"]*"/,'$1"'+importedReleaseId+'"')+'\n  ';
+ const file=proposer.getByLabel('Synthetischen Wissens-Release einspielen',{exact:true});
+ await expect(file).toBeEnabled();
+ await file.setInputFiles({name:'synthetic-release.json',mimeType:'application/json',buffer:Buffer.from(exactPack,'utf8')});
+ await expect(proposer.getByRole('status')).toHaveText('Wissens-Release unveränderlich gespeichert.');
+ expect(await proposer.locator('.knowledge-release-content').textContent()).toBe(exactPack);
+ await expect(proposer.locator('dd').filter({hasText:createHash('sha256').update(exactPack,'utf8').digest('hex')})).toHaveCount(1);
+
  await proposer.getByLabel('Bezeichnung der Quelle',{exact:true}).fill('source:browser-synthetic');
  await proposer.getByLabel('Bezeichnung der Auswirkungsanalyse',{exact:true}).fill('impact:browser-synthetic');
  await proposer.getByLabel('Bezeichnung der Testnachweise',{exact:true}).fill('tests:browser-synthetic');
@@ -23,6 +36,11 @@ test('distinct synthetic users propose review and activate exact Knowledge in Ge
  const reviewerContext=await browser.newContext();
  const reviewerPage=await reviewerContext.newPage();
  const reviewer=await login(reviewerPage,process.env.NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL);
+ await expect(reviewer.getByLabel('Synthetischen Wissens-Release einspielen',{exact:true})).toHaveCount(0);
+ await reviewer.getByLabel('Wissenspaket und Release',{exact:true}).selectOption(JSON.stringify([importedPackId,importedReleaseId]));
+ await reviewer.getByRole('button',{name:'Genauen Release ansehen',exact:true}).click();
+ expect(await reviewer.locator('.knowledge-release-content').textContent()).toBe(exactPack);
+
  await reviewer.getByRole('button',{name:'Wissensänderung öffnen: '+changeId,exact:true}).click();
  await reviewer.locator('summary').filter({hasText:'Quelle: source:browser-synthetic'}).click();
  const content=reviewer.locator('.knowledge-evidence-content').first();

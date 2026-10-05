@@ -102,6 +102,76 @@ public sealed class SyntheticKnowledgeGovernanceTests
     }
 
     [Fact]
+    public async Task Imported_releases_are_exact_scoped_immutable_and_paginated_after_restart()
+    {
+        var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if (string.IsNullOrWhiteSpace(connection)) return;
+        await using var source = NpgsqlDataSource.Create(connection);
+        await using (var reset = source.CreateCommand("DROP SCHEMA IF EXISTS normacase CASCADE"))
+            await reset.ExecuteNonQueryAsync();
+        var originals = new List<(string Pack, string Release, string Json)>();
+        await using (var host = Factory(connection))
+        {
+            using var proposer = Client(host, Alice);
+            using var reviewer = Client(host, Bob);
+            using var outsider = Client(host, Other);
+            using var anonymous = host.CreateClient();
+            Assert.Equal(HttpStatusCode.Unauthorized, (await anonymous.GetAsync("/api/review/knowledge/releases")).StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, (await outsider.GetAsync("/api/review/knowledge/releases")).StatusCode);
+            var releases = new NormaCase.Persistence.PostgreSql.PostgresKnowledgeReleaseStore(source);
+            foreach (var letter in new[] { "a", "c" })
+            {
+                using var catalog = JsonDocument.Parse(await proposer.GetStringAsync("/api/packs"));
+                var entry = catalog.RootElement.EnumerateArray().Single(item => item.GetProperty("packId").GetString() == "synthetic.demo-" + letter);
+                var original = (await releases.LoadAsync("synthetic.demo-" + letter, entry.GetProperty("releaseId").GetString()!))!;
+                var node = System.Text.Json.Nodes.JsonNode.Parse(original.KnowledgePackJson)!;
+                var id = "imported-" + Guid.NewGuid().ToString("N");
+                node["manifest"]!["packId"] = id;
+                node["manifest"]!["releaseId"] = "release-00";
+                var exact = node.ToJsonString() + "\n  ";
+                Assert.Equal(HttpStatusCode.Forbidden, (await reviewer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = exact })).StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, (await proposer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = exact, importedByActorId = "forged" })).StatusCode);
+                using var response = await proposer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = exact });
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                using var imported = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                Assert.Equal(exact, imported.RootElement.GetProperty("packJson").GetString());
+                Assert.Equal("synthetic-local:user-alice", imported.RootElement.GetProperty("import").GetProperty("importedByActorId").GetString());
+                originals.Add((id, "release-00", exact));
+                Assert.Equal(HttpStatusCode.OK, (await proposer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = exact })).StatusCode);
+                Assert.Equal(HttpStatusCode.Conflict, (await proposer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = exact + " " })).StatusCode);
+                Assert.Null(await new NormaCase.Persistence.PostgreSql.PostgresReviewedKnowledgeActivationStore(source).LoadActiveAsync(id));
+                if (letter == "a")
+                {
+                    for (var index = 1; index <= 26; index++)
+                    {
+                        node["manifest"]!["releaseId"] = "release-" + index.ToString("D2", System.Globalization.CultureInfo.InvariantCulture);
+                        Assert.Equal(HttpStatusCode.OK, (await proposer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = node.ToJsonString() })).StatusCode);
+                    }
+                    using var first = JsonDocument.Parse(await proposer.GetStringAsync("/api/review/knowledge/releases?packId=" + id));
+                    Assert.Equal(25, first.RootElement.GetProperty("releases").GetArrayLength());
+                    var cursor = first.RootElement.GetProperty("nextPageCursor");
+                    using var second = JsonDocument.Parse(await proposer.GetStringAsync("/api/review/knowledge/releases?packId=" + id
+                        + "&afterPackId=" + cursor.GetProperty("packId").GetString() + "&afterReleaseId=" + cursor.GetProperty("releaseId").GetString()));
+                    Assert.Equal(2, second.RootElement.GetProperty("releases").GetArrayLength());
+                    Assert.Equal(JsonValueKind.Null, second.RootElement.GetProperty("nextPageCursor").ValueKind);
+                    Assert.Equal(HttpStatusCode.BadRequest, (await proposer.GetAsync("/api/review/knowledge/releases?afterPackId=" + id)).StatusCode);
+                }
+            }
+            Assert.Equal(HttpStatusCode.BadRequest, (await proposer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = "{invalid}" })).StatusCode);
+            Assert.Equal((HttpStatusCode)413, (await proposer.PostAsJsonAsync("/api/review/knowledge/releases", new { packJson = new string('x', 65537) })).StatusCode);
+        }
+        await using var restarted = Factory(connection);
+        using var after = Client(restarted, Bob);
+        foreach (var original in originals)
+        {
+            using var response = JsonDocument.Parse(await after.GetStringAsync("/api/review/knowledge/release?packId=" + original.Pack + "&releaseId=" + original.Release));
+            Assert.Equal(original.Json, response.RootElement.GetProperty("packJson").GetString());
+            Assert.Equal("synthetic-local:user-alice", response.RootElement.GetProperty("import").GetProperty("importedByActorId").GetString());
+            Assert.Equal("SYNTHETIC", response.RootElement.GetProperty("validationLevel").GetString());
+        }
+    }
+
+    [Fact]
     public async Task Suspended_Knowledge_subject_cannot_read_or_append_governance()
     {
         var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");

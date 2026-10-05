@@ -336,6 +336,16 @@
       "SOURCE": "Quelle",
       "IMPACT": "Auswirkungsanalyse",
       "TESTS": "Testnachweise"
-    }
+    },
+    "importFile": "Synthetischen Wissens-Release einspielen",
+    "importHelp": "JSON-Datei mit höchstens 64 KiB. Der genaue Inhalt wird unveränderlich gespeichert; Prüfung und Aktivierung erfolgen anschließend getrennt.",
+    "imported": "Wissens-Release unveränderlich gespeichert.",
+    "invalidImport": "Die Datei muss gültiges UTF-8 und ein synthetisches Wissenspaket mit höchstens 64 KiB enthalten.",
+    "retainedReleases": "Gespeicherte Wissens-Releases",
+    "inspectRelease": "Genauen Release ansehen",
+    "moreReleases": "Weitere gespeicherte Releases laden",
+    "exactRelease": "Genauer gespeicherter Inhalt",
+    "importedBy": "Eingespielt von",
+    "installedRelease": "Mit der Installation geladen"
   }
 }

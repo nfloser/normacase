@@ -190,3 +190,13 @@ Bestehende Fälle, wiederholte Eingänge und bereits erzeugte Ergebnisse behalte
 ursprünglichen Wissensstand. Eine spätere Aktivierung ändert den laufenden Host nicht.
 Die vollständige Konfiguration steht in
 [exact Knowledge consumption](../architecture/EXACT_KNOWLEDGE_CONSUMPTION.md).
+
+### Synthetischen Wissens-Release einspielen
+
+In „Wissen verwalten“ können berechtigte Vorschlagende eine UTF-8-JSON-Datei bis
+64 KiB einspielen. Exakter Inhalt, Prüfsumme, verifizierte Identität und Zeitpunkt
+werden unveränderlich gespeichert. Ein identischer Import bleibt derselbe Vorgang;
+andere Inhalte unter derselben Pack-/Release-ID werden abgewiesen. Der Import
+ändert keine Freigabe und stellt die laufende Fallverarbeitung nicht um. Gespeicherte
+Releases lassen sich seitenweise auswählen und im Original ansehen; anschließend
+folgen Nachweise, getrennte Prüfung und Aktivierung.

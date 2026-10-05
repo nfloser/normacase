@@ -5,11 +5,16 @@ const text=de.knowledgeAdministration;
 type Change={changeId:string;packId:string;releaseId:string;sha256:string;sourceReference:string;impactReference:string;testReference:string;proposerActorId:string;proposedAtUtc:string;decision:null|{reviewerActorId:string;reviewedAtUtc:string;approved:boolean;reason:string}};
 type Active={revision:string;releaseId:string;sha256:string;actorId:string;activatedAtUtc:string};
 type Evidence={evidenceId:string;kind:string;title:string;content:string;sha256:string;recordedByActorId:string;recordedAtUtc:string};
+type Release={packId:string;releaseId:string;sha256:string;lifecycleStatus:string;validationLevel:string};
+type ReleaseCursor={packId:string;releaseId:string};
+type ReleaseDetail=Release&{packJson:string;import:null|{importedByActorId:string;importedAtUtc:string}};
+const releaseKey=(release:{packId:string;releaseId:string})=>JSON.stringify([release.packId,release.releaseId]);
 type Detail={change:Change;active:Active|null;evidence:Evidence[];retainedEvidenceComplete:boolean};
 export function KnowledgeAdministration({credential,actions,packs,onUnauthorized}:{credential:string;actions:string[];packs:Pack[];onUnauthorized:(message?:string)=>void}){
  const [changes,setChanges]=useState<Change[]>([]),[cursor,setCursor]=useState<string|null>(null),[detail,setDetail]=useState<Detail|null>(null);
- const [packId,setPackId]=useState(packs[0]?.packId??''),[source,setSource]=useState(''),[impact,setImpact]=useState(''),[tests,setTests]=useState(''),[reason,setReason]=useState('');
+ const [packId,setPackId]=useState(packs[0]?.packId??''),[releaseId,setReleaseId]=useState(packs[0]?.releaseId??''),[source,setSource]=useState(''),[impact,setImpact]=useState(''),[tests,setTests]=useState(''),[reason,setReason]=useState('');
  const [sourceContent,setSourceContent]=useState(''),[impactContent,setImpactContent]=useState(''),[testContent,setTestContent]=useState('');
+ const [releases,setReleases]=useState<Release[]>([]),[releaseCursor,setReleaseCursor]=useState<ReleaseCursor|null>(null),[releaseDetail,setReleaseDetail]=useState<ReleaseDetail|null>(null);
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const pending=useRef<AbortController|null>(null);
  function begin(){pending.current?.abort();const controller=new AbortController();pending.current=controller;setBusy(true);setError('');setNotice('');return controller;}
@@ -29,17 +34,49 @@ export function KnowledgeAdministration({credential,actions,packs,onUnauthorized
  }
  async function list(after:string|null=null){
   const controller=begin();setDetail(null);setReason('');
-  try{const page=await request('/changes'+(after?'?afterChangeId='+encodeURIComponent(after):''),controller);if(active(controller)){setChanges(page.changes);setCursor(page.nextPageCursor);}}
+  try{const page=await request('/changes'+(after?'?afterChangeId='+encodeURIComponent(after):''),controller);
+   if(active(controller)){setChanges(page.changes);setCursor(page.nextPageCursor);}
+   if(!after)await loadReleases(controller);
+  }
   catch(exception){failure(exception,controller);}finally{if(active(controller))setBusy(false);}
+ }
+ async function loadReleases(controller:AbortController,after:ReleaseCursor|null=null){
+  const query=after?'?afterPackId='+encodeURIComponent(after.packId)+'&afterReleaseId='+encodeURIComponent(after.releaseId):'';
+  const page=await request('/releases'+query,controller);
+  if(active(controller)){
+   setReleases(previous=>after?[...previous,...page.releases.filter((item:Release)=>!previous.some(known=>releaseKey(known)===releaseKey(item)))]:page.releases);
+   setReleaseCursor(page.nextPageCursor);
+   if(!after&&!page.releases.some((item:Release)=>item.packId===packId&&item.releaseId===releaseId)&&page.releases.length){setPackId(page.releases[0].packId);setReleaseId(page.releases[0].releaseId);setReleaseDetail(null);}
+  }
+ }
+ async function moreReleases(){const controller=begin();try{await loadReleases(controller,releaseCursor);}catch(exception){failure(exception,controller);}finally{if(active(controller))setBusy(false);}}
+ async function inspectRelease(){
+  const controller=begin();setReleaseDetail(null);
+  try{const result=await request('/release?packId='+encodeURIComponent(packId)+'&releaseId='+encodeURIComponent(releaseId),controller);if(active(controller))setReleaseDetail(result);}
+  catch(exception){failure(exception,controller);}finally{if(active(controller))setBusy(false);}
+ }
+ async function importRelease(file:File){
+  const controller=begin();setReleaseDetail(null);
+  try{
+   if(file.size>65536)throw new KnowledgeFileError();
+   const bytes=await file.arrayBuffer();if(!active(controller))return;
+   let packJson:string;try{packJson=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes);}catch{throw new KnowledgeFileError();}
+   const imported=await request('/releases',controller,{packJson});
+   if(active(controller)){
+    setReleases(previous=>[imported,...previous.filter(item=>releaseKey(item)!==releaseKey(imported))]);
+    setPackId(imported.packId);setReleaseId(imported.releaseId);setReleaseDetail(imported);setNotice(text.imported);
+   }
+  }catch(exception){if(active(controller)&&exception instanceof KnowledgeFileError){setError(text.invalidImport);}else failure(exception,controller);}
+  finally{if(active(controller))setBusy(false);}
  }
  async function open(id:string){
   const controller=begin();setDetail(null);setReason('');
   try{const next=await request('/changes/'+encodeURIComponent(id),controller);if(active(controller))setDetail(next);}
   catch(exception){failure(exception,controller);}finally{if(active(controller))setBusy(false);}
  }
- useEffect(()=>{void list();return()=>{pending.current?.abort();pending.current=null;};},[credential]);
+ useEffect(()=>{setChanges([]);setReleases([]);setReleaseDetail(null);void list();return()=>{pending.current?.abort();pending.current=null;};},[credential]);
  async function propose(){
-  const pack=packs.find(item=>item.packId===packId);
+  const pack=releases.find(item=>item.packId===packId&&item.releaseId===releaseId);
   if(!pack||![source,impact,tests,sourceContent,impactContent,testContent].every(value=>value.trim())){setError(de.inputError);return;}
   const controller=begin();
   try{
@@ -69,8 +106,17 @@ export function KnowledgeAdministration({credential,actions,packs,onUnauthorized
  return <section className="knowledge-administration" aria-label={text.heading}>
   <h3>{text.heading}</h3><p>{text.help}</p>
   {error&&<div className="error" role="alert">{error}</div>}{notice&&<p role="status">{notice}</p>}
+  <fieldset disabled={busy}><legend>{text.retainedReleases}</legend>
+   <label className="field">{text.pack}<select aria-label={text.pack} value={releaseKey({packId,releaseId})} onChange={event=>{const [pack,release]=JSON.parse(event.target.value) as string[];setPackId(pack);setReleaseId(release);setReleaseDetail(null);}}>{releases.map(item=><option key={releaseKey(item)} value={releaseKey(item)}>{packs.find(pack=>pack.packId===item.packId)?.presentation?.title??item.packId} — {item.releaseId}</option>)}</select></label>
+   <button type="button" className="secondary" disabled={!releases.length} onClick={inspectRelease}>{text.inspectRelease}</button>
+   {releaseCursor&&<button type="button" className="secondary" onClick={moreReleases}>{text.moreReleases}</button>}
+  </fieldset>
+  {releaseDetail&&<details open><summary>{text.exactRelease}: {releaseDetail.packId} / {releaseDetail.releaseId}</summary>
+   <dl><dt>{text.hash}</dt><dd>{releaseDetail.sha256}</dd><dt>{text.importedBy}</dt><dd>{releaseDetail.import?releaseDetail.import.importedByActorId+' · '+date(releaseDetail.import.importedAtUtc):text.installedRelease}</dd></dl>
+   <pre className="knowledge-release-content">{releaseDetail.packJson}</pre></details>}
   {actions.includes('PROPOSE')&&<fieldset disabled={busy}><legend>{text.proposal}</legend>
-   <label className="field">{text.pack}<select aria-label={text.pack} value={packId} onChange={event=>setPackId(event.target.value)}>{packs.map(pack=><option key={pack.packId} value={pack.packId}>{pack.presentation?.title??pack.packId} — {pack.releaseId}</option>)}</select></label>
+   <label className="field">{text.importFile}<input aria-label={text.importFile} type="file" accept=".json,application/json" onChange={event=>{const file=event.target.files?.[0];event.target.value='';if(file)void importRelease(file);}}/></label>
+   <p>{text.importHelp}</p>
    <label className="field">{text.source}<input aria-label={text.source} maxLength={256} value={source} onChange={event=>setSource(event.target.value)}/></label>
    <label className="field">{text.impact}<input aria-label={text.impact} maxLength={256} value={impact} onChange={event=>setImpact(event.target.value)}/></label>
    <label className="field">{text.tests}<input aria-label={text.tests} maxLength={256} value={tests} onChange={event=>setTests(event.target.value)}/></label>
@@ -103,3 +149,5 @@ export function KnowledgeAdministration({credential,actions,packs,onUnauthorized
  </section>;
 }
 class KnowledgeHttpError extends Error{constructor(readonly status:number){super('knowledge_request_failed');}}
+
+class KnowledgeFileError extends Error{}

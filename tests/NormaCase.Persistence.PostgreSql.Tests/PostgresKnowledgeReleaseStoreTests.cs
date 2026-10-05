@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Npgsql;
 using NpgsqlTypes;
 using NormaCase.Knowledge.Catalog;
+using NormaCase.Application.Authorization;
 using NormaCase.Persistence.PostgreSql;
 using Xunit;
 
@@ -9,6 +10,52 @@ namespace NormaCase.Persistence.PostgreSql.Tests;
 
 public sealed class PostgresKnowledgeReleaseStoreTests
 {
+    [Fact]
+    public async Task Release_pages_and_import_audit_are_exact_bounded_and_restart_safe()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var releases = new PostgresKnowledgeReleaseStore(source);
+        var imports = new PostgresKnowledgeReleaseImportStore(source);
+        var actor = "synthetic-local:import-" + Guid.NewGuid().ToString("N");
+        var entitlements = new PostgresReviewedEntitlementChangeStore(source);
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, [], []));
+        var node = JsonNode.Parse(Fixture("c"))!;
+        var packId = node["manifest"]!["packId"]!.GetValue<string>();
+        async Task<KnowledgeReleaseImportRecord> Import(string json) => await entitlements.ExecuteWithEffectiveLockAsync(actor,
+            (_, token) => imports.ImportAsync(json, DateTimeOffset.UnixEpoch, token));
+        node["manifest"]!["releaseId"] = "release-a";
+        var jsonA = node.ToJsonString() + "\n  ";
+        var first = await Import(jsonA);
+        Assert.Equal(jsonA, first.Artifact.KnowledgePackJson);
+        Assert.Equal(actor, first.ImportedByActorId);
+        Assert.Equal(DateTimeOffset.UnixEpoch, first.ImportedAtUtc);
+        var duplicates = await Task.WhenAll(Enumerable.Range(0, 4).Select(_ => Import(jsonA)));
+        Assert.All(duplicates, item => Assert.Equal(first.ImportedByActorId, item.ImportedByActorId));
+        await Assert.ThrowsAsync<KnowledgeReleaseIdentityConflictException>(() => Import(jsonA + " "));
+        node["manifest"]!["releaseId"] = "release-b";
+        await Import(node.ToJsonString());
+        var page = await releases.ListAsync(1, packId: packId, validationLevel: "SYNTHETIC");
+        Assert.Equal(new[] { "release-a", "release-b" }, page.Select(item => item.ReleaseId));
+        var next = await releases.ListAsync(1, packId: packId, afterPackId: packId, afterReleaseId: "release-a", validationLevel: "SYNTHETIC");
+        Assert.Equal(new[] { "release-b" }, next.Select(item => item.ReleaseId));
+        Assert.Empty(await releases.ListAsync(1, packId: packId, afterPackId: packId, afterReleaseId: "release-b"));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => releases.ListAsync(101));
+        await Assert.ThrowsAsync<ArgumentException>(() => releases.ListAsync(1, afterPackId: packId));
+        await using var restartedSource = Source();
+        var retained = (await new PostgresKnowledgeReleaseImportStore(restartedSource).LoadAsync(packId, first.Artifact.ReleaseId))!;
+        Assert.Equal(actor, retained.ImportedByActorId);
+        Assert.Equal(jsonA, retained.Artifact.KnowledgePackJson);
+        foreach (var sql in new[] {
+            "UPDATE normacase.knowledge_release_imports SET actor_id=actor_id WHERE pack_id=$1",
+            "DELETE FROM normacase.knowledge_release_imports WHERE pack_id=$1" })
+        {
+            await using var command = source.CreateCommand(sql);
+            command.Parameters.AddWithValue(packId);
+            await Assert.ThrowsAsync<PostgresException>(() => command.ExecuteNonQueryAsync());
+        }
+    }
+
     [Fact]
     public async Task Concurrent_registration_is_exact_idempotent_and_restart_preserves_original_json()
     {
