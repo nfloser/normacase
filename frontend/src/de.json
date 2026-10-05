@@ -369,6 +369,7 @@
     "unavailable": "Für diesen Fallstand ist keine Eingabekorrektur verfügbar.",
     "changedBy": "Korrigiert von",
     "correctionReason": "Aufgezeichnete Korrekturbegründung",
-    "inputRevision": "Neue Eingaberevision"
+    "inputRevision": "Neue Eingaberevision",
+    "conflict": "Der Fall wurde zwischenzeitlich geändert. Lade den aktuellen Fallstand und prüfe die Angaben erneut."
   }
 }

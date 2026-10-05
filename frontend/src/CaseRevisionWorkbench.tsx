@@ -29,7 +29,7 @@ export function CaseRevisionWorkbench({detail,credential,pack,historical,onHisto
  function fail(exception:unknown,controller:AbortController,mutation=false){
   if(!active(controller))return;
   if(exception instanceof RevisionHttpError&&exception.status===401){onUnauthorized(de.reviewedWorkQueues.authenticationExpired);return;}
-  setError(exception instanceof RevisionHttpError?exception.status===409?de.reviewedWorkQueues.conflict:exception.status===403?de.reviewedWorkQueues.forbidden:de.inputError:
+  setError(exception instanceof RevisionHttpError?exception.status===409?text.conflict:exception.status===403?de.reviewedWorkQueues.forbidden:de.inputError:
    mutation?text.unknownCompletion:de.networkError);
  }
  useEffect(()=>{

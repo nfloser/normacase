@@ -51,3 +51,24 @@ test('correct an incomplete intake, inspect readonly history and reapprove throu
  await expect(region.getByRole('region',{name:'Fallrevisionen und Korrekturen'})).toHaveCount(0);
  expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length,document.cookie])).toEqual([0,0,'']);
 });
+
+test('logout aborts delayed case history and clears retained correction content',async({page})=>{
+ await page.goto('/');
+ const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
+ await region.getByLabel('Lokaler Review-Schlüssel').fill(credential);
+ await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
+ await region.getByRole('button',{name:'Fall öffnen: '+caseId,exact:true}).click();
+ let release;const hold=new Promise(resolve=>{release=resolve;});
+ let reached;const entered=new Promise(resolve=>{reached=resolve;});
+ await page.route('**/api/review/work-cases/'+caseId+'/history',async route=>{
+  const response=await route.fetch();reached();await hold;await route.fulfill({response}).catch(()=>{});
+ });
+ await region.getByRole('button',{name:'Gespeicherte Revisionen ansehen'}).click();
+ await entered;
+ await region.getByRole('button',{name:'Review-Modus abmelden',exact:true}).click();
+ release();
+ await expect(region.getByRole('region',{name:'Fallrevisionen und Korrekturen'})).toHaveCount(0);
+ await expect(region.getByText('Synthetische Browser-Korrektur',{exact:true})).toHaveCount(0);
+ await expect(region.getByLabel('Lokaler Review-Schlüssel')).toBeVisible();
+ expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length,document.cookie])).toEqual([0,0,'']);
+});
