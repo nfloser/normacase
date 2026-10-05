@@ -70,12 +70,15 @@ public sealed class PostgresCaseCorrectionStoreTests
     public async Task Concurrent_corrections_have_one_winner_and_one_new_revision()
     {
         await using var source = Source(); var fixture = await Seed(source);
-        async Task<bool> Attempt()
+        var otherActor = new AuthenticatedReviewActor("synthetic-local:other-" + Guid.NewGuid().ToString("N"), "synthetic-local");
+        await new PostgresReviewedEntitlementChangeStore(source).ReconcileBaselineAsync(
+            new(otherActor.ActorId, 0, ["READ", "CORRECT"], [fixture.State.Process.CaseId.Value]));
+        async Task<bool> Attempt(Fixture candidate)
         {
-            try { await Correct(source, fixture); return true; }
+            try { await Correct(source, candidate); return true; }
             catch (CaseCorrectionConflictException) { return false; }
         }
-        var results = await Task.WhenAll(Attempt(), Attempt());
+        var results = await Task.WhenAll(Attempt(fixture), Attempt(fixture with { Actor = otherActor }));
         Assert.Single(results, success => success);
         Assert.Equal(2, (await Store(source).LoadAsync(fixture.State.Process.CaseId))!.Process.CaseRevision);
         Assert.Equal(2, (await Store(source).LoadHistoryPageAsync(fixture.State.Process.CaseId, 25, null)).Count);
