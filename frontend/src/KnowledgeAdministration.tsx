@@ -4,10 +4,12 @@ import de from './de.json';
 const text=de.knowledgeAdministration;
 type Change={changeId:string;packId:string;releaseId:string;sha256:string;sourceReference:string;impactReference:string;testReference:string;proposerActorId:string;proposedAtUtc:string;decision:null|{reviewerActorId:string;reviewedAtUtc:string;approved:boolean;reason:string}};
 type Active={revision:string;releaseId:string;sha256:string;actorId:string;activatedAtUtc:string};
-type Detail={change:Change;active:Active|null};
+type Evidence={evidenceId:string;kind:string;title:string;content:string;sha256:string;recordedByActorId:string;recordedAtUtc:string};
+type Detail={change:Change;active:Active|null;evidence:Evidence[];retainedEvidenceComplete:boolean};
 export function KnowledgeAdministration({credential,actions,packs,onUnauthorized}:{credential:string;actions:string[];packs:Pack[];onUnauthorized:(message?:string)=>void}){
  const [changes,setChanges]=useState<Change[]>([]),[cursor,setCursor]=useState<string|null>(null),[detail,setDetail]=useState<Detail|null>(null);
  const [packId,setPackId]=useState(packs[0]?.packId??''),[source,setSource]=useState(''),[impact,setImpact]=useState(''),[tests,setTests]=useState(''),[reason,setReason]=useState('');
+ const [sourceContent,setSourceContent]=useState(''),[impactContent,setImpactContent]=useState(''),[testContent,setTestContent]=useState('');
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const pending=useRef<AbortController|null>(null);
  function begin(){pending.current?.abort();const controller=new AbortController();pending.current=controller;setBusy(true);setError('');setNotice('');return controller;}
@@ -38,10 +40,14 @@ export function KnowledgeAdministration({credential,actions,packs,onUnauthorized
  useEffect(()=>{void list();return()=>{pending.current?.abort();pending.current=null;};},[credential]);
  async function propose(){
   const pack=packs.find(item=>item.packId===packId);
-  if(!pack||![source,impact,tests].every(value=>value.trim())){setError(de.inputError);return;}
+  if(!pack||![source,impact,tests,sourceContent,impactContent,testContent].every(value=>value.trim())){setError(de.inputError);return;}
   const controller=begin();
-  try{const created=await request('/changes',controller,{packId,releaseId:pack.releaseId,sourceReference:source,impactReference:impact,testReference:tests});
-   if(active(controller)){setSource('');setImpact('');setTests('');setChanges(items=>[created,...items].slice(0,25));setDetail({change:created,active:null});
+  try{
+   const artifacts:Evidence[]=[];
+   for(const [kind,title,content] of [['SOURCE',source,sourceContent],['IMPACT',impact,impactContent],['TESTS',tests,testContent]])
+    artifacts.push(await request('/evidence',controller,{kind,title,content}));
+   const created=await request('/changes',controller,{packId,releaseId:pack.releaseId,sourceReference:artifacts[0].evidenceId,impactReference:artifacts[1].evidenceId,testReference:artifacts[2].evidenceId});
+   if(active(controller)){setSource('');setImpact('');setTests('');setSourceContent('');setImpactContent('');setTestContent('');setChanges(items=>[created,...items].slice(0,25));setDetail({change:created,active:null,evidence:artifacts,retainedEvidenceComplete:true});
     const loaded=await request('/changes/'+encodeURIComponent(created.changeId),controller);if(active(controller)){setDetail(loaded);setNotice(text.saved);}}
   }catch(exception){failure(exception,controller);}finally{if(active(controller))setBusy(false);}
  }
@@ -68,6 +74,10 @@ export function KnowledgeAdministration({credential,actions,packs,onUnauthorized
    <label className="field">{text.source}<input aria-label={text.source} maxLength={256} value={source} onChange={event=>setSource(event.target.value)}/></label>
    <label className="field">{text.impact}<input aria-label={text.impact} maxLength={256} value={impact} onChange={event=>setImpact(event.target.value)}/></label>
    <label className="field">{text.tests}<input aria-label={text.tests} maxLength={256} value={tests} onChange={event=>setTests(event.target.value)}/></label>
+   <label className="field">{text.sourceContent}<textarea aria-label={text.sourceContent} maxLength={65536} value={sourceContent} onChange={event=>setSourceContent(event.target.value)}/></label>
+   <label className="field">{text.impactContent}<textarea aria-label={text.impactContent} maxLength={65536} value={impactContent} onChange={event=>setImpactContent(event.target.value)}/></label>
+   <label className="field">{text.testContent}<textarea aria-label={text.testContent} maxLength={65536} value={testContent} onChange={event=>setTestContent(event.target.value)}/></label>
+   <p>{text.evidenceHelp}</p>
    <button type="button" className="primary" onClick={propose}>{text.propose}</button></fieldset>}
   <div className="actions"><button type="button" className="secondary" disabled={busy} onClick={()=>list()}>{text.refresh}</button>
    {cursor&&<button type="button" className="secondary" disabled={busy} onClick={()=>list(cursor)}>{text.next}</button>}</div>
@@ -81,9 +91,14 @@ export function KnowledgeAdministration({credential,actions,packs,onUnauthorized
     {detail.change.decision&&<><dt>{text.reviewedBy}</dt><dd>{detail.change.decision.reviewerActorId} · {date(detail.change.decision.reviewedAtUtc)}</dd><dt>{text.reason}</dt><dd>{detail.change.decision.reason}</dd></>}
     <dt>{text.activeRevision}</dt><dd>{detail.active?.revision??'0'}</dd>{detail.active&&<><dt>{text.activeRelease}</dt><dd>{detail.active.releaseId}</dd><dt>{text.activatedBy}</dt><dd>{detail.active.actorId} · {date(detail.active.activatedAtUtc)}</dd></>}
    </dl>
-   {!detail.change.decision&&actions.includes('REVIEW')&&<fieldset disabled={busy}><legend>{text.review}</legend><label className="field">{text.reason}<textarea aria-label={text.reason} maxLength={1000} value={reason} onChange={event=>setReason(event.target.value)}/></label>
+   <h4>{text.retainedEvidence}</h4>
+   {!detail.retainedEvidenceComplete&&<p>{text.legacyEvidence}</p>}
+   {detail.evidence.map(artifact=><details key={artifact.evidenceId}><summary>{(text.evidenceKinds as Record<string,string>)[artifact.kind]??de.unknown}: {artifact.title}</summary>
+    <dl><dt>{text.hash}</dt><dd>{artifact.sha256}</dd><dt>{text.recordedBy}</dt><dd>{artifact.recordedByActorId} · {date(artifact.recordedAtUtc)}</dd></dl>
+    <pre className="knowledge-evidence-content">{artifact.content}</pre></details>)}
+   {!detail.change.decision&&detail.retainedEvidenceComplete&&actions.includes('REVIEW')&&<fieldset disabled={busy}><legend>{text.review}</legend><label className="field">{text.reason}<textarea aria-label={text.reason} maxLength={1000} value={reason} onChange={event=>setReason(event.target.value)}/></label>
     <button type="button" className="primary" onClick={()=>mutate('approve')}>{text.approve}</button><button type="button" className="secondary" onClick={()=>mutate('reject')}>{text.reject}</button></fieldset>}
-   {detail.change.decision?.approved&&actions.includes('ACTIVATE')&&<button type="button" className="primary" disabled={busy} onClick={()=>mutate('activate')}>{text.activate}</button>}
+   {detail.change.decision?.approved&&detail.retainedEvidenceComplete&&actions.includes('ACTIVATE')&&<button type="button" className="primary" disabled={busy} onClick={()=>mutate('activate')}>{text.activate}</button>}
   </article>}
  </section>;
 }

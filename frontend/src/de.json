@@ -296,12 +296,12 @@
   },
   "knowledgeAdministration": {
     "heading": "Wissen verwalten",
-    "help": "Synthetische Wissensänderungen mit getrennter Prüfung und protokollierter Aktivierung. Die laufende Fallverarbeitung wird dadurch nicht umgestellt. Referenzen ersetzen keine fachliche Freigabe.",
+    "help": "Synthetische Wissensänderungen mit gespeicherten Nachweisen, getrennter Prüfung und protokollierter Aktivierung. Die laufende Fallverarbeitung wird dadurch nicht umgestellt; technische Freigabe ist keine fachliche Freigabe.",
     "proposal": "Neue Wissensänderung",
     "pack": "Wissenspaket und Release",
-    "source": "Quellenreferenz",
-    "impact": "Referenz der Auswirkungsanalyse",
-    "tests": "Referenz der Testnachweise",
+    "source": "Bezeichnung der Quelle",
+    "impact": "Bezeichnung der Auswirkungsanalyse",
+    "tests": "Bezeichnung der Testnachweise",
     "propose": "Wissensänderung vorschlagen",
     "refresh": "Wissensänderungen neu laden",
     "next": "Weitere Wissensänderungen",
@@ -324,6 +324,18 @@
     "activatedBy": "Aktiviert von",
     "activate": "Freigegebenen Release protokolliert aktivieren",
     "saved": "Wissensvorgang gespeichert.",
-    "conflict": "Der Wissensstand hat sich geändert oder die Aktion ist nicht zulässig. Der gespeicherte Stand wurde neu geladen; bitte erneut prüfen."
+    "conflict": "Der Wissensstand hat sich geändert oder die Aktion ist nicht zulässig. Der gespeicherte Stand wurde neu geladen; bitte erneut prüfen.",
+    "sourceContent": "Inhalt des synthetischen Quellennachweises",
+    "impactContent": "Inhalt der synthetischen Auswirkungsanalyse",
+    "testContent": "Inhalt der synthetischen Testnachweise",
+    "evidenceHelp": "Nur synthetische Nachweise verwenden. Texte werden mit Prüfsumme unveränderlich gespeichert; maximal 64 KiB UTF-8 je Nachweis. Keine fachliche Freigabe oder Ausführung der Inhalte.",
+    "retainedEvidence": "Unveränderlich gespeicherte Nachweise",
+    "legacyEvidence": "Historischer Vorschlag mit unvollständig gespeicherten Nachweisen. Für neue Prüfung oder Aktivierung einen neuen Vorschlag mit vollständig gespeicherten Nachweisen anlegen.",
+    "recordedBy": "Nachweis gespeichert von",
+    "evidenceKinds": {
+      "SOURCE": "Quelle",
+      "IMPACT": "Auswirkungsanalyse",
+      "TESTS": "Testnachweise"
+    }
   }
 }
