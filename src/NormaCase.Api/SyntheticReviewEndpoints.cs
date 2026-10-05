@@ -75,6 +75,7 @@ internal static class SyntheticReviewEndpoints
         var entitlements = app.Services.GetRequiredService<SyntheticLiveEntitlements>();
         var group = app.MapGroup("/api/review").RequireAuthorization();
         SyntheticBatchReviewEndpoints.Map(group, source, store, entitlements);
+        SyntheticCaseCorrectionEndpoints.Map(group, source, store, entitlements, platformVersion);
 
         group.MapGet("/work-queues", async (HttpContext context, CancellationToken token) =>
         {
@@ -261,7 +262,7 @@ internal static class SyntheticReviewEndpoints
         }
     }
 
-    internal static object Detail(CaseReviewState state, SyntheticEntitlementSnapshot? entitlement = null)
+    internal static object Detail(CaseReviewState state, SyntheticEntitlementSnapshot? entitlement = null, bool historical = false)
         => new
         {
             caseId = state.Process.CaseId.Value,
@@ -273,7 +274,7 @@ internal static class SyntheticReviewEndpoints
             assessmentJson = AssessmentJson.Serialize(state.Assessment.Result, state.Assessment.PlatformVersion),
             evidence = state.Assessment.Input.Evidence.ToDictionary(
                 item => item.Key, item => item.Value.ToString().ToUpperInvariant(), StringComparer.Ordinal),
-            allowedActions = AllowedActions(state).Where(action => entitlement is null
+            allowedActions = (historical ? [] : AllowedActions(state)).Where(action => entitlement is null
                 || entitlement.Allows(state.Process.CaseId.Value,
                     action == "ACCEPT_SYSTEM_RESULT" ? "ACCEPT" : "OVERRIDE")).ToArray(),
             auditRevision = state.Audit.Events[^1].Sequence.ToString(CultureInfo.InvariantCulture),
