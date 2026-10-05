@@ -19,7 +19,7 @@ public sealed class CaseReviewIntegrityException : Exception
     public CaseReviewIntegrityException() : base("Stored case review history failed verification.") { }
 }
 
-public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<string, int, WorkflowDefinition> resolveWorkflow)
+public sealed partial class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<string, int, WorkflowDefinition> resolveWorkflow)
     : ICaseReviewTransactionStore
 {
     private readonly NpgsqlDataSource source = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
@@ -173,7 +173,14 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
                 if (state.Audit.Events.Count != 1) throw new CaseReviewIntegrityException();
                 await VerifyAssessment(connection, transaction, state, token);
             }
-            else VerifyAppend(previous, state);
+            else if (previous.Assessment.AssessmentId != state.Assessment.AssessmentId)
+                await VerifyCorrection(connection, transaction, previous, state, row.Version, token);
+            else
+            {
+                if (await ReadCorrection(connection, transaction, caseId, row.Version, token) is not null)
+                    throw new CaseReviewIntegrityException();
+                VerifyAppend(previous, state);
+            }
             previous = state;
         }
         return previous is null ? null : (rows[^1].Version, previous);
