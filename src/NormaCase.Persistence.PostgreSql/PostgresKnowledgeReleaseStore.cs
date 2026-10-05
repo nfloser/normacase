@@ -31,8 +31,9 @@ public sealed class PostgresKnowledgeReleaseStore(NpgsqlDataSource dataSource) :
         Identity(artifact.PackId); Identity(artifact.ReleaseId);
         try
         {
-            await using var connection = await source.OpenConnectionAsync(token);
-            await using var transaction = await connection.BeginTransactionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             await using (var command = new NpgsqlCommand("""
                 INSERT INTO normacase.knowledge_release_artifacts
                     (pack_id,release_id,lifecycle_status,validation_level,pack_json,pack_sha256)
@@ -52,7 +53,7 @@ public sealed class PostgresKnowledgeReleaseStore(NpgsqlDataSource dataSource) :
             if (stored.KnowledgePackJson != artifact.KnowledgePackJson)
                 throw new KnowledgeReleaseIdentityConflictException(artifact.PackId, artifact.ReleaseId);
             token.ThrowIfCancellationRequested();
-            await transaction.CommitAsync(token);
+            await session.CommitAsync(token);
             return stored;
         }
         catch (NpgsqlException) { throw new KnowledgeReleaseStorageException(); }
@@ -63,8 +64,8 @@ public sealed class PostgresKnowledgeReleaseStore(NpgsqlDataSource dataSource) :
         Identity(packId); Identity(releaseId);
         try
         {
-            await using var connection = await source.OpenConnectionAsync(token);
-            return await Read(connection, null, packId, releaseId, token);
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            return await Read(session.Connection, session.Transaction, packId, releaseId, token);
         }
         catch (NpgsqlException) { throw new KnowledgeReleaseStorageException(); }
     }

@@ -497,6 +497,104 @@ public sealed class SyntheticReviewHostTests
     }
 
     [Fact]
+    public async Task Exact_reviewed_selection_changes_new_intake_but_preserves_original_replay_and_outbound()
+    {
+        var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if (string.IsNullOrWhiteSpace(connection)) return;
+        await ResetDatabase(connection);
+        var oldOrder = "original-" + Guid.NewGuid().ToString("N");
+        var newOrder = "selected-" + Guid.NewGuid().ToString("N");
+        var oldCase = IntakeCase("synthetic-json", oldOrder);
+        var newCase = IntakeCase("synthetic-json", newOrder);
+        using var input = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", "demo-g-supported.json")));
+        var originalRequest = new { formatVersion = 1, order = oldOrder, message = "original-message", revision = "1", input = input.RootElement };
+        var nextRequest = originalRequest with { order = newOrder, message = "selected-message" };
+        var export = new { messageId = "original-result", correlationId = "original-correlation", destinationId = "synthetic-inbox",
+            expectedCaseRevision = "1", expectedProcessRevision = "2", expectedAuditRevision = "2" };
+        string originalAssessment;
+        string originalOutbound;
+        await using (var initialHost = Factory(connection, null, oldCase, newCase))
+        {
+            using var client = initialHost.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+            using var response = await client.PostAsJsonAsync("/api/review/intake/json", originalRequest);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            using var intake = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            originalAssessment = intake.RootElement.GetProperty("workCase").GetProperty("assessmentJson").GetString()!;
+            Assert.Equal(NormaCase.Domain.Decision.AssessmentOutcome.Supported,
+                NormaCase.Serialization.AssessmentJson.Deserialize(originalAssessment).Assessment.Outcome);
+            Assert.Equal(HttpStatusCode.OK, (await client.PostAsJsonAsync($"/api/review/work-cases/{oldCase}/reviews", new
+            { expectedCaseRevision = "1", expectedProcessRevision = "1", expectedAuditRevision = "1", disposition = "ACCEPT_SYSTEM_RESULT", reason = "Synthetische Freigabe" })).StatusCode);
+            using var receipt = await client.PostAsJsonAsync($"/api/review/work-cases/{oldCase}/outbound", export);
+            Assert.Equal(HttpStatusCode.OK, receipt.StatusCode);
+            using var json = JsonDocument.Parse(await receipt.Content.ReadAsStringAsync());
+            originalOutbound = json.RootElement.GetProperty("resultJson").GetString()!;
+        }
+        await using var source = NpgsqlDataSource.Create(connection);
+        var releases = new NormaCase.Persistence.PostgreSql.PostgresKnowledgeReleaseStore(source);
+        var oldArtifact = (await releases.LoadAsync("synthetic.demo-g", "demo-g-2026.1"))!;
+        var node = System.Text.Json.Nodes.JsonNode.Parse(oldArtifact.KnowledgePackJson)!;
+        node["manifest"]!["releaseId"] = "synthetic-selected-" + Guid.NewGuid().ToString("N");
+        node["rules"]![0]!["version"] = 2;
+        node["rules"]![0]!["onMatch"] = "NOT_SUPPORTED";
+        node["sources"]![0]!["version"] = "2";
+        node["sources"]![0]!["title"] = "Fiktive alternative Testregel";
+        var selected = await releases.RegisterAsync(node.ToJsonString());
+        var evidence = new NormaCase.Persistence.PostgreSql.PostgresKnowledgeEvidenceStore(source);
+        var ids = new List<string>();
+        foreach (var kind in new[] { "SOURCE", "IMPACT", "TESTS" })
+            ids.Add((await evidence.RegisterAsync(new("selection-evidence-" + Guid.NewGuid().ToString("N"), kind,
+                "Synthetischer Beleg", "Fiktiver Inhalt für Aktivierungstest", "synthetic-local:proposer", DateTimeOffset.UnixEpoch))).EvidenceId);
+        var governance = new NormaCase.Persistence.PostgreSql.PostgresReviewedKnowledgeActivationStore(source, requireRetainedEvidence: true);
+        var proposal = new NormaCase.Application.Knowledge.KnowledgeChangeProposal("selection-change-" + Guid.NewGuid().ToString("N"),
+            selected.PackId, selected.ReleaseId, selected.Sha256, ids[0], ids[1], ids[2], "synthetic-local:proposer", DateTimeOffset.UnixEpoch);
+        await governance.ProposeAsync(proposal);
+        await governance.DecideAsync(new(proposal.ChangeId, "synthetic-local:reviewer", DateTimeOffset.UnixEpoch, true, "Synthetische Gegenprüfung"));
+        var activation = await governance.ActivateAsync(new(proposal.ChangeId, 0, "synthetic-local:activator", DateTimeOffset.UnixEpoch));
+        WebApplicationFactory<Program> SelectedHost(string hash) => Factory(connection, null, oldCase, newCase)
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:PackId", selected.PackId);
+                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:Revision", activation.Revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:ReleaseId", selected.ReleaseId);
+                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:Sha256", hash);
+            });
+        using (var invalid = SelectedHost(new string('0', 64)))
+            Assert.ThrowsAny<Exception>(() => invalid.CreateClient());
+        await using (var configured = SelectedHost(selected.Sha256))
+        {
+            using var client = configured.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+            using var repeated = await client.PostAsJsonAsync("/api/review/intake/json", originalRequest);
+            Assert.Equal(HttpStatusCode.OK, repeated.StatusCode);
+            using var historical = JsonDocument.Parse(await repeated.Content.ReadAsStringAsync());
+            Assert.Equal("DUPLICATE", historical.RootElement.GetProperty("acceptance").GetString());
+            Assert.Equal(originalAssessment, historical.RootElement.GetProperty("workCase").GetProperty("assessmentJson").GetString());
+            using var fresh = await client.PostAsJsonAsync("/api/review/intake/json", nextRequest);
+            Assert.Equal(HttpStatusCode.OK, fresh.StatusCode);
+            using var json = JsonDocument.Parse(await fresh.Content.ReadAsStringAsync());
+            var result = NormaCase.Serialization.AssessmentJson.Deserialize(json.RootElement.GetProperty("workCase").GetProperty("assessmentJson").GetString()!).Assessment;
+            Assert.Equal(selected.ReleaseId, result.KnowledgeRelease);
+            Assert.Equal(NormaCase.Domain.Decision.AssessmentOutcome.NotSupported, result.Outcome);
+            using var outbound = await client.PostAsJsonAsync($"/api/review/work-cases/{oldCase}/outbound", export);
+            Assert.Equal(HttpStatusCode.OK, outbound.StatusCode);
+            using var retained = JsonDocument.Parse(await outbound.Content.ReadAsStringAsync());
+            Assert.Equal(originalOutbound, retained.RootElement.GetProperty("resultJson").GetString());
+        }
+        // A later approved activation must not silently move the configured revision.
+        await governance.ActivateAsync(new(proposal.ChangeId, 1, "synthetic-local:activator", DateTimeOffset.UnixEpoch));
+        await using var restarted = SelectedHost(selected.Sha256);
+        using var after = restarted.CreateClient();
+        after.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
+        using var restored = await after.PostAsJsonAsync("/api/review/intake/json", nextRequest);
+        Assert.Equal(HttpStatusCode.OK, restored.StatusCode);
+        using var restoredJson = JsonDocument.Parse(await restored.Content.ReadAsStringAsync());
+        Assert.Equal("DUPLICATE", restoredJson.RootElement.GetProperty("acceptance").GetString());
+        Assert.Equal(selected.ReleaseId, NormaCase.Serialization.AssessmentJson.Deserialize(
+            restoredJson.RootElement.GetProperty("workCase").GetProperty("assessmentJson").GetString()!).Assessment.KnowledgeRelease);
+    }
+
+    [Fact]
     public async Task Fresh_intake_review_and_two_outbound_sinks_survive_restart()
     {
         var connection = Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");

@@ -13,6 +13,60 @@ public sealed class PostgresReviewedKnowledgeActivationStoreTests
     [Theory]
     [InlineData("a")]
     [InlineData("c")]
+    public async Task Exact_selection_retains_review_and_evidence_and_never_follows_latest(string letter)
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var releases = new PostgresKnowledgeReleaseStore(source);
+        var evidence = new PostgresKnowledgeEvidenceStore(source);
+        var governance = new PostgresReviewedKnowledgeActivationStore(source, requireRetainedEvidence: true);
+        var artifact = await releases.RegisterAsync(Fixture(letter));
+        var ids = new List<string>();
+        foreach (var kind in new[] { "SOURCE", "IMPACT", "TESTS" })
+        {
+            var item = await evidence.RegisterAsync(new(Id(), kind, "Synthetischer Beleg", "Exakter synthetischer Inhalt", "proposer", Time));
+            ids.Add(item.EvidenceId);
+        }
+        async Task<KnowledgeActivationRecord> Activate(KnowledgeReleaseArtifact release, long revision)
+        {
+            var proposal = new KnowledgeChangeProposal(Id(), release.PackId, release.ReleaseId, release.Sha256,
+                ids[0], ids[1], ids[2], "proposer", Time);
+            await governance.ProposeAsync(proposal);
+            await governance.DecideAsync(new(proposal.ChangeId, "reviewer", Time, true, "Synthetisch geprüft"));
+            return await governance.ActivateAsync(new(proposal.ChangeId, revision, "activator", Time));
+        }
+        var active = await Activate(artifact, 0);
+        var selection = new KnowledgeActivationSelection(artifact.PackId, active.Revision, artifact.ReleaseId, artifact.Sha256);
+        var service = new KnowledgeActivationSelectionService(governance, releases, evidence);
+        Assert.Equal(artifact.KnowledgePackJson, (await service.LoadAsync(selection)).KnowledgePackJson);
+        var node = JsonNode.Parse(artifact.KnowledgePackJson)!;
+        node["manifest"]!["releaseId"] = Id();
+        var newer = await releases.RegisterAsync(node.ToJsonString());
+        await Activate(newer, 1);
+        Assert.Equal(artifact.KnowledgePackJson, (await service.LoadAsync(selection)).KnowledgePackJson);
+        await Assert.ThrowsAsync<KnowledgeActivationSelectionException>(() => service.LoadAsync(
+            new(artifact.PackId, 99, artifact.ReleaseId, artifact.Sha256)));
+        await Assert.ThrowsAsync<KnowledgeActivationSelectionException>(() => service.LoadAsync(
+            new(artifact.PackId, 1, newer.ReleaseId, newer.Sha256)));
+        await Assert.ThrowsAsync<KnowledgeActivationSelectionException>(() => service.LoadAsync(
+            new(artifact.PackId, 1, artifact.ReleaseId, new string('0', 64))));
+        await using var restartedSource = Source();
+        Assert.Equal(artifact.KnowledgePackJson, (await new KnowledgeActivationSelectionService(
+            new PostgresReviewedKnowledgeActivationStore(restartedSource), new PostgresKnowledgeReleaseStore(restartedSource),
+            new PostgresKnowledgeEvidenceStore(restartedSource)).LoadAsync(selection)).KnowledgePackJson);
+        var legacy = await releases.RegisterAsync(Fixture(letter));
+        var legacyGovernance = new PostgresReviewedKnowledgeActivationStore(source);
+        var legacyProposal = Proposal(legacy);
+        await legacyGovernance.ProposeAsync(legacyProposal);
+        await legacyGovernance.DecideAsync(new(legacyProposal.ChangeId, "reviewer", Time, true, "Historical reference only"));
+        await legacyGovernance.ActivateAsync(new(legacyProposal.ChangeId, 0, "activator", Time));
+        await Assert.ThrowsAsync<KnowledgeActivationSelectionException>(() => service.LoadAsync(
+            new(legacy.PackId, 1, legacy.ReleaseId, legacy.Sha256)));
+    }
+
+    [Theory]
+    [InlineData("a")]
+    [InlineData("c")]
     public async Task Reviewed_activation_retains_exact_history_and_restart_without_validation_promotion(string letter)
     {
         await using var source = Source();
