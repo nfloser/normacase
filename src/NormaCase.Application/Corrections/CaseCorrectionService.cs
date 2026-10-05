@@ -37,7 +37,7 @@ public sealed class CaseCorrectionPolicy
 
 public sealed record CaseCorrectionCommand(string CorrectionId, AssessmentId AssessmentId,
     long ExpectedCaseRevision, long ExpectedProcessRevision, long ExpectedAuditRevision,
-    DateTimeOffset RecordedAtUtc, string Reason, NormalizedIntakeRequest CorrectedInput);
+    DateTimeOffset RecordedAtUtc, string PlatformVersion, string Reason, NormalizedIntakeRequest CorrectedInput);
 
 /// <summary>Append-only relation to the exact preceding input and assessment, including its review revision.</summary>
 public sealed record CaseCorrectionLink(string CorrectionId, CaseId CaseId,
@@ -98,6 +98,7 @@ public sealed class CaseCorrectionService(ICaseCorrectionAuthorizer authorizer)
         ArgumentNullException.ThrowIfNull(routing); ArgumentNullException.ThrowIfNull(command.CorrectedInput);
         CorrectionBoundary.Identifier(command.CorrectionId);
         CorrectionBoundary.Text(command.Reason, 1000);
+        CorrectionBoundary.Text(command.PlatformVersion, 256);
         if (command.AssessmentId.IsEmpty || command.ExpectedCaseRevision < 1
             || command.ExpectedProcessRevision < 0 || command.ExpectedAuditRevision < 1
             || command.RecordedAtUtc == default || command.RecordedAtUtc.Offset != TimeSpan.Zero)
@@ -135,7 +136,7 @@ public sealed class CaseCorrectionService(ICaseCorrectionAuthorizer authorizer)
             throw new CaseCorrectionPolicyException();
         var input = new NormalizedIntakeService(new PreparationOnlyStore()).Normalize(command.CorrectedInput, pack);
         var assessment = new AssessmentRecorder().Evaluate(pack, input.Input.Facts, input.Input.AssessmentDate, input.Input.Evidence,
-            new(command.AssessmentId, input.CaseId, current.Assessment.PlatformVersion, command.RecordedAtUtc));
+            new(command.AssessmentId, input.CaseId, command.PlatformVersion, command.RecordedAtUtc));
         var revision = checked(current.Process.CaseRevision + 1);
         var start = CaseProcessingInstance.Start(input.CaseId, revision, workflow);
         var routed = new CaseProcessingRoutingService().Apply(new AssessmentTriageService().Route(assessment, triage),

@@ -46,7 +46,9 @@ public sealed class CaseCorrectionServiceTests
         Assert.Single(result.Next.Audit.Events);
         Assert.NotEqual(fixture.Current.Assessment.AssessmentId, result.Next.Assessment.AssessmentId);
         Assert.Equal(AssessmentOutcome.Supported, result.Next.Assessment.Result.Outcome);
-        Assert.Equal(TruthValue.Unknown, fixture.Current.Assessment.Input.Facts["criterion_a"].Truth);
+        Assert.True(fixture.Current.Assessment.Input.Facts["criterion_a"].IsUnknown);
+        Assert.Equal("current-platform", result.Next.Assessment.PlatformVersion);
+        Assert.Equal("test-platform", fixture.Current.Assessment.PlatformVersion);
         Assert.Equal(1, fixture.Original.Provenance.UpstreamRevision);
         Assert.Equal(fixture.Current.Assessment.AssessmentId, result.Link.PreviousAssessmentId);
         Assert.Equal(fixture.Original.Provenance.MessageId, result.Link.PreviousMessageId);
@@ -158,7 +160,7 @@ public sealed class CaseCorrectionServiceTests
             fixture.Original, fixture.Pack, Workflow, policy ?? Policy(), Triage, Routing);
     private static CaseCorrectionCommand Command(Data fixture)
         => new("correction-one", new("assessment-two"), 1, 1, 1, Time.AddMinutes(1),
-            "Synthetic corrected information", new(fixture.Original.CaseId, fixture.Original.CaseTypeId,
+            "current-platform", "Synthetic corrected information", new(fixture.Original.CaseId, fixture.Original.CaseTypeId,
             new("source-one", "order-one", "message-two", 2, "synthetic-json", 1, Time.AddMinutes(1)),
             fixture.Original.Input.AssessmentDate,
             new Dictionary<string, CaseValue> { ["criterion_a"] = TruthValue.Yes, ["criterion_b"] = TruthValue.Yes, ["criterion_c"] = TruthValue.No },

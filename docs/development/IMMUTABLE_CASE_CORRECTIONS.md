@@ -11,12 +11,12 @@ the trusted authentication adapter output and exact policy against the current c
 Information completion and manual-review correction are separate synthetic policies.
 
 The command names the correction and new assessment identities, expected case,
-process and audit revisions, explicit UTC recording time, bounded reason and full
+process and audit revisions, explicit UTC recording time and executing platform version, bounded reason and full
 structured corrected input. The retained original receipt must match the current
 assessment facts/evidence/date, exact Knowledge release, case and upstream stream.
 Only the consecutive upstream/case revision is accepted. Corrections use that same
 retained Knowledge release; adopting another release requires a separate migration
-policy. A platform upgrade likewise needs an explicit evaluator boundary.
+policy. The caller supplies the executing platform version; it is never inherited from a historical assessment.
 
 Preparation reuses normalization, deterministic assessment, triage and workflow
 routing. Missing data remains UNKNOWN/INCOMPLETE. The new process starts afresh;
