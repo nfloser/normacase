@@ -197,7 +197,8 @@ public sealed class PostgresReviewedEntitlementChangeStore(
             await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
             await LockActor(connection, transaction, actorId, cancellationToken);
             var state = await LoadEffectiveAsync(connection, transaction, actorId, cancellationToken);
-            var result = await action(state, cancellationToken);
+            var result = await PostgresAuthorizedOperation.RunAsync(
+                new(dataSource, connection, transaction, state), () => action(state, cancellationToken));
             await transaction.CommitAsync(cancellationToken);
             return result;
         }

@@ -32,14 +32,15 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
         if (state.Audit.Events.Count != 1) throw new CaseReviewBindingException();
         try
         {
-            await using var connection = await source.OpenConnectionAsync(cancellationToken);
-            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await using var session = await PostgresOperationSession.OpenAsync(source, cancellationToken);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             await Lock(connection, transaction, state.Process.CaseId, cancellationToken);
             if (await Read(connection, transaction, state.Process.CaseId, cancellationToken) is not null)
                 throw new CaseReviewConflictException();
             await VerifyAssessment(connection, transaction, state, cancellationToken);
             await Insert(connection, transaction, state, 0, json, cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+            await session.CommitAsync(cancellationToken);
         }
         catch (NpgsqlException) { throw new CaseReviewStorageException(); }
     }
@@ -52,8 +53,9 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
         if (state.Audit.Events.Count != 1) throw new CaseReviewBindingException();
         try
         {
-            await using var connection = await source.OpenConnectionAsync(token);
-            await using var transaction = await connection.BeginTransactionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             await Lock(connection, transaction, state.Process.CaseId, token);
             var existing = await Read(connection, transaction, state.Process.CaseId, token);
             if (existing is not null)
@@ -64,7 +66,7 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
             }
             await PostgresAssessmentRecordStore.AppendOnConnectionAsync(state.Assessment, connection, transaction, token);
             await Insert(connection, transaction, state, 0, CaseReviewStateJson.Serialize(state), token);
-            await transaction.CommitAsync(token);
+            await session.CommitAsync(token);
             return state;
         }
         catch (NpgsqlException) { throw new CaseReviewStorageException(); }
@@ -74,7 +76,8 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
     {
         try
         {
-            await using var connection = await source.OpenConnectionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            var connection = session.Connection;
             await using var command = new NpgsqlCommand("SELECT DISTINCT case_id FROM normacase.case_review_versions ORDER BY case_id LIMIT 501", connection);
             await using var reader = await command.ExecuteReaderAsync(token);
             var ids = new List<CaseId>();
@@ -94,7 +97,8 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
         if (scope?.Length > 500) throw new ArgumentException("Case scope exceeds limit.", nameof(permittedCases));
         try
         {
-            await using var connection = await source.OpenConnectionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            var connection = session.Connection;
             await using var command = new NpgsqlCommand(
                 "SELECT DISTINCT case_id COLLATE \"C\" FROM normacase.case_review_versions WHERE ($1::text IS NULL OR case_id COLLATE \"C\" > $1 COLLATE \"C\") AND ($2::text[] IS NULL OR case_id = ANY($2)) ORDER BY case_id COLLATE \"C\" LIMIT $3", connection);
             command.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Text, Value = (object?)afterCaseId ?? DBNull.Value });
@@ -115,8 +119,9 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
         if (caseId.IsEmpty) throw new ArgumentException("Explicit case identity required.", nameof(caseId));
         try
         {
-            await using var connection = await source.OpenConnectionAsync(cancellationToken);
-            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await using var session = await PostgresOperationSession.OpenAsync(source, cancellationToken);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             await Lock(connection, transaction, caseId, cancellationToken);
             var current = await Read(connection, transaction, caseId, cancellationToken) ?? throw new CaseReviewBindingException();
             var next = update(current.State);
@@ -124,7 +129,7 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
             var json = CaseReviewStateJson.Serialize(next);
             cancellationToken.ThrowIfCancellationRequested();
             await Insert(connection, transaction, next, checked(current.Version + 1), json, cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+            await session.CommitAsync(cancellationToken);
             return next;
         }
         catch (NpgsqlException) { throw new CaseReviewStorageException(); }
@@ -135,8 +140,9 @@ public sealed class PostgresCaseReviewStore(NpgsqlDataSource dataSource, Func<st
         if (caseId.IsEmpty) throw new ArgumentException("Explicit case identity required.", nameof(caseId));
         try
         {
-            await using var connection = await source.OpenConnectionAsync(cancellationToken);
-            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await using var session = await PostgresOperationSession.OpenAsync(source, cancellationToken);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             var result = await Read(connection, transaction, caseId, cancellationToken);
             return result?.State;
         }

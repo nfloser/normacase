@@ -33,9 +33,23 @@ for queue scoping, case detail, review, batch, intake and outbound authorization
 
 Protected reads and mutations acquire the same transaction-scoped per-identity advisory
 lock as approval. The effective snapshot is loaded only after that lock is held and the
-lock is retained until the protected read or mutation has completed. Concurrent revocation
+lock is retained until the protected read or mutation has committed. Review, intake,
+assessment initialization, batch request/results and inbox receipts borrow the same
+connection and transaction. Nested stores cannot commit or dispose that transaction.
+A connection loss therefore rolls back all protected writes instead of allowing a
+stale callback to reconnect and commit separately. A protected operation uses one
+pooled connection, including bounded batches. Concurrent revocation
 therefore orders entirely before or after the operation; a stale pre-check cannot cross
 the change boundary. Read-only projections remain bounded by the current exact case set.
+File delivery is deliberately outside the database transaction: an exact immutable
+outbound command (payload hash, authenticated actor, entitlement revision and UTC time)
+is committed under the authorization lock before any file side effect. If that commit
+fails, no file is dispatched. Revocation prevents new commands; it does not recall an
+already committed command. Retry uses the same message/destination identity, bounded
+idempotent file sink and durable terminal receipt. This is synthetic dispatch authority,
+not institution approval or a general background delivery worker.
+
+Persistent legacy wildcard credentials fail startup before connecting to PostgreSQL.
 The non-persistent legacy preview retains its historical local configuration behavior
 and receives no implicit `BATCH` permission.
 

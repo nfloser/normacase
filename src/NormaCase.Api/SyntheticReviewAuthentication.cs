@@ -40,6 +40,8 @@ internal sealed class SyntheticReviewCredential
             throw new InvalidOperationException("Invalid synthetic administration configuration.");
         if (users.Length == 0)
         {
+            if (configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled"))
+                throw new InvalidOperationException("Persistent review requires exact configured synthetic users.");
             if (administrator is not null || entitlementApprover is not null)
                 throw new InvalidOperationException("Identity administration requires separate synthetic users.");
             if (!TryDecode(configuration["SyntheticReview:Credential"], out var bytes))

@@ -17,8 +17,9 @@ public sealed class PostgresNormalizedIntakeStore(NpgsqlDataSource source) : INo
         ArgumentNullException.ThrowIfNull(record); var provenance = record.Provenance;
         try
         {
-            await using var connection = await source.OpenConnectionAsync(token);
-            await using var transaction = await connection.BeginTransactionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
             // One bounded synthetic host: a global lock also protects cross-stream CaseId ownership.
             await Execute(connection, transaction, "SELECT pg_advisory_xact_lock(hashtextextended('normacase.intake',0))", token);
             await using (var lookup = new NpgsqlCommand("SELECT upstream_case_id,upstream_revision FROM normacase.intake_messages WHERE source_system_id=$1 AND message_id=$2", connection, transaction))
@@ -31,7 +32,7 @@ public sealed class PostgresNormalizedIntakeStore(NpgsqlDataSource source) : INo
             if (existing is not null)
             {
                 if (!existing.HasSameContent(record)) throw new IntakeConflictException();
-                await Alias(connection, transaction, provenance, token); await transaction.CommitAsync(token);
+                await Alias(connection, transaction, provenance, token); await session.CommitAsync(token);
                 return new(IntakeAcceptance.Duplicate, existing);
             }
             await using (var ownership = new NpgsqlCommand("SELECT source_system_id,upstream_case_id,case_id,case_type_id FROM normacase.intake_streams WHERE (source_system_id=$1 AND upstream_case_id=$2) OR case_id=$3", connection, transaction))
@@ -55,7 +56,7 @@ public sealed class PostgresNormalizedIntakeStore(NpgsqlDataSource source) : INo
             {
                 insert.Parameters.AddWithValue(provenance.SourceSystemId); insert.Parameters.AddWithValue(provenance.UpstreamCaseId); insert.Parameters.AddWithValue(provenance.UpstreamRevision); insert.Parameters.AddWithValue(NpgsqlDbType.Json, json); insert.Parameters.AddWithValue(Hash(json)); await insert.ExecuteNonQueryAsync(token);
             }
-            await Alias(connection, transaction, provenance, token); await transaction.CommitAsync(token);
+            await Alias(connection, transaction, provenance, token); await session.CommitAsync(token);
             return new(IntakeAcceptance.Accepted, record);
         }
         catch (NpgsqlException) { throw new IntakeStorageException(); }
@@ -64,7 +65,8 @@ public sealed class PostgresNormalizedIntakeStore(NpgsqlDataSource source) : INo
     {
         // Reuse boundary validation without touching knowledge or input values.
         _ = new IntakeProvenance(sourceSystemId, upstreamCaseId, "load", upstreamRevision, "load", 1, new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero));
-        try { await using var connection = await source.OpenConnectionAsync(token); return await Read(connection, null, sourceSystemId, upstreamCaseId, upstreamRevision, token); }
+        try { await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            var connection = session.Connection; return await Read(connection, null, sourceSystemId, upstreamCaseId, upstreamRevision, token); }
         catch (NpgsqlException) { throw new IntakeStorageException(); }
     }
     public async Task<NormalizedIntakeRecord?> LoadForCaseAsync(NormaCase.Domain.Cases.CaseId caseId, CancellationToken token = default)
@@ -72,7 +74,8 @@ public sealed class PostgresNormalizedIntakeStore(NpgsqlDataSource source) : INo
         if (caseId.IsEmpty) throw new ArgumentException("Explicit case identity required.");
         try
         {
-            await using var connection = await source.OpenConnectionAsync(token);
+            await using var session = await PostgresOperationSession.OpenAsync(source, token);
+            var connection = session.Connection;
             string system; string upstream; long revision;
             await using (var command = new NpgsqlCommand("SELECT s.source_system_id,s.upstream_case_id,max(r.upstream_revision) FROM normacase.intake_streams s JOIN normacase.intake_records r USING(source_system_id,upstream_case_id) WHERE s.case_id=$1 GROUP BY s.source_system_id,s.upstream_case_id", connection))
             {

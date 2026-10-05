@@ -168,3 +168,13 @@ bereitgestellt. Der Betreiber muss das Verzeichnis vor anderen lokalen Nutzern
 schützen. Wiederholung nach Abbruch vergleicht den ursprünglichen Inhalt; sie ändert
 keinen Review. Details und die Backup-/Restore-Probe stehen in
 [synthetischer Gesamtablauf](../development/SYNTHETIC_ROUNDTRIP.de.md).
+
+### Authorization transaction and file dispatch
+
+Persistent operation requires exact `SyntheticReview:Users` identities; the legacy
+`SyntheticReview:Credential` is accepted only without persistence. All protected
+PostgreSQL stores share the transaction that owns the actor entitlement lock. Backend
+termination rolls back nested writes and batch receipts. No replacement connection is
+opened during that authorized operation. The file adapter receives an immutable exact
+authorized outbound request only after its authorization transaction commits. Already
+committed commands may finish after revocation; new commands cannot be authorized.

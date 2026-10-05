@@ -268,3 +268,18 @@ on logout and stores no credentials; it is not an authorization boundary. The ho
 does not automatically consume recorded activations. Transaction-safe live permission
 administration and institution-approved authority remain separate implementation and
 external policy concerns.
+
+
+### Knowledge evidence substitution and document execution
+
+The synthetic governance host now requires immutable typed SOURCE/IMPACT/TESTS
+artifacts that existed by proposal time. Content hashes are checked during load and
+inside proposal/review/activation transactions; wrong types, missing artifacts and
+late substitute evidence fail. Source references cannot be overwritten to alter a
+previous approval. The retained text is bounded strict UTF-8, not an executable
+attachment, HTML view, automatic URL fetch or a medical fact. React renders literal
+text safely and no content is logged. Only the verified configured proposer can record
+evidence; metadata is server-owned. Exact content hashes do not authenticate source
+quality or defend against privileged wholesale database insertion/schema compromise.
+Legacy reference-only history remains visible without being silently promoted into
+new approval eligibility. See [Knowledge evidence retention](../architecture/KNOWLEDGE_EVIDENCE_RETENTION.md).

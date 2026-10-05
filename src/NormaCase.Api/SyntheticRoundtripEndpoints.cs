@@ -76,7 +76,8 @@ internal static class SyntheticRoundtripEndpoints
             try
             {
                 var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
-                return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
+                OutboundDeliveryRequest? fileRequest = null;
+                var authorizedResult = await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
                 {
                 if (!SyntheticReviewEndpoints.PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
                     return DemoHost.Error("unknown_work_case", 404);
@@ -98,7 +99,15 @@ internal static class SyntheticRoundtripEndpoints
                 };
                 // Message identity is the delivery identity; callers cannot change an independent
                 // delivery id to repeat the same reviewed message side effect.
-                var receipt = await new ReviewedCaseDeliveryService(outbound).DeliverAsync(new(result.MessageId, sink.DestinationId, result), sink, lockedToken);
+                var deliveryRequest = new OutboundDeliveryRequest(result.MessageId, sink.DestinationId, result);
+                if (ReferenceEquals(sink, file))
+                {
+                    await new PostgresAuthorizedOutboundRequestStore(source).RegisterAsync(
+                        deliveryRequest, TimeProvider.System.GetUtcNow(), lockedToken);
+                    fileRequest = deliveryRequest;
+                    return Results.NoContent();
+                }
+                var receipt = await new ReviewedCaseDeliveryService(outbound).DeliverAsync(deliveryRequest, sink, lockedToken);
                 return Results.Json(new
                 {
                     status = receipt.Status.ToString().ToUpperInvariant(),
@@ -107,6 +116,16 @@ internal static class SyntheticRoundtripEndpoints
                     resultJson = ReviewedCaseResultJson.Serialize(receipt.Result)
                 });
                 }, token);
+                if (fileRequest is null) return authorizedResult;
+                // Execute only after the outer authorization transaction committed successfully.
+                var delivered = await new ReviewedCaseDeliveryService(outbound).DeliverAsync(fileRequest, file!, token);
+                return Results.Json(new
+                {
+                    status = delivered.Status.ToString().ToUpperInvariant(),
+                    delivered.IsCommitted,
+                    delivered.TransportReference,
+                    resultJson = ReviewedCaseResultJson.Serialize(delivered.Result)
+                });
             }
             catch (OutboundResultConflictException) { return DemoHost.Error("review_conflict", 409); }
             catch (OutboundDeliveryConflictException) { return DemoHost.Error("review_conflict", 409); }

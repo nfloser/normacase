@@ -3,7 +3,7 @@ using NormaCase.Application.Knowledge;
 
 namespace NormaCase.Persistence.PostgreSql;
 
-public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource dataSource)
+public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource dataSource, bool requireRetainedEvidence = false)
     : IReviewedKnowledgeActivationStore
 {
     public async Task<KnowledgeChangeRecord> ProposeAsync(KnowledgeChangeProposal proposal, CancellationToken token = default)
@@ -12,6 +12,7 @@ public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource da
         return await Write(async (connection, transaction) =>
         {
             await VerifyRelease(connection, transaction, proposal, token);
+            if (requireRetainedEvidence) await PostgresKnowledgeEvidenceStore.Verify(connection, transaction, proposal, token);
             await using var insert = new NpgsqlCommand("""
                 INSERT INTO normacase.knowledge_changes
                 (change_id,pack_id,release_id,pack_sha256,source_reference,impact_reference,test_reference,proposer_actor_id,proposed_at_utc)
@@ -36,6 +37,7 @@ public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource da
                 || decision.ReviewedAtUtc < existing.Proposal.ProposedAtUtc)
                 throw new KnowledgeGovernanceConflictException();
             await VerifyRelease(connection, transaction, existing.Proposal, token);
+            if (requireRetainedEvidence) await PostgresKnowledgeEvidenceStore.Verify(connection, transaction, existing.Proposal, token);
             await using var insert = new NpgsqlCommand("""
                 INSERT INTO normacase.knowledge_change_decisions
                 (change_id,reviewer_actor_id,reviewed_at_utc,approved,reason) VALUES ($1,$2,$3,$4,$5)
@@ -67,6 +69,7 @@ public sealed class PostgresReviewedKnowledgeActivationStore(NpgsqlDataSource da
                 || (current is not null && command.ActivatedAtUtc < current.ActivatedAtUtc))
                 throw new KnowledgeGovernanceConflictException();
             await VerifyRelease(connection, transaction, change.Proposal, token);
+            if (requireRetainedEvidence) await PostgresKnowledgeEvidenceStore.Verify(connection, transaction, change.Proposal, token);
             var result = new KnowledgeActivationRecord(change.Proposal.PackId, command.ExpectedRevision + 1,
                 command.ChangeId, change.Proposal.ReleaseId, change.Proposal.Sha256, command.ActorId, command.ActivatedAtUtc);
             await using var insert = new NpgsqlCommand("""

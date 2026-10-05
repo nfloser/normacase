@@ -36,7 +36,7 @@ internal sealed class SyntheticLiveEntitlements(
         CancellationToken token = default)
     {
         EnsureLocal(actor);
-        if (!persistent || credential.IsLegacyActor(actor.ActorId))
+        if (!persistent)
             return await action(credential.ConfiguredEntitlementSnapshot(actor.ActorId), token);
         return await store.ExecuteWithEffectiveLockAsync(actor.ActorId,
             (state, lockedToken) => action(new(state), lockedToken), token);

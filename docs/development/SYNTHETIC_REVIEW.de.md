@@ -145,13 +145,16 @@ Identität haben. Die Zuweisung erzeugt keine zusätzlichen Fallrechte. Eine ges
 Identität kann auch die Wissensverwaltung nicht benutzen.
 
 Nach Anmeldung erscheint „Wissen verwalten“. Alice wählt einen vorhandenen
-synthetischen Release und gibt Quellen-, Auswirkungs- und Testreferenzen an. Bob
+synthetischen Release und gibt Bezeichnungen sowie die synthetischen Quellen-,
+Auswirkungs- und Testtexte an. Jeder Nachweis wird unveränderlich gespeichert;
+pro Text sind höchstens 64 KiB UTF-8 zulässig. Bob
 öffnet den Vorschlag, prüft die referenzierten Nachweise und gibt mit Begründung frei
 oder lehnt ab. Eine Freigabe kann anschließend ausdrücklich protokolliert aktiviert
 werden. Prüfsumme, Beteiligte, Zeiten und Aktivierungsrevision bleiben erhalten.
 Die Liste zeigt höchstens 25 Vorschläge pro Seite; „Weitere Wissensänderungen“ lädt
 die nächste Seite. Bei Konflikt wird der gespeicherte Stand neu geladen.
 
-Referenzangaben sind keine gespeicherten Quellendokumente und keine fachliche
-MD-Freigabe. Die Aktivierung stellt den laufenden Host nicht um und bewertet keine
+Die gespeicherten Nachweistexte sind keine fachliche MD-Freigabe. Alte
+Vorschläge ohne vollständige ursprüngliche Nachweise bleiben lesbar; für weitere
+Prüfung oder Aktivierung muss ein neuer Vorschlag angelegt werden. Die Aktivierung stellt den laufenden Host nicht um und bewertet keine
 historischen Fälle neu. Diese technische Wissensverwaltung bleibt synthetisch.

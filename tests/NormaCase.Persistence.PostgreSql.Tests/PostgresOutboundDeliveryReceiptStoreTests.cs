@@ -1,5 +1,6 @@
 using Npgsql;
 using NormaCase.Application.Outbound;
+using NormaCase.Application.Authorization;
 using NormaCase.Domain.Audit;
 using NormaCase.Domain.Decision;
 using NormaCase.Persistence.PostgreSql;
@@ -9,6 +10,54 @@ namespace NormaCase.Persistence.PostgreSql.Tests;
 
 public sealed class PostgresOutboundDeliveryReceiptStoreTests
 {
+    [Fact]
+    public async Task Exact_file_command_requires_authorized_commit_and_is_immutable()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var id = "authorized-file-" + Guid.NewGuid().ToString("N");
+        var request = new OutboundDeliveryRequest(id, "synthetic-file", Sample(id));
+        var actor = "synthetic-local:file-" + Guid.NewGuid().ToString("N");
+        var entitlements = new PostgresReviewedEntitlementChangeStore(source);
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, ["READ", "EXPORT"], [request.Result.CaseId.Value]));
+        var commands = new PostgresAuthorizedOutboundRequestStore(source);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => commands.RegisterAsync(request, DateTimeOffset.UnixEpoch));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => entitlements.ExecuteWithEffectiveLockAsync<int>(actor,
+            async (_, token) =>
+            {
+                await commands.RegisterAsync(request, DateTimeOffset.UnixEpoch, token);
+                throw new InvalidOperationException("Synthetic dispatch failure");
+            }));
+        await using (var count = source.CreateCommand("SELECT count(*) FROM normacase.authorized_outbound_requests WHERE delivery_id=$1"))
+        {
+            count.Parameters.AddWithValue(id);
+            Assert.Equal(0L, await count.ExecuteScalarAsync());
+        }
+        async Task<bool> Register(OutboundDeliveryRequest value) => await entitlements.ExecuteWithEffectiveLockAsync(actor,
+            async (_, token) => { await commands.RegisterAsync(value, DateTimeOffset.UnixEpoch, token); return true; });
+        Assert.All(await Task.WhenAll(Enumerable.Range(0, 4).Select(_ => Register(request))), Assert.True);
+        await Assert.ThrowsAsync<OutboundDeliveryConflictException>(() => Register(request with
+            { Result = request.Result with { CorrelationId = "changed" } }));
+        foreach (var sql in new[]
+        {
+            "UPDATE normacase.authorized_outbound_requests SET actor_id=actor_id WHERE delivery_id=$1",
+            "DELETE FROM normacase.authorized_outbound_requests WHERE delivery_id=$1"
+        })
+        {
+            await using var command = source.CreateCommand(sql);
+            command.Parameters.AddWithValue(id);
+            await Assert.ThrowsAsync<PostgresException>(() => command.ExecuteNonQueryAsync());
+        }
+        await using var retained = source.CreateCommand("SELECT actor_id,entitlement_revision,result_sha256 FROM normacase.authorized_outbound_requests WHERE delivery_id=$1");
+        retained.Parameters.AddWithValue(id);
+        await using var reader = await retained.ExecuteReaderAsync();
+        Assert.True(await reader.ReadAsync());
+        Assert.Equal(actor, reader.GetString(0));
+        Assert.Equal(0L, reader.GetInt64(1));
+        Assert.Equal(64, reader.GetString(2).Length);
+        Assert.False(await reader.ReadAsync());
+    }
+
     [Fact]
     public async Task Delivered_receipt_survives_store_restart_and_prevents_second_sink_side_effect()
     {

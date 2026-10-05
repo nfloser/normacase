@@ -7,6 +7,7 @@ No database deletion, connection-string output, or credential persistence.
 """
 import base64
 import json
+import hashlib
 import os
 from pathlib import Path
 import secrets
@@ -44,10 +45,22 @@ def run(mode, manifest_path):
     outbound_directory = manifest_path.parent / "synthetic-outbound"
     outbound_directory.mkdir(parents=True, exist_ok=True)
     token = base64.b64encode(secrets.token_bytes(32)).decode("ascii")
+    scenarios = [("accepted", "demo-g-supported"), ("overridden", "demo-g-not-supported"),
+                 ("incomplete", "demo-g-incomplete"), ("review", "demo-g-review")]
+    payloads = ([{"formatVersion": 1, "order": "smoke-" + uuid.uuid4().hex, "message": "input-" + suffix,
+                  "revision": "1", "input": json.loads((ROOT / "examples/cases" / (case_name + ".json")).read_text())}
+                 for suffix, case_name in scenarios] if mode == "create" else
+                [entry["payload"] for entry in json.loads(manifest_path.read_text(encoding="utf-8"))])
     env = os.environ.copy()
     env.update({"SyntheticReview__Enabled": "true", "SyntheticReview__PersistenceEnabled": "true",
-                "SyntheticReview__Credential": token, "ConnectionStrings__SyntheticReview": connection,
+                "SyntheticReview__Users__reviewer__Credential": token, "ConnectionStrings__SyntheticReview": connection,
                 "SyntheticReview__OutboundDirectory": str(outbound_directory)})
+    env.pop("SyntheticReview__Credential", None)
+    for index, action in enumerate(["READ", "ACCEPT", "OVERRIDE", "INTAKE", "EXPORT"]):
+        env[f"SyntheticReview__Users__reviewer__Actions__{index}"] = action
+    for index, payload in enumerate(payloads):
+        case_id = "synthetic-intake-" + hashlib.sha256(("synthetic-json:" + payload["order"]).encode()).hexdigest()
+        env[f"SyntheticReview__Users__reviewer__CaseIds__{index}"] = case_id
     migration_connection = os.environ.get("NORMACASE_POSTGRES_MIGRATION_TEST_CONNECTION")
     if migration_connection:
         env["ConnectionStrings__SyntheticReviewMigrations"] = migration_connection
@@ -66,10 +79,7 @@ def run(mode, manifest_path):
             raise RuntimeError("Synthetic host did not become ready")
         if mode == "create":
             entries = []
-            for suffix, case_name in [("accepted", "demo-g-supported"), ("overridden", "demo-g-not-supported"),
-                                      ("incomplete", "demo-g-incomplete"), ("review", "demo-g-review")]:
-                payload = {"formatVersion": 1, "order": "smoke-" + uuid.uuid4().hex, "message": "input-" + suffix,
-                           "revision": "1", "input": json.loads((ROOT / "examples/cases" / (case_name + ".json")).read_text())}
+            for (suffix, _), payload in zip(scenarios, payloads):
                 request("/api/review/intake/json", payload, expected=401)
                 intake = request("/api/review/intake/json", payload, token=token)
                 case = intake["workCase"]
