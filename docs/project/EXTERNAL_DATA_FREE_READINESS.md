@@ -38,7 +38,7 @@ and must not be classified as externally blocked. Track completion in
 | Distinct identities and case/action permissions | Multiple exact case/action-scoped synthetic identities, persistent audited live suspension/reactivation, immutable reconciled revision-zero baselines and separate proposal/approval roles | Approved exact live grants and account suspension are transaction-bound; backend-loss, rollback and persistent legacy rejection regressions pass (#222); productive IdP/role mapping remains external |
 | Knowledge governance | Exact validated release artifacts are retained append-only in PostgreSQL and restored by exact identity; durable proposal/distinct-review/activation history with exact hashes and retained typed evidence | Authenticated synthetic API and German governance UI are integrated; explicit exact activation consumption for new intake and original-release replay is integrated; complete authoring/import workflow and broader operational adoption remain under assessment |
 | Corrections and clarification | Intake accepts only revision 1; incomplete/manual-review paths are not complete work cycles | Append-only corrected revisions/reassessment, configurable synthetic clarification and review policy, preserved historical inputs/results |
-| Batch review | Versioned opt-in policy, bounded unique commands, separate synthetic `BATCH` grants, authenticated API, PostgreSQL per-case transactions, append-only request/result idempotency with concurrency/restart recovery, German selection/cancellation/retry UX and real browser/database proof | Institution-approved permission and role mapping for productive batch use |
+| Batch review | Versioned opt-in policy, bounded unique commands, separate synthetic `BATCH` grants, authenticated API, PostgreSQL aggregate checks inside the shared HTTP authorization transaction, append-only request/result idempotency with concurrency/restart recovery, German selection/cancellation/retry UX and real browser/database proof | Institution-approved permission and role mapping for productive batch use |
 | Operational scale and installation | Local host, bounded and authorized paginated queues, native previews, restore rehearsal, privacy-safe liveness, live PostgreSQL/schema readiness and separately tested migration/runtime database roles | Documented reproducible target deployment/update, rollback/recovery and broader failure-path validation |
 
 Institutional role mappings, actual medical/process policies, vendor contracts and
@@ -50,12 +50,15 @@ platform scope and is not introduced as a requirement for completion.
 
 ## Access-independent completion boundary
 
-At this repository state, the synthetic integration path is proved, but known generic
-platform work remains in #184, #185 and #187. Identity authorization and separation of
-duties are complete for the generic synthetic adapter; remaining work includes durable knowledge approval/activation, correction and
-clarification cycles, policy-controlled batch review, and reproducible operational
-update/rollback behavior. These mechanisms can continue with synthetic identities,
-policies and packs; they are not blocked by missing MD data.
+At this repository state, the synthetic integration path is proved, but generic
+platform work remains in #183, #184, #185 and #187. Exact case/action authorization
+and account suspension are transaction-bound in the review/intake/outbound paths.
+The same failure boundary still needs acceptance review for configured Knowledge
+administration roles. Durable Knowledge approval/evidence and explicit activation
+consumption are integrated; release authoring/import, correction and clarification
+cycles, and reproducible operational update/rollback behavior remain. These mechanisms
+can continue with synthetic identities, policies and packs; they are not blocked by
+missing MD data.
 
 External authority becomes necessary for concrete institutional interface mappings,
 productive identity/role assignments, binding medical/process policy, target-specific
