@@ -178,3 +178,15 @@ termination rolls back nested writes and batch receipts. No replacement connecti
 opened during that authorized operation. The file adapter receives an immutable exact
 authorized outbound request only after its authorization transaction commits. Already
 committed commands may finish after revocation; new commands cannot be authorized.
+
+### Ausgewählten Wissensstand übernehmen
+
+Neue Eingänge können nach einem Neustart einen ausdrücklich gewählten, geprüften
+synthetischen Wissensstand verwenden. Dafür sind Pack-ID, Aktivierungsrevision,
+Release-ID und SHA-256 gemeinsam unter `SyntheticReview:IntakeKnowledgeActivation`
+anzugeben. Der Host prüft Freigabe, getrennte Gegenprüfung, gespeicherte Belege und
+exakten Inhalt; unvollständige oder abweichende Angaben verhindern den Start.
+Bestehende Fälle, wiederholte Eingänge und bereits erzeugte Ergebnisse behalten ihren
+ursprünglichen Wissensstand. Eine spätere Aktivierung ändert den laufenden Host nicht.
+Die vollständige Konfiguration steht in
+[exact Knowledge consumption](../architecture/EXACT_KNOWLEDGE_CONSUMPTION.md).

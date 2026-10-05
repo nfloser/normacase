@@ -65,12 +65,12 @@ internal static class SyntheticReviewEndpoints
     internal static void Map(
         WebApplication app,
         IReadOnlyDictionary<string, KnowledgePack> packs,
-        string platformVersion)
+        string platformVersion, KnowledgePack? intakePack = null)
     {
         var source = app.Services.GetRequiredService<NpgsqlDataSource>();
         var store = new PostgresCaseReviewStore(source, ResolveWorkflow);
         Seed(source, store, packs, platformVersion).GetAwaiter().GetResult();
-        SyntheticRoundtripEndpoints.Map(app, source, store, packs["synthetic.demo-g"], platformVersion);
+        SyntheticRoundtripEndpoints.Map(app, source, store, intakePack ?? packs["synthetic.demo-g"], platformVersion);
 
         var entitlements = app.Services.GetRequiredService<SyntheticLiveEntitlements>();
         var group = app.MapGroup("/api/review").RequireAuthorization();

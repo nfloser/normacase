@@ -81,6 +81,9 @@ public static class DemoHost
         var reviewCredential = app.Services.GetRequiredService<SyntheticReviewCredential>();
         var knowledgePermissions = app.Services.GetRequiredService<SyntheticKnowledgePermissions>();
         var persistentReviewEnabled = app.Configuration.GetValue<bool>("SyntheticReview:PersistenceEnabled");
+        var intakePack = packs["synthetic.demo-g"];
+        if (!persistentReviewEnabled && app.Configuration.GetSection("SyntheticReview:IntakeKnowledgeActivation").Exists())
+            throw new InvalidOperationException("Exact intake activation requires persistent synthetic review.");
         if (persistentReviewEnabled && !reviewCredential.Enabled)
             throw new InvalidOperationException("Persistent synthetic review requires the verified review identity boundary.");
 
@@ -104,6 +107,7 @@ public static class DemoHost
             }
             app.Services.GetRequiredService<SyntheticLiveEntitlements>()
                 .ReconcileAsync().GetAwaiter().GetResult();
+            intakePack = SyntheticIntakeKnowledge.LoadAsync(app.Configuration, source, intakePack).GetAwaiter().GetResult();
         }
 
         app.UseExceptionHandler(handler => handler.Run(async context =>
@@ -156,7 +160,7 @@ public static class DemoHost
                 .RequireAuthorization();
             if (persistentReviewEnabled)
             {
-                SyntheticReviewEndpoints.Map(app, packs, platformVersion);
+                SyntheticReviewEndpoints.Map(app, packs, platformVersion, intakePack);
                 SyntheticIdentityAdministrationEndpoints.Map(app);
                 SyntheticKnowledgeGovernance.Map(app);
                 SyntheticEntitlementAdministrationEndpoints.Map(app);

@@ -47,14 +47,25 @@ internal static class SyntheticRoundtripEndpoints
                 if (!entitlement.Allows(request.CaseId.Value, "INTAKE")) return DemoHost.Error("review_forbidden", 403);
                 // New upstream revisions need a separately approved correction policy.
                 if (request.Provenance.UpstreamRevision != 1) return DemoHost.Error("review_forbidden", 403);
-                var receipt = await new NormalizedIntakeService(intakeStore).AcceptAsync(request, pack, lockedToken);
+                var executionPack = pack;
+                var existing = await intakeStore.LoadAsync(request.Provenance.SourceSystemId,
+                    request.Provenance.UpstreamCaseId, request.Provenance.UpstreamRevision, lockedToken);
+                if (existing is not null)
+                {
+                    var originalRelease = await new PostgresKnowledgeReleaseStore(source).LoadAsync(
+                        existing.KnowledgePackId, existing.KnowledgeRelease, lockedToken)
+                        ?? throw new KnowledgeReleaseIntegrityException();
+                    executionPack = originalRelease.LoadPack();
+                    if (executionPack.Manifest.ValidationLevel != "SYNTHETIC") throw new KnowledgeReleaseIntegrityException();
+                }
+                var receipt = await new NormalizedIntakeService(intakeStore).AcceptAsync(request, executionPack, lockedToken);
                 var original = receipt.Record;
                 var state = await reviews.LoadAsync(original.CaseId, lockedToken);
                 if (state is null)
                 {
-                    if (original.KnowledgePackId != pack.Manifest.PackId || original.KnowledgeRelease != pack.Manifest.ReleaseId)
+                    if (original.KnowledgePackId != executionPack.Manifest.PackId || original.KnowledgeRelease != executionPack.Manifest.ReleaseId)
                         return DemoHost.Error("review_conflict", 409);
-                    var record = new AssessmentRecorder().Evaluate(pack, original.Input.Facts, original.Input.AssessmentDate, original.Input.Evidence,
+                    var record = new AssessmentRecorder().Evaluate(executionPack, original.Input.Facts, original.Input.AssessmentDate, original.Input.Evidence,
                         new(new("assessment-" + original.CaseId.Value), original.CaseId, platformVersion, original.Provenance.ReceivedAtUtc));
                     var process = CaseProcessingInstance.Start(original.CaseId, 1, SyntheticReviewEndpoints.Workflow);
                     var routed = new CaseProcessingRoutingService().Apply(new AssessmentTriageService().Route(record, SyntheticReviewEndpoints.TriagePolicy),
