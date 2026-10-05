@@ -21,6 +21,7 @@ public sealed class PostgresKnowledgeReleaseStoreTests
         var entitlements = new PostgresReviewedEntitlementChangeStore(source);
         await entitlements.ReconcileBaselineAsync(new(actor, 0, [], []));
         var node = JsonNode.Parse(Fixture("c"))!;
+        node["manifest"]!["packId"] = "import-page-" + Guid.NewGuid().ToString("N");
         var packId = node["manifest"]!["packId"]!.GetValue<string>();
         async Task<KnowledgeReleaseImportRecord> Import(string json) => await entitlements.ExecuteWithEffectiveLockAsync(actor,
             (_, token) => imports.ImportAsync(json, DateTimeOffset.UnixEpoch, token));
@@ -32,6 +33,12 @@ public sealed class PostgresKnowledgeReleaseStoreTests
         Assert.Equal(DateTimeOffset.UnixEpoch, first.ImportedAtUtc);
         var duplicates = await Task.WhenAll(Enumerable.Range(0, 4).Select(_ => Import(jsonA)));
         Assert.All(duplicates, item => Assert.Equal(first.ImportedByActorId, item.ImportedByActorId));
+        var laterActor = "synthetic-local:later-import-" + Guid.NewGuid().ToString("N");
+        await entitlements.ReconcileBaselineAsync(new(laterActor, 0, [], []));
+        var repeated = await entitlements.ExecuteWithEffectiveLockAsync(laterActor,
+            (_, token) => imports.ImportAsync(jsonA, DateTimeOffset.UnixEpoch.AddDays(1), token));
+        Assert.Equal(actor, repeated.ImportedByActorId);
+        Assert.Equal(DateTimeOffset.UnixEpoch, repeated.ImportedAtUtc);
         await Assert.ThrowsAsync<KnowledgeReleaseIdentityConflictException>(() => Import(jsonA + " "));
         node["manifest"]!["releaseId"] = "release-b";
         await Import(node.ToJsonString());
