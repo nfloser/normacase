@@ -23,6 +23,18 @@ public sealed class SyntheticAuthenticationTests
                 })));
 
     [Fact]
+    public async Task Persistent_legacy_identity_fails_before_database_startup()
+    {
+        await using var host = Host().WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("SyntheticReview:PersistenceEnabled", "true");
+            builder.UseSetting("ConnectionStrings:SyntheticReview", "Host=127.0.0.1;Database=unused");
+        });
+        var failure = Assert.ThrowsAny<Exception>(() => host.CreateClient());
+        Assert.Contains("exact configured synthetic users", failure.ToString());
+    }
+
+    [Fact]
     public async Task Separate_configured_credentials_resolve_separate_server_owned_subjects()
     {
         var second = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));

@@ -120,6 +120,8 @@ public sealed class IdentityEntitlementState
 
 public interface IReviewedEntitlementChangeStore
 {
+    Task ReconcileBaselineAsync(
+        IdentityEntitlementState baseline, CancellationToken cancellationToken = default);
     Task<EntitlementChangeRecord> ProposeAsync(
         EntitlementChangeProposal proposal, CancellationToken cancellationToken = default);
     Task<EntitlementChangeRecord> DecideAsync(
@@ -131,6 +133,9 @@ public interface IReviewedEntitlementChangeStore
         int limit, CancellationToken cancellationToken = default);
     Task<IdentityEntitlementState> LoadEffectiveAsync(
         string actorId, CancellationToken cancellationToken = default);
+    Task<T> ExecuteWithEffectiveLockAsync<T>(
+        string actorId, Func<IdentityEntitlementState, CancellationToken, Task<T>> action,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed class ReviewedEntitlementChangeService(

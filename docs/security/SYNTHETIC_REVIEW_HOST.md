@@ -83,6 +83,13 @@ Die Fallberechtigung wird vor der Revisionsprüfung kontrolliert; die explizite
 Prozesspolicy erlaubt weiterhin ausschließlich Übergänge aus `awaiting-approval`.
 Ein aktueller Command gegen einen abgeschlossenen Fall bleibt mit 403 gesperrt.
 
+Im persistenten Mehrbenutzermodus wird die konfigurierte Ausgangsberechtigung einmalig
+als unveränderliche Revision null gespeichert. Eine abweichende Startkonfiguration
+bricht einen späteren Start ab. Freigegebene vollständige Snapshots steuern danach alle
+Live-Prüfungen. Mutierende Requests halten denselben identitätsbezogenen PostgreSQL-Lock
+wie die Berechtigungsfreigabe bis zum Abschluss der Fachtransaktion; eine parallele
+Entziehung ist daher eindeutig vor oder nach dem Request wirksam.
+
 Sammelprüfung ist eine separate synthetische Berechtigung: neben `READ` und der
 jeweiligen `ACCEPT`-/`OVERRIDE`-Aktion ist `BATCH` für jeden Fall erforderlich. Der
 alte gemeinsame Ein-Schlüssel-Modus erhält `BATCH` ausdrücklich nicht. Die
@@ -161,3 +168,13 @@ bereitgestellt. Der Betreiber muss das Verzeichnis vor anderen lokalen Nutzern
 schützen. Wiederholung nach Abbruch vergleicht den ursprünglichen Inhalt; sie ändert
 keinen Review. Details und die Backup-/Restore-Probe stehen in
 [synthetischer Gesamtablauf](../development/SYNTHETIC_ROUNDTRIP.de.md).
+
+### Authorization transaction and file dispatch
+
+Persistent operation requires exact `SyntheticReview:Users` identities; the legacy
+`SyntheticReview:Credential` is accepted only without persistence. All protected
+PostgreSQL stores share the transaction that owns the actor entitlement lock. Backend
+termination rolls back nested writes and batch receipts. No replacement connection is
+opened during that authorized operation. The file adapter receives an immutable exact
+authorized outbound request only after its authorization transaction commits. Already
+committed commands may finish after revocation; new commands cannot be authorized.

@@ -72,9 +72,9 @@ internal static class SyntheticReviewEndpoints
         Seed(source, store, packs, platformVersion).GetAwaiter().GetResult();
         SyntheticRoundtripEndpoints.Map(app, source, store, packs["synthetic.demo-g"], platformVersion);
 
-        var credential = app.Services.GetRequiredService<SyntheticReviewCredential>();
+        var entitlements = app.Services.GetRequiredService<SyntheticLiveEntitlements>();
         var group = app.MapGroup("/api/review").RequireAuthorization();
-        SyntheticBatchReviewEndpoints.Map(group, source, store, credential);
+        SyntheticBatchReviewEndpoints.Map(group, source, store, entitlements);
 
         group.MapGet("/work-queues", async (HttpContext context, CancellationToken token) =>
         {
@@ -87,64 +87,63 @@ internal static class SyntheticReviewEndpoints
                 return DemoHost.Error("invalid_input", 400);
             var cursor = cursorText.Count == 0 ? null : cursorText[0];
             if (cursor is not null && !PermittedCaseId(cursor)) return DemoHost.Error("invalid_input", 400);
-            var ids = await store.ListCasePageAsync(size, cursor, credential.ReadScope(actor), token);
-            var page = ids.Take(size).ToArray();
-            var states = new List<CaseReviewState>();
-            foreach (var id in page)
+            return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
             {
-                if (!PermittedCaseId(id.Value) || !credential.Allows(actor, id.Value, "READ")) continue;
-                states.Add(await store.LoadAsync(id, token) ?? throw new CaseReviewIntegrityException());
-            }
-            var projection = new CaseWorkQueueProjectionService();
-            return Results.Json(new
-            {
-                configurationId = QueueConfiguration.Id,
-                configurationVersion = QueueConfiguration.Version,
-                nextPageCursor = ids.Count > size ? page[^1].Value : null,
-                queues = QueueConfiguration.Queues.Select(queue => new
+                var ids = await store.ListCasePageAsync(size, cursor, entitlement.ReadScope(), lockedToken);
+                var page = ids.Take(size).ToArray();
+                var states = new List<CaseReviewState>();
+                foreach (var id in page)
                 {
-                    queueId = queue.QueueId,
-                    items = states
-                        .Select(state => (State: state, Membership: projection.Project(state.Process, QueueConfiguration)))
-                        .Where(item => item.Membership.QueueId == queue.QueueId)
-                        .Select(item => new
-                        {
-                            caseId = item.State.Process.CaseId.Value,
-                            caseRevision = item.State.Process.CaseRevision.ToString(CultureInfo.InvariantCulture),
-                            processRevision = item.State.Process.Revision.ToString(CultureInfo.InvariantCulture),
-                            stateId = item.State.Process.StateId,
-                            assessmentId = item.State.Assessment.AssessmentId.Value,
-                            auditRevision = item.State.Audit.Events[^1].Sequence.ToString(CultureInfo.InvariantCulture),
-                            batchAllowed = item.State.Process.StateId == "awaiting-approval"
-                                && credential.Allows(actor, item.State.Process.CaseId.Value, "ACCEPT")
-                                && credential.Allows(actor, item.State.Process.CaseId.Value, "BATCH")
-                        }).ToArray()
-                }).ToArray()
-            });
+                    if (!PermittedCaseId(id.Value) || !entitlement.Allows(id.Value, "READ")) continue;
+                    states.Add(await store.LoadAsync(id, lockedToken) ?? throw new CaseReviewIntegrityException());
+                }
+                var projection = new CaseWorkQueueProjectionService();
+                return Results.Json(new
+                {
+                    configurationId = QueueConfiguration.Id,
+                    configurationVersion = QueueConfiguration.Version,
+                    nextPageCursor = ids.Count > size ? page[^1].Value : null,
+                    queues = QueueConfiguration.Queues.Select(queue => new
+                    {
+                        queueId = queue.QueueId,
+                        items = states
+                            .Select(state => (State: state, Membership: projection.Project(state.Process, QueueConfiguration)))
+                            .Where(item => item.Membership.QueueId == queue.QueueId)
+                            .Select(item => new
+                            {
+                                caseId = item.State.Process.CaseId.Value,
+                                caseRevision = item.State.Process.CaseRevision.ToString(CultureInfo.InvariantCulture),
+                                processRevision = item.State.Process.Revision.ToString(CultureInfo.InvariantCulture),
+                                stateId = item.State.Process.StateId,
+                                assessmentId = item.State.Assessment.AssessmentId.Value,
+                                auditRevision = item.State.Audit.Events[^1].Sequence.ToString(CultureInfo.InvariantCulture),
+                                batchAllowed = item.State.Process.StateId == "awaiting-approval"
+                                    && entitlement.Allows(item.State.Process.CaseId.Value, "ACCEPT")
+                                    && entitlement.Allows(item.State.Process.CaseId.Value, "BATCH")
+                            }).ToArray()
+                    }).ToArray()
+                });
+            }, token);
         });
 
         group.MapGet("/work-cases/{caseId}", async (string caseId, HttpContext context, CancellationToken token) =>
         {
-            if (!PermittedCaseId(caseId) || !credential.Allows(SyntheticReviewAuthentication.ResolveActor(context.User), caseId, "READ"))
-                return DemoHost.Error("unknown_work_case", 404);
-
-            var state = await store.LoadAsync(new(caseId), token);
-            return state is null
-                ? DemoHost.Error("unknown_work_case", 404)
-                : Results.Json(Detail(state, credential, SyntheticReviewAuthentication.ResolveActor(context.User)));
+            var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
+            return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
+            {
+                if (!PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
+                    return DemoHost.Error("unknown_work_case", 404);
+                var state = await store.LoadAsync(new(caseId), lockedToken);
+                return state is null ? DemoHost.Error("unknown_work_case", 404)
+                    : Results.Json(Detail(state, entitlement));
+            }, token);
         });
 
         group.MapPost("/work-cases/{caseId}/reviews", async (string caseId, HttpContext context, CancellationToken token) =>
         {
-            if (!PermittedCaseId(caseId) || !credential.Allows(SyntheticReviewAuthentication.ResolveActor(context.User), caseId, "READ"))
-                return DemoHost.Error("unknown_work_case", 404);
-
             var parsed = await ReadReviewRequest(context.Request, token);
             if (parsed.Error is not null) return parsed.Error;
             var request = parsed.Request!;
-
-            var current = await store.LoadAsync(new(caseId), token);
-            if (current is null) return DemoHost.Error("unknown_work_case", 404);
 
             AuthenticatedReviewActor actor;
             try
@@ -156,27 +155,24 @@ internal static class SyntheticReviewEndpoints
                 return DemoHost.Error("review_forbidden", 403);
             }
 
-            var disposition = request.Disposition == "ACCEPT_SYSTEM_RESULT"
-                ? HumanReviewDisposition.AcceptSystemResult
-                : HumanReviewDisposition.Override;
-            var command = new CaseReviewCommand(
-                current.Process.CaseId,
-                current.Assessment.AssessmentId,
-                new("synthetic-review-" + Guid.NewGuid().ToString("N")),
-                request.ExpectedCaseRevision,
-                request.ExpectedProcessRevision,
-                request.ExpectedAuditRevision,
-                TimeProvider.System.GetUtcNow(),
-                disposition,
-                request.Reason,
-                request.OverrideOutcome);
-
             try
             {
-                var service = new CaseReviewService(store, new SyntheticAuthorizer(credential));
-                var committed = await service.ReviewAsync(
-                    actor, command, Workflow, ReviewPolicy, token);
-                return Results.Json(Detail(committed, credential, actor));
+                return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
+                {
+                    if (!PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
+                        return DemoHost.Error("unknown_work_case", 404);
+                    var current = await store.LoadAsync(new(caseId), lockedToken);
+                    if (current is null) return DemoHost.Error("unknown_work_case", 404);
+                    var disposition = request.Disposition == "ACCEPT_SYSTEM_RESULT"
+                        ? HumanReviewDisposition.AcceptSystemResult : HumanReviewDisposition.Override;
+                    var command = new CaseReviewCommand(current.Process.CaseId, current.Assessment.AssessmentId,
+                        new("synthetic-review-" + Guid.NewGuid().ToString("N")), request.ExpectedCaseRevision,
+                        request.ExpectedProcessRevision, request.ExpectedAuditRevision, TimeProvider.System.GetUtcNow(),
+                        disposition, request.Reason, request.OverrideOutcome);
+                    var service = new CaseReviewService(store, new SyntheticAuthorizer(entitlement));
+                    var committed = await service.ReviewAsync(actor, command, Workflow, ReviewPolicy, lockedToken);
+                    return Results.Json(Detail(committed, entitlement));
+                }, token);
             }
             catch (CaseReviewDeniedException)
             {
@@ -265,7 +261,7 @@ internal static class SyntheticReviewEndpoints
         }
     }
 
-    internal static object Detail(CaseReviewState state, SyntheticReviewCredential? credential = null, AuthenticatedReviewActor? actor = null)
+    internal static object Detail(CaseReviewState state, SyntheticEntitlementSnapshot? entitlement = null)
         => new
         {
             caseId = state.Process.CaseId.Value,
@@ -277,8 +273,9 @@ internal static class SyntheticReviewEndpoints
             assessmentJson = AssessmentJson.Serialize(state.Assessment.Result, state.Assessment.PlatformVersion),
             evidence = state.Assessment.Input.Evidence.ToDictionary(
                 item => item.Key, item => item.Value.ToString().ToUpperInvariant(), StringComparer.Ordinal),
-            allowedActions = AllowedActions(state).Where(action => credential is null || actor is not null
-                && credential.Allows(actor, state.Process.CaseId.Value, action == "ACCEPT_SYSTEM_RESULT" ? "ACCEPT" : "OVERRIDE")).ToArray(),
+            allowedActions = AllowedActions(state).Where(action => entitlement is null
+                || entitlement.Allows(state.Process.CaseId.Value,
+                    action == "ACCEPT_SYSTEM_RESULT" ? "ACCEPT" : "OVERRIDE")).ToArray(),
             auditRevision = state.Audit.Events[^1].Sequence.ToString(CultureInfo.InvariantCulture),
             audit = state.Audit.Events.Select(item => new
             {
@@ -409,7 +406,7 @@ internal static class SyntheticReviewEndpoints
         string Reason,
         AssessmentOutcome? OverrideOutcome);
 
-    internal sealed class SyntheticAuthorizer(SyntheticReviewCredential credential) : ICaseReviewAuthorizer
+    internal sealed class SyntheticAuthorizer(SyntheticEntitlementSnapshot entitlement) : ICaseReviewAuthorizer
     {
         public bool Authorize(
             AuthenticatedReviewActor actor,
@@ -418,16 +415,16 @@ internal static class SyntheticReviewEndpoints
             CaseReviewPolicy policy)
         {
             if (!PermittedCaseId(state.Process.CaseId.Value)
-                || !credential.Allows(actor, state.Process.CaseId.Value,
+                || !entitlement.Allows(state.Process.CaseId.Value,
                     command.Disposition == HumanReviewDisposition.AcceptSystemResult ? "ACCEPT" : "OVERRIDE")) return false;
             // This adapter's synthetic entitlement remains explicitly local.
             // The identity/action/case check above uses trusted server configuration.
             // An organizational adapter must load authoritative current grants.
-            var entitlement = new CaseReviewGrant(
+            var grant = new CaseReviewGrant(
                 actor,
                 state.Process.CaseId, ReviewPolicy,
                 [HumanReviewDisposition.AcceptSystemResult, HumanReviewDisposition.Override]);
-            return new GrantedCaseReviewAuthorizer([entitlement])
+            return new GrantedCaseReviewAuthorizer([grant])
                 .Authorize(actor, state, command, policy);
         }
     }

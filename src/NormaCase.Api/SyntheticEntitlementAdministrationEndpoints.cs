@@ -25,17 +25,16 @@ internal static class SyntheticEntitlementAdministrationEndpoints
             foreach (var actorId in credential.ConfiguredUsers())
             {
                 var effective = await store.LoadEffectiveAsync(actorId, token);
-                var configured = credential.ConfiguredEntitlements(actorId)!.Value;
                 identities.Add(new
                 {
                     actorId,
                     effectiveRevision = effective.Revision.ToString(CultureInfo.InvariantCulture),
-                    actions = effective.Revision == 0 ? configured.Actions : effective.Actions,
-                    caseIds = effective.Revision == 0 ? configured.CaseIds : effective.CaseIds,
+                    actions = effective.Actions,
+                    caseIds = effective.CaseIds,
                     availableCaseIds = credential.ConfiguredCases()
                 });
             }
-            return Results.Json(new { identities, authorizationActive = false });
+            return Results.Json(new { identities, authorizationActive = true });
         });
 
         group.MapPost("/", async (HttpContext context, CancellationToken token) =>

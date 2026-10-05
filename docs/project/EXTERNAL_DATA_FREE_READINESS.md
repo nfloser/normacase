@@ -35,8 +35,8 @@ and must not be classified as externally blocked. Track completion in
 
 | Technical scope | Current limitation | Required completion evidence |
 |---|---|---|
-| Distinct identities and case/action permissions | Multiple exact case/action-scoped synthetic identities, authorized reads/writes/exports, persistent audited live suspension/reactivation; authenticated append-only entitlement proposals and distinct decisions have separate synthetic roles, bounded pending work, German administration UI and stale/concurrency protection | Initial-configuration reconciliation and transaction-safe enforcement of approved revisions in every live authorization decision |
-| Knowledge governance | Exact validated release artifacts are retained append-only in PostgreSQL and restored by exact identity; no implicit latest selection or validation promotion; durable headless proposal/distinct-review/activation history with exact hashes and concurrent revision protection | Authenticated synthetic proposal/review/activation API and German governance UI are integrated; typed source/impact/test evidence is retained exactly and verified before mutations; explicit host activation consumption remains |
+| Distinct identities and case/action permissions | Multiple exact case/action-scoped synthetic identities, persistent audited live suspension/reactivation, immutable reconciled revision-zero baselines and separate proposal/approval roles | Live enforcement remains under review until transaction-loss and persistent legacy bypass regressions pass |
+| Knowledge governance | Exact validated release artifacts are retained append-only in PostgreSQL and restored by exact identity; durable proposal/distinct-review/activation history with exact hashes and retained typed evidence | Authenticated synthetic API and German governance UI are integrated; explicit host activation consumption remains |
 | Corrections and clarification | Intake accepts only revision 1; incomplete/manual-review paths are not complete work cycles | Append-only corrected revisions/reassessment, configurable synthetic clarification and review policy, preserved historical inputs/results |
 | Batch review | Versioned opt-in policy, bounded unique commands, separate synthetic `BATCH` grants, authenticated API, PostgreSQL per-case transactions, append-only request/result idempotency with concurrency/restart recovery, German selection/cancellation/retry UX and real browser/database proof | Institution-approved permission and role mapping for productive batch use |
 | Operational scale and installation | Local host, bounded and authorized paginated queues, native previews, restore rehearsal, privacy-safe liveness, live PostgreSQL/schema readiness and separately tested migration/runtime database roles | Documented reproducible target deployment/update, rollback/recovery and broader failure-path validation |
@@ -51,8 +51,8 @@ platform scope and is not introduced as a requirement for completion.
 ## Access-independent completion boundary
 
 At this repository state, the synthetic integration path is proved, but known generic
-platform work remains in #183–#187. It includes configurable authorization and
-separation of duties, durable knowledge approval/activation, correction and
+platform work remains in #184, #185 and #187. Identity authorization and separation of
+duties are complete for the generic synthetic adapter; remaining work includes durable knowledge approval/activation, correction and
 clarification cycles, policy-controlled batch review, and reproducible operational
 update/rollback behavior. These mechanisms can continue with synthetic identities,
 policies and packs; they are not blocked by missing MD data.

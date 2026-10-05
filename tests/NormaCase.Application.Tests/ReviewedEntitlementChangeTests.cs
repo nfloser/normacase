@@ -71,6 +71,10 @@ public sealed class ReviewedEntitlementChangeTests
         internal EntitlementChangeDecision? Decision { get; private set; }
         internal bool RequireDistinctDecisionActor { get; private set; }
 
+        public Task ReconcileBaselineAsync(
+            IdentityEntitlementState baseline, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+
         public Task<EntitlementChangeRecord> ProposeAsync(
             EntitlementChangeProposal proposal, CancellationToken cancellationToken = default)
         {
@@ -99,5 +103,10 @@ public sealed class ReviewedEntitlementChangeTests
         public Task<IdentityEntitlementState> LoadEffectiveAsync(
             string actorId, CancellationToken cancellationToken = default)
             => Task.FromResult(new IdentityEntitlementState(actorId, 0, [], []));
+
+        public async Task<T> ExecuteWithEffectiveLockAsync<T>(string actorId,
+            Func<IdentityEntitlementState, CancellationToken, Task<T>> action,
+            CancellationToken cancellationToken = default)
+            => await action(await LoadEffectiveAsync(actorId, cancellationToken), cancellationToken);
     }
 }

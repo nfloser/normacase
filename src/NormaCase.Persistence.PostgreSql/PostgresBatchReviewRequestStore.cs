@@ -46,39 +46,43 @@ public sealed class PostgresBatchReviewRequestStore(NpgsqlDataSource dataSource)
     {
         Validate(registration);
         NpgsqlConnection? connection = null;
+        var shared = PostgresAuthorizedOperation.Current;
+        if (shared is not null && !ReferenceEquals(shared.Source, source))
+            throw new InvalidOperationException("Authorized batch cannot cross data sources.");
         try
         {
-            connection = await source.OpenConnectionAsync(cancellationToken);
-            await LockAsync(connection, registration.RequestId, cancellationToken);
+            connection = shared?.Connection ?? await source.OpenConnectionAsync(cancellationToken);
+            await LockAsync(connection, registration.RequestId, shared is not null, cancellationToken);
             var existing = await ReadAsync(connection, registration.RequestId, cancellationToken);
             if (existing is null)
             {
                 await InsertAsync(connection, registration, cancellationToken);
                 return new(connection, registration.RequestId,
-                    registration.ProposedRecordedAtUtc, resultJson: null);
+                    registration.ProposedRecordedAtUtc, resultJson: null, ownsConnection: shared is null);
             }
 
             EnsureSame(existing, registration);
             return new(connection, registration.RequestId,
-                existing.RecordedAtUtc, existing.ResultJson);
+                existing.RecordedAtUtc, existing.ResultJson, ownsConnection: shared is null);
         }
         catch (Exception exception) when (exception is NpgsqlException)
         {
-            if (connection is not null) await connection.DisposeAsync();
+            if (connection is not null && shared is null) await connection.DisposeAsync();
             throw new BatchReviewRequestStorageException();
         }
         catch
         {
-            if (connection is not null) await connection.DisposeAsync();
+            if (connection is not null && shared is null) await connection.DisposeAsync();
             throw;
         }
     }
 
     private static async Task LockAsync(
-        NpgsqlConnection connection, string requestId, CancellationToken token)
+        NpgsqlConnection connection, string requestId, bool transactional, CancellationToken token)
     {
         await using var command = new NpgsqlCommand(
-            "SELECT pg_advisory_lock(hashtextextended($1, 0));", connection);
+            transactional ? "SELECT pg_advisory_xact_lock(hashtextextended($1, 0));"
+                : "SELECT pg_advisory_lock(hashtextextended($1, 0));", connection);
         command.Parameters.AddWithValue("normacase.batch-review:" + requestId);
         await command.ExecuteNonQueryAsync(token);
     }
@@ -177,11 +181,13 @@ public sealed class PostgresBatchReviewRequestStore(NpgsqlDataSource dataSource)
 public sealed class PostgresBatchReviewRequestLease : IAsyncDisposable
 {
     private NpgsqlConnection? connection;
+    private readonly bool ownsConnection;
     internal PostgresBatchReviewRequestLease(
         NpgsqlConnection connection, string requestId,
-        DateTimeOffset recordedAtUtc, string? resultJson)
+        DateTimeOffset recordedAtUtc, string? resultJson, bool ownsConnection)
     {
         this.connection = connection;
+        this.ownsConnection = ownsConnection;
         RequestId = requestId;
         RecordedAtUtc = recordedAtUtc;
         ResultJson = resultJson;
@@ -225,7 +231,7 @@ public sealed class PostgresBatchReviewRequestLease : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         var active = Interlocked.Exchange(ref connection, null);
-        if (active is null) return;
+        if (active is null || !ownsConnection) return;
         try
         {
             await using var command = new NpgsqlCommand(

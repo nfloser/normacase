@@ -38,8 +38,8 @@ public sealed class PostgresOutboundDeliveryReceiptStore(NpgsqlDataSource dataSo
         ValidateKey(key);
         try
         {
-            await using var connection =
-                await source.OpenConnectionAsync(cancellationToken);
+            await using var session = await PostgresOperationSession.OpenAsync(source, cancellationToken);
+            var connection = session.Connection;
             return await ReadAsync(
                 connection,
                 transaction: null,
@@ -59,10 +59,9 @@ public sealed class PostgresOutboundDeliveryReceiptStore(NpgsqlDataSource dataSo
         ValidateReceipt(receipt);
         try
         {
-            await using var connection =
-                await source.OpenConnectionAsync(cancellationToken);
-            await using var transaction =
-                await connection.BeginTransactionAsync(cancellationToken);
+            await using var session = await PostgresOperationSession.OpenAsync(source, cancellationToken);
+            var connection = session.Connection;
+            var transaction = session.Transaction;
 
             await LockAsync(
                 connection,
@@ -78,7 +77,7 @@ public sealed class PostgresOutboundDeliveryReceiptStore(NpgsqlDataSource dataSo
             if (existing is not null)
             {
                 EnsureSame(existing, receipt);
-                await transaction.CommitAsync(cancellationToken);
+                await session.CommitAsync(cancellationToken);
                 return existing;
             }
 
@@ -105,7 +104,7 @@ public sealed class PostgresOutboundDeliveryReceiptStore(NpgsqlDataSource dataSo
                 (object?)receipt.TransportReference ?? DBNull.Value);
             await insert.ExecuteNonQueryAsync(cancellationToken);
 
-            await transaction.CommitAsync(cancellationToken);
+            await session.CommitAsync(cancellationToken);
             return receipt;
         }
         catch (NpgsqlException)

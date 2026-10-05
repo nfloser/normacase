@@ -15,9 +15,12 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         var actor = "synthetic-local:user-" + Guid.NewGuid().ToString("N");
         var changeId = "entitlement-" + Guid.NewGuid().ToString("N");
         var store = new PostgresReviewedEntitlementChangeStore(source);
+        await store.ReconcileBaselineAsync(new(actor, 0, ["READ"], ["demo-g-not-supported"]));
         var proposal = Proposal(changeId, actor, 0, "synthetic-local:access-proposer", "demo-g-supported");
 
-        Assert.Equal(0, (await store.LoadEffectiveAsync(actor)).Revision);
+        var baseline = await store.LoadEffectiveAsync(actor);
+        Assert.Equal(0, baseline.Revision);
+        Assert.Equal(new[] { "demo-g-not-supported" }, baseline.CaseIds);
         await store.ProposeAsync(proposal);
         var decided = await store.DecideAsync(new(
             changeId, "synthetic-local:access-approver",
@@ -37,7 +40,8 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         {
             "UPDATE normacase.identity_entitlement_changes SET reason=reason WHERE change_id=$1",
             "DELETE FROM normacase.identity_entitlement_decisions WHERE change_id=$1",
-            "UPDATE normacase.identity_entitlement_versions SET actions=actions WHERE actor_id=$2"
+            "UPDATE normacase.identity_entitlement_versions SET actions=actions WHERE actor_id=$2",
+            "UPDATE normacase.identity_entitlement_baselines SET actions=actions WHERE actor_id=$2"
         })
         {
             await using var command = new NpgsqlCommand(sql, connection);
@@ -55,6 +59,7 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         await new PostgresMigrationRunner(source).MigrateAsync();
         var actor = "synthetic-local:user-" + Guid.NewGuid().ToString("N");
         var store = new PostgresReviewedEntitlementChangeStore(source);
+        await store.ReconcileBaselineAsync(new(actor, 0, [], []));
 
         var rejected = Proposal("entitlement-" + Guid.NewGuid().ToString("N"), actor, 0,
             "synthetic-local:access-proposer", "demo-g-not-supported");
@@ -82,6 +87,72 @@ public sealed class PostgresReviewedEntitlementChangeStoreTests
         await Assert.ThrowsAsync<EntitlementChangeConflictException>(() => store.DecideAsync(new(
             stale.ChangeId, "synthetic-local:access-approver",
             new DateTimeOffset(2026, 10, 4, 12, 4, 0, TimeSpan.Zero), true, "Veraltete Freigabe"), true));
+    }
+
+    [Fact]
+    public async Task Baseline_mismatch_fails_and_live_operation_serializes_with_approval()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var actor = "synthetic-local:user-" + Guid.NewGuid().ToString("N");
+        var store = new PostgresReviewedEntitlementChangeStore(source);
+        await store.ReconcileBaselineAsync(new(actor, 0, ["READ"], ["demo-g-supported"]));
+        await Assert.ThrowsAsync<EntitlementChangeConflictException>(() =>
+            store.ReconcileBaselineAsync(new(actor, 0, ["READ"], ["demo-g-review"])));
+
+        var proposal = Proposal("entitlement-" + Guid.NewGuid().ToString("N"), actor, 0,
+            "synthetic-local:access-proposer", "demo-g-review");
+        await store.ProposeAsync(proposal);
+        var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var operation = store.ExecuteWithEffectiveLockAsync(actor, async (snapshot, _) =>
+        {
+            Assert.Equal(0, snapshot.Revision);
+            entered.SetResult(true);
+            await release.Task;
+            return snapshot;
+        });
+        await entered.Task;
+        var approval = store.DecideAsync(new(proposal.ChangeId, "synthetic-local:access-approver",
+            new DateTimeOffset(2026, 10, 4, 12, 1, 0, TimeSpan.Zero), true, "Synthetische Gegenprüfung"), true);
+        Assert.False(approval.IsCompleted);
+        release.SetResult(true);
+        Assert.Equal(0, (await operation).Revision);
+        Assert.Equal(1, (await approval).Proposal.ExpectedEntitlementRevision + 1);
+        Assert.Equal(1, (await store.LoadEffectiveAsync(actor)).Revision);
+    }
+
+    [Fact]
+    public async Task Account_suspension_serializes_with_operation_and_rechecks_after_authentication()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var actor = "synthetic-local:suspend-" + Guid.NewGuid().ToString("N");
+        var store = new PostgresReviewedEntitlementChangeStore(source);
+        await store.ReconcileBaselineAsync(new(actor, 0, ["READ"], ["demo-g-supported"]));
+        var access = new PostgresIdentityAccessAdministrationStore(source);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var operation = store.ExecuteWithEffectiveLockAsync(actor, async (state, _) =>
+        {
+            Assert.NotEmpty(state.Actions);
+            entered.SetResult();
+            await release.Task.WaitAsync(TimeSpan.FromSeconds(15));
+            return true;
+        });
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        var suspension = access.ChangeAsync(new(actor, 0, true, "synthetic-local:administrator",
+            DateTimeOffset.UnixEpoch, "Synthetische Sperre"));
+        Assert.False(suspension.IsCompleted);
+        release.SetResult();
+        Assert.True(await operation);
+        Assert.True((await suspension).Suspended);
+        await store.ExecuteWithEffectiveLockAsync(actor, (state, _) =>
+        {
+            Assert.Empty(state.Actions);
+            Assert.Empty(state.CaseIds);
+            return Task.FromResult(true);
+        });
     }
 
     private static EntitlementChangeProposal Proposal(

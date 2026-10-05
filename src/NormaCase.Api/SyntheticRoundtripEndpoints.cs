@@ -30,7 +30,7 @@ internal static class SyntheticRoundtripEndpoints
         var directory = app.Configuration["SyntheticReview:OutboundDirectory"];
         // File delivery is enabled only with an explicit operator-controlled directory.
         var file = string.IsNullOrWhiteSpace(directory) ? null : new BoundedFileReviewedCaseResultSink("synthetic-file", directory);
-        var credential = app.Services.GetRequiredService<SyntheticReviewCredential>();
+        var entitlements = app.Services.GetRequiredService<SyntheticLiveEntitlements>();
         var group = app.MapGroup("/api/review").RequireAuthorization();
         group.MapPost("/intake/{format}", async (string format, HttpContext context, CancellationToken token) =>
         {
@@ -42,12 +42,14 @@ internal static class SyntheticRoundtripEndpoints
                 var text = await ReadBody(context.Request, token);
                 var request = format == "json" ? SyntheticIntakeAdapters.Json(text, TimeProvider.System.GetUtcNow()) : SyntheticIntakeAdapters.Xml(text, TimeProvider.System.GetUtcNow());
                 var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
-                if (!credential.Allows(actor, request.CaseId.Value, "INTAKE")) return DemoHost.Error("review_forbidden", 403);
+                return await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
+                {
+                if (!entitlement.Allows(request.CaseId.Value, "INTAKE")) return DemoHost.Error("review_forbidden", 403);
                 // New upstream revisions need a separately approved correction policy.
                 if (request.Provenance.UpstreamRevision != 1) return DemoHost.Error("review_forbidden", 403);
-                var receipt = await new NormalizedIntakeService(intakeStore).AcceptAsync(request, pack, token);
+                var receipt = await new NormalizedIntakeService(intakeStore).AcceptAsync(request, pack, lockedToken);
                 var original = receipt.Record;
-                var state = await reviews.LoadAsync(original.CaseId, token);
+                var state = await reviews.LoadAsync(original.CaseId, lockedToken);
                 if (state is null)
                 {
                     if (original.KnowledgePackId != pack.Manifest.PackId || original.KnowledgeRelease != pack.Manifest.ReleaseId)
@@ -59,9 +61,10 @@ internal static class SyntheticRoundtripEndpoints
                         process, SyntheticReviewEndpoints.Workflow, SyntheticReviewEndpoints.RoutingPolicy, 1, 0);
                     if (routed.Status != CaseProcessingRoutingStatus.Applied) throw new CaseReviewBindingException();
                     state = await reviews.InitializeRecordedAsync(new(record, 1, routed.Process,
-                        AssessmentAuditTrail.Start(AssessmentAuditEvent.AssessmentCreated(1, record.AssessmentId, record.RecordedAtUtc, "synthetic-intake"))), token);
+                        AssessmentAuditTrail.Start(AssessmentAuditEvent.AssessmentCreated(1, record.AssessmentId, record.RecordedAtUtc, "synthetic-intake"))), lockedToken);
                 }
-                return Results.Json(new { acceptance = receipt.Acceptance.ToString().ToUpperInvariant(), workCase = SyntheticReviewEndpoints.Detail(state, credential, actor) });
+                return Results.Json(new { acceptance = receipt.Acceptance.ToString().ToUpperInvariant(), workCase = SyntheticReviewEndpoints.Detail(state, entitlement) });
+                }, token);
             }
             catch (IntakeConflictException) { return DemoHost.Error("review_conflict", 409); }
             catch (CaseReviewConflictException) { return DemoHost.Error("review_conflict", 409); }
@@ -70,18 +73,20 @@ internal static class SyntheticRoundtripEndpoints
         });
         group.MapPost("/work-cases/{caseId}/outbound", async (string caseId, HttpContext context, CancellationToken token) =>
         {
-            if (!SyntheticReviewEndpoints.PermittedCaseId(caseId)
-                || !credential.Allows(SyntheticReviewAuthentication.ResolveActor(context.User), caseId, "READ"))
-                return DemoHost.Error("unknown_work_case", 404);
-            if (!credential.Allows(SyntheticReviewAuthentication.ResolveActor(context.User), caseId, "EXPORT"))
-                return DemoHost.Error("review_forbidden", 403);
             try
             {
-                var request = JsonSerializer.Deserialize<ExportRequest>(await ReadBody(context.Request, token), ExportOptions) ?? throw new JsonException();
+                var actor = SyntheticReviewAuthentication.ResolveActor(context.User);
+                OutboundDeliveryRequest? fileRequest = null;
+                var authorizedResult = await entitlements.ExecuteAuthorizedAsync<IResult>(actor, async (entitlement, lockedToken) =>
+                {
+                if (!SyntheticReviewEndpoints.PermittedCaseId(caseId) || !entitlement.Allows(caseId, "READ"))
+                    return DemoHost.Error("unknown_work_case", 404);
+                if (!entitlement.Allows(caseId, "EXPORT")) return DemoHost.Error("review_forbidden", 403);
+                var request = JsonSerializer.Deserialize<ExportRequest>(await ReadBody(context.Request, lockedToken), ExportOptions) ?? throw new JsonException();
                 if (!context.Request.HasJsonContentType()) return DemoHost.Error("json_required", 415);
-                var state = await reviews.LoadAsync(new(caseId), token);
+                var state = await reviews.LoadAsync(new(caseId), lockedToken);
                 if (state is null) return DemoHost.Error("unknown_work_case", 404);
-                var intake = await intakeStore.LoadForCaseAsync(new(caseId), token);
+                var intake = await intakeStore.LoadForCaseAsync(new(caseId), lockedToken);
                 if (intake is null) return DemoHost.Error("review_forbidden", 403);
                 var result = new ReviewedCaseResultFactory().Create(intake, state, SyntheticReviewEndpoints.Workflow,
                     new(Revision(request.ExpectedCaseRevision), Revision(request.ExpectedProcessRevision), Revision(request.ExpectedAuditRevision)),
@@ -94,13 +99,32 @@ internal static class SyntheticRoundtripEndpoints
                 };
                 // Message identity is the delivery identity; callers cannot change an independent
                 // delivery id to repeat the same reviewed message side effect.
-                var receipt = await new ReviewedCaseDeliveryService(outbound).DeliverAsync(new(result.MessageId, sink.DestinationId, result), sink, token);
+                var deliveryRequest = new OutboundDeliveryRequest(result.MessageId, sink.DestinationId, result);
+                if (ReferenceEquals(sink, file))
+                {
+                    await new PostgresAuthorizedOutboundRequestStore(source).RegisterAsync(
+                        deliveryRequest, TimeProvider.System.GetUtcNow(), lockedToken);
+                    fileRequest = deliveryRequest;
+                    return Results.NoContent();
+                }
+                var receipt = await new ReviewedCaseDeliveryService(outbound).DeliverAsync(deliveryRequest, sink, lockedToken);
                 return Results.Json(new
                 {
                     status = receipt.Status.ToString().ToUpperInvariant(),
                     receipt.IsCommitted,
                     receipt.TransportReference,
                     resultJson = ReviewedCaseResultJson.Serialize(receipt.Result)
+                });
+                }, token);
+                if (fileRequest is null) return authorizedResult;
+                // Execute only after the outer authorization transaction committed successfully.
+                var delivered = await new ReviewedCaseDeliveryService(outbound).DeliverAsync(fileRequest, file!, token);
+                return Results.Json(new
+                {
+                    status = delivered.Status.ToString().ToUpperInvariant(),
+                    delivered.IsCommitted,
+                    delivered.TransportReference,
+                    resultJson = ReviewedCaseResultJson.Serialize(delivered.Result)
                 });
             }
             catch (OutboundResultConflictException) { return DemoHost.Error("review_conflict", 409); }

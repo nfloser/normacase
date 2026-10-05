@@ -1,5 +1,6 @@
 using Npgsql;
 using NormaCase.Application.Assessments;
+using NormaCase.Application.Authorization;
 using NormaCase.Application.Reviews;
 using NormaCase.Domain.Audit;
 using NormaCase.Domain.Cases;
@@ -38,6 +39,68 @@ public sealed class PostgresCaseReviewStoreTests
         Assert.Empty(await store.ListCasePageAsync(1, null, []));
         Assert.Equal(new[] { scope[2] }, await store.ListCasePageAsync(1, null, [scope[2]]));
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => store.ListCasePageAsync(101, null, scope));
+    }
+
+    [Fact]
+    public async Task Terminated_authorization_transaction_cannot_commit_a_stale_review()
+    {
+        await using var source = Source();
+        var initial = await Seed(source);
+        var actor = "synthetic-local:loss-" + Guid.NewGuid().ToString("N");
+        var entitlements = new PostgresReviewedEntitlementChangeStore(source);
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, ["READ", "ACCEPT"], [initial.Process.CaseId.Value]));
+        var proposal = new EntitlementChangeProposal("loss-" + Guid.NewGuid().ToString("N"), actor, 0,
+            [], [], "synthetic-local:proposer", Time, "Synthetischer Entzug");
+        await entitlements.ProposeAsync(proposal);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var operation = entitlements.ExecuteWithEffectiveLockAsync(actor, async (snapshot, token) =>
+        {
+            Assert.Equal(0, snapshot.Revision);
+            entered.SetResult();
+            await release.Task.WaitAsync(TimeSpan.FromSeconds(15));
+            return await new CaseReviewService(Store(source), new Authorizer(true)).ReviewAsync(
+                new(actor, "synthetic-local"), Command(initial), Workflow, Policy, token);
+        });
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        try
+        {
+            await using var terminate = source.CreateCommand("""
+                SELECT pg_terminate_backend(pid) FROM pg_locks
+                WHERE locktype='advisory' AND objsubid=1 AND granted
+                AND ((classid::bigint << 32) | objid::bigint)=hashtextextended($1,117);
+                """);
+            terminate.Parameters.AddWithValue(actor);
+            Assert.True((bool)(await terminate.ExecuteScalarAsync())!);
+            await entitlements.DecideAsync(new(proposal.ChangeId, "synthetic-local:approver",
+                Time.AddMinutes(1), true, "Synthetische Gegenprüfung"), true);
+        }
+        finally { release.TrySetResult(); }
+        await Assert.ThrowsAnyAsync<Exception>(() => operation);
+        var retained = (await Store(source).LoadAsync(initial.Process.CaseId))!;
+        Assert.Equal(CaseReviewStateJson.Serialize(initial), CaseReviewStateJson.Serialize(retained));
+        Assert.Equal(1, (await entitlements.LoadEffectiveAsync(actor)).Revision);
+    }
+
+    [Fact]
+    public async Task Authorized_operation_uses_one_pool_connection_and_rolls_back_all_nested_writes()
+    {
+        var builder = new NpgsqlConnectionStringBuilder(Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION"))
+            { MaxPoolSize = 1, Timeout = 3 };
+        await using var source = NpgsqlDataSource.Create(builder.ConnectionString);
+        var initial = await Seed(source);
+        var actor = "synthetic-local:atomic-" + Guid.NewGuid().ToString("N");
+        var entitlements = new PostgresReviewedEntitlementChangeStore(source);
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, ["READ", "ACCEPT"], [initial.Process.CaseId.Value]));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => entitlements.ExecuteWithEffectiveLockAsync<int>(actor,
+            async (_, token) =>
+            {
+                await new CaseReviewService(Store(source), new Authorizer(true)).ReviewAsync(
+                    new(actor, "synthetic-local"), Command(initial), Workflow, Policy, token);
+                throw new InvalidOperationException("Synthetic callback failure");
+            }));
+        Assert.Equal(CaseReviewStateJson.Serialize(initial),
+            CaseReviewStateJson.Serialize((await Store(source).LoadAsync(initial.Process.CaseId))!));
     }
 
     [Theory]

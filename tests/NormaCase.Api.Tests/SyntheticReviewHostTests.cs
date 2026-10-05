@@ -65,7 +65,9 @@ public sealed class SyntheticReviewHostTests
                         ["SyntheticReview:PersistenceEnabled"] = "true",
                         ["ConnectionStrings:SyntheticReview"] = runtimeBuilder.ConnectionString,
                         ["ConnectionStrings:SyntheticReviewMigrations"] = migrationBuilder.ConnectionString,
-                        ["SyntheticReview:Credential"] = Credential
+                        ["SyntheticReview:Users:reviewer:Credential"] = Credential,
+                        ["SyntheticReview:Users:reviewer:Actions:0"] = "READ",
+                        ["SyntheticReview:Users:reviewer:CaseIds:0"] = "demo-g-supported"
                     })));
             using var client = host.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
@@ -123,7 +125,9 @@ public sealed class SyntheticReviewHostTests
                     ["SyntheticReview:Enabled"] = "true",
                     ["SyntheticReview:PersistenceEnabled"] = "true",
                     ["ConnectionStrings:SyntheticReview"] = connection,
-                    ["SyntheticReview:Credential"] = Credential
+                    ["SyntheticReview:Users:reviewer:Credential"] = Credential,
+                        ["SyntheticReview:Users:reviewer:Actions:0"] = "READ",
+                        ["SyntheticReview:Users:reviewer:CaseIds:0"] = "demo-g-supported"
                 })));
         using var client = host.CreateClient();
 
@@ -439,7 +443,7 @@ public sealed class SyntheticReviewHostTests
             Assert.Equal("2", acceptedJson.RootElement.GetProperty("processRevision").GetString());
             var acceptedAudit = acceptedJson.RootElement.GetProperty("audit").EnumerateArray().ToArray();
             Assert.Equal(2, acceptedAudit.Length);
-            Assert.Equal("synthetic-local:reviewer", acceptedAudit[1].GetProperty("actorId").GetString());
+            Assert.Equal("synthetic-local:user-reviewer", acceptedAudit[1].GetProperty("actorId").GetString());
             Assert.Equal("ACCEPT_SYSTEM_RESULT", acceptedAudit[1].GetProperty("disposition").GetString());
 
             var repeated = await client.PostAsJsonAsync("/api/review/work-cases/demo-g-supported/reviews",
@@ -506,7 +510,7 @@ public sealed class SyntheticReviewHostTests
         string originalOutbound;
         try
         {
-            await using (var host = Factory(connection, directory))
+            await using (var host = Factory(connection, directory, IntakeCase("synthetic-json", order), IntakeCase("synthetic-xml", "xml-" + order)))
             {
                 using var client = host.CreateClient();
                 Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync("/api/review/intake/json", payload)).StatusCode);
@@ -542,7 +546,7 @@ public sealed class SyntheticReviewHostTests
                 Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/api/review/intake/xml", new StringContent("<!DOCTYPE x [<!ENTITY ext SYSTEM 'file:///etc/passwd'>]><SyntheticCase/>", System.Text.Encoding.UTF8, "application/xml"))).StatusCode);
                 Assert.Equal(HttpStatusCode.Forbidden, (await client.PostAsJsonAsync("/api/review/intake/json", payload with { revision = "2", message = "new-revision" })).StatusCode);
             }
-            await using var restarted = Factory(connection, directory);
+            await using var restarted = Factory(connection, directory, IntakeCase("synthetic-json", order), IntakeCase("synthetic-xml", "xml-" + order));
             using var after = restarted.CreateClient();
             after.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Credential);
             using var historical = JsonDocument.Parse(await (await after.PostAsJsonAsync("/api/review/intake/json", payload)).Content.ReadAsStringAsync());
@@ -582,15 +586,23 @@ public sealed class SyntheticReviewHostTests
         Assert.ThrowsAny<Exception>(() => host.CreateClient());
     }
 
-    private static WebApplicationFactory<Program> Factory(string connection, string? outboundDirectory = null)
+    private static WebApplicationFactory<Program> Factory(string connection, string? outboundDirectory = null, params string[] intakeCases)
         => new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
             builder.UseSetting("SyntheticReview:Enabled", "true");
             builder.UseSetting("SyntheticReview:PersistenceEnabled", "true");
-            builder.UseSetting("SyntheticReview:Credential", Credential);
+            builder.UseSetting("SyntheticReview:Users:reviewer:Credential", Credential);
+            foreach (var (action, index) in new[] { "READ", "ACCEPT", "OVERRIDE", "INTAKE", "EXPORT" }.Select((action, index) => (action, index)))
+                builder.UseSetting($"SyntheticReview:Users:reviewer:Actions:{index}", action);
+            foreach (var (id, index) in new[] { "demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review", "demo-g-batch-supported", "demo-g-batch-not-supported" }.Concat(intakeCases).Select((id, index) => (id, index)))
+                builder.UseSetting($"SyntheticReview:Users:reviewer:CaseIds:{index}", id);
             builder.UseSetting("ConnectionStrings:SyntheticReview", connection);
             if (outboundDirectory is not null) builder.UseSetting("SyntheticReview:OutboundDirectory", outboundDirectory);
         });
+
+    private static string IntakeCase(string source, string order)
+        => "synthetic-intake-" + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
+            System.Text.Encoding.UTF8.GetBytes(source + ":" + order))).ToLowerInvariant();
 
     private static WebApplicationFactory<Program> BatchFactory(string connection)
         => new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
