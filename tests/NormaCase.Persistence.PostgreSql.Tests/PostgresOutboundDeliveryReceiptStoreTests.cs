@@ -11,6 +11,55 @@ namespace NormaCase.Persistence.PostgreSql.Tests;
 public sealed class PostgresOutboundDeliveryReceiptStoreTests
 {
     [Fact]
+    public async Task Lost_authorization_commit_never_dispatches_a_file_command()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var id = "lost-file-" + Guid.NewGuid().ToString("N");
+        var request = new OutboundDeliveryRequest(id, "synthetic-file", Sample(id));
+        var actor = "synthetic-local:file-loss-" + Guid.NewGuid().ToString("N");
+        var entitlements = new PostgresReviewedEntitlementChangeStore(source);
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, ["READ", "EXPORT"], [request.Result.CaseId]));
+        var proposal = new EntitlementChangeProposal("revoke-" + Guid.NewGuid().ToString("N"), actor,
+            0, [], [], "synthetic-local:proposer", DateTimeOffset.UnixEpoch, "Synthetischer Entzug");
+        await entitlements.ProposeAsync(proposal);
+        var staged = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var sink = new CountingSink("synthetic-file");
+        async Task Dispatch()
+        {
+            await entitlements.ExecuteWithEffectiveLockAsync(actor, async (_, token) =>
+            {
+                await new PostgresAuthorizedOutboundRequestStore(source).RegisterAsync(request, DateTimeOffset.UnixEpoch, token);
+                staged.SetResult();
+                await release.Task.WaitAsync(TimeSpan.FromSeconds(15));
+                return true;
+            });
+            await new ReviewedCaseDeliveryService(new PostgresOutboundDeliveryReceiptStore(source)).DeliverAsync(request, sink);
+        }
+        var dispatch = Dispatch();
+        await staged.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        try
+        {
+            await using var terminate = source.CreateCommand("""
+                SELECT pg_terminate_backend(pid) FROM pg_locks WHERE locktype='advisory'
+                AND objsubid=1 AND granted AND ((classid::bigint << 32) | objid::bigint)=hashtextextended($1,117);
+                """);
+            terminate.Parameters.AddWithValue(actor);
+            Assert.True((bool)(await terminate.ExecuteScalarAsync())!);
+            await entitlements.DecideAsync(new(proposal.ChangeId, "synthetic-local:approver",
+                DateTimeOffset.UnixEpoch.AddMinutes(1), true, "Synthetische Gegenprüfung"), true);
+        }
+        finally { release.TrySetResult(); }
+        await Assert.ThrowsAnyAsync<Exception>(() => dispatch);
+        Assert.Equal(0, sink.Attempts);
+        Assert.Null(await new PostgresOutboundDeliveryReceiptStore(source).FindAsync(request.Key));
+        await using var count = source.CreateCommand("SELECT count(*) FROM normacase.authorized_outbound_requests WHERE delivery_id=$1");
+        count.Parameters.AddWithValue(id);
+        Assert.Equal(0L, await count.ExecuteScalarAsync());
+    }
+
+    [Fact]
     public async Task Exact_file_command_requires_authorized_commit_and_is_immutable()
     {
         await using var source = Source();
