@@ -18,7 +18,7 @@ test('distinct synthetic users propose review and activate exact Knowledge in Ge
  await proposer.getByLabel('Inhalt der synthetischen Testnachweise',{exact:true}).fill('Synthetische Testergebnisse');
  await proposer.getByRole('button',{name:'Wissensänderung vorschlagen',exact:true}).click();
  await expect(proposer.getByRole('status')).toHaveText('Wissensvorgang gespeichert.');
- const changeId=(await proposer.getByRole('heading',{level:4}).textContent()).replace('Wissensänderung: ','');
+ const changeId=(await proposer.getByRole('heading',{level:4,name:/^Wissensänderung:/}).textContent()).replace('Wissensänderung: ','');
  await expect(proposer.getByRole('button',{name:'Wissensänderung freigeben',exact:true})).toHaveCount(0);
  const reviewerContext=await browser.newContext();
  const reviewerPage=await reviewerContext.newPage();
