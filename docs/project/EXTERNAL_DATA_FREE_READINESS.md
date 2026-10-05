@@ -28,9 +28,9 @@ offline operation and developer/security preparation remain possible without the
 
 ## Platform completion beyond the demo
 
-The synthetic demonstration milestone is complete; the full institution-independent
-platform is not. The following technical work does **not** require internal MD data
-and must not be classified as externally blocked. Track completion in
+The synthetic demonstration and the institution-independent platform scopes below
+are complete at the explicit local/synthetic boundary. These scopes required no
+internal MD data; their integrated acceptance is recorded in
 [platform follow-up #180](https://github.com/nfloser/normacase/issues/180).
 
 | Technical scope | Current limitation | Required completion evidence |
@@ -42,9 +42,9 @@ and must not be classified as externally blocked. Track completion in
 | Operational scale and installation | Bounded authorized queues, native Windows/Linux runtime/assets, least-privilege PostgreSQL roles and readiness; exact immutable package staging, explicit stopped-service activation, previous-to-candidate native update and original/corrected/clarification backup/restore/recovery rehearsal (#241) | Target-specific TLS, retention, RPO/RTO, identity/privacy/security and deployment approval |
 
 Institutional role mappings, actual medical/process policies, vendor contracts and
-external approvals remain external. Their generic configurable mechanisms remain
-engineering work. An empty issue list or a green demo is not evidence that this
-larger scope is finished. Optional AI extraction remains outside the deterministic
+external approvals remain external. Their generic configurable mechanisms are integrated and tested. Completion is
+supported by the per-scope API, browser, persistence and native-operation evidence,
+rather than by an empty issue list or a green demonstration alone. Optional AI extraction remains outside the deterministic
 platform scope and is not introduced as a requirement for completion.
 
 
