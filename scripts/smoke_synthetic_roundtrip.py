@@ -56,7 +56,7 @@ def run(mode, manifest_path):
                 "SyntheticReview__Users__reviewer__Credential": token, "ConnectionStrings__SyntheticReview": connection,
                 "SyntheticReview__OutboundDirectory": str(outbound_directory)})
     env.pop("SyntheticReview__Credential", None)
-    for index, action in enumerate(["READ", "ACCEPT", "OVERRIDE", "INTAKE", "EXPORT"]):
+    for index, action in enumerate(["READ", "ACCEPT", "OVERRIDE", "INTAKE", "EXPORT", "CORRECT", "CLARIFY"]):
         env[f"SyntheticReview__Users__reviewer__Actions__{index}"] = action
     for index, payload in enumerate(payloads):
         case_id = "synthetic-intake-" + hashlib.sha256(("synthetic-json:" + payload["order"]).encode()).hexdigest()
@@ -64,7 +64,9 @@ def run(mode, manifest_path):
     migration_connection = os.environ.get("NORMACASE_POSTGRES_MIGRATION_TEST_CONNECTION")
     if migration_connection:
         env["ConnectionStrings__SyntheticReviewMigrations"] = migration_connection
-    command = ["dotnet", str(ROOT / "src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll")]
+    executable = os.environ.get("NORMACASE_API_TEST_EXECUTABLE")
+    command = ([str(Path(executable).resolve())] if executable else
+               ["dotnet", str(ROOT / "src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll")])
     process = subprocess.Popen(command, env=env, cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         for _ in range(100):
@@ -77,6 +79,19 @@ def run(mode, manifest_path):
                 time.sleep(0.1)
         else:
             raise RuntimeError("Synthetic host did not become ready")
+        installation_root = os.environ.get("NORMACASE_INSTALLATION_TEST_ROOT")
+        refused_commit = os.environ.get("NORMACASE_REFUSED_SWITCH_TEST_COMMIT")
+        if installation_root and refused_commit:
+            from manage_installation import activate
+            active_pointer = Path(installation_root) / "current.json"
+            original_pointer = active_pointer.read_bytes()
+            try:
+                activate(Path(installation_root), refused_commit)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError("Active synthetic native service allowed a release switch")
+            assert active_pointer.read_bytes() == original_pointer
         if mode == "create":
             entries = []
             for (suffix, _), payload in zip(scenarios, payloads):
@@ -111,6 +126,54 @@ def run(mode, manifest_path):
                     assert not case["allowedActions"]
                 entries.append({"payload": payload, "case": case, "export": export, "result": result})
             manifest_path.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
+        elif mode == "upgrade":
+            entries = json.loads(manifest_path.read_text(encoding="utf-8"))
+            supported = (ROOT / "examples/cases/demo-g-supported.json").read_text(encoding="utf-8")
+            for entry in entries:
+                case_id = entry["case"]["caseId"]
+                before = request(f"/api/review/work-cases/{case_id}", token=token)
+                original_record = request(f"/api/review/work-cases/{case_id}/history", token=token)
+                state = before["stateId"]
+                policy = ("synthetic-information-completion" if state == "waiting-information" else
+                          "synthetic-manual-correction" if state == "manual-review" else "synthetic-reviewed-correction")
+                question_id = None
+                if state in ("waiting-information", "manual-review"):
+                    question_id = "question-" + uuid.uuid4().hex
+                    request(f"/api/review/work-cases/{case_id}/clarifications", {
+                        "clarificationId": question_id,
+                        "policyId": "synthetic-missing-information" if state == "waiting-information" else "synthetic-review-questions",
+                        "policyVersion": "1", "expectedCaseRevision": before["caseRevision"],
+                        "expectedProcessRevision": before["processRevision"], "expectedAuditRevision": before["auditRevision"],
+                        "reason": "Synthetische Aktualisierungsprobe",
+                        "requestedFields": ["request_complete"] if state == "waiting-information" else [],
+                        "requestedEvidence": ["supporting_document"] if state == "manual-review" else []
+                    }, token=token)
+                corrected = request(f"/api/review/work-cases/{case_id}/corrections", {
+                    "correctionId": "correction-" + uuid.uuid4().hex,
+                    "messageId": "corrected-input-" + entry["payload"]["order"], "upstreamRevision": "2",
+                    "policyId": policy, "policyVersion": "1", "expectedCaseRevision": before["caseRevision"],
+                    "expectedProcessRevision": before["processRevision"], "expectedAuditRevision": before["auditRevision"],
+                    "reason": "Synthetische neue Revision nach Versionswechsel", "inputJson": supported,
+                    "clarificationId": question_id
+                }, token=token)["workCase"]
+                assert corrected["caseRevision"] == "2" and len(corrected["audit"]) == 1
+                assert corrected["stateId"] == "awaiting-approval"
+                expected_platform = os.environ.get("NORMACASE_EXPECTED_PLATFORM_VERSION")
+                if expected_platform:
+                    assert json.loads(corrected["assessmentJson"])["platformVersion"] == expected_platform
+                    assert json.loads(before["assessmentJson"])["platformVersion"] != expected_platform
+                current = request(f"/api/review/work-cases/{case_id}/reviews", {
+                    "expectedCaseRevision": "2", "expectedProcessRevision": "1", "expectedAuditRevision": "1",
+                    "disposition": "ACCEPT_SYSTEM_RESULT", "reason": "Synthetische erneute Freigabe nach Aktualisierung"
+                }, token=token)
+                export = dict(entry["export"], messageId="corrected-result-" + entry["payload"]["order"],
+                              expectedCaseRevision="2", expectedProcessRevision="2", expectedAuditRevision="2")
+                current_result = request(f"/api/review/work-cases/{case_id}/outbound", export, token=token)["resultJson"]
+                assert request(f"/api/review/work-cases/{case_id}/outbound", dict(export,destinationId="synthetic-file"), token=token)["resultJson"] == current_result
+                entry["updated"] = {"case": current, "export": export, "result": current_result,
+                                    "originalHistory": original_record,
+                                    "clarifications": request(f"/api/review/work-cases/{case_id}/clarifications", token=token)}
+            manifest_path.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
         elif mode == "verify":
             entries = json.loads(manifest_path.read_text(encoding="utf-8"))
             for entry in entries:
@@ -118,7 +181,20 @@ def run(mode, manifest_path):
                 assert historical["acceptance"] == "DUPLICATE"
                 assert historical["workCase"] == entry["case"]
                 case_id = entry["case"]["caseId"]
-                if entry["result"] is None:
+                if "updated" in entry:
+                    updated = entry["updated"]
+                    assert request(f"/api/review/work-cases/{case_id}", token=token) == updated["case"]
+                    assert request(f"/api/review/work-cases/{case_id}/clarifications", token=token) == updated["clarifications"]
+                    for original in updated["originalHistory"]["entries"]:
+                        assert request(f"/api/review/work-cases/{case_id}/history/{original['version']}",token=token) == original
+                    for destination in ("synthetic-inbox","synthetic-file"):
+                        if entry["result"] is not None:
+                            old = request(f"/api/review/work-cases/{case_id}/outbound/{destination}/{entry['export']['messageId']}",token=token)
+                            assert old["resultJson"] == entry["result"]
+                        current = request(f"/api/review/work-cases/{case_id}/outbound/{destination}/{updated['export']['messageId']}",token=token)
+                        assert current["resultJson"] == updated["result"] and current["isCommitted"]
+                    assert updated["result"] in [p.read_text(encoding="utf-8") for p in outbound_directory.glob("*.json")]
+                elif entry["result"] is None:
                     request(f"/api/review/work-cases/{case_id}/outbound", entry["export"], expected=403, token=token)
                 else:
                     for destination in ("synthetic-inbox", "synthetic-file"):
@@ -126,7 +202,7 @@ def run(mode, manifest_path):
                         assert result["isCommitted"] and result["resultJson"] == entry["result"]
                     assert entry["result"] in [p.read_text(encoding="utf-8") for p in outbound_directory.glob("*.json")]
         else:
-            raise RuntimeError("Mode must be create or verify")
+            raise RuntimeError("Mode must be create, upgrade or verify")
         queues = request("/api/review/work-queues", token=token)
         ids = {item["caseId"] for queue in queues["queues"] for item in queue["items"]}
         assert all(entry["case"]["caseId"] in ids for entry in entries)
@@ -142,5 +218,5 @@ def run(mode, manifest_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        raise SystemExit("Usage: smoke_synthetic_roundtrip.py create|verify SYNTHETIC_MANIFEST_PATH")
+        raise SystemExit("Usage: smoke_synthetic_roundtrip.py create|upgrade|verify SYNTHETIC_MANIFEST_PATH")
     run(sys.argv[1], Path(sys.argv[2]))

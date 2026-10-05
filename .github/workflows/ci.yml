@@ -297,3 +297,125 @@ jobs:
         env:
           NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_restored;Username=normacase_test;Password=synthetic-test-password;Pooling=true
         run: python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-rehearsal.json
+
+
+  native-update-recovery:
+    name: Native installation, update and recovery
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: normacase_native
+          POSTGRES_USER: normacase_test
+          POSTGRES_PASSWORD: synthetic-test-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U normacase_test -d normacase_native"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_native;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+      PREVIOUS_COMMIT: ${{ github.event.pull_request.base.sha || github.event.before }}
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact candidate and previous sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Verify staging failures and prepare previous exact package
+        run: |
+          python scripts/test_installation.py
+          git worktree add --detach /tmp/normacase-previous "$PREVIOUS_COMMIT"
+          npm ci --prefix /tmp/normacase-previous/frontend
+          npm run build --prefix /tmp/normacase-previous/frontend
+          python /tmp/normacase-previous/scripts/build_preview.py --rid linux-x64 --commit "$PREVIOUS_COMMIT" --output /tmp/normacase-old-package
+      - name: Build candidate native package
+        run: |
+          npm ci --prefix frontend
+          npm run build --prefix frontend
+          python scripts/build_preview.py --rid linux-x64 --commit "$CANDIDATE_COMMIT" --output /tmp/normacase-new-package
+      - name: Stage both verified packages and activate exact previous release
+        run: |
+          python scripts/manage_installation.py stage --root /tmp/normacase-installed --archive /tmp/normacase-old-package/normacase-synthetic-preview-linux-x64.zip --rid linux-x64 --commit "$PREVIOUS_COMMIT"
+          python scripts/manage_installation.py stage --root /tmp/normacase-installed --archive /tmp/normacase-new-package/normacase-synthetic-preview-linux-x64.zip --rid linux-x64 --commit "$CANDIDATE_COMMIT"
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$PREVIOUS_COMMIT"
+          mkdir /tmp/native-rehearsal
+      - name: Install previous native version and retain original exact history
+        env:
+          NORMACASE_INSTALLATION_TEST_ROOT: /tmp/normacase-installed
+          NORMACASE_REFUSED_SWITCH_TEST_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$PREVIOUS_COMMIT/api/NormaCase.Api"
+          python scripts/smoke_synthetic_roundtrip.py create /tmp/native-rehearsal/state.json
+          cp /tmp/native-rehearsal/state.json /tmp/native-rehearsal/before.json
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rehearsal/state.json
+      - name: Preserve pre-update database and files
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U normacase_test --format=custom --no-owner --no-acl normacase_native > /tmp/native-before.dump
+          tar -cf /tmp/native-before-files.tar -C /tmp/native-rehearsal/synthetic-outbound .
+      - name: Activate exact candidate and process new revisions under its platform identity
+        env:
+          NORMACASE_INSTALLATION_TEST_ROOT: /tmp/normacase-installed
+          NORMACASE_REFUSED_SWITCH_TEST_COMMIT: ${{ github.event.pull_request.base.sha || github.event.before }}
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$CANDIDATE_COMMIT"
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$CANDIDATE_COMMIT/api/NormaCase.Api"
+          export NORMACASE_EXPECTED_PLATFORM_VERSION="0.1.0-preview+$CANDIDATE_COMMIT"
+          python scripts/smoke_synthetic_roundtrip.py upgrade /tmp/native-rehearsal/state.json
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rehearsal/state.json
+          python scripts/smoke_failed_startup.py "$NORMACASE_API_TEST_EXECUTABLE"
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rehearsal/state.json
+      - name: Restore old and updated snapshots into separate fresh databases
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_native_rollback
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_native_restored
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U normacase_test --format=custom --no-owner --no-acl normacase_native > /tmp/native-updated.dump
+          tar -cf /tmp/native-updated-files.tar -C /tmp/native-rehearsal/synthetic-outbound .
+          docker exec -i "$POSTGRES_CONTAINER" pg_restore -U normacase_test --dbname=normacase_native_rollback --no-owner --no-acl --exit-on-error < /tmp/native-before.dump
+          docker exec -i "$POSTGRES_CONTAINER" pg_restore -U normacase_test --dbname=normacase_native_restored --no-owner --no-acl --exit-on-error < /tmp/native-updated.dump
+          mkdir -p /tmp/native-rollback/synthetic-outbound /tmp/native-restored/synthetic-outbound
+          cp /tmp/native-rehearsal/before.json /tmp/native-rollback/state.json
+          cp /tmp/native-rehearsal/state.json /tmp/native-restored/state.json
+          tar -xf /tmp/native-before-files.tar -C /tmp/native-rollback/synthetic-outbound
+          tar -xf /tmp/native-updated-files.tar -C /tmp/native-restored/synthetic-outbound
+      - name: Verify previous native release against its own restored snapshot
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_native_rollback;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$PREVIOUS_COMMIT"
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$PREVIOUS_COMMIT/api/NormaCase.Api"
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rollback/state.json
+      - name: Verify candidate correction and clarification history after physical restore
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_native_restored;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$CANDIDATE_COMMIT"
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$CANDIDATE_COMMIT/api/NormaCase.Api"
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-restored/state.json
