@@ -44,7 +44,7 @@ export function EntitlementAdministration({credential,canPropose,canDecide,onUna
       onChange={event=>{const next=identities.find(item=>item.actorId===event.target.value);if(next)choose(next);}}>
       {identities.map(item=><option key={item.actorId}>{item.actorId}</option>)}</select></label>
       {identity&&<><p>{text.revision}: {identity.effectiveRevision}</p><fieldset><legend>{text.actions}</legend>
-        {['READ','ACCEPT','OVERRIDE','EXPORT','INTAKE','BATCH'].map(action=><label key={action}><input type="checkbox" checked={actions.includes(action)}
+        {['READ','ACCEPT','OVERRIDE','EXPORT','INTAKE','BATCH','CORRECT','CLARIFY'].map(action=><label key={action}><input type="checkbox" checked={actions.includes(action)}
           onChange={()=>toggle(action,actions,setActions)}/>{(text.actionLabels as Record<string,string>)[action]}</label>)}</fieldset>
         <fieldset><legend>{text.cases}</legend>{identity.availableCaseIds.map(caseId=><label key={caseId}><input type="checkbox" checked={caseIds.includes(caseId)}
           onChange={()=>toggle(caseId,caseIds,setCaseIds)}/>{caseId}</label>)}</fieldset>

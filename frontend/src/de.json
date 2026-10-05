@@ -186,7 +186,7 @@
   "entitlementAdministration": {
     "heading": "Fall- und Aktionsberechtigungen verwalten",
     "help": "Berechtigungsstände werden als vollständige, unveränderliche Schnappschüsse beantragt und von einer getrennten Testidentität geprüft.",
-    "notLive": "Hinweis: Freigegebene Berechtigungsstände werden bereits dauerhaft gespeichert, steuern die laufende Anmeldung aber noch nicht. Bis zur transaktionssicheren Umschaltung gilt weiterhin die Startkonfiguration.",
+    "notLive": "Freigegebene Berechtigungsstände gelten live. Jede geschützte Falländerung prüft den aktuellen Stand und wird gemeinsam mit dieser Berechtigungsprüfung gespeichert.",
     "proposeHeading": "Berechtigungsänderung beantragen",
     "pendingHeading": "Offene Berechtigungsanträge",
     "identity": "Synthetische Identität",
@@ -214,7 +214,9 @@
       "OVERRIDE": "Ergebnis übersteuern",
       "EXPORT": "Fall exportieren",
       "INTAKE": "Fall aufnehmen",
-      "BATCH": "Sammelfreigabe ausführen"
+      "BATCH": "Sammelfreigabe ausführen",
+      "CORRECT": "Fallangaben korrigieren",
+      "CLARIFY": "Klärungsanfrage erstellen"
     }
   },
   "reviewedWorkQueues": {
