@@ -765,6 +765,73 @@ public sealed class SyntheticReviewHostTests
     }
 
     [Fact]
+    public async Task Original_review_intake_and_outbound_replay_remain_exact_after_a_later_reviewed_correction()
+    {
+        var connection=Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION");
+        if(string.IsNullOrWhiteSpace(connection))return;
+        await ResetDatabase(connection);
+        var order="reviewed-correction-"+Guid.NewGuid().ToString("N");
+        var caseId=IntakeCase("synthetic-json",order);
+        using var supported=JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory,"Cases","demo-g-supported.json")));
+        using var negative=JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory,"Cases","demo-g-not-supported.json")));
+        var payload=new{formatVersion=1,order,message="original-reviewed-input",revision="1",input=supported.RootElement};
+        string originalAssessment,originalOutbound;
+        await using(var host=Factory(connection,null,caseId))
+        {
+            using var client=host.CreateClient();client.DefaultRequestHeaders.Authorization=new AuthenticationHeaderValue("Bearer",Credential);
+            Assert.Equal(HttpStatusCode.OK,(await client.PostAsJsonAsync("/api/review/intake/json",payload)).StatusCode);
+            Assert.Equal(HttpStatusCode.OK,(await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/reviews",
+                new{expectedCaseRevision="1",expectedProcessRevision="1",expectedAuditRevision="1",disposition="ACCEPT_SYSTEM_RESULT",reason="Synthetische ursprüngliche Freigabe"})).StatusCode);
+            using var original=JsonDocument.Parse(await(await client.GetAsync($"/api/review/work-cases/{caseId}/history/1")).Content.ReadAsStringAsync());
+            originalAssessment=original.RootElement.GetProperty("assessmentRecordJson").GetString()!;
+            var first=await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/outbound",
+                new{messageId="original-reviewed-result",correlationId="reviewed-correction",destinationId="synthetic-inbox",
+                    expectedCaseRevision="1",expectedProcessRevision="2",expectedAuditRevision="2"});
+            Assert.Equal(HttpStatusCode.OK,first.StatusCode);
+            using var firstJson=JsonDocument.Parse(await first.Content.ReadAsStringAsync());
+            originalOutbound=firstJson.RootElement.GetProperty("resultJson").GetString()!;
+            var corrected=await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/corrections",
+                new{correctionId="reviewed-correction-"+Guid.NewGuid().ToString("N"),messageId="later-input",upstreamRevision="2",
+                    policyId="synthetic-reviewed-correction",policyVersion="1",expectedCaseRevision="1",expectedProcessRevision="2",
+                    expectedAuditRevision="2",reason="Synthetische Korrektur nach Freigabe",inputJson=negative.RootElement.GetRawText()});
+            Assert.Equal(HttpStatusCode.OK,corrected.StatusCode);
+            using var next=JsonDocument.Parse(await corrected.Content.ReadAsStringAsync());
+            Assert.Equal("2",next.RootElement.GetProperty("workCase").GetProperty("caseRevision").GetString());
+            Assert.Equal("awaiting-approval",next.RootElement.GetProperty("workCase").GetProperty("stateId").GetString());
+            Assert.Equal(1,next.RootElement.GetProperty("workCase").GetProperty("audit").GetArrayLength());
+            using var replay=JsonDocument.Parse(await(await client.PostAsJsonAsync("/api/review/intake/json",payload)).Content.ReadAsStringAsync());
+            var retained=replay.RootElement.GetProperty("workCase");
+            Assert.Equal("1",retained.GetProperty("caseRevision").GetString());
+            Assert.Equal("accepted",retained.GetProperty("stateId").GetString());
+            Assert.Equal("Synthetische ursprüngliche Freigabe",retained.GetProperty("audit")[1].GetProperty("reason").GetString());
+            Assert.Empty(retained.GetProperty("allowedActions").EnumerateArray());
+            var unchanged=await client.GetAsync($"/api/review/work-cases/{caseId}/outbound/synthetic-inbox/original-reviewed-result");
+            Assert.Equal(HttpStatusCode.OK,unchanged.StatusCode);
+            using var exact=JsonDocument.Parse(await unchanged.Content.ReadAsStringAsync());
+            Assert.Equal(originalOutbound,exact.RootElement.GetProperty("resultJson").GetString());
+            Assert.Equal(HttpStatusCode.NotFound,(await client.GetAsync("/api/review/work-cases/demo-g-supported/outbound/synthetic-inbox/original-reviewed-result")).StatusCode);
+            Assert.Equal(HttpStatusCode.OK,(await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/reviews",
+                new{expectedCaseRevision="2",expectedProcessRevision="1",expectedAuditRevision="1",disposition="ACCEPT_SYSTEM_RESULT",reason="Synthetische neue Freigabe"})).StatusCode);
+            var second=await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/outbound",
+                new{messageId="later-reviewed-result",correlationId="reviewed-correction",destinationId="synthetic-inbox",
+                    expectedCaseRevision="2",expectedProcessRevision="2",expectedAuditRevision="2"});
+            Assert.Equal(HttpStatusCode.OK,second.StatusCode);
+            using var secondJson=JsonDocument.Parse(await second.Content.ReadAsStringAsync());
+            Assert.NotEqual(originalOutbound,secondJson.RootElement.GetProperty("resultJson").GetString());
+        }
+        await using var restarted=Factory(connection,null,caseId);
+        using var after=restarted.CreateClient();after.DefaultRequestHeaders.Authorization=new AuthenticationHeaderValue("Bearer",Credential);
+        using var historical=JsonDocument.Parse(await(await after.GetAsync($"/api/review/work-cases/{caseId}/history/1")).Content.ReadAsStringAsync());
+        Assert.Equal(originalAssessment,historical.RootElement.GetProperty("assessmentRecordJson").GetString());
+        using var oldReceipt=JsonDocument.Parse(await(await after.GetAsync($"/api/review/work-cases/{caseId}/outbound/synthetic-inbox/original-reviewed-result")).Content.ReadAsStringAsync());
+        Assert.Equal(originalOutbound,oldReceipt.RootElement.GetProperty("resultJson").GetString());
+        using var oldReplay=JsonDocument.Parse(await(await after.PostAsJsonAsync("/api/review/intake/json",payload)).Content.ReadAsStringAsync());
+        Assert.Equal("1",oldReplay.RootElement.GetProperty("workCase").GetProperty("caseRevision").GetString());
+        using var current=JsonDocument.Parse(await(await after.GetAsync($"/api/review/work-cases/{caseId}")).Content.ReadAsStringAsync());
+        Assert.Equal("2",current.RootElement.GetProperty("caseRevision").GetString());
+    }
+
+    [Fact]
     public void Persistent_review_requires_verified_authentication()
     {
         using var host = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
