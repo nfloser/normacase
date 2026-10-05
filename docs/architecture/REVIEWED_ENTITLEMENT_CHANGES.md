@@ -57,3 +57,10 @@ and receives no implicit `BATCH` permission.
 
 A productive identity provider and institution-specific role mapping remain external
 prerequisites; they do not alter this generic version/locking contract.
+
+Configured synthetic Knowledge administration uses the same operation transaction and
+account-suspension lock. Evidence, proposal, review, activation and exact retained-release
+reads borrow that backend. An account suspended after its initial authentication cannot
+enter the operation; the API returns the bounded German authentication response. These
+Knowledge roles remain separately assigned in trusted configuration: case-grant removal
+does not imply permission to administer Knowledge or silently remove a configured role.

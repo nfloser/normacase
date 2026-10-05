@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Npgsql;
 using NormaCase.Application.Knowledge;
+using NormaCase.Application.Authorization;
 using NormaCase.Knowledge.Catalog;
 using Xunit;
 
@@ -9,6 +10,90 @@ namespace NormaCase.Persistence.PostgreSql.Tests;
 public sealed class PostgresReviewedKnowledgeActivationStoreTests
 {
     private static readonly DateTimeOffset Time = DateTimeOffset.UnixEpoch;
+
+    [Fact]
+    public async Task Knowledge_mutations_share_authorization_backend_and_suspension_denies_stale_identity()
+    {
+        await using var source = Source();
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var releases = new PostgresKnowledgeReleaseStore(source);
+        var artifact = await releases.RegisterAsync(Fixture("a"));
+        var evidence = new PostgresKnowledgeEvidenceStore(source);
+        var ids = new List<string>();
+        foreach (var kind in new[] { "SOURCE", "IMPACT", "TESTS" })
+            ids.Add((await evidence.RegisterAsync(new(Id(), kind, "Synthetischer Beleg", "Exakter Inhalt", "proposer", Time))).EvidenceId);
+        var actor = "synthetic-local:knowledge-" + Guid.NewGuid().ToString("N");
+        var entitlements = new PostgresReviewedEntitlementChangeStore(source);
+        // Knowledge roles are independently configured; no case grants are required here.
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, [], []));
+        var proposal = new KnowledgeChangeProposal(Id(), artifact.PackId, artifact.ReleaseId, artifact.Sha256,
+            ids[0], ids[1], ids[2], "proposer", Time);
+        var governance = new PostgresReviewedKnowledgeActivationStore(source, requireRetainedEvidence: true);
+        var stagedId = Id();
+        var staged = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var operation = entitlements.ExecuteWithEffectiveLockAsync(actor, async (_, token) =>
+        {
+            await evidence.RegisterAsync(new(stagedId, "TESTS", "Zusätzlicher Test", "Synthetischer Inhalt", actor, Time), token);
+            await governance.ProposeAsync(proposal, token);
+            await governance.DecideAsync(new(proposal.ChangeId, "reviewer", Time, true, "Synthetische Gegenprüfung"), token);
+            staged.SetResult();
+            await release.Task.WaitAsync(TimeSpan.FromSeconds(15));
+            return await governance.ActivateAsync(new(proposal.ChangeId, 0, "activator", Time), token);
+        });
+        await staged.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        try
+        {
+            await using var terminate = source.CreateCommand("""
+                SELECT pg_terminate_backend(pid) FROM pg_locks WHERE locktype='advisory'
+                AND objsubid=1 AND granted AND ((classid::bigint << 32) | objid::bigint)=hashtextextended($1,117);
+                """);
+            terminate.Parameters.AddWithValue(actor);
+            Assert.True((bool)(await terminate.ExecuteScalarAsync())!);
+            await new PostgresIdentityAccessAdministrationStore(source).ChangeAsync(new(actor, 0, true,
+                "synthetic-local:administrator", Time, "Synthetische Sperre"));
+        }
+        finally { release.TrySetResult(); }
+        await Assert.ThrowsAnyAsync<Exception>(() => operation);
+        Assert.Null(await evidence.LoadAsync(stagedId));
+        Assert.Null(await governance.LoadChangeAsync(proposal.ChangeId));
+        Assert.Null(await governance.LoadActiveAsync(artifact.PackId));
+        await Assert.ThrowsAsync<IdentityAccessDeniedException>(() => entitlements.ExecuteWithEffectiveLockAsync(actor,
+            (_, token) => evidence.RegisterAsync(new(Id(), "TESTS", "Test", "Inhalt", actor, Time), token)));
+    }
+
+    [Fact]
+    public async Task Configured_Knowledge_role_can_commit_with_no_case_grants_and_one_pool_connection()
+    {
+        var builder = new NpgsqlConnectionStringBuilder(Environment.GetEnvironmentVariable("NORMACASE_POSTGRES_TEST_CONNECTION"))
+            { MaxPoolSize = 1, Timeout = 3 };
+        await using var source = NpgsqlDataSource.Create(builder.ConnectionString);
+        await new PostgresMigrationRunner(source).MigrateAsync();
+        var artifact = await new PostgresKnowledgeReleaseStore(source).RegisterAsync(Fixture("c"));
+        var actor = "synthetic-local:knowledge-pool-" + Guid.NewGuid().ToString("N");
+        var entitlements = new PostgresReviewedEntitlementChangeStore(source);
+        await entitlements.ReconcileBaselineAsync(new(actor, 0, [], []));
+        var governance = new PostgresReviewedKnowledgeActivationStore(source, requireRetainedEvidence: true);
+        var evidence = new PostgresKnowledgeEvidenceStore(source);
+        var activation = await entitlements.ExecuteWithEffectiveLockAsync(actor, async (state, token) =>
+        {
+            Assert.Empty(state.Actions);
+            Assert.Empty(state.CaseIds);
+            var ids = new List<string>();
+            foreach (var kind in new[] { "SOURCE", "IMPACT", "TESTS" })
+                ids.Add((await evidence.RegisterAsync(new(Id(), kind, "Synthetischer Beleg", "Inhalt", actor, Time), token)).EvidenceId);
+            var proposal = new KnowledgeChangeProposal(Id(), artifact.PackId, artifact.ReleaseId, artifact.Sha256,
+                ids[0], ids[1], ids[2], "proposer", Time);
+            await governance.ProposeAsync(proposal, token);
+            await governance.DecideAsync(new(proposal.ChangeId, "reviewer", Time, true, "Synthetisch geprüft"), token);
+            var active = await governance.ActivateAsync(new(proposal.ChangeId, 0, "activator", Time), token);
+            Assert.NotNull(await new KnowledgeActivationSelectionService(governance,
+                new PostgresKnowledgeReleaseStore(source), evidence).LoadAsync(
+                new(artifact.PackId, active.Revision, artifact.ReleaseId, artifact.Sha256), token));
+            return active;
+        });
+        Assert.Equal(activation, await governance.LoadActiveAsync(artifact.PackId));
+    }
 
     [Theory]
     [InlineData("a")]

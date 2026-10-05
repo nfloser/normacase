@@ -38,7 +38,19 @@ internal static class SyntheticKnowledgeGovernance
         var store = new PostgresReviewedKnowledgeActivationStore(source, requireRetainedEvidence: true);
         var releases = new PostgresKnowledgeReleaseStore(source);
         var evidenceStore = new PostgresKnowledgeEvidenceStore(source);
+        var entitlements = app.Services.GetRequiredService<SyntheticLiveEntitlements>();
         var group = app.MapGroup("/api/review/knowledge").RequireAuthorization();
+        group.AddEndpointFilter(async (invocation, next) =>
+        {
+            var context = invocation.HttpContext;
+            var actor = Actor(context);
+            if (permissions.Actions(actor).Length == 0) return DemoHost.Error("review_forbidden", 403);
+            // Role checks remain inside each endpoint; the scope only binds live account
+            // authority and store writes to one backend, without deriving Knowledge roles
+            // from case grants or the requesting actor.
+            return await entitlements.ExecuteAuthorizedAsync<object?>(actor,
+                async (_, _) => await next(invocation), context.RequestAborted);
+        });
 
         group.MapPost("/evidence", async (HttpContext context, CancellationToken token) =>
         {
