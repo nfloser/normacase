@@ -139,6 +139,53 @@ public sealed class PostgresCaseCorrectionStoreTests
         Assert.Single((await Store(source).LoadAsync(fixture.State.Process.CaseId))!.Audit.Events);
     }
 
+    [Fact]
+    public async Task Clarification_resolution_and_corrected_revision_commit_together_and_reject_unknown_targets()
+    {
+        await using var source=Source();var fixture=await Seed(source);
+        var entitlements=new PostgresReviewedEntitlementChangeStore(source);
+        var clarification=new CaseClarificationCommand("question-"+Guid.NewGuid().ToString("N"),1,1,1,
+            Time.AddSeconds(30),"Synthetisch fehlende Angabe nachfordern",["criterion_a"],[]);
+        var policy=new CaseClarificationPolicy("pg-clarification",1,Workflow.Id,1,["waiting"],true);
+        var record=await entitlements.ExecuteWithEffectiveLockAsync(fixture.Actor.ActorId,(_,token)=>
+            Store(source).RequestClarificationAsync(fixture.State.Process.CaseId,current=>
+                new CaseClarificationService(new QuestionAuthorizer()).Prepare(fixture.Actor,current,clarification,policy,fixture.Pack,token),token));
+        var command=Command(fixture);
+        var input=command.CorrectedInput;
+        var unknown=new NormalizedIntakeRequest(input.CaseId,input.CaseTypeId,input.Provenance,input.AssessmentDate,
+            new Dictionary<string,CaseValue>(),input.Evidence,input.EvidenceReferences);
+        await Assert.ThrowsAsync<CaseCorrectionPolicyException>(()=>entitlements.ExecuteWithEffectiveLockAsync<int>(
+            fixture.Actor.ActorId,async(_,token)=>{
+                var staged=await Service().CorrectAsync(Store(source),fixture.Actor,command with{CorrectedInput=unknown},
+                    fixture.Pack,Workflow,Policy,Triage,Routing,token);
+                await Store(source).ResolveClarificationAsync(record.ClarificationId,staged,token);return 0;
+            }));
+        Assert.Equal(1,(await Store(source).LoadAsync(fixture.State.Process.CaseId))!.Process.CaseRevision);
+        Assert.Null(await new PostgresAssessmentRecordStore(source).LoadAsync(command.AssessmentId));
+        Assert.Null((await Store(source).ListClarificationsAsync(fixture.State.Process.CaseId,25,null)).Single().ResolvedByCorrectionId);
+        var result=await entitlements.ExecuteWithEffectiveLockAsync(fixture.Actor.ActorId,async(_,token)=>{
+            var corrected=await Service().CorrectAsync(Store(source),fixture.Actor,Command(fixture),fixture.Pack,Workflow,Policy,Triage,Routing,token);
+            await Store(source).ResolveClarificationAsync(record.ClarificationId,corrected,token);return corrected;
+        });
+        var retained=(await Store(source).ListClarificationsAsync(fixture.State.Process.CaseId,25,null)).Single();
+        Assert.Equal(CaseClarificationJson.Serialize(record),CaseClarificationJson.Serialize(retained.Request));
+        Assert.Equal(result.Link.CorrectionId,retained.ResolvedByCorrectionId);
+        await using var connection=await source.OpenConnectionAsync();
+        foreach(var sql in new[]{
+            "UPDATE normacase.case_clarification_requests SET request_sha256=request_sha256 WHERE clarification_id=$1",
+            "DELETE FROM normacase.case_clarification_requests WHERE clarification_id=$1",
+            "UPDATE normacase.case_clarification_resolutions SET correction_id=correction_id WHERE clarification_id=$1",
+            "DELETE FROM normacase.case_clarification_resolutions WHERE clarification_id=$1"})
+        {
+            await using var mutation=new NpgsqlCommand(sql,connection);mutation.Parameters.AddWithValue(record.ClarificationId);
+            Assert.Equal("55000",(await Assert.ThrowsAsync<PostgresException>(()=>mutation.ExecuteNonQueryAsync())).SqlState);
+        }
+    }
+    private sealed class QuestionAuthorizer:ICaseClarificationAuthorizer
+    {
+        public bool Authorize(AuthenticatedReviewActor actor,CaseReviewState current,CaseClarificationCommand command,CaseClarificationPolicy policy)=>true;
+    }
+
     private static Task<CaseCorrectionPlan> Correct(NpgsqlDataSource source, Fixture fixture)
         => new PostgresReviewedEntitlementChangeStore(source).ExecuteWithEffectiveLockAsync(fixture.Actor.ActorId,
             (_, token) => Service().CorrectAsync(Store(source), fixture.Actor, Command(fixture), fixture.Pack, Workflow, Policy, Triage, Routing, token));
@@ -176,7 +223,7 @@ public sealed class PostgresCaseCorrectionStoreTests
             AssessmentAuditTrail.Start(AssessmentAuditEvent.AssessmentCreated(1, assessment.AssessmentId, Time, "synthetic-intake")));
         await Store(source).InitializeRecordedAsync(state);
         var actor = new AuthenticatedReviewActor("synthetic-local:corrector-" + id, "synthetic-local");
-        await new PostgresReviewedEntitlementChangeStore(source).ReconcileBaselineAsync(new(actor.ActorId, 0, ["READ", "CORRECT"], [original.CaseId.Value]));
+        await new PostgresReviewedEntitlementChangeStore(source).ReconcileBaselineAsync(new(actor.ActorId, 0, ["READ", "CORRECT", "CLARIFY"], [original.CaseId.Value]));
         return new(pack, original, state, actor);
     }
     private sealed record Fixture(KnowledgePack Pack, NormalizedIntakeRecord Original, CaseReviewState State, AuthenticatedReviewActor Actor);

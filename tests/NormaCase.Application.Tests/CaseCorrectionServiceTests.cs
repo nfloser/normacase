@@ -154,6 +154,55 @@ public sealed class CaseCorrectionServiceTests
         Assert.Throws<CaseCorrectionConflictException>(() => Prepare(fixture, Command(fixture) with { RecordedAtUtc = Time.AddSeconds(-1) }));
     }
 
+    [Theory]
+    [InlineData("waiting", true, "criterion_a")]
+    [InlineData("manual", false, "criterion_b")]
+    public void Clarification_policies_bind_explicit_targets_and_resolve_only_with_new_known_input(string state, bool missing, string target)
+    {
+        var fixture = Fixture(state);
+        var policy = new CaseClarificationPolicy("clarification-" + state, 1, Workflow.Id, 1, [state], missing);
+        var command = new CaseClarificationCommand("clarification-one", 1, 1, 1, Time.AddSeconds(30),
+            "Synthetische gezielte Rückfrage", [target], []);
+        var record = new CaseClarificationService(new ClarificationAuthorizer()).Prepare(Actor, fixture.Current, command, policy, fixture.Pack);
+        Assert.Equal(Actor.ActorId, record.ActorId);
+        Assert.Equal(policy.Id, record.PolicyId);
+        Assert.Equal(new[] { target }, record.RequestedFields);
+        var correction = Prepare(fixture, Command(fixture), new CaseCorrectionPolicy("correct-" + state, 1, Workflow.Id, 1, [state]));
+        CaseClarificationService.VerifyResolution(record, correction);
+        Assert.Throws<CaseCorrectionBindingException>(() => CaseClarificationService.VerifyResolution(record,
+            correction with { Link = correction.Link with { PreviousCaseRevision = 2 } }));
+        Assert.Throws<CaseCorrectionConflictException>(() => new CaseClarificationService(new ClarificationAuthorizer())
+            .Prepare(Actor, fixture.Current, command with { ExpectedAuditRevision = 2 }, policy, fixture.Pack));
+    }
+
+    [Fact]
+    public void Clarification_rejects_guessed_schema_targets_and_cannot_resolve_unknown_values()
+    {
+        var fixture = Fixture("waiting");
+        var policy = new CaseClarificationPolicy("missing-only", 1, Workflow.Id, 1, ["waiting"], true);
+        var command = new CaseClarificationCommand("clarification-one", 1, 1, 1, Time.AddSeconds(30),
+            "Synthetische gezielte Rückfrage", ["criterion_a"], []);
+        var service = new CaseClarificationService(new ClarificationAuthorizer());
+        Assert.Throws<ArgumentException>(() => service.Prepare(Actor, fixture.Current, command with { RequestedFields = ["guessed"] }, policy, fixture.Pack));
+        Assert.Throws<CaseCorrectionPolicyException>(() => service.Prepare(Actor, fixture.Current, command with { RequestedFields = ["criterion_b"] }, policy, fixture.Pack));
+        var record = service.Prepare(Actor, fixture.Current, command, policy, fixture.Pack);
+        var corrected = Command(fixture);
+        var input = corrected.CorrectedInput;
+        var unknown = new NormalizedIntakeRequest(input.CaseId, input.CaseTypeId, input.Provenance, input.AssessmentDate,
+            new Dictionary<string, CaseValue>(), input.Evidence, input.EvidenceReferences);
+        Assert.Throws<CaseCorrectionPolicyException>(() => CaseClarificationService.VerifyResolution(record,
+            Prepare(fixture, corrected with { CorrectedInput = unknown })));
+        var mutable = new List<string> { "criterion_a" };
+        record = service.Prepare(Actor, fixture.Current, command with { RequestedFields = mutable }, policy, fixture.Pack);
+        mutable.Clear();
+        Assert.Equal(new[] { "criterion_a" }, record.RequestedFields);
+    }
+
+    private sealed class ClarificationAuthorizer : ICaseClarificationAuthorizer
+    {
+        public bool Authorize(AuthenticatedReviewActor actor, CaseReviewState current, CaseClarificationCommand command, CaseClarificationPolicy policy) => true;
+    }
+
     private static CaseCorrectionPolicy Policy() => new("completion", 1, Workflow.Id, 1, ["waiting"]);
     private static CaseCorrectionPlan Prepare(Data fixture, CaseCorrectionCommand command, CaseCorrectionPolicy? policy = null)
         => new CaseCorrectionService(new Authorizer(true)).Prepare(Actor, command, fixture.Current,

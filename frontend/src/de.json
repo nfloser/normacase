@@ -186,7 +186,7 @@
   "entitlementAdministration": {
     "heading": "Fall- und Aktionsberechtigungen verwalten",
     "help": "Berechtigungsstände werden als vollständige, unveränderliche Schnappschüsse beantragt und von einer getrennten Testidentität geprüft.",
-    "notLive": "Hinweis: Freigegebene Berechtigungsstände werden bereits dauerhaft gespeichert, steuern die laufende Anmeldung aber noch nicht. Bis zur transaktionssicheren Umschaltung gilt weiterhin die Startkonfiguration.",
+    "notLive": "Freigegebene Berechtigungsstände gelten live. Jede geschützte Falländerung prüft den aktuellen Stand und wird gemeinsam mit dieser Berechtigungsprüfung gespeichert.",
     "proposeHeading": "Berechtigungsänderung beantragen",
     "pendingHeading": "Offene Berechtigungsanträge",
     "identity": "Synthetische Identität",
@@ -214,7 +214,9 @@
       "OVERRIDE": "Ergebnis übersteuern",
       "EXPORT": "Fall exportieren",
       "INTAKE": "Fall aufnehmen",
-      "BATCH": "Sammelfreigabe ausführen"
+      "BATCH": "Sammelfreigabe ausführen",
+      "CORRECT": "Fallangaben korrigieren",
+      "CLARIFY": "Klärungsanfrage erstellen"
     }
   },
   "reviewedWorkQueues": {
@@ -370,6 +372,20 @@
     "changedBy": "Korrigiert von",
     "correctionReason": "Aufgezeichnete Korrekturbegründung",
     "inputRevision": "Neue Eingaberevision",
-    "conflict": "Der Fall wurde zwischenzeitlich geändert. Lade den aktuellen Fallstand und prüfe die Angaben erneut."
+    "conflict": "Der Fall wurde zwischenzeitlich geändert. Lade den aktuellen Fallstand und prüfe die Angaben erneut.",
+    "clarifications": "Gezielte Klärungsanfragen",
+    "loadClarifications": "Klärungsanfragen laden",
+    "requestClarification": "Angaben oder Nachweise nachfordern",
+    "fieldTarget": "Angabe nachfordern",
+    "evidenceTarget": "Nachweis nachfordern",
+    "clarificationReason": "Begründung der Klärungsanfrage",
+    "sendClarification": "Klärungsanfrage speichern",
+    "resolveClarification": "Klärungsanfrage mit dieser Korrektur beantworten",
+    "noClarification": "Keine Klärungsanfrage zuordnen",
+    "clarificationStatuses": {
+      "OPEN": "Offen",
+      "RESOLVED": "Durch neue Fallrevision beantwortet",
+      "SUPERSEDED": "Frühere Fallrevision · nicht beantwortet"
+    }
   }
 }

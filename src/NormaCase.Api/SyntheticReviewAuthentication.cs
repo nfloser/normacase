@@ -18,7 +18,7 @@ internal sealed class SyntheticReviewCredential
         bool Administrator = false, bool EntitlementApprover = false);
     private readonly Entry[] entries;
     private readonly bool legacy;
-    private static readonly HashSet<string> ValidActions = ["READ", "ACCEPT", "OVERRIDE", "EXPORT", "INTAKE", "BATCH", "CORRECT"];
+    private static readonly HashSet<string> ValidActions = ["READ", "ACCEPT", "OVERRIDE", "EXPORT", "INTAKE", "BATCH", "CORRECT", "CLARIFY"];
 
     private SyntheticReviewCredential(bool enabled, Entry[] entries, bool legacy = false)
         => (Enabled, this.entries, this.legacy) = (enabled, entries, legacy);

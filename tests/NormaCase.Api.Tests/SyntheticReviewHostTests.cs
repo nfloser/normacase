@@ -696,7 +696,8 @@ public sealed class SyntheticReviewHostTests
         using var incomplete = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", example)));
         var payload = new { formatVersion = 1, order, message = "original-message", revision = "1", input = incomplete.RootElement };
         using var supported = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Cases", "demo-g-supported.json")));
-        var correction = new { correctionId = "correction-" + Guid.NewGuid().ToString("N"), messageId = "corrected-message",
+        var clarificationId="question-"+Guid.NewGuid().ToString("N");
+        var correction = new { clarificationId, correctionId = "correction-" + Guid.NewGuid().ToString("N"), messageId = "corrected-message",
             upstreamRevision = "2", policyId, policyVersion = "1", expectedCaseRevision = "1", expectedProcessRevision = "1",
             expectedAuditRevision = "1", reason = "Synthetische Angaben gezielt korrigiert", inputJson = supported.RootElement.GetRawText() };
         await using (var host = Factory(connection, null, caseId))
@@ -711,6 +712,17 @@ public sealed class SyntheticReviewHostTests
             using var historical = JsonDocument.Parse(await (await client.GetAsync($"/api/review/work-cases/{caseId}/history/0")).Content.ReadAsStringAsync());
             originalRecord = historical.RootElement.GetProperty("assessmentRecordJson").GetString()!;
             Assert.Empty(historical.RootElement.GetProperty("workCase").GetProperty("allowedActions").EnumerateArray());
+            var question = new { clarificationId, policyId=initialState=="waiting-information"?"synthetic-missing-information":"synthetic-review-questions",
+                policyVersion="1", expectedCaseRevision="1",expectedProcessRevision="1",expectedAuditRevision="1",
+                reason="Synthetische gezielte Klärungsanfrage",requestedFields=initialState=="waiting-information"?new[]{"request_complete"}:Array.Empty<string>(),
+                requestedEvidence=initialState=="manual-review"?new[]{"supporting_document"}:Array.Empty<string>() };
+            Assert.Equal(HttpStatusCode.OK,(await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/clarifications",question)).StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict,(await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/clarifications",question)).StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden,(await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/corrections",
+                correction with { inputJson=incomplete.RootElement.GetRawText() })).StatusCode);
+            using(var unchanged=JsonDocument.Parse(await(await client.GetAsync($"/api/review/work-cases/{caseId}")).Content.ReadAsStringAsync()))
+                Assert.Equal("1",unchanged.RootElement.GetProperty("caseRevision").GetString());
+
             Assert.Equal(HttpStatusCode.BadRequest, (await client.GetAsync($"/api/review/work-cases/{caseId}/history?afterVersion=00")).StatusCode);
             Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/review/work-cases/demo-g-not-configured/history")).StatusCode);
             Assert.Equal(HttpStatusCode.Conflict, (await client.PostAsJsonAsync($"/api/review/work-cases/{caseId}/corrections", correction with { expectedAuditRevision = "2" })).StatusCode);
@@ -739,6 +751,8 @@ public sealed class SyntheticReviewHostTests
             using var outbound = JsonDocument.Parse(await delivered.Content.ReadAsStringAsync());
             using var message = JsonDocument.Parse(outbound.RootElement.GetProperty("resultJson").GetString()!);
             Assert.Equal("corrected-message", message.RootElement.GetProperty("result").GetProperty("upstreamMessageId").GetString());
+            using var questions=JsonDocument.Parse(await(await client.GetAsync($"/api/review/work-cases/{caseId}/clarifications")).Content.ReadAsStringAsync());
+            Assert.Equal("RESOLVED",questions.RootElement.GetProperty("entries")[0].GetProperty("status").GetString());
         }
         await using var restarted = Factory(connection, null, caseId);
         using var after = restarted.CreateClient();
@@ -779,7 +793,7 @@ public sealed class SyntheticReviewHostTests
             builder.UseSetting("SyntheticReview:Enabled", "true");
             builder.UseSetting("SyntheticReview:PersistenceEnabled", "true");
             builder.UseSetting("SyntheticReview:Users:reviewer:Credential", Credential);
-            foreach (var (action, index) in new[] { "READ", "ACCEPT", "OVERRIDE", "INTAKE", "EXPORT", "CORRECT" }.Select((action, index) => (action, index)))
+            foreach (var (action, index) in new[] { "READ", "ACCEPT", "OVERRIDE", "INTAKE", "EXPORT", "CORRECT", "CLARIFY" }.Select((action, index) => (action, index)))
                 builder.UseSetting($"SyntheticReview:Users:reviewer:Actions:{index}", action);
             foreach (var (id, index) in new[] { "demo-g-supported", "demo-g-not-supported", "demo-g-incomplete", "demo-g-review", "demo-g-batch-supported", "demo-g-batch-not-supported" }.Concat(intakeCases).Select((id, index) => (id, index)))
                 builder.UseSetting($"SyntheticReview:Users:reviewer:CaseIds:{index}", id);
