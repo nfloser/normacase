@@ -21,7 +21,7 @@ The persistent synthetic host accepts these operator configuration keys:
 | `SyntheticReview:IntakeKnowledgeActivation:Sha256` | Exact 64-character lowercase release hash |
 
 All four values are required together. Unknown keys, an absent activation, wrong hash,
-missing retained evidence, incompatible schema or non-synthetic validation fail startup.
+missing retained evidence, incompatible schema, non-active lifecycle or non-synthetic validation fail startup.
 The selected release must retain the installed adapter's field ids/types and evidence
 ids and must not add domain outputs/workflows. A structurally different pack needs its
 own explicit intake mapping and German presentation; the generic selection service

@@ -12,7 +12,8 @@ internal static class SyntheticIntakeKnowledge
     {
         var section = configuration.GetSection("SyntheticReview:IntakeKnowledgeActivation");
         if (!section.Exists()) return installed;
-        if (section.Value is not null || section.GetChildren().Any(item => item.Key is not ("PackId" or "Revision" or "ReleaseId" or "Sha256")))
+        var allowedKeys = new HashSet<string>(["PackId", "Revision", "ReleaseId", "Sha256"], StringComparer.OrdinalIgnoreCase);
+        if (!string.IsNullOrEmpty(section.Value) || section.GetChildren().Any(item => !allowedKeys.Contains(item.Key)))
             throw new InvalidOperationException("Invalid exact intake Knowledge selection.");
         var text = section["Revision"];
         if (!long.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out var revision)
@@ -24,7 +25,7 @@ internal static class SyntheticIntakeKnowledge
         var selected = artifact.LoadPack();
         // This adapter's configured German field/evidence presentation is tied to its
         // installed synthetic schema. Other schemas need their own explicit adapter mapping.
-        if (selected.Manifest.ValidationLevel != "SYNTHETIC" || selected.Manifest.PackId != installed.Manifest.PackId
+        if (selected.Manifest.LifecycleStatus != "ACTIVE" || selected.Manifest.ValidationLevel != "SYNTHETIC" || selected.Manifest.PackId != installed.Manifest.PackId
             || !selected.Fields.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => (f.Id, f.Type))
                 .SequenceEqual(installed.Fields.OrderBy(f => f.Id, StringComparer.Ordinal).Select(f => (f.Id, f.Type)))
             || !selected.EvidenceRequirements.Select(e => e.Id).Order(StringComparer.Ordinal)

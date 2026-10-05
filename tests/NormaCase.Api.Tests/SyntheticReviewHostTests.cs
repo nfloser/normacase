@@ -551,12 +551,12 @@ public sealed class SyntheticReviewHostTests
         await governance.ProposeAsync(proposal);
         await governance.DecideAsync(new(proposal.ChangeId, "synthetic-local:reviewer", DateTimeOffset.UnixEpoch, true, "Synthetische Gegenprüfung"));
         var activation = await governance.ActivateAsync(new(proposal.ChangeId, 0, "synthetic-local:activator", DateTimeOffset.UnixEpoch));
-        WebApplicationFactory<Program> SelectedHost(string hash) => Factory(connection, null, oldCase, newCase)
+        WebApplicationFactory<Program> SelectedHost(string hash, NormaCase.Knowledge.Catalog.KnowledgeReleaseArtifact? alternative = null, long? revision = null) => Factory(connection, null, oldCase, newCase)
             .WithWebHostBuilder(builder =>
             {
-                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:PackId", selected.PackId);
-                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:Revision", activation.Revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
-                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:ReleaseId", selected.ReleaseId);
+                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:PackId", (alternative ?? selected).PackId);
+                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:Revision", (revision ?? activation.Revision).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:ReleaseId", (alternative ?? selected).ReleaseId);
                 builder.UseSetting("SyntheticReview:IntakeKnowledgeActivation:Sha256", hash);
             });
         using (var invalid = SelectedHost(new string('0', 64)))
@@ -592,6 +592,27 @@ public sealed class SyntheticReviewHostTests
         Assert.Equal("DUPLICATE", restoredJson.RootElement.GetProperty("acceptance").GetString());
         Assert.Equal(selected.ReleaseId, NormaCase.Serialization.AssessmentJson.Deserialize(
             restoredJson.RootElement.GetProperty("workCase").GetProperty("assessmentJson").GetString()!).Assessment.KnowledgeRelease);
+        foreach (var incompatible in new[] { "DRAFT", "SCHEMA" })
+        {
+            var invalidNode = node.DeepClone();
+            invalidNode["manifest"]!["releaseId"] = "synthetic-incompatible-" + Guid.NewGuid().ToString("N");
+            if (incompatible == "DRAFT") invalidNode["manifest"]!["lifecycleStatus"] = "DRAFT";
+            else invalidNode["fields"]!.AsArray().Add(new System.Text.Json.Nodes.JsonObject
+                { ["id"] = "new_unmapped_field", ["type"] = "truth", ["required"] = false });
+            var incompatibleArtifact = await releases.RegisterAsync(invalidNode.ToJsonString());
+            var incompatibleProposal = new NormaCase.Application.Knowledge.KnowledgeChangeProposal(
+                "incompatible-change-" + Guid.NewGuid().ToString("N"), incompatibleArtifact.PackId,
+                incompatibleArtifact.ReleaseId, incompatibleArtifact.Sha256, ids[0], ids[1], ids[2],
+                "synthetic-local:proposer", DateTimeOffset.UnixEpoch);
+            await governance.ProposeAsync(incompatibleProposal);
+            await governance.DecideAsync(new(incompatibleProposal.ChangeId, "synthetic-local:reviewer",
+                DateTimeOffset.UnixEpoch, true, "Synthetische Gegenprüfung"));
+            var current = (await governance.LoadActiveAsync(selected.PackId))!;
+            var incompatibleActivation = await governance.ActivateAsync(new(incompatibleProposal.ChangeId,
+                current.Revision, "synthetic-local:activator", DateTimeOffset.UnixEpoch));
+            using var invalidHost = SelectedHost(incompatibleArtifact.Sha256, incompatibleArtifact, incompatibleActivation.Revision);
+            Assert.ThrowsAny<Exception>(() => invalidHost.CreateClient());
+        }
     }
 
     [Fact]
