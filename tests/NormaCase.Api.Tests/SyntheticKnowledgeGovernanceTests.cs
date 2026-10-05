@@ -38,9 +38,25 @@ public sealed class SyntheticKnowledgeGovernanceTests
             Assert.Equal("PROPOSE", session.RootElement.GetProperty("knowledgeActions")[0].GetString());
             using var packs = JsonDocument.Parse(await alice.GetStringAsync("/api/packs"));
             var pack = packs.RootElement.EnumerateArray().First();
-            var request = new { packId = pack.GetProperty("packId").GetString(), releaseId = pack.GetProperty("releaseId").GetString(), sourceReference = "source:synthetic", impactReference = "impact:synthetic", testReference = "tests:synthetic" };
+            var evidenceIds = new List<string>();
+            foreach (var kind in new[] { "SOURCE", "IMPACT", "TESTS" })
+            {
+                var evidenceRequest = new { kind, title = "Synthetischer Nachweis", content = "Synthetischer Text\n  äöü\n" };
+                Assert.Equal(HttpStatusCode.Forbidden, (await bob.PostAsJsonAsync("/api/review/knowledge/evidence", evidenceRequest)).StatusCode);
+                var saved = await alice.PostAsJsonAsync("/api/review/knowledge/evidence", evidenceRequest);
+                Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+                using var artifact = JsonDocument.Parse(await saved.Content.ReadAsStringAsync());
+                Assert.Equal(evidenceRequest.content, artifact.RootElement.GetProperty("content").GetString());
+                Assert.Equal("synthetic-local:user-alice", artifact.RootElement.GetProperty("recordedByActorId").GetString());
+                evidenceIds.Add(artifact.RootElement.GetProperty("evidenceId").GetString()!);
+            }
+            Assert.Equal(HttpStatusCode.BadRequest, (await alice.PostAsJsonAsync("/api/review/knowledge/evidence", new { kind = "SOURCE", title = "Synthetic", content = "text", recordedByActorId = "spoofed" })).StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, (await alice.PostAsJsonAsync("/api/review/knowledge/evidence", new { kind = "SOURCE", title = "Synthetic", content = new string('ä', 32769) })).StatusCode);
+            var request = new { packId = pack.GetProperty("packId").GetString(), releaseId = pack.GetProperty("releaseId").GetString(), sourceReference = evidenceIds[0], impactReference = evidenceIds[1], testReference = evidenceIds[2] };
             Assert.Equal(HttpStatusCode.Forbidden, (await bob.PostAsJsonAsync(Path, request)).StatusCode);
             Assert.Equal(HttpStatusCode.BadRequest, (await alice.PostAsJsonAsync(Path, new { request.packId, request.releaseId, request.sourceReference, request.impactReference, request.testReference, proposerActorId = "spoofed" })).StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, (await alice.PostAsJsonAsync(Path, new { request.packId, request.releaseId, sourceReference = "missing-evidence", request.impactReference, request.testReference })).StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, (await alice.PostAsJsonAsync(Path, new { request.packId, request.releaseId, sourceReference = evidenceIds[2], request.impactReference, request.testReference })).StatusCode);
             var created = await alice.PostAsJsonAsync(Path, request);
             Assert.Equal(HttpStatusCode.OK, created.StatusCode);
             using var proposal = JsonDocument.Parse(await created.Content.ReadAsStringAsync());
@@ -74,6 +90,8 @@ public sealed class SyntheticKnowledgeGovernanceTests
         await using var restarted = Factory(connection);
         using var reviewer = Client(restarted, Bob);
         using var retained = JsonDocument.Parse(await reviewer.GetStringAsync(Path + "/" + changeId));
+        Assert.Equal(3, retained.RootElement.GetProperty("evidence").GetArrayLength());
+        Assert.All(retained.RootElement.GetProperty("evidence").EnumerateArray(), artifact => Assert.Equal("Synthetischer Text\n  äöü\n", artifact.GetProperty("content").GetString()));
         Assert.Equal("1", retained.RootElement.GetProperty("active").GetProperty("revision").GetString());
         Assert.Equal("synthetic-local:user-bob", retained.RootElement.GetProperty("change").GetProperty("decision").GetProperty("reviewerActorId").GetString());
         using var stillConfigured = JsonDocument.Parse(await reviewer.GetStringAsync("/api/packs"));

@@ -35,9 +35,25 @@ internal static class SyntheticKnowledgeGovernance
     {
         var permissions = app.Services.GetRequiredService<SyntheticKnowledgePermissions>();
         var source = app.Services.GetRequiredService<Npgsql.NpgsqlDataSource>();
-        var store = new PostgresReviewedKnowledgeActivationStore(source);
+        var store = new PostgresReviewedKnowledgeActivationStore(source, requireRetainedEvidence: true);
         var releases = new PostgresKnowledgeReleaseStore(source);
+        var evidenceStore = new PostgresKnowledgeEvidenceStore(source);
         var group = app.MapGroup("/api/review/knowledge").RequireAuthorization();
+
+        group.MapPost("/evidence", async (HttpContext context, CancellationToken token) =>
+        {
+            if (!Allowed(context, permissions, "PROPOSE")) return DemoHost.Error("review_forbidden", 403);
+            using var json = await Body(context.Request, ["content", "kind", "title"], token, 397312);
+            if (json is null) return DemoHost.Error("invalid_input", 400);
+            try
+            {
+                var artifact = new KnowledgeEvidenceArtifact("synthetic-evidence-" + Guid.NewGuid().ToString("N"),
+                    Text(json.RootElement, "kind"), Text(json.RootElement, "title"), Text(json.RootElement, "content"),
+                    Actor(context).ActorId, Now());
+                return Results.Json(Evidence(await evidenceStore.RegisterAsync(artifact, token)));
+            }
+            catch (ArgumentException) { return DemoHost.Error("invalid_input", 400); }
+        });
 
         group.MapGet("/changes", async (HttpContext context, CancellationToken token) =>
         {
@@ -61,7 +77,15 @@ internal static class SyntheticKnowledgeGovernance
                 var change = await store.LoadChangeAsync(changeId, token);
                 if (change is null) return DemoHost.Error("unknown_knowledge_change", 404);
                 var active = await store.LoadActiveAsync(change.Proposal.PackId, token);
-                return Results.Json(new { change = Change(change), active = Activation(active) });
+                var evidence = new List<object>();
+                var retainedEvidenceComplete = true;
+                foreach (var (id, kind) in new[] { (change.Proposal.SourceReference, "SOURCE"), (change.Proposal.ImpactReference, "IMPACT"), (change.Proposal.TestReference, "TESTS") })
+                {
+                    var retained = await evidenceStore.LoadAsync(id, token);
+                    retainedEvidenceComplete &= retained is not null && retained.Kind == kind && retained.RecordedAtUtc <= change.Proposal.ProposedAtUtc;
+                    if (retained is not null) evidence.Add(Evidence(retained));
+                }
+                return Results.Json(new { change = Change(change), active = Activation(active), evidence, retainedEvidenceComplete });
             }
             catch (ArgumentException) { return DemoHost.Error("invalid_input", 400); }
         });
@@ -81,6 +105,7 @@ internal static class SyntheticKnowledgeGovernance
                     Text(root, "impactReference"), Text(root, "testReference"), Actor(context).ActorId, Now()), token);
                 return Results.Json(Change(result));
             }
+            catch (KnowledgeGovernanceConflictException) { return DemoHost.Error("knowledge_evidence_required", 409); }
             catch (ArgumentException) { return DemoHost.Error("invalid_input", 400); }
         });
         group.MapPost("/changes/{changeId}/decision", async (string changeId, HttpContext context, CancellationToken token) =>
@@ -143,6 +168,11 @@ internal static class SyntheticKnowledgeGovernance
         changeId = record.ChangeId, releaseId = record.ReleaseId, sha256 = record.Sha256,
         actorId = record.ActorId, activatedAtUtc = record.ActivatedAtUtc
     };
+    private static object Evidence(KnowledgeEvidenceArtifact artifact) => new
+    {
+        evidenceId = artifact.EvidenceId, kind = artifact.Kind, title = artifact.Title, content = artifact.Content,
+        sha256 = artifact.Sha256, recordedByActorId = artifact.RecordedByActorId, recordedAtUtc = artifact.RecordedAtUtc
+    };
     private static DateTimeOffset Now()
     {
         var time = TimeProvider.System.GetUtcNow();
@@ -151,9 +181,9 @@ internal static class SyntheticKnowledgeGovernance
     private static string Text(JsonElement root, string key)
         => root.GetProperty(key).ValueKind == JsonValueKind.String
             ? root.GetProperty(key).GetString()! : throw new ArgumentException("Invalid governance request.");
-    private static async Task<JsonDocument?> Body(HttpRequest request, string[] keys, CancellationToken token)
+    private static async Task<JsonDocument?> Body(HttpRequest request, string[] keys, CancellationToken token, int maximumBytes = 4096)
     {
-        if (!request.HasJsonContentType() || request.ContentLength is > 4096) return null;
+        if (!request.HasJsonContentType() || request.ContentLength > maximumBytes) return null;
         try
         {
             using var stream = new MemoryStream();
@@ -161,7 +191,7 @@ internal static class SyntheticKnowledgeGovernance
             int read;
             while ((read = await request.Body.ReadAsync(buffer, token)) > 0)
             {
-                if (stream.Length + read > 4096) return null;
+                if (stream.Length + read > maximumBytes) return null;
                 stream.Write(buffer, 0, read);
             }
             var json = JsonDocument.Parse(new UTF8Encoding(false, true).GetString(stream.ToArray()));

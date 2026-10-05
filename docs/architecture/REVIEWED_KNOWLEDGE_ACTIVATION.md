@@ -6,9 +6,8 @@ release selection. The authenticated administration adapter is described below.
 
 `IReviewedKnowledgeActivationStore` accepts bounded immutable proposals containing
 exact pack/release/SHA-256, source, impact-analysis and test-evidence references,
-and explicitly supplied proposer/time. References identify retained evidence; this
-adapter does not fetch external documents or claim that reference text proves a
-medical review. A separately supplied reviewer records approval or rejection and a
+and explicitly supplied proposer/time. References identify evidence; the synthetic host requires exact retained typed
+artifacts. Neither reference text nor stored artifacts prove a medical review. A separately supplied reviewer records approval or rejection and a
 reason. The proposer cannot decide their own proposal. Each proposal has one final
 decision; rejection cannot be replaced with approval.
 
@@ -36,7 +35,7 @@ self-review, stale/competing commands and mutation triggers. Application tests c
 bounded contracts and lossless audit timestamps. CI also rehearses migration/runtime
 roles and synthetic dump/restore against the expanded schema.
 
-Remaining integration: retained evidence/source management and explicit host
+Remaining integration: explicit host
 consumption of the selected activation. These are institution-independent implementation work. Actual domain
 approval and institution-specific policy remain external inputs. #184 remains open.
 
@@ -59,6 +58,10 @@ JSON keys, non-JSON, invalid UTF-8 and bodies over 4 KiB fail. The host cannot p
 review or activate a non-synthetic artifact. The running host keeps its configured
 release selection. Governance activation records are not hot-reload instructions.
 
+The host now requires retained typed source/impact/test evidence for mutations; see
+[Knowledge evidence retention](KNOWLEDGE_EVIDENCE_RETENTION.md). Historical reference-only
+records stay readable without implicit evidence or validation promotion.
+
 The change list uses C-collated immutable ID keyset pagination, at most 25 displayed
 records and a separate next-page cursor. Concurrent insertions before a cursor appear
 on refresh, not retroactively on an already viewed page. Review status is loaded
@@ -72,5 +75,5 @@ resubmit proposals or decisions automatically: reconcile the saved list/detail f
 
 CI exercises real API/PostgreSQL authorization, 27-record pagination, server-owned
 metadata, restart and stale activation, plus a two-user German browser journey and
-delayed-list logout. Source document/evidence retention, controlled consumption of
+delayed-list logout. Controlled consumption of
 activation by future intake and productive institution/domain approval remain open.
