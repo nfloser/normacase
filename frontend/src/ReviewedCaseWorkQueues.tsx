@@ -5,6 +5,7 @@ import { batchReviewRequest, batchReviewResult, type BatchReviewCandidate, type 
 import { reviewRequest } from './review';
 import type { Pack } from './model';
 import { DecisionTrace } from './DecisionTrace';
+import { CaseRevisionWorkbench } from './CaseRevisionWorkbench';
 import { KnowledgeAdministration } from './KnowledgeAdministration';
 import { IdentityAdministration } from './IdentityAdministration';
 import { EntitlementAdministration } from './EntitlementAdministration';
@@ -15,7 +16,7 @@ type Item = BatchReviewCandidate & {stateId:string};
 type Queue = {queueId:string;items:Item[]};
 type QueuePage = {queues:Queue[];nextPageCursor?:string|null};
 type AuditItem = {sequence:string;kind:string;occurredAtUtc:string;actorId:string;disposition:string|null;reason:string|null;overrideOutcome:string|null};
-type Detail = Item & {
+export type ReviewedCaseDetail = Item & {
   packId:string;
   assessmentJson:string;
   evidence:Record<string,string>;
@@ -23,6 +24,7 @@ type Detail = Item & {
   auditRevision:string;
   audit:AuditItem[];
 };
+type Detail=ReviewedCaseDetail;
 type Assessment = {assessment:{outcome:string;ruleTrace?:RuleTrace;domainOutputs?:OutputTrace[];missingRequiredFields:string[];knowledgeRelease:string}};
 const outcomes:Record<string,string> = {
   SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,
@@ -40,6 +42,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   const [nextCursor,setNextCursor]=useState<string|null>(null);
   const [selected,setSelected]=useState('');
   const [detail,setDetail]=useState<Detail|null>(null);
+  const [historical,setHistorical]=useState(false);
   const [reason,setReason]=useState('');
   const [overrideOutcome,setOverrideOutcome]=useState('');
   const [error,setError]=useState('');
@@ -56,7 +59,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
   function begin(){pending.current?.abort();const controller=new AbortController();pending.current=controller;setBusy(true);setError('');setNotice('');return controller;}
   function active(controller:AbortController){return pending.current===controller&&!controller.signal.aborted;}
   function finish(controller:AbortController){if(active(controller))setBusy(false);}
-  function clearReviewForm(){setReason('');setOverrideOutcome('');}
+  function clearReviewForm(){setReason('');setOverrideOutcome('');setHistorical(false);}
   function clearBatch(){setBatchSelection([]);setBatchReason('');setRetainedBatchRequest(null);setBatchResult(null);setBatchRunning(false);}
   function clearSession(message=''){
     pending.current?.abort();pending.current=null;setBusy(false);
@@ -252,6 +255,7 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
       </section>)}</div>
       {busy&&<p>{text.loading}</p>}
       {detail&&<article><h3>{text.detail}: {detail.caseId}</h3>
+        {historical&&<p><strong>{de.caseCorrections.historical}</strong></p>}
         <p>{(text.states as Record<string,string>)[detail.stateId]??de.unknown}</p>
         <dl><dt>{text.caseRevision}</dt><dd>{detail.caseRevision}</dd>
           <dt>{text.processRevision}</dt><dd>{detail.processRevision}</dd>
@@ -271,7 +275,10 @@ export function ReviewedCaseWorkQueues({packs}:{packs:Pack[]}) {
           {item.reason&&<span>{item.reason}</span>}
           {item.overrideOutcome&&<span>{text.overrideResult}: {outcomes[item.overrideOutcome]??de.unknown}</span>}
         </li>)}</ol>
-        {(canAccept||canOverride)&&<div className="review-actions">
+        <CaseRevisionWorkbench key={detail.assessmentId+':'+historical} detail={detail} credential={credential} pack={pack}
+          historical={historical} onUnauthorized={clearSession} onCurrent={()=>loadDetail(detail.caseId)}
+          onHistorical={value=>{setDetail(value);setReason('');setOverrideOutcome('');setHistorical(true);}}/>
+        {!historical&&(canAccept||canOverride)&&<div className="review-actions">
           <label className="field">{text.reason}<textarea value={reason} disabled={busy} maxLength={1000}
             onChange={event=>setReason(event.target.value)} aria-label={text.reason}/></label>
           {canOverride&&<label className="field">{text.overrideOutcome}<select aria-label={text.overrideOutcome}

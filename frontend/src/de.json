@@ -347,5 +347,28 @@
     "exactRelease": "Genauer gespeicherter Inhalt",
     "importedBy": "Eingespielt von",
     "installedRelease": "Mit der Installation geladen"
+  },
+  "caseCorrections": {
+    "heading": "Fallrevisionen und Korrekturen",
+    "help": "Korrigierte Angaben erzeugen eine neue Prüfung. Frühere Angaben, Bewertungen und Freigaben bleiben erhalten.",
+    "history": "Gespeicherte Revisionen ansehen",
+    "more": "Weitere Revisionen anzeigen",
+    "open": "Revision ansehen",
+    "historical": "Historische Revision · schreibgeschützt",
+    "current": "Aktuellen Fallstand laden",
+    "edit": "Angaben als neue Revision korrigieren",
+    "reason": "Begründung der Korrektur",
+    "submit": "Korrektur speichern und neu prüfen",
+    "saved": "Neue Fallrevision gespeichert und erneut geprüft.",
+    "unknownCompletion": "Der Abschluss ist unbekannt. Lade den aktuellen Fallstand, bevor du eine weitere Korrektur sendest.",
+    "policy": "Korrekturverfahren",
+    "policies": {
+      "synthetic-information-completion": "Fehlende Angaben nachreichen",
+      "synthetic-manual-correction": "Angaben nach manueller Prüfung korrigieren"
+    },
+    "unavailable": "Für diesen Fallstand ist keine Eingabekorrektur verfügbar.",
+    "changedBy": "Korrigiert von",
+    "correctionReason": "Aufgezeichnete Korrekturbegründung",
+    "inputRevision": "Neue Eingaberevision"
   }
 }
