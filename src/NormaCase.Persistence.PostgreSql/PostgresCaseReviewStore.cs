@@ -175,7 +175,12 @@ public sealed partial class PostgresCaseReviewStore(NpgsqlDataSource dataSource,
             }
             else if (previous.Assessment.AssessmentId != state.Assessment.AssessmentId)
                 await VerifyCorrection(connection, transaction, previous, state, row.Version, token);
-            else VerifyAppend(previous, state);
+            else
+            {
+                if (await ReadCorrection(connection, transaction, caseId, row.Version, token) is not null)
+                    throw new CaseReviewIntegrityException();
+                VerifyAppend(previous, state);
+            }
             previous = state;
         }
         return previous is null ? null : (rows[^1].Version, previous);
