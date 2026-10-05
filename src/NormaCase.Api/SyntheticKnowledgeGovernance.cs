@@ -52,6 +52,53 @@ internal static class SyntheticKnowledgeGovernance
                 async (_, _) => await next(invocation), context.RequestAborted);
         });
 
+        var imports = new PostgresKnowledgeReleaseImportStore(source);
+        group.MapGet("/releases", async (HttpContext context, CancellationToken token) =>
+        {
+            if (!Allowed(context, permissions)) return DemoHost.Error("review_forbidden", 403);
+            if (context.Request.Query.Keys.Any(key => key is not ("packId" or "afterPackId" or "afterReleaseId"))
+                || context.Request.Query.Any(pair => pair.Value.Count != 1)) return DemoHost.Error("invalid_input", 400);
+            try
+            {
+                string? Query(string key) => context.Request.Query.ContainsKey(key) ? context.Request.Query[key].ToString() : null;
+                var page = await releases.ListAsync(25, Query("packId"), Query("afterPackId"), Query("afterReleaseId"), "SYNTHETIC", token);
+                return Results.Json(new { releases = page.Take(25).Select(Release),
+                    nextPageCursor = page.Count > 25 ? new { packId = page[24].PackId, releaseId = page[24].ReleaseId } : null });
+            }
+            catch (ArgumentException) { return DemoHost.Error("invalid_input", 400); }
+        });
+        group.MapGet("/release", async (HttpContext context, CancellationToken token) =>
+        {
+            if (!Allowed(context, permissions)) return DemoHost.Error("review_forbidden", 403);
+            if (context.Request.Query.Count != 2 || !context.Request.Query.ContainsKey("packId") || !context.Request.Query.ContainsKey("releaseId")
+                || context.Request.Query.Any(pair => pair.Value.Count != 1)) return DemoHost.Error("invalid_input", 400);
+            try
+            {
+                var artifact = await releases.LoadAsync(context.Request.Query["packId"].ToString(), context.Request.Query["releaseId"].ToString(), token);
+                if (artifact is null || artifact.ValidationLevel != "SYNTHETIC") return DemoHost.Error("unknown_knowledge_change", 404);
+                return Results.Json(ReleaseDetail(artifact, await imports.LoadAsync(artifact.PackId, artifact.ReleaseId, token)));
+            }
+            catch (ArgumentException) { return DemoHost.Error("invalid_input", 400); }
+        });
+        group.MapPost("/releases", async (HttpContext context, CancellationToken token) =>
+        {
+            if (!Allowed(context, permissions, "PROPOSE")) return DemoHost.Error("review_forbidden", 403);
+            using var json = await Body(context.Request, ["packJson"], token, 397312);
+            if (json is null) return DemoHost.Error("invalid_input", 400);
+            try
+            {
+                var exact = Text(json.RootElement, "packJson");
+                if (new UTF8Encoding(false, true).GetByteCount(exact) > 65536) return DemoHost.Error("input_too_large", 413);
+                var candidate = new NormaCase.Knowledge.Catalog.KnowledgeReleaseCatalog().Register(exact);
+                if (candidate.ValidationLevel != "SYNTHETIC") return DemoHost.Error("review_forbidden", 403);
+                var imported = await imports.ImportAsync(exact, Now(), token);
+                return Results.Json(ReleaseDetail(imported.Artifact, imported));
+            }
+            catch (NormaCase.Knowledge.Catalog.KnowledgeReleaseIdentityConflictException) { return DemoHost.Error("knowledge_change_conflict", 409); }
+            catch (Exception exception) when (exception is ArgumentException or JsonException or NormaCase.Knowledge.Validation.KnowledgeValidationException)
+            { return DemoHost.Error("invalid_input", 400); }
+        });
+
         group.MapPost("/evidence", async (HttpContext context, CancellationToken token) =>
         {
             if (!Allowed(context, permissions, "PROPOSE")) return DemoHost.Error("review_forbidden", 403);
@@ -179,6 +226,18 @@ internal static class SyntheticKnowledgeGovernance
         packId = record.PackId, revision = record.Revision.ToString(CultureInfo.InvariantCulture),
         changeId = record.ChangeId, releaseId = record.ReleaseId, sha256 = record.Sha256,
         actorId = record.ActorId, activatedAtUtc = record.ActivatedAtUtc
+    };
+    private static object Release(NormaCase.Knowledge.Catalog.KnowledgeReleaseArtifact artifact) => new
+    {
+        packId = artifact.PackId, releaseId = artifact.ReleaseId, sha256 = artifact.Sha256,
+        lifecycleStatus = artifact.LifecycleStatus, validationLevel = artifact.ValidationLevel
+    };
+    private static object ReleaseDetail(NormaCase.Knowledge.Catalog.KnowledgeReleaseArtifact artifact, KnowledgeReleaseImportRecord? imported) => new
+    {
+        packId = artifact.PackId, releaseId = artifact.ReleaseId, sha256 = artifact.Sha256,
+        lifecycleStatus = artifact.LifecycleStatus, validationLevel = artifact.ValidationLevel,
+        packJson = artifact.KnowledgePackJson, import = imported is null ? null : new
+        { importedByActorId = imported.ImportedByActorId, importedAtUtc = imported.ImportedAtUtc }
     };
     private static object Evidence(KnowledgeEvidenceArtifact artifact) => new
     {

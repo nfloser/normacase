@@ -6,5 +6,9 @@ namespace NormaCase.Application.Knowledge;
 public interface IKnowledgeReleaseStore
 {
     Task<KnowledgeReleaseArtifact> RegisterAsync(string knowledgePackJson, CancellationToken token = default);
+    // One extra row signals continuation; stable ordinal tuple cursor and optional exact filters.
+    Task<IReadOnlyList<KnowledgeReleaseArtifact>> ListAsync(int pageSize, string? packId = null,
+        string? afterPackId = null, string? afterReleaseId = null, string? validationLevel = null,
+        CancellationToken token = default);
     Task<KnowledgeReleaseArtifact?> LoadAsync(string packId, string releaseId, CancellationToken token = default);
 }
