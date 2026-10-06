@@ -34,6 +34,18 @@ class InstallationTests(unittest.TestCase):
             self.assertEqual("a"*40,installation.read_current(target)["previousCommit"])
             self.assertTrue((target/"releases"/("a"*40)).is_dir())
 
+    def test_repeated_activation_preserves_exact_pointer_and_previous_release(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);target=root/"installed"
+            for commit in ("a"*40,"b"*40):
+                installation.stage(target,self.bundle(root,commit),"linux-x64",commit)
+                installation.activate(target,commit)
+                original=(target/"current.json").read_bytes()
+                expected=installation.read_current(target)
+                self.assertEqual(expected,installation.activate(target,commit))
+                self.assertEqual(original,(target/"current.json").read_bytes())
+            self.assertEqual("a"*40,installation.read_current(target)["previousCommit"])
+
     def test_wrong_commit_tampering_and_live_service_never_replace_active_pointer(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);target=root/"installed";commit="a"*40
