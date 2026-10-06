@@ -100,6 +100,8 @@ def activate(root, commit):
         stopped()
         verify_release(root, commit)
         current = read_current(root)
+        if current is not None and current["sourceCommit"] == commit:
+            return current
         value = {"formatVersion": 1, "sourceCommit": commit,
                  "previousCommit": current["sourceCommit"] if current else None}
         temporary = root / ("pointer-" + uuid.uuid4().hex + ".tmp")

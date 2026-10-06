@@ -32,6 +32,11 @@ lokaler Dienstport verhindert den Wechsel. Nach einem harten Prozessabbruch prü
 zuerst, dass kein Dienst mehr läuft, bevor du eine verbliebene lokale Sperrdatei
 manuell entfernst. Die Startumgebung und Konfiguration bleiben außerhalb der Pakete.
 
+Die erneute Aktivierung derselben aktiven Version ist wiederholbar: Nach den
+Dienst- und Paketprüfungen bleibt `current.json` unverändert, einschließlich des
+vorherigen Standes. Eine Wiederholung umgeht weder die Dienstsperre noch die
+Integritätsprüfung. Erst der Wechsel zu einem anderen Commit ersetzt den Zeiger.
+
 ## PostgreSQL und persistente Fallprüfung
 
 Für den synthetischen Containerbetrieb sind Docker und das vorab bereitgestellte
