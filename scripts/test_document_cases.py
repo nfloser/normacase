@@ -98,6 +98,9 @@ class RetainedCorpusTests(unittest.TestCase):
         catalog=json.loads((fixtures.OUT/'catalog.json').read_text())
         bundles=json.loads((fixtures.ROOT/'scripts/clinical-case-bundles.de.json').read_text())
         baseline=json.loads((fixtures.ROOT/'scripts/reference-input-baseline.json').read_text())
+        reference_ids={c['caseId'] for c in catalog['cases'] if c['caseId'].startswith('reference-')}
+        self.assertEqual(set(bundles),reference_ids)
+        self.assertEqual(set(baseline),reference_ids)
         for case in catalog['cases']:
             if case['caseId'] not in bundles: continue
             profile=bundles[case['caseId']]
@@ -109,6 +112,7 @@ class RetainedCorpusTests(unittest.TestCase):
             for document in pdfs:
                 self.assertNotIn('Demo',document['title'])
                 content=' '.join(PdfReader(fixtures.OUT/case['caseId']/document['filename']).pages[0].extract_text().split())
+                self.assertIn('Schulungsakte - Identität und Berichte synthetisch',content)
                 self.assertIn(profile['person'],content)
                 self.assertIn(profile['caseNumber'],content)
             for supplement in profile['documents']:

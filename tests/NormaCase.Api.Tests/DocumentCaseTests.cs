@@ -63,7 +63,9 @@ public sealed class DocumentCaseTests : IClassFixture<WebApplicationFactory<Prog
             var context=item.GetProperty("context");
             Assert.False(string.IsNullOrWhiteSpace(context.GetProperty("request").GetString()));
             Assert.False(string.IsNullOrWhiteSpace(context.GetProperty("question").GetString()));
-            Assert.Contains("Synthetische Testperson",context.GetProperty("background").GetString());
+            Assert.False(string.IsNullOrWhiteSpace(context.GetProperty("background").GetString()));
+            var transcript=await client.GetStringAsync("/api/document-cases/"+id+"/documents/transmission");
+            Assert.Contains("Schulungsakte - Identität und Berichte synthetisch",transcript);
             using var detail=JsonDocument.Parse(await client.GetStringAsync("/api/document-cases/"+id));
             Assert.Equal(context.GetRawText(),detail.RootElement.GetProperty("context").GetRawText());
             if(!(id!.Contains("transport",StringComparison.Ordinal)||id.Contains("care",StringComparison.Ordinal)||id.StartsWith("reference-md-",StringComparison.Ordinal)))
