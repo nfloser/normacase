@@ -215,3 +215,19 @@ Eigene Ordner können angelegt, umbenannt, eingefärbt und gelöscht werden. Aus
 Die Organisation liegt im Speicher des lokalen Demo-Servers: Browser-Neuladen erhält sie, ein Neustart setzt sie zurück. Maximal 50 Ordner, 100 Fälle je Aktion, 1000 Zeichen je Notiz und 500 Änderungen je Serverlauf. Revisionen verhindern versehentliches Überschreiben; wiederholte identische Operationskennungen liefern denselben Erfolg. Der Demo-Pfad ist bei aktiviertem persistentem Review-Host deaktiviert.
 
 „Bestätigen (Demo)“ und „Abschicken (Demo)“ sind ausdrücklich lokale Probeläufe. Nur vollständige, dafür geeignete Fälle können gemeinsam bestätigt werden; eine ungeeignete Auswahl wird vollständig abgelehnt. Versand erzeugt ausschließlich eine herunterladbare JSON-Datei mit unveränderten Assessment-Zeichenfolgen und `SYNTHETIC_LOCAL_ONLY`. Es gibt weder eine MD-Übertragung noch eine rechtlich verbindliche Freigabe.
+
+
+## Arbeitsplatz kompakt – erste Umsetzung (UI-Arbeitsanweisung 10.10.2026)
+
+Der Fall-Explorer hat nun eine aktive Fallkontextzeile, Systemlisten als direkte Filter
+(ohne Fallknoten im linken Baum), eine medizinisch-blaue kompakte Symbolleiste,
+Statushintergründe und einen Schalter für die Zeilenfärbung. Zeilen sind auf 28 px
+Grundhöhe ausgelegt; lange Falltitel/Notizen können aktuell zusätzliche Höhe erzeugen.
+Die Auswahlfarbe hat Vorrang; eigene Farben bleiben organisatorische Randmarkierungen.
+Die Browser-Tests prüfen Fallkontext und das Umschalten der Statusdarstellung.
+
+**Noch offen gegenüber UI_ARBEITSANWEISUNG.md:** dauerhafter zweigeteilter
+Dokumentenbereich, serverseitige Spaltenfilter und Sortierung, konfigurierbare
+Spalten, persönliche Einstellungen/Sicherung, PDF-/Word-Prüfbericht und
+mehrstufige Sammelvorschau. Diese Änderungen erfordern weitere kleine PRs.
+Die Demo-Ordnerzustände bleiben derzeit nur bis zum Neustart des Hosts erhalten.
