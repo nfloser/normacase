@@ -69,3 +69,8 @@ main p { line-height:1.65; }
 @media(max-width:760px) { .document-layout, .reference-list { grid-template-columns:1fr; } .document-viewer iframe { height:480px; } }
 .document-text { font-size:1rem; line-height:1.6; max-height:650px; border:1px solid #71857a; }
 .scan-preview.zoomed img { width:175%; max-width:none; }
+/* Let larger text wrap within narrow review and result panels. */
+.card, .workspace > *, .section-head > div { min-width:0; }
+dl { grid-template-columns:minmax(0,115px) minmax(0,1fr); }
+dt, .field, button, .section-head { overflow-wrap:anywhere; }
+@media(max-width:760px) { .field span { flex-wrap:wrap; } .reviewed-work-queues dl { grid-template-columns:1fr; } }
