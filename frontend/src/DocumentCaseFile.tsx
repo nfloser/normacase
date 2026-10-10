@@ -10,18 +10,37 @@ type Document={id:string;title:string;mediaType:string;pages:number;sha256:strin
 type Observation={id:string;page:number;field:string;value:string;method:string};
 type CaseContext={request:string;question:string;background:string};
 type File={context:CaseContext|null;caseId:string;title:string;scope:string;validationLevel:string;documents:Document[];observations:Observation[];findings:string[];fieldLabels:Record<string,string>;evidenceLabels:Record<string,string>;outputLabels:Record<string,{label:string;choices:Record<string,string>}>;source:{title:string;version:string;url:string};assessmentJson:string|null};
-type Assessment={assessment:{outcome:string;ruleTrace?:RuleTrace;domainOutputs?:OutputTrace[]}};
+type Assessment={platformVersion?:string;assessment:{outcome:string;assessmentDate?:string;knowledgeRelease?:string;missingRequiredFields?:string[];ruleTrace?:RuleTrace;domainOutputs?:OutputTrace[]}};
 const outcomes:Record<string,string>={SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 const values:Record<string,string>={YES:text.yes,NO:text.no,UNKNOWN:text.unknown,NOT_APPLICABLE:text.notApplicable};
+
+function assessmentCopyText(file:File,record:Assessment):string{
+ const result=record.assessment;
+ const lines=[
+  'Fall: '+file.title,
+  'Aktenzeichen: '+file.caseId,
+  'Prüfergebnis: '+(outcomes[result.outcome]??de.unknown)
+ ];
+ if(result.assessmentDate)lines.push('Prüfdatum: '+result.assessmentDate);
+ if(result.knowledgeRelease)lines.push('Wissensstand: '+result.knowledgeRelease);
+ if(record.platformVersion)lines.push('Plattformstand: '+record.platformVersion);
+ if(result.missingRequiredFields?.length){
+  lines.push('Fehlende Pflichtangaben:');
+  for(const field of result.missingRequiredFields)lines.push('– '+(file.fieldLabels[field]??de.fieldReference));
+ }
+ lines.push('Synthetischer Schulungsfall · Kein verbindlicher medizinischer oder rechtlicher Prüfentscheid.');
+ return lines.join('\n');
+}
+
 
 export function DocumentCaseFile({caseId,presentation,showAssessment=false,analysis,initialView='result'}:{caseId:string;initialView?:'result'|'documents';analysis?:ReactNode;presentation?:Pack['presentation'];showAssessment?:boolean}) {
   const [view,setView]=useState<'result'|'documents'>(initialView);
   const [file,setFile]=useState<File|null>(null);
   const [selected,setSelected]=useState('');
-  const [error,setError]=useState('');
+  const [error,setError]=useState('');const [copyNotice,setCopyNotice]=useState('');
   const [plain,setPlain]=useState('');const [sourcePage,setSourcePage]=useState(1);const [zoom,setZoom]=useState(100);const [previewFailed,setPreviewFailed]=useState(false);
   useEffect(()=>{
-    const controller=new AbortController();setView(initialView);setFile(null);setSelected('');setError('');setPlain('');setSourcePage(1);setZoom(100);
+    const controller=new AbortController();setView(initialView);setFile(null);setSelected('');setError('');setCopyNotice('');setPlain('');setSourcePage(1);setZoom(100);
     fetch('/api/document-cases/'+encodeURIComponent(caseId),{signal:controller.signal})
       .then(response=>{if(!response.ok)throw new Error();return response.json();})
       .then((data:File)=>{if(!controller.signal.aborted){setFile(data);setSelected(data.documents[0]?.id??'');}})
@@ -38,12 +57,25 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
   useEffect(()=>{setPreviewFailed(false);},[selected,sourcePage,caseId]);
   const resolvedPresentation=presentation??(file?{title:file.title,description:file.scope,fields:file.fieldLabels,evidence:file.evidenceLabels,outputs:file.outputLabels,examples:[]}:undefined);
   const assessment=file?.assessmentJson?parse(file.assessmentJson) as Assessment:null;
+  async function copyText(content:string){
+   try{
+    if(!navigator.clipboard?.writeText)throw new Error('clipboard_unavailable');
+    await navigator.clipboard.writeText(content);
+    setCopyNotice('In die Zwischenablage kopiert.');
+   }catch{setCopyNotice('Kopieren nicht möglich. Bitte die Berechtigung für die Zwischenablage prüfen.');}
+  }
+
   // Ignore an old result immediately on case switch, before the effect cleans it up.
   if(file&&file.caseId!==caseId)return <p>{text.loading}</p>;
   return <section className="document-case-file" aria-label={text.heading}>
     <nav className="case-view-navigation" aria-label={de.workspace.caseViews}>
       <button type="button" className="secondary" aria-pressed={view==='result'} onClick={()=>setView('result')}>{de.workspace.resultView}</button>
       <button type="button" className="secondary" aria-label={de.workspace.documentsView} aria-pressed={view==='documents'} onClick={()=>setView('documents')}>{de.workspace.documentsView}{file?' ('+file.documents.length+')':''}</button>
+      <div className="case-copy-actions">
+       <button type="button" className="secondary" disabled={!file} onClick={()=>file&&copyText(file.caseId)}>Aktenzeichen kopieren</button>
+       <button type="button" className="secondary" disabled={!file||!assessment} title={!assessment?'Für diesen Vorgang liegt kein regelbasiertes Prüfergebnis vor.':undefined} onClick={()=>file&&assessment&&copyText(assessmentCopyText(file,assessment))}>Ergebnistext kopieren</button>
+       {copyNotice&&<span role="status" className="case-copy-notice">{copyNotice}</span>}
+      </div>
     </nav>
     {error?<div className="case-result-view"><p role="alert">{error}</p>{analysis}</div>:!file?<div className="case-result-view"><p role="status">{text.loading}</p>{analysis}</div>:<>
       {view==='result'?<div className="case-result-view">
