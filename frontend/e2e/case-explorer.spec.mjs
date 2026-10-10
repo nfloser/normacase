@@ -165,3 +165,29 @@ test('late bookmark completion does not dismiss a newly opened folder dialog',as
  await expect(dialog.getByLabel('Ordnername')).toBeVisible();
  await dialog.getByLabel('Ordnername').fill('Verlässlich geöffnet');
 });
+
+
+test('case list supports arrow navigation, bounded ranges and nested controls',async({page})=>{
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ const rows=explorer.locator('tbody tr');
+ await expect.poll(()=>rows.count()).toBeGreaterThan(100);
+ await rows.nth(0).locator('td').nth(2).click();
+ await rows.nth(0).focus();
+ await rows.nth(0).press('Shift+ArrowDown');
+ await expect(rows.nth(1)).toBeFocused();
+ await expect(rows.nth(0)).toHaveAttribute('aria-selected','true');
+ await expect(rows.nth(1)).toHaveAttribute('aria-selected','true');
+ await rows.nth(1).press('Shift+ArrowDown');
+ await expect(explorer.locator('tbody tr[aria-selected="true"]')).toHaveCount(3);
+ await rows.nth(2).press('ArrowDown');
+ await expect(rows.nth(3)).toBeFocused();
+ await expect(explorer.locator('tbody tr[aria-selected="true"]')).toHaveCount(1);
+ await rows.nth(3).getByRole('checkbox').focus();
+ await page.keyboard.press('ArrowUp');
+ await expect(rows.nth(3).getByRole('checkbox')).toBeFocused();
+ await rows.nth(3).focus();await rows.nth(3).press('Home');
+ await rows.nth(0).press('Shift+End');
+ await expect(explorer.getByText('Die Auswahl darf höchstens 100 Fälle enthalten. Bitte wählen Sie einen kleineren Bereich.')).toBeVisible();
+ await expect(explorer.locator('tbody tr[aria-selected="true"]')).toHaveCount(1);
+});

@@ -543,6 +543,7 @@
       "amber": "Bernstein",
       "purple": "Violett",
       "rose": "Rosa"
-    }
+    },
+    "selectionLimit": "Die Auswahl darf höchstens 100 Fälle enthalten. Bitte wählen Sie einen kleineren Bereich."
   }
 }
