@@ -1,6 +1,6 @@
 # Synthetische Dokumentakten
 
-Die lokale Demo bietet pro Arbeitslistenfall eine Dokumentakte sowie zwölf separat
+Die lokale Demo bietet pro Arbeitslistenfall eine Dokumentakte sowie 22 separat
 anwählbare Referenzakten. Die Dateien sind tatsächlich lokal vorhanden: PDFs,
 PNG-Scanansichten und Textübermittlungen. Vorschau, Fundstellen mit Seitenwahl,
 Vergrößerung einer Scanansicht, neuer Tab und Download funktionieren ohne externe
@@ -102,7 +102,7 @@ Die Repository-Attribute fixieren LF für gehashte Text-/JSON-Dateien auch unter
 
 ## Konkrete fachliche Beispielaufträge
 
-Die zwölf Referenzakten enthalten einen erfundenen Fallhintergrund, einen Auftrag
+Die 22 Referenzakten enthalten einen erfundenen Fallhintergrund, einen Auftrag
 und eine konkrete Fragestellung. Krankenfahrt und Pflege-Score verwenden die
 bereits vorhandenen eng begrenzten öffentlichen Referenzregeln; Reha und Onkologie
 bleiben Unterlagensichtungen. Die Alters-, Diagnose- und Alltagsangaben sind
@@ -129,3 +129,24 @@ Vorschauseite ist im Katalog mit Dokument, Seite und SHA-256 gebunden. Die API
 prüft Identität, Seitenanzahl, PNG-Signatur, Größe und Hash vor Bereitstellung;
 fehlende Vorschauen liefern keine geratenen Inhalte. Poppler ist keine
 Laufzeitabhängigkeit der Windows-Demo.
+
+
+## Zusätzliche öffentliche Fallfamilien
+
+Zehn weitere Akten erweitern den Bestand auf 122 Fälle (100 unveränderte
+Arbeitslistenfälle und 22 Referenzakten):
+
+| Fallfamilie | Anzahl | Grundlage / Grenze |
+| --- | --- | --- |
+| MD-Pflegelehrfälle Ingrid Müller / Otto Krämer | 2 | Publizierte Modulsummen 0/11/3/15/2/6 bzw. 3/0/0/10/1/1; Vergleichswerte 48,75 und 31,25. Ergänzte Berichte sind erfunden; keine aktuelle Pflegegradentscheidung |
+| Arbeitsunfall / Zusammenhangsfrage | 3 | DGUV A 2206, F 1000: vorhanden, Erstbefund fehlt, Ereignisschilderungen widersprüchlich. Keine Kausalitäts-, Anerkennungs- oder MdE-Prüfung |
+| Krankenhaus → Kurzzeitpflege | 2 | KBV PIO Überleitungsbogen, öffentliche fiktive Fallfamilie. Keine FHIR-Konformitätsbehauptung |
+| Cannabinoid-Anfrage | 2 | MD-Arztfragebogen: Therapieziel / Vorbehandlungen. Keine Wirksamkeits-, Rechts- oder Bewilligungsprüfung |
+| Hörhilfen-Anfrage | 1 | Öffentliche MD-Unterlagenanforderungen; Verordnung, Messbefund und Anpassbericht. Keine Eignungs- oder Leistungsentscheidung |
+
+Die Definitionen liegen außerhalb des Plattformkerns in
+`scripts/source-backed-cases.de.json`. Originale sind über Quellenlinks erreichbar;
+es werden keine fremden Originalformulare ohne geprüfte Weiterverbreitungsrechte
+mitgeliefert. Die lokalen PDFs verwenden ein eigenes Brief-/Berichtslayout und
+tragen einen sichtbaren Schulungskennzeichner. Es handelt sich ausdrücklich nicht
+um echte Patientenakten oder Originalanlagen der publizierten Lehrbeispiele.

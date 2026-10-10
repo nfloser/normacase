@@ -1,14 +1,112 @@
 {
-  "reference-transport-complete": {"request":"Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung","question":"Ist die Genehmigungsfiktion nach KT-RL § 8 Abs. 3 im dokumentierten Referenzpfad erfüllt?","background":"Synthetische Testperson K-01, 78 Jahre: Für eine ambulante augenärztliche Behandlung wurde eine Krankenfahrt verordnet. Die medizinische Notwendigkeit ist ausdrücklich bestätigt. Der beigefügte Pflegekassenbescheid weist Pflegegrad 4 aus."},
-  "reference-transport-missing": {"request":"Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung","question":"Kann der Referenzpfad ohne ausdrückliche Bestätigung der medizinischen Notwendigkeit abschließend geprüft werden?","background":"Synthetische Testperson K-02, 78 Jahre: Die Verordnung nennt eine ambulante Behandlung und Pflegegrad 4. Die ausdrückliche Angabe zur medizinischen Notwendigkeit fehlt. Der Pflegekassenbescheid ist beigefügt."},
-  "reference-transport-conflicting": {"request":"Krankenfahrt mit abweichenden Pflegegradangaben","question":"Welche Angaben verhindern eine eindeutige Prüfung der Genehmigungsfiktion nach KT-RL § 8 Abs. 3?","background":"Synthetische Testperson K-03, 78 Jahre: Für eine ambulante Behandlung wurde eine medizinisch notwendige Krankenfahrt verordnet. In der Verordnung steht Pflegegrad 4, im beigefügten Bescheid Pflegegrad 3. Die Software darf keinen dieser Werte stillschweigend bevorzugen."},
-  "reference-transport-negative": {"request":"Krankenfahrt: dokumentierter Referenzpfad nicht erfüllt","question":"Sind die Voraussetzungen dieses engen Referenzpfads erfüllt, ohne daraus eine allgemeine Leistungsablehnung abzuleiten?","background":"Synthetische Testperson K-04, 78 Jahre: Die Akte nennt eine ambulante Behandlung und Pflegegrad 2. Die ausdrückliche medizinische Notwendigkeit ist mit Nein dokumentiert. Die hier geprüfte Genehmigungsfiktion ist damit nicht erfüllt; andere Anspruchswege werden nicht bewertet."},
-  "reference-care-complete": {"request":"Nachrechnung eines Pflege-Scores aus festgestellten Modulsummen","question":"Welche gewichteten Score-Schwellen werden anhand der bereits fachlich festgestellten Modulsummen erreicht?","background":"Synthetische Testperson P-01, 72 Jahre, mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Die fachliche Erhebung hat die Modulsummen 2, 4, 1, 8, 2 und 3 dokumentiert. NormaCase rechnet diese Angaben nach; es bewertet weder die Diagnose noch einzelne Fähigkeiten und vergibt keinen Pflegegrad."},
-  "reference-care-missing": {"request":"Pflege-Score: unvollständige Dokumentation der Selbstversorgung","question":"Welche Angabe muss vor einer vollständigen Gewichtung ergänzt werden?","background":"Synthetische Testperson P-02, 72 Jahre, mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Für fünf Module liegen fachlich festgestellte Summen vor. Die Summe für Modul 4, Selbstversorgung, fehlt. Sie wird weder aus der Diagnose abgeleitet noch durch Null ersetzt."},
-  "reference-care-out-of-range": {"request":"Pflege-Score: auffälliger übermittelter Modulwert","question":"Welche übermittelte Modulsumme liegt außerhalb des im Wissensstand definierten Bereichs?","background":"Synthetische Testperson P-03, 72 Jahre: Der übermittelte Bogen nennt für Modul 1, Mobilität, die Summe 16. Diese Angabe wird gegen den zulässigen Bereich geprüft und muss geklärt werden. Die übrigen Modulsummen bleiben erhalten; eine fachliche Neubeurteilung wird nicht vorgetäuscht."},
-  "reference-care-conflicting": {"request":"Pflege-Score: widersprüchliche Angaben zur Selbstversorgung","question":"Kann der gewichtete Score bei zwei verschiedenen Summen für dasselbe Modul vollständig bestimmt werden?","background":"Synthetische Testperson P-04, 72 Jahre: Der erste Modulbogen nennt für Selbstversorgung die Summe 8. Eine zweite Anlage nennt 3. Ohne Klärung bleibt diese Modulsumme unbekannt. Keine Quelle wird automatisch als maßgeblich ausgewählt."},
-  "reference-reha-complete": {"request":"Unterlagensichtung zu einem Antrag auf medizinische Rehabilitation","question":"Sind Rehabilitationsziel, Funktionseinschränkungen und ein Befundbericht dokumentiert?","background":"Synthetische Testperson R-01, 56 Jahre, nach orthopädischer Behandlung: Die dokumentierte Gehstrecke beträgt 200 Meter. Als Ziel ist selbständige Alltagsmobilität genannt. Ein Befundbericht liegt bei. Die Demo zeigt die Unterlagen; sie entscheidet nicht über Indikation oder Bewilligung."},
-  "reference-reha-missing": {"request":"Rehabilitationsantrag mit fehlendem Befundbericht","question":"Welche Anlage fehlt für die vorgesehene Unterlagensichtung?","background":"Synthetische Testperson R-02, 56 Jahre, nach orthopädischer Behandlung: Einschränkungen der Gehstrecke und das Ziel selbständiger Alltagsmobilität sind beschrieben. Der angekündigte ärztliche Befundbericht fehlt. Eine Rehabilitationsindikation wird daraus nicht abgeleitet."},
-  "reference-oncology-complete": {"request":"Zusammenstellung von Unterlagen zur Anfrage einer CAR-T-Therapie","question":"Sind Diagnosebericht, Therapieverlauf und Board-Protokoll in der Akte enthalten?","background":"Synthetische Testperson O-01, 63 Jahre, mit dokumentierter Lymphomerkrankung: Ein Diagnosebericht, der bisherige Therapieverlauf und ein interdisziplinäres Board-Protokoll sind benannt. Die Demo dient der Unterlagensichtung auf Grundlage der öffentlichen Checkliste. Eine Therapie- oder Kostenentscheidung findet nicht statt."},
-  "reference-oncology-missing": {"request":"Onkologische Anfrage mit fehlendem Board-Protokoll","question":"Welche Anlage ist bei der dokumentierten onkologischen Anfrage noch nicht vorhanden?","background":"Synthetische Testperson O-02, 63 Jahre, mit dokumentierter Lymphomerkrankung: Diagnose und bisheriger Therapieverlauf liegen vor. Das Board-Protokoll fehlt. Die Akte wird als Unterlagendemonstration gezeigt; weder Präparatwahl noch Nutzen-Risiko-Abwägung werden automatisiert."}
+  "reference-transport-complete": {
+    "request": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung",
+    "question": "Ist die Genehmigungsfiktion nach KT-RL § 8 Abs. 3 im dokumentierten Referenzpfad erfüllt?",
+    "background": "Synthetische Testperson K-01, 78 Jahre: Für eine ambulante augenärztliche Behandlung wurde eine Krankenfahrt verordnet. Die medizinische Notwendigkeit ist ausdrücklich bestätigt. Der beigefügte Pflegekassenbescheid weist Pflegegrad 4 aus."
+  },
+  "reference-transport-missing": {
+    "request": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung",
+    "question": "Kann der Referenzpfad ohne ausdrückliche Bestätigung der medizinischen Notwendigkeit abschließend geprüft werden?",
+    "background": "Synthetische Testperson K-02, 78 Jahre: Die Verordnung nennt eine ambulante Behandlung und Pflegegrad 4. Die ausdrückliche Angabe zur medizinischen Notwendigkeit fehlt. Der Pflegekassenbescheid ist beigefügt."
+  },
+  "reference-transport-conflicting": {
+    "request": "Krankenfahrt mit abweichenden Pflegegradangaben",
+    "question": "Welche Angaben verhindern eine eindeutige Prüfung der Genehmigungsfiktion nach KT-RL § 8 Abs. 3?",
+    "background": "Synthetische Testperson K-03, 78 Jahre: Für eine ambulante Behandlung wurde eine medizinisch notwendige Krankenfahrt verordnet. In der Verordnung steht Pflegegrad 4, im beigefügten Bescheid Pflegegrad 3. Die Software darf keinen dieser Werte stillschweigend bevorzugen."
+  },
+  "reference-transport-negative": {
+    "request": "Krankenfahrt: dokumentierter Referenzpfad nicht erfüllt",
+    "question": "Sind die Voraussetzungen dieses engen Referenzpfads erfüllt, ohne daraus eine allgemeine Leistungsablehnung abzuleiten?",
+    "background": "Synthetische Testperson K-04, 78 Jahre: Die Akte nennt eine ambulante Behandlung und Pflegegrad 2. Die ausdrückliche medizinische Notwendigkeit ist mit Nein dokumentiert. Die hier geprüfte Genehmigungsfiktion ist damit nicht erfüllt; andere Anspruchswege werden nicht bewertet."
+  },
+  "reference-care-complete": {
+    "request": "Nachrechnung eines Pflege-Scores aus festgestellten Modulsummen",
+    "question": "Welche gewichteten Score-Schwellen werden anhand der bereits fachlich festgestellten Modulsummen erreicht?",
+    "background": "Synthetische Testperson P-01, 72 Jahre, mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Die fachliche Erhebung hat die Modulsummen 2, 4, 1, 8, 2 und 3 dokumentiert. NormaCase rechnet diese Angaben nach; es bewertet weder die Diagnose noch einzelne Fähigkeiten und vergibt keinen Pflegegrad."
+  },
+  "reference-care-missing": {
+    "request": "Pflege-Score: unvollständige Dokumentation der Selbstversorgung",
+    "question": "Welche Angabe muss vor einer vollständigen Gewichtung ergänzt werden?",
+    "background": "Synthetische Testperson P-02, 72 Jahre, mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Für fünf Module liegen fachlich festgestellte Summen vor. Die Summe für Modul 4, Selbstversorgung, fehlt. Sie wird weder aus der Diagnose abgeleitet noch durch Null ersetzt."
+  },
+  "reference-care-out-of-range": {
+    "request": "Pflege-Score: auffälliger übermittelter Modulwert",
+    "question": "Welche übermittelte Modulsumme liegt außerhalb des im Wissensstand definierten Bereichs?",
+    "background": "Synthetische Testperson P-03, 72 Jahre: Der übermittelte Bogen nennt für Modul 1, Mobilität, die Summe 16. Diese Angabe wird gegen den zulässigen Bereich geprüft und muss geklärt werden. Die übrigen Modulsummen bleiben erhalten; eine fachliche Neubeurteilung wird nicht vorgetäuscht."
+  },
+  "reference-care-conflicting": {
+    "request": "Pflege-Score: widersprüchliche Angaben zur Selbstversorgung",
+    "question": "Kann der gewichtete Score bei zwei verschiedenen Summen für dasselbe Modul vollständig bestimmt werden?",
+    "background": "Synthetische Testperson P-04, 72 Jahre: Der erste Modulbogen nennt für Selbstversorgung die Summe 8. Eine zweite Anlage nennt 3. Ohne Klärung bleibt diese Modulsumme unbekannt. Keine Quelle wird automatisch als maßgeblich ausgewählt."
+  },
+  "reference-reha-complete": {
+    "request": "Unterlagensichtung zu einem Antrag auf medizinische Rehabilitation",
+    "question": "Sind Rehabilitationsziel, Funktionseinschränkungen und ein Befundbericht dokumentiert?",
+    "background": "Synthetische Testperson R-01, 56 Jahre, nach orthopädischer Behandlung: Die dokumentierte Gehstrecke beträgt 200 Meter. Als Ziel ist selbständige Alltagsmobilität genannt. Ein Befundbericht liegt bei. Die Demo zeigt die Unterlagen; sie entscheidet nicht über Indikation oder Bewilligung."
+  },
+  "reference-reha-missing": {
+    "request": "Rehabilitationsantrag mit fehlendem Befundbericht",
+    "question": "Welche Anlage fehlt für die vorgesehene Unterlagensichtung?",
+    "background": "Synthetische Testperson R-02, 56 Jahre, nach orthopädischer Behandlung: Einschränkungen der Gehstrecke und das Ziel selbständiger Alltagsmobilität sind beschrieben. Der angekündigte ärztliche Befundbericht fehlt. Eine Rehabilitationsindikation wird daraus nicht abgeleitet."
+  },
+  "reference-oncology-complete": {
+    "request": "Zusammenstellung von Unterlagen zur Anfrage einer CAR-T-Therapie",
+    "question": "Sind Diagnosebericht, Therapieverlauf und Board-Protokoll in der Akte enthalten?",
+    "background": "Synthetische Testperson O-01, 63 Jahre, mit dokumentierter Lymphomerkrankung: Ein Diagnosebericht, der bisherige Therapieverlauf und ein interdisziplinäres Board-Protokoll sind benannt. Die Demo dient der Unterlagensichtung auf Grundlage der öffentlichen Checkliste. Eine Therapie- oder Kostenentscheidung findet nicht statt."
+  },
+  "reference-oncology-missing": {
+    "request": "Onkologische Anfrage mit fehlendem Board-Protokoll",
+    "question": "Welche Anlage ist bei der dokumentierten onkologischen Anfrage noch nicht vorhanden?",
+    "background": "Synthetische Testperson O-02, 63 Jahre, mit dokumentierter Lymphomerkrankung: Diagnose und bisheriger Therapieverlauf liegen vor. Das Board-Protokoll fehlt. Die Akte wird als Unterlagendemonstration gezeigt; weder Präparatwahl noch Nutzen-Risiko-Abwägung werden automatisiert."
+  },
+  "reference-md-mueller": {
+    "request": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel",
+    "question": "Wie werden die veröffentlichten Modulsummen gewichtet und welche Unterlagen belegen den Alltag?",
+    "background": "Synthetische Testperson L-01, 72 Jahre. Angelehnt an das veröffentlichte Lehrbeispiel Ingrid Müller: Unterstützung bei Körperpflege, Medikamenten und Tagesstruktur. Dokumente und Einrichtungen sind neu erfunden; die Modulsummen entsprechen der veröffentlichten Lehrtabelle."
+  },
+  "reference-md-kraemer": {
+    "request": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel",
+    "question": "Lässt sich die publizierte Gewichtung anhand dokumentierter Modulsummen nachvollziehen?",
+    "background": "Synthetische Testperson L-02, 75 Jahre. Angelehnt an Otto Krämer: Nach Schlaganfall bestehen Einschränkungen beim Gehen und bei Handbewegungen. Angehörige unterstützen die Selbstversorgung. Die neuen Berichte sind synthetisch."
+  },
+  "reference-accident-complete": {
+    "request": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis",
+    "question": "Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?",
+    "background": "Synthetische Testperson U-complete, 42 Jahre, Materialtransport. Der fiktive Vorgang betrifft Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf."
+  },
+  "reference-accident-missing": {
+    "request": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis",
+    "question": "Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?",
+    "background": "Synthetische Testperson U-missing, 42 Jahre, Materialtransport. Der fiktive Vorgang betrifft Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf."
+  },
+  "reference-accident-conflicting": {
+    "request": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis",
+    "question": "Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?",
+    "background": "Synthetische Testperson U-conflicting, 42 Jahre, Materialtransport. Der fiktive Vorgang betrifft Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf."
+  },
+  "reference-transfer-complete": {
+    "request": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege",
+    "question": "Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?",
+    "background": "Synthetische Testperson T-complete, 72 Jahre. Nach stationärer Behandlung soll eine Kurzzeitpflege die Alltagsversorgung übernehmen. Angelehnt an die öffentliche KBV-Fallfamilie; Ereignisse und Anlagen sind erfunden."
+  },
+  "reference-transfer-missing": {
+    "request": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege",
+    "question": "Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?",
+    "background": "Synthetische Testperson T-missing, 72 Jahre. Nach stationärer Behandlung soll eine Kurzzeitpflege die Alltagsversorgung übernehmen. Angelehnt an die öffentliche KBV-Fallfamilie; Ereignisse und Anlagen sind erfunden."
+  },
+  "reference-cannabis-complete": {
+    "request": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung",
+    "question": "Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?",
+    "background": "Synthetische Testperson A-complete, 58 Jahre, mit chronischer Schmerzsymptomatik. Die Anfrage dient ausschließlich der Dokumentensichtung; Wirksamkeit, Anspruch und Verordnungsbefugnis werden nicht bewertet."
+  },
+  "reference-cannabis-missing": {
+    "request": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung",
+    "question": "Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?",
+    "background": "Synthetische Testperson A-missing, 58 Jahre, mit chronischer Schmerzsymptomatik. Die Anfrage dient ausschließlich der Dokumentensichtung; Wirksamkeit, Anspruch und Verordnungsbefugnis werden nicht bewertet."
+  },
+  "reference-aid-hearing": {
+    "request": "Zusammenstellung einer Hörhilfenanfrage",
+    "question": "Sind Verordnung, Messbefund und Anpassdokumentation vorhanden?",
+    "background": "Synthetische Testperson H-01, 67 Jahre. Eine Hörversorgung wird angefragt. Die Akte enthält erfundene Unterlagen nach öffentlich beschriebenen Dokumentarten. Kein Leistungs- oder Eignungsentscheid."
+  }
 }

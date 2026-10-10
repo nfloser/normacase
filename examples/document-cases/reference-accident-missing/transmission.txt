@@ -1,0 +1,57 @@
+SYNTHETISCHE DEMO - reference-accident-missing
+Kontrollierter PDF-Text, keine OCR.
+
+Gutachtenauftrag – Zusammenhangsfrage / Seite 1
+Synthetisch | reference-accident-missing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Gutachtenauftrag – Zusammenhangsfrage
+Fiktive Einrichtung / Testperson reference-accident-missing / Datum 10.10.2026
+Synthetische Testperson U-missing, 42 Jahre, Materialtransport. Der fiktive Vorgang betrifft
+Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf. Auftrag
+angelehnt an DGUV A 2206.
+Ereignis: Beim Bewegen einer Materialkiste im fiktiven Betrieb wird ein Stolpern mit Sturz auf
+die rechte Hand beschrieben. Fragestellung: Welche Erstbefunde und Vorschädigungen sind
+dokumentiert?
+Die Unterlagen werden für eine ärztliche Zusammenhangsbegutachtung zusammengestellt.
+Eine Anerkennung als Arbeitsunfall oder MdE-Schätzung ist nicht Gegenstand der Demo.
+Angabe
+Dokumentierter Wert
+Unfallereignis dokumentiert
+Ja
+Erstbefund beigefügt
+Nicht angegeben
+Quelle der Dokumentstruktur: dguv-accident. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Gutachtenauftrag – Zusammenhangsfrage / Seite 2
+Synthetisch | reference-accident-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+accident_event_documented=YES
+initial_findings_attached=UNKNOWN
+END-NCF1
+
+Anlagenübersicht – ausstehender Erstbefund / Seite 1
+Synthetisch | reference-accident-missing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Anlagenübersicht – ausstehender Erstbefund
+Fiktive Einrichtung / Testperson reference-accident-missing / Datum 10.10.2026
+Ein Erstbericht wurde angekündigt, ist jedoch nicht beigefügt. Die fehlende Anlage wird nicht
+durch eine vermutete Diagnose ersetzt.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: dguv-accident. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Anlagenübersicht – ausstehender Erstbefund / Seite 2
+Synthetisch | reference-accident-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+

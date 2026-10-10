@@ -1,0 +1,58 @@
+SYNTHETISCHE DEMO - reference-cannabis-missing
+Kontrollierter PDF-Text, keine OCR.
+
+Arztfragebogen – synthetische Anfrage / Seite 1
+Synthetisch | reference-cannabis-missing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Arztfragebogen – synthetische Anfrage
+Fiktive Einrichtung / Testperson reference-cannabis-missing / Datum 10.10.2026
+Synthetische Testperson A-missing, 58 Jahre, mit chronischer Schmerzsymptomatik. Die
+Anfrage dient ausschließlich der Dokumentensichtung; Wirksamkeit, Anspruch und
+Verordnungsbefugnis werden nicht bewertet. Fragestellung angelehnt an den veröffentlichten
+MD-Arztfragebogen.
+Therapieziel: Im Antrag wird eine Verbesserung der Alltagsbelastbarkeit genannt.
+Diagnosebelege, Vorbehandlungen und Verlauf sollen von der fachlich zuständigen Stelle
+bewertet werden.
+Die Demo enthält keine Dosierung, Empfehlung oder Aussage zur Bewilligung.
+Angabe
+Dokumentierter Wert
+Therapieziel dokumentiert
+Ja
+Vorbehandlungen belegt
+Nicht angegeben
+Quelle der Dokumentstruktur: md-cannabinoid. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Arztfragebogen – synthetische Anfrage / Seite 2
+Synthetisch | reference-cannabis-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+treatment_goal_documented=YES
+previous_treatments_attached=UNKNOWN
+END-NCF1
+
+Anlagenübersicht – Therapieverlauf ausstehend / Seite 1
+Synthetisch | reference-cannabis-missing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Anlagenübersicht – Therapieverlauf
+ ausstehend
+Fiktive Einrichtung / Testperson reference-cannabis-missing / Datum 10.10.2026
+Vorbehandlungen sind noch nicht belegt. Die Lücke verhindert eine vollständige
+Unterlagensichtung.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: md-cannabinoid. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Anlagenübersicht – Therapieverlauf ausstehend / Seite 2
+Synthetisch | reference-cannabis-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+

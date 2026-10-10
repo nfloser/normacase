@@ -1,0 +1,57 @@
+SYNTHETISCHE DEMO - reference-transfer-missing
+Kontrollierter PDF-Text, keine OCR.
+
+Überleitungsbericht – Kurzzeitpflege / Seite 1
+Synthetisch | reference-transfer-missing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Überleitungsbericht – Kurzzeitpflege
+Fiktive Einrichtung / Testperson reference-transfer-missing / Datum 10.10.2026
+Synthetische Testperson T-missing, 72 Jahre. Nach stationärer Behandlung soll eine
+Kurzzeitpflege die Alltagsversorgung übernehmen. Angelehnt an die öffentliche
+KBV-Fallfamilie; Ereignisse und Anlagen sind erfunden. Aufnehmende Einrichtung: Fiktives
+Pflegezentrum Nord.
+Übergabe: Unterstützung bei Transfers, Körperpflege und Tagesstruktur ist im Bericht
+vorgesehen. Ansprechpartner ist die fiktive Entlasskoordination.
+Die Akte demonstriert eine sektorenübergreifende Informationsübergabe, keine
+FHIR-Konformitätsprüfung.
+Angabe
+Dokumentierter Wert
+Überleitungsbericht beigefügt
+Ja
+Medikationsübersicht beigefügt
+Nicht angegeben
+Quelle der Dokumentstruktur: kbv-transfer. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Überleitungsbericht – Kurzzeitpflege / Seite 2
+Synthetisch | reference-transfer-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+transfer_report_attached=YES
+medication_overview_attached=UNKNOWN
+END-NCF1
+
+Anlagenanforderung – Medikationsübersicht / Seite 1
+Synthetisch | reference-transfer-missing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Anlagenanforderung – Medikationsübersicht
+Fiktive Einrichtung / Testperson reference-transfer-missing / Datum 10.10.2026
+Eine aktuelle, ärztlich bestätigte Medikationsübersicht ist angekündigt, aber noch nicht
+vorhanden. Rückfrage an die entlassende Einrichtung ist erforderlich.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: kbv-transfer. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Anlagenanforderung – Medikationsübersicht / Seite 2
+Synthetisch | reference-transfer-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+
