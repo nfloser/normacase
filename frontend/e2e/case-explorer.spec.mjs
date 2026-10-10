@@ -154,12 +154,14 @@ test('late bookmark completion does not dismiss a newly opened folder dialog',as
  const explorer=page.getByRole('region',{name:'Fallverwaltung'});
  await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
  const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ const wasBookmarked=await row.locator('[aria-label="Lesezeichen gesetzt"]').count()>0;
  await row.getByRole('button',{name:'Fallaktionen',exact:true}).click();
- await page.getByRole('menuitem',{name:'Lesezeichen setzen',exact:true}).click();
+ await page.getByRole('menuitem',{name:wasBookmarked?'Lesezeichen entfernen':'Lesezeichen setzen',exact:true}).click();
  await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
  const dialog=page.getByRole('dialog');
  await expect(dialog.getByLabel('Ordnername')).toBeVisible();
- await expect(row.locator('[aria-label="Lesezeichen gesetzt"]')).toBeVisible();
+ if(wasBookmarked)await expect(row.locator('[aria-label="Lesezeichen gesetzt"]')).toHaveCount(0);
+ else await expect(row.locator('[aria-label="Lesezeichen gesetzt"]')).toBeVisible();
  await expect(dialog.getByLabel('Ordnername')).toBeVisible();
  await dialog.getByLabel('Ordnername').fill('Verlässlich geöffnet');
 });
