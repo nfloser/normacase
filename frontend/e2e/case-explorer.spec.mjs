@@ -51,3 +51,20 @@ test('keyboard menu returns focus and removes only the folder assignment',async(
  await row.press('Shift+F10');await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
  await expect(row).toContainText('Ohne eigenen Ordner');
 });
+
+test('compact workplace shows status color, case context and bounded list rows',async({page})=>{
+ await page.setViewportSize({width:1920,height:1080});await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await expect(explorer.getByText('Kein Fall ausgewählt')).toBeVisible();
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ await row.click();
+ await expect(explorer.getByText(/Fall: reference-md-mueller/)).toBeVisible();
+ await expect(row).toHaveAttribute('data-status',/approval|clarification|review|technical|documents|complete/);
+ const table=explorer.locator('.explorer-table');
+ await expect(table).toHaveClass(/status-row-colors/);
+ await explorer.getByLabel('Zeilenfärbung').uncheck();
+ await expect(table).not.toHaveClass(/status-row-colors/);
+ await explorer.getByLabel('Zeilenfärbung').check();
+ await expect(table).toHaveClass(/status-row-colors/);
+ await expect(explorer.locator('.explorer-table tbody tr').first()).toHaveCSS('height','28px');
+});
