@@ -161,3 +161,10 @@ Die technische Prüfspur und beide Downloads bleiben unverändert. Importierte
 historische Snapshots erhalten diese aktuelle Präsentation nicht: historische
 Beschriftungen sind bislang nicht Teil des Snapshotvertrags. Ihre bestätigte
 originale Prüfspur ist weiterhin als JSON verfügbar.
+
+## Dokumentakten und lesbarer Einstieg
+
+Die Arbeitslisten besitzen jetzt eigene PDF-/Scan-/Textakten mit Fundstellen,
+Vorschau und Download. Zwölf zusätzliche Referenzakten zeigen öffentlich
+recherchierte Inhaltsbereiche. [Dokumentakten](DOCUMENT_CASES.de.md) beschreibt
+Bedienung, Testadapter und die ausdrücklichen fachlichen Grenzen.

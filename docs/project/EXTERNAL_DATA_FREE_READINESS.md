@@ -68,3 +68,15 @@ productive identity/role assignments, binding medical/process policy, target-spe
 deployment approval and domain-approved knowledge. The repository must not invent
 those external requirements, but must also not treat them as blockers for the generic
 mechanisms tracked above.
+
+## Document-backed demonstration (#246)
+
+The read-only local preview now has retained synthetic PDF, PNG and text files for
+100 work-queue cases and 12 additional source-informed reference cases. Controlled
+PDF-text extraction, page provenance and normalized input/result consistency are
+verified separately from medical rules. The UI adds readable contrast, navigation,
+preview, download and scan zoom. This completes a bounded document demonstration,
+not arbitrary medical-document recognition or institution-specific ingestion. Real
+format compatibility, extraction accuracy, usability with novice users and domain
+approval still require their own acceptance evidence. See
+[document cases](../development/DOCUMENT_CASES.de.md).

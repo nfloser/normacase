@@ -214,3 +214,11 @@ Schlüssel. Ausschließlich synthetische Daten; keine produktive MD-Freigabe.
 Der vollständige lokale Testablauf mit frischen JSON-/XML-Eingängen, gespeicherter
 Arbeitsliste, menschlicher Freigabe, zwei Rückgabezielen und Wiederherstellungsprobe
 steht in [Synthetischer Gesamtablauf](docs/development/SYNTHETIC_ROUNDTRIP.de.md).
+
+### Dokumentakten in der Demo
+
+Arbeitslistenfälle enthalten lokale synthetische PDFs, Scanbilder und Textdateien
+mit Vorschau, Download und Fundstellen. Zwölf zusätzliche Referenzakten zeigen
+Krankenfahrt, Pflege-Score, Rehabilitation und Onkologie; die letzten beiden bleiben
+Unterlagensichtung ohne fachliche Entscheidung. Details und Grenzen:
+[Dokumentakten](docs/development/DOCUMENT_CASES.de.md).

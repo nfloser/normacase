@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { parse } from 'lossless-json';
 import de from './de.json';
 import type { Pack } from './model';
+import { DocumentCaseFile } from './DocumentCaseFile';
 import { DecisionTrace } from './DecisionTrace';
 import type { RuleTrace, OutputTrace } from './trace';
 
@@ -15,6 +16,7 @@ const outcomes:Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.
 const representativeLimit=5;
 
 export function CaseWorkQueues({packs}:{packs:Pack[]}) {
+  const [expanded,setExpanded]=useState<Record<string,boolean>>({});
   const [queues,setQueues]=useState<Queue[]>([]);
   const [totalCases,setTotalCases]=useState(0);
   const [selected,setSelected]=useState('');
@@ -42,7 +44,7 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
   const pack=packs.find(pack=>pack.packId===detail?.packId);
   const statuses:Record<string,string>={PRESENT:de.present,MISSING:de.missing,CONFLICTING:de.conflicting};
   const queueLabels=text.queues as Record<string,string>;
-  return <section className="card work-queues" aria-label={text.heading}>
+  return <section id="work-queues" className="card work-queues" aria-label={text.heading}>
     <h2>{text.heading}</h2><p>{text.help}</p>
     {!!totalCases&&<div className="workload-summary" aria-label={text.summaryHeading}>
       <div className="workload-total"><strong>{totalCases} {text.summaryTotal}</strong><span>{text.summaryHelp}</span></div>
@@ -52,15 +54,15 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
     </div>}
     <div className="queue-grid">{queues.map(queue=><section key={queue.queueId}>
       <h3>{queueLabels[queue.queueId]??de.unknown} ({queue.items.length})</h3>
-      <ul>{queue.items.slice(0,representativeLimit).map(item=><li key={item.caseId}><button type="button" className="secondary" aria-pressed={selected===item.caseId} onClick={()=>{if(selected!==item.caseId){setDetail(null);setSelected(item.caseId);}}}>{text.select}: {item.caseId}</button></li>)}
-        {queue.items.length>representativeLimit&&<li className="queue-more">{text.moreCases.replace('{count}',String(queue.items.length-representativeLimit))}</li>}
-      </ul>
+      <ul>{queue.items.slice(0,expanded[queue.queueId]?queue.items.length:representativeLimit).map(item=><li key={item.caseId}><button type="button" className="secondary" aria-pressed={selected===item.caseId} onClick={()=>{if(selected!==item.caseId){setDetail(null);setSelected(item.caseId);}}}>{text.select}: {item.caseId}</button></li>)}
+        {queue.items.length>representativeLimit&&!expanded[queue.queueId]&&<li className="queue-more">{text.moreCases.replace('{count}',String(queue.items.length-representativeLimit))}</li>}
+      </ul>{queue.items.length>representativeLimit&&<button type="button" className="secondary" aria-expanded={!!expanded[queue.queueId]} onClick={()=>setExpanded({...expanded,[queue.queueId]:!expanded[queue.queueId]})}>{expanded[queue.queueId]?de.documents.showLess:de.documents.showAll}</button>}
     </section>)}</div>
     <div aria-live="polite">{busy&&<p>{text.loading}</p>}{error&&<p role="alert">{error}</p>}
     {detail&&<article><h3>{text.detail}: {detail.caseId}</h3>
       <p>{(text.states as Record<string,string>)[detail.stateId]??de.unknown}</p>
       <dl><dt>{text.caseRevision}</dt><dd>{detail.caseRevision}</dd><dt>{text.processRevision}</dt><dd>{detail.processRevision}</dd></dl>
-      {assessment?<><h4>{de.result}: {outcomes[assessment.assessment.outcome]??de.unknown}</h4>
+      <DocumentCaseFile key={detail.caseId} caseId={detail.caseId} presentation={pack?.presentation}/>{assessment?<><h4>{de.result}: {outcomes[assessment.assessment.outcome]??de.unknown}</h4>
         <dl><dt>{de.release}</dt><dd>{assessment.assessment.knowledgeRelease}</dd><dt>{text.recorded}</dt><dd>{detail.recordedAtUtc&&new Date(detail.recordedAtUtc).toLocaleString('de-DE',{timeZone:'UTC'})} UTC</dd></dl>
         {!!assessment.assessment.missingRequiredFields.length&&<><h4>{de.missingFields}</h4><ul>{assessment.assessment.missingRequiredFields.map(id=><li key={id}>{pack?.presentation?.fields[id]??de.fieldReference}</li>)}</ul></>}
         <h4>{de.evidence}</h4><dl>{Object.entries(detail.evidence).map(([id,status])=><div key={id}><dt>{pack?.presentation?.evidence[id]??de.evidenceReference}</dt><dd>{statuses[status]??de.unknown}</dd></div>)}</dl>

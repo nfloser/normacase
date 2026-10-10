@@ -298,3 +298,14 @@ without exception text; clients clear their authenticated state. Knowledge roles
 explicit separate assignments and are never inferred from case entitlements. Real
 PostgreSQL tests prove failed-backend rollback and a one-connection operation with no
 case grants; API/browser journeys retain separate proposer/reviewer/activator checks.
+
+### Synthetic document preview
+
+The retained synthetic corpus is outside the webroot and served by a bounded
+case/document allowlist under the existing loopback and Origin guard. Only local
+PDF, PNG and plain text are accepted; startup checks hashes, page provenance,
+normalized observation values and expected assessments. No upload, arbitrary path,
+remote fetch, OCR or productive case permission is implied. Only document responses
+allow same-origin embedding; the main application remains unframeable. Text is
+rendered as escaped React content. Checksums do not authenticate producers. See
+[document demo boundary](../development/DOCUMENT_CASES.de.md).

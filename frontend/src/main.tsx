@@ -4,6 +4,7 @@ import { parse } from 'lossless-json';
 import de from './de.json';
 import { exampleValues, normalizeCatalog, requestJson, type Pack } from './model';
 import './style.css';
+import { ReferenceDocumentCases } from './DocumentCaseFile';
 import { CaseWorkQueues } from './CaseWorkQueues';
 import { ReviewedCaseWorkQueues } from './ReviewedCaseWorkQueues';
 import { WorkflowWorkbench } from './WorkflowWorkbench';
@@ -99,9 +100,9 @@ function App() {
   }
   const status=result?.assessment.outcome??'';
   const title=pack?.presentation?.title??selected;
-  return <><header className="top"><a className="brand" href="/"><span className="brandmark">N</span>{de.app}<span className="brand-divider">/</span><span className="sub">{de.subtitle}</span></a><span className="local"><span/>{de.local}</span></header>
-    <main><div className="intro"><p className="eyebrow">{de.kicker}</p><h1>{de.hero}</h1><p>{de.intro}</p><div className="notice">{de.notice}</div></div>
-    <CaseWorkQueues packs={packs}/><div className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
+  return <><a className="skip-link" href="#main-content">{de.documents.skip}</a><header className="top"><a className="brand" href="/"><span className="brandmark">N</span>{de.app}<span className="brand-divider">/</span><span className="sub">{de.subtitle}</span></a><span className="local"><span/>{de.local}</span></header>
+    <main id="main-content"><nav className="workspace-navigation" aria-label={de.app}><a href="#work-queues">{de.documents.queues}</a><a href="#reference-cases">{de.documents.references}</a><a href="#workbench">{de.documents.workbench}</a></nav><p>{de.documents.orientation}</p><div className="intro"><p className="eyebrow">{de.kicker}</p><h1>{de.hero}</h1><p>{de.intro}</p><div className="notice">{de.notice}</div></div>
+    <CaseWorkQueues packs={packs}/><ReferenceDocumentCases/><div id="workbench" className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
       <form onSubmit={evaluate}>
         <label className="field">{de.pack}<select aria-label={de.pack} value={selected} onChange={event=>changePack(event.target.value)}>{packs.map(item=><option key={item.packId} value={item.packId}>{item.presentation?.title??item.packId}</option>)}</select></label>
         <div className="example"><label className="field">{de.example}<select value={example} onChange={event=>{clear();setExample(event.target.value);}}><option value="">{de.emptyExample}</option>{pack?.presentation?.examples.map(item=><option key={item.file} value={item.file}>{item.label}</option>)}</select></label><button type="button" className="secondary" onClick={loadExample} disabled={!example||busy}>{de.loadExample}</button></div>
