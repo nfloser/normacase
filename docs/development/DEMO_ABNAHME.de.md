@@ -100,6 +100,15 @@ Fallbezeichnungen verwenden in jeder Tabellenzeile einen gleich breiten
 Lesezeichenplatz. Das Setzen oder Entfernen des Sterns verschiebt weder den
 Textanfang noch die Spalten; optionale Notizen beginnen auf derselben Textkante.
 
+### Ablage aus dem Eingang
+
+„Alle Fälle“ enthält gemäß der gewünschten Bedienung nur Fälle ohne eigenen
+Ordner. Nach „Verschieben nach“ verschwindet der Fall dort, einschließlich
+Auswahl und eingeblendeter Detailakte. Im Zielordner und seinen fachlichen
+Arbeits-/Statuslisten bleibt er zugänglich. „Aus Ordner entfernen“ bringt ihn
+wieder in den Eingang. Zähler folgen der tatsächlichen Zuordnung; Prüfung,
+Bestätigung und Versandstatus ändern sich dadurch nicht.
+
 ### Helle und dunkle Darstellung
 
 „Farbschema“ rechts im Menüband bietet System, Hell und Dunkel. System reagiert

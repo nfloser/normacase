@@ -1,0 +1,23 @@
+import {test,expect} from '@playwright/test';
+test('moving a case removes it from All cases and clearing its folder returns it',async({page})=>{
+ await page.goto('/#work-queues');const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await page.getByLabel('Fälle suchen').fill('reference-care-out-of-range');
+ const row=explorer.locator('.explorer-table tbody tr');await expect(row).toHaveCount(1);
+ const result=await row.locator('td').nth(6).innerText();
+ await row.locator('td').nth(2).click();
+ await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
+ const dialog=page.getByRole('dialog');await dialog.getByLabel('Ordnername').fill('Abgelegte Vorgänge');
+ await dialog.getByRole('button',{name:'Ordner speichern'}).click();
+ await explorer.getByRole('button',{name:/Auswahl verschieben/}).click();
+ await dialog.getByLabel('Zielordner').selectOption({label:'Abgelegte Vorgänge'});
+ await dialog.getByRole('button',{name:'Verschieben',exact:true}).click();
+ await expect(row).toHaveCount(0);
+ await expect(explorer.locator('.explorer-detail-heading')).toHaveCount(0);
+ await expect(explorer.getByRole('button',{name:'Auswahl bestätigen',exact:true})).toBeDisabled();
+ await explorer.locator('.custom-folder .tree-filter').filter({hasText:'Abgelegte Vorgänge'}).click();
+ await expect(row).toHaveCount(1);await expect(row.locator('td').nth(6)).toHaveText(result);
+ await row.click({button:'right'});await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
+ await expect(row).toHaveCount(0);
+ await explorer.locator('.tree-filter').filter({hasText:'Alle Fälle'}).click();
+ await expect(row).toHaveCount(1);await expect(row.locator('td').nth(6)).toHaveText(result);
+});
