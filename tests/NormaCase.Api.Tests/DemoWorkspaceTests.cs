@@ -75,4 +75,26 @@ public sealed class DemoWorkspaceTests
         using var request=new HttpRequestMessage(HttpMethod.Get,"/api/demo-workspace");request.Headers.Add("Origin","https://example.org");
         Assert.Equal(HttpStatusCode.Forbidden,(await client.SendAsync(request)).StatusCode);
     }
+
+    [Fact]
+    public async Task Nested_personal_folders_are_bounded_and_reparent_on_delete()
+    {
+        await using var factory=new WebApplicationFactory<Program>();using var client=factory.CreateClient();
+        async Task<JsonElement> Change(int revision,string action,string operationId,object args)
+        {
+            var map=JsonSerializer.SerializeToElement(args).EnumerateObject().ToDictionary(x=>x.Name,x=>(object?)x.Value);
+            map["action"]=action;map["operationId"]=operationId;map["expectedRevision"]=revision;map["caseIds"]=Array.Empty<string>();
+            var response=await client.PostAsJsonAsync("/api/demo-workspace/commands",map);
+            Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+            return JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.GetProperty("workspace").Clone();
+        }
+        var root=await Change(0,"CREATE_FOLDER","root",new{label="Prüfmappe",color="#497ab7"});
+        var parent=root.GetProperty("folders")[0].GetProperty("id").GetString();
+        var nested=await Change(1,"CREATE_FOLDER","child",new{label="Rückfragen",color="#287554",parentId=parent});
+        var child=nested.GetProperty("folders").EnumerateArray().Single(f=>f.GetProperty("label").GetString()=="Rückfragen").GetProperty("id").GetString();
+        Assert.Equal(parent,nested.GetProperty("folders").EnumerateArray().Single(f=>f.GetProperty("id").GetString()==child).GetProperty("parentId").GetString());
+        var after=await Change(2,"DELETE_FOLDER","delete-parent",new{folderId=parent});
+        Assert.Equal(JsonValueKind.Null,after.GetProperty("folders").EnumerateArray().Single(f=>f.GetProperty("id").GetString()==child).GetProperty("parentId").ValueKind);
+        Assert.Equal(122,after.GetProperty("cases").GetArrayLength());
+    }
 }
