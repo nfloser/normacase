@@ -576,3 +576,10 @@ html[data-theme=dark] .workload-total strong{color:var(--nc-primary)}
 html[data-theme=dark] input::placeholder{color:var(--nc-muted)}
 
 html[data-theme=dark] .workspace-extras-list a:hover{background:var(--nc-light)}
+html[data-theme=dark] .workspace-extras>summary{background:transparent;color:var(--nc-primary);border-color:var(--nc-line)}
+html[data-theme=dark] .case-explorer .custom-folder>.tree-filter[aria-pressed=true]{background:var(--nc-selected)}
+html[data-theme=dark] .case-explorer .context-submenu-panel .menu-custom-color{color:var(--nc-primary)}
+html[data-theme=dark] .case-explorer .context-submenu.touch-submenu .context-submenu-panel.is-open{background:var(--nc-surface)}
+html[data-theme=dark] .case-list-panel{background:var(--nc-background);border-color:var(--nc-line)}
+html[data-theme=dark] .case-empty{color:var(--nc-muted)}
+html[data-theme=dark] .workspace-navigation a[aria-current=page]{background:#256da8;color:#fff}
