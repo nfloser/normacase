@@ -122,6 +122,21 @@ class RetainedCorpusTests(unittest.TestCase):
                     self.assertIn(section['heading'],content)
             self.assertTrue(all(o['id'].startswith('document-') for o in case['observations']))
 
+    def test_clinical_source_pages_are_readable_and_keep_controlled_anchors(self):
+        import json
+        from pypdf import PdfReader
+        catalog=json.loads((fixtures.OUT/'catalog.json').read_text())
+        for case in catalog['cases']:
+            if not case['caseId'].startswith('reference-'): continue
+            for observation in case['observations']:
+                self.assertEqual(observation['page'],2)
+                pdf=PdfReader(fixtures.OUT/case['caseId']/(observation['id']+'.pdf'))
+                page=pdf.pages[observation['page']-1].extract_text()
+                self.assertIn('Erfasste Angaben zur Fallprüfung',page)
+                self.assertIn(case['fieldLabels'].get(observation['field'],observation['field']),page)
+                self.assertIn('NCF1',page)
+                self.assertIn('END-NCF1',page)
+
     def test_retained_decimal_json_does_not_round(self):
         import tempfile,json
         from decimal import Decimal

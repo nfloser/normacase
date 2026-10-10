@@ -184,3 +184,15 @@ Erneute Sichtung der DGUV-Originale und KBV-Information am 10.10.2026 bestätigt
 Dokumenttypen. Keine amtlichen Formulare, Logos, Signaturen oder fremden Patientenakten
 werden kopiert. Keine neue fachliche Regel, Freigabe oder produktive
 Schnittstellenkonformität ist Bestandteil dieser Änderung.
+
+### Lesbare Beleganlage (Issue #286)
+
+Die zweite Seite der strukturierten Referenzberichte zeigt jetzt zusätzlich eine
+fachlich beschriftete Angaben-Tabelle, Aktenzuordnung und Prüfauftrag. Der
+kontrollierte NCF1-Übermittlungsvermerk bleibt vollständig erhalten. Alle
+122 strukturierten Inputs und sämtliche Dokument-/Seiten-/Wertzuordnungen sind
+gegenüber PR #285 unverändert; insbesondere bleiben Fundstellen auf Seite 2.
+PDF- und Vorschau-Fingerprints ändern sich mit dem neuen Layout. Frühere
+Dokumentfassungen sind über ihren Git-Stand reproduzierbar und werden nicht als
+identische Bytes ausgegeben. Inhaltliche Pflege-Prüfaufträge sind in den externen
+Fallprofilen hinterlegt, nicht als fachliche Sonderlogik im Frontend.

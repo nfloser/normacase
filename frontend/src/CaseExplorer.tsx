@@ -1,5 +1,11 @@
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import de from './de.json';
+import {parse} from 'lossless-json';
+import {createPortal} from 'react-dom';
+import {WorkspaceIcon} from './WorkspaceIcon';
+import {NavTreeItem} from './NavTreeItem';
+import {caseIdentity} from './casePresentation';
+const ui=de.clinicalWorkspace;
 import {browserWorkspaceHost,type WorkspaceHost} from './workspaceHost';
 import {DocumentCaseFile} from './DocumentCaseFile';
 import {selectCaseRange} from './caseSelection';
@@ -9,33 +15,47 @@ type Organization={folderId:string|null;color:string|null;bookmark:boolean;note:
 type Case={caseId:string;title:string;queueId:string;canConfirm:boolean;organization:Organization};
 type Workspace={revision:number;localSimulation:boolean;folders:Folder[];queueColors:Record<string,string>;cases:Case[];audit:{sequence:number;action:string;caseIds:string[]}[]};
 type Dialog='folder'|'move'|'color'|'note'|'confirm'|'dispatch'|'queueColor'|'rename'|'delete';
+const outcomes:Record<string,string>={SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 const queueNames:Record<string,string>={...de.workQueues.queues,documents:t.documentReview};
 const colorPresets={blue:'#497ab7',teal:'#24708f',green:'#287554',amber:'#b7791f',purple:'#7956a3',rose:'#a54866'};
 const defaultColors:Record<string,string>={approval:'#24708f',clarification:'#b7791f',review:'#a54866',technical:'#7956a3',documents:'#497ab7'};
 
 export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={}){
  const [workspace,setWorkspace]=useState<Workspace|null>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
+ const [catalog,setCatalog]=useState<Record<string,{context:{request:string;question:string}|null}>>({});
+ const [summaries,setSummaries]=useState<Record<string,{documents:{id:string}[];findings:string[];assessmentJson:string|null}>>({});
+ const [extraFilters,setExtraFilters]=useState<Record<string,string>>({});
+ const [platformCases,setPlatformCases]=useState(false),[navOpen,setNavOpen]=useState(true),[rightDetail,setRightDetail]=useState(false),[density,setDensity]=useState(28),[showFolder,setShowFolder]=useState(false),[sort,setSort]=useState<'title'|'number'|'status'>('number'),[descending,setDescending]=useState(false),[columnQuery,setColumnQuery]=useState(''),[statusFilter,setStatusFilter]=useState('');
+ const searchRef=useRef<HTMLInputElement|null>(null);
  const [query,setQuery]=useState(''),[filter,setFilter]=useState('all'),[selection,setSelection]=useState<string[]>([]),[opened,setOpened]=useState('');
  const [openedView,setOpenedView]=useState<'result'|'documents'>('result');
  const [activeCase,setActiveCase]=useState('');
  const [rowColors,setRowColors]=useState(true);
  const [detailOpen,setDetailOpen]=useState(true);
- const [detailPercent,setDetailPercent]=useState(45);
+ const [detailPercent,setDetailPercent]=useState(55);
  const selectionAnchor=useRef<string|null>(null),rowRefs=useRef<Record<string,HTMLTableRowElement|null>>({});
  const resizing=useRef(false),explorerContentRef=useRef<HTMLDivElement|null>(null);
- const [moreActions,setMoreActions]=useState(false);
+
  const [coarsePointer]=useState(()=>typeof window!=='undefined'&&window.matchMedia?.('(pointer: coarse)').matches===true);
+ const [navMenu,setNavMenu]=useState<{x:number;y:number;id:string;folder:boolean}|null>(null);
  const [subMenu,setSubMenu]=useState<'color'|'folder'|null>(null);
  const [menu,setMenu]=useState<{x:number;y:number;ids:string[]}|null>(null),[dialog,setDialog]=useState<Dialog|null>(null);
  const [targets,setTargets]=useState<string[]>([]),[label,setLabel]=useState(''),[color,setColor]=useState('#497ab7'),[folderId,setFolderId]=useState(''),[parentId,setParentId]=useState(''),[note,setNote]=useState('');
  const menuRef=useRef<HTMLDivElement|null>(null),dialogRef=useRef<HTMLDialogElement|null>(null),openButtons=useRef<Record<string,HTMLButtonElement|null>>({});
  const pending=useRef<AbortController|null>(null),returnFocus=useRef<HTMLElement|null>(null);
  async function refresh(signal?:AbortSignal){const response=await fetch('/api/demo-workspace',{signal});if(!response.ok)throw new Error();setWorkspace(await response.json());}
+ useEffect(()=>{const controller=new AbortController();fetch('/api/document-cases',{signal:controller.signal}).then(r=>{if(!r.ok)throw new Error();return r.json();}).then(data=>{if(!controller.signal.aborted)setCatalog(Object.fromEntries(data.cases.map((c:{caseId:string})=>[c.caseId,c])));}).catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});return()=>controller.abort();},[]);
+ useEffect(()=>{
+  const controller=new AbortController(),ids=Object.keys(catalog);let cursor=0;
+  async function worker(){while(cursor<ids.length&&!controller.signal.aborted){const id=ids[cursor++];try{const response=await fetch('/api/document-cases/'+encodeURIComponent(id),{signal:controller.signal});if(!response.ok)throw new Error();const item=await response.json();if(!controller.signal.aborted)setSummaries(old=>({...old,[id]:item}));}catch{if(!controller.signal.aborted)setError(de.networkError);}}}
+  Promise.all(Array.from({length:Math.min(4,ids.length)},worker));return()=>controller.abort();
+ },[catalog]);
  useEffect(()=>{const controller=new AbortController();refresh(controller.signal).catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});return()=>{controller.abort();pending.current?.abort();};},[]);
  useEffect(()=>{if(!menu)return;menuRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();const close=(event:PointerEvent)=>{if(!menuRef.current?.contains(event.target as Node))setMenu(null);};document.addEventListener('pointerdown',close);return()=>document.removeEventListener('pointerdown',close);},[menu]);
  useEffect(()=>{if(dialog&&!dialogRef.current?.open)dialogRef.current?.showModal();},[dialog]);
  useEffect(()=>{
   const handle=(event:KeyboardEvent)=>{
+   if(document.querySelector('.case-explorer')?.closest('[hidden]'))return;
    if(event.key==='F4'&&!event.altKey&&!event.ctrlKey&&!event.metaKey){
     event.preventDefault();setDetailOpen(open=>!open);
    }
@@ -46,12 +66,13 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  function resizeDetail(event:React.PointerEvent<HTMLDivElement>){
   if(!resizing.current||!explorerContentRef.current)return;
   const bounds=explorerContentRef.current.getBoundingClientRect();
-  const ratio=(bounds.bottom-event.clientY)/Math.max(1,bounds.height);
+  const ratio=rightDetail?(bounds.right-event.clientX)/Math.max(1,bounds.width):(bounds.bottom-event.clientY)/Math.max(1,bounds.height);
   setDetailPercent(Math.max(25,Math.min(70,Math.round(ratio*100))));
  }
 
+ useEffect(()=>{if(!notice)return;const timer=window.setTimeout(()=>setNotice(''),3000);return()=>window.clearTimeout(timer);},[notice]);
  function closeDialog(){dialogRef.current?.close();setDialog(null);returnFocus.current?.focus();}
- function begin(kind:Dialog,ids=selection,focus?:HTMLElement){returnFocus.current=focus??document.activeElement as HTMLElement;setMenu(null);setTargets(ids);setLabel('');setNote(workspace?.cases.find(c=>c.caseId===ids[0])?.organization.note??'');setFolderId(workspace?.folders[0]?.id??'');setParentId('');setColor('#497ab7');setDialog(kind);}
+ function begin(kind:Dialog,ids=selection,focus?:HTMLElement){setNavMenu(null);returnFocus.current=focus??document.activeElement as HTMLElement;setMenu(null);setTargets(ids);setLabel('');setNote(workspace?.cases.find(c=>c.caseId===ids[0])?.organization.note??'');setFolderId(workspace?.folders[0]?.id??'');setParentId('');setColor('#497ab7');setDialog(kind);}
  async function command(action:string,ids:string[],extra:Record<string,unknown>={}){
   if(!workspace||busy)return;setBusy(true);setError('');setNotice('');const controller=new AbortController();pending.current=controller;
   try{const response=await fetch('/api/demo-workspace/commands',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({action,caseIds:ids,expectedRevision:workspace.revision,operationId:crypto.randomUUID(),...extra})});
@@ -68,8 +89,10 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  function appendFolders(parent:string|null,depth:number){for(const folder of folders.filter(f=>(f.parentId??null)===parent)){orderedFolders.push({...folder,depth});appendFolders(folder.id,depth+1);}}
  appendFolders(null,0);
  const groups=['approval','clarification','review','technical','documents'];
- function matches(c:Case){return (filter==='all'||filter==='bookmarks'&&c.organization.bookmark||filter==='confirmed'&&c.organization.confirmed&&!c.organization.dispatched||filter==='dispatched'&&c.organization.dispatched||filter==='unfiled'&&!c.organization.folderId||filter===c.queueId||filter===c.organization.folderId)&&(c.caseId+' '+c.title+' '+c.organization.note).toLocaleLowerCase('de-DE').includes(query.toLocaleLowerCase('de-DE'));}
- const visible=cases.filter(matches).sort((a,b)=>Number(b.caseId.startsWith('reference-'))-Number(a.caseId.startsWith('reference-'))||a.caseId.localeCompare(b.caseId));
+ function resultLabel(c:Case){const record=summaries[c.caseId];return record?record.assessmentJson?(outcomes[(parse(record.assessmentJson) as {assessment:{outcome:string}}).assessment.outcome]??de.unknown):ui.noTechnical:de.unknown;}
+ function extraText(c:Case,key:string){return key==='number'?caseIdentity(c.caseId,c.title).number:key==='question'?catalog[c.caseId]?.context?.request??ui.noTechnical:key==='next'?(ui.nextSteps as Record<string,string>)[c.queueId]??de.unknown:key==='result'?resultLabel(c):key==='documents'?String(summaries[c.caseId]?.documents.length??''):folders.find(f=>f.id===c.organization.folderId)?.label??'';}
+ function matches(c:Case){return Object.entries(extraFilters).every(([key,value])=>extraText(c,key).toLocaleLowerCase('de-DE').includes(value.toLocaleLowerCase('de-DE')))&& (platformCases||c.caseId.startsWith('reference-'))&&(!statusFilter||c.queueId===statusFilter)&&caseIdentity(c.caseId,c.title).subject.toLocaleLowerCase('de-DE').includes(columnQuery.toLocaleLowerCase('de-DE'))&&(filter==='all'||filter==='bookmarks'&&c.organization.bookmark||filter==='confirmed'&&c.organization.confirmed&&!c.organization.dispatched||filter==='dispatched'&&c.organization.dispatched||filter==='unfiled'&&!c.organization.folderId||filter===c.queueId||filter===c.organization.folderId)&&(c.caseId+' '+c.title+' '+c.organization.note).toLocaleLowerCase('de-DE').includes(query.toLocaleLowerCase('de-DE'));}
+ const visible=cases.filter(matches).sort((a,b)=>{const left=caseIdentity(a.caseId,a.title),right=caseIdentity(b.caseId,b.title);const compared=(sort==='title'?left.subject:sort==='status'?a.queueId:left.number).localeCompare(sort==='title'?right.subject:sort==='status'?b.queueId:right.number,'de-DE',{numeric:true});return (descending?-compared:compared)||a.caseId.localeCompare(b.caseId);});
  function selectRow(id:string,range:boolean,toggle:boolean){
   if(busy)return;
   if(range){
@@ -99,29 +122,81 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  const focused=cases.find(c=>c.caseId===activeCase);
  const status=(c:Case)=>c.organization.dispatched?t.dispatched:c.organization.confirmed?t.confirmed:queueNames[c.queueId]??de.unknown;
  const caseColor=(c:Case)=>c.organization.color??workspace?.queueColors[c.queueId]??defaultColors[c.queueId];
+ const actionTargets=opened?[opened]:selection;
+ const actionCases=cases.filter(c=>actionTargets.includes(c.caseId));
+ useEffect(()=>{
+  function action(event:Event){
+   const name=(event as CustomEvent<string>).detail;
+   if(name==='open'&&focused)open(focused.caseId);
+   if(name==='copy-id'||name==='copy-result'){const region=document.getElementById(opened?'full-case-copy':'inline-case-copy');const label=name==='copy-id'?ui.copyId:ui.copyResult;Array.from(region?.querySelectorAll<HTMLButtonElement>('button')??[]).find(b=>b.textContent===label)?.click();}
+   if(name==='folder')begin('folder',[]);
+   if(name==='move'&&actionTargets.length)begin('move',actionTargets);
+   if(name==='color'&&actionTargets.length)begin('color',actionTargets);
+   if(name==='bookmark'&&actionTargets.length)command('BOOKMARK',actionTargets,{value:!actionCases.every(c=>c.organization.bookmark)});
+   if(name==='confirm'&&canConfirm(actionCases))begin('confirm',actionTargets);
+   if(name==='dispatch'&&canDispatch(actionCases))begin('dispatch',actionTargets);
+   if(name==='select-all'){setSelection(visible.slice(0,100).map(c=>c.caseId));}
+   if(name==='clear'){selectionAnchor.current=null;setSelection([]);}
+   if(name==='detail')setDetailOpen(v=>!v);
+   if(name==='orientation')setRightDetail(v=>!v);
+   if(name==='navigation')setNavOpen(v=>!v);
+   if(name==='density')setDensity(v=>v===28?24:v===24?34:28);
+   if(name==='columns')setShowFolder(v=>!v);
+   if(name==='refresh')refresh().catch(()=>setError(de.networkError));
+   if(name==='reset'){setQuery('');setColumnQuery('');setExtraFilters({});setStatusFilter('');setFilter('all');setDensity(28);setDetailPercent(55);setNavOpen(true);setRightDetail(false);setShowFolder(false);setSort('number');setDescending(false);}
+  }
+  function key(event:KeyboardEvent){
+   if(document.querySelector('.case-explorer')?.closest('[hidden]'))return;
+   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();searchRef.current?.focus();}
+   if(event.key==='F5'){event.preventDefault();action(new CustomEvent('action',{detail:'refresh'}));}
+   const editing=(event.target as HTMLElement)?.closest('input,textarea,select,[contenteditable=true]');
+   if(!editing&&!dialog&&!menu){
+    if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='a'){event.preventDefault();action(new CustomEvent('action',{detail:'select-all'}));}
+    if(event.key==='Escape')action(new CustomEvent('action',{detail:'clear'}));
+    if(event.altKey&&event.key==='ArrowLeft'&&opened){event.preventDefault();back();}
+   }
+  }
+  window.addEventListener('normacase-workspace-action',action);window.addEventListener('keydown',key);
+  return()=>{window.removeEventListener('normacase-workspace-action',action);window.removeEventListener('keydown',key);};
+ });
+ useEffect(()=>{window.dispatchEvent(new CustomEvent('normacase-workspace-capabilities',{detail:{hasSelection:actionTargets.length>0,hasVisible:visible.length>0,focused:!!focused,canConfirm:canConfirm(actionCases)&&!busy,canDispatch:canDispatch(actionCases)&&!busy,canCopy:!!focused&&!!summaries[focused.caseId],canCopyResult:!!focused&&!!summaries[focused.caseId]?.assessmentJson,busy}}));},[workspace,selection,opened,activeCase,query,columnQuery,statusFilter,extraFilters,filter,platformCases,summaries,busy]);
+ function sortBy(value:'title'|'number'|'status'){if(sort===value)setDescending(v=>!v);else{setSort(value);setDescending(false);}}
+ const toolbar=<div className="compact-workplace-toolbar" role="toolbar" aria-label="Fallaktionen">
+  <button type="button" className="secondary" onClick={()=>begin('folder',[])}><WorkspaceIcon name="folder"/>{t.newFolder}</button>
+  <button type="button" className="secondary" disabled={!focused} onClick={()=>focused&&open(focused.caseId)}><WorkspaceIcon name="open"/>{ui.open}</button>
+  <button type="button" className="secondary" onClick={()=>refresh().catch(()=>setError(de.networkError))} title={ui.refresh} aria-label={ui.refresh}><WorkspaceIcon name="refresh"/></button>
+  <span className="toolbar-separator"/>
+  <button type="button" className="secondary" title={!actionTargets.length?ui.noSelection:undefined} disabled={!actionTargets.length||busy} onClick={()=>begin('move',actionTargets)}><WorkspaceIcon name="folder"/>{t.moveSelection}{!!actionTargets.length&&<small> ({actionTargets.length})</small>}</button>
+  <button type="button" className="secondary" title={!actionTargets.length?ui.noSelection:undefined} disabled={!actionTargets.length||busy} onClick={()=>begin('color',actionTargets)}><WorkspaceIcon name="mark"/>{ui.mark}</button>
+  <button type="button" className="secondary" title={!actionTargets.length?ui.noSelection:undefined} disabled={!actionTargets.length||busy} onClick={()=>command('BOOKMARK',actionTargets,{value:!actionCases.every(c=>c.organization.bookmark)})}><WorkspaceIcon name="bookmark"/>{ui.bookmark}</button>
+  <button type="button" className="secondary" disabled={!canConfirm(actionCases)||busy} onClick={()=>begin('confirm',actionTargets)}><WorkspaceIcon name="confirmed"/>{t.confirmSelection}</button>
+  <button type="button" className="secondary" disabled={!canDispatch(actionCases)||busy} onClick={()=>begin('dispatch',actionTargets)}><WorkspaceIcon name="dispatch"/>{t.dispatchSelection}</button>
+  <button type="button" className="secondary" aria-pressed={detailOpen} onClick={()=>setDetailOpen(!detailOpen)}>{detailOpen?"Details ausblenden (F4)":"Details anzeigen (F4)"}</button>
+  <label className="compact-color-toggle"><input type="checkbox" checked={rowColors} onChange={e=>setRowColors(e.target.checked)}/> Zeilenfärbung</label>
+ </div>;
  const menuCases=cases.filter(c=>menu?.ids.includes(c.caseId));
- return <section className="card case-explorer case-first" aria-label={t.heading}>
+ return <section className="card case-explorer case-first" aria-label={t.heading} style={{"--row-height":density+"px"} as CSSProperties}>
+ {document.getElementById("workspace-search-slot")&&createPortal(<input ref={searchRef} aria-label={t.search} value={query} onChange={e=>setQuery(e.target.value)} placeholder={ui.searchPlaceholder}/>,document.getElementById("workspace-search-slot")!)}
+ {toolbar}
   {error&&<p className="error" role="alert">{error}</p>}{notice&&<p className="explorer-notice" role="status">{notice}</p>}
-  {opened?<div className="opened-case"><header className="case-header"><button type="button" className="secondary" onClick={back}>{de.workspace.back}</button><h2>{current?.title}</h2><span className="case-identifier">{opened}</span>{current&&<span className="opened-case-status" role="status">{status(current)}</span>}<div className="opened-case-quick-actions"><button type="button" className="secondary" onClick={()=>begin('move',[opened])}>Verschieben nach …</button><button type="button" className="secondary" onClick={()=>begin('color',[opened])}>Markieren</button><button type="button" className="secondary" disabled={busy} onClick={()=>command('BOOKMARK',[opened],{value:!current?.organization.bookmark})}>{current?.organization.bookmark?'Lesezeichen entfernen':'Lesezeichen setzen'}</button><button type="button" className="secondary" disabled={!current?.canConfirm||current.organization.confirmed||busy} onClick={()=>begin('confirm',[opened])}>Bestätigen</button></div></header><DocumentCaseFile key={opened} caseId={opened} initialView={openedView} showAssessment/></div>:<>
-   <header className="explorer-header"><div><h2>{t.heading}</h2><p className="workplace-case-context" aria-live="polite">{focused?`Fall: ${focused.caseId} · ${focused.title}`:'Kein Fall ausgewählt'}</p></div><label className="field explorer-search">{t.search}<input value={query} onChange={e=>setQuery(e.target.value)} placeholder={t.searchPlaceholder}/></label></header>
-   <nav className="explorer-navigation compact-explorer-navigation" aria-label={t.navigation}><button type="button" className="secondary" aria-expanded={moreActions} onClick={()=>setMoreActions(!moreActions)}>Ansicht ▾</button>{moreActions&&<><button type="button" className="secondary" aria-pressed={filter==='all'} onClick={()=>setFilter('all')}>{t.all}</button><button type="button" className="secondary" aria-pressed={filter==='bookmarks'} onClick={()=>setFilter('bookmarks')}>{t.bookmarks}</button><button type="button" className="secondary" aria-pressed={filter==='unfiled'} onClick={()=>setFilter('unfiled')}>{t.unfiled}</button><button type="button" className="secondary" disabled={busy} onClick={()=>refresh().catch(()=>setError(de.networkError))}>{t.refresh}</button></>}</nav>
-   <div className="compact-workplace-toolbar" role="toolbar" aria-label="Fallaktionen"><button type="button" className="secondary" onClick={()=>begin('folder',[])}>{t.newFolder}</button><button type="button" className="secondary" disabled={!focused} onClick={()=>focused&&open(focused.caseId)}>Fall öffnen</button><button type="button" className="secondary" aria-pressed={detailOpen} onClick={()=>setDetailOpen(!detailOpen)}>{detailOpen?"Details ausblenden (F4)":"Details anzeigen (F4)"}</button><button type="button" className="secondary" disabled={!canConfirm(selected)||busy} onClick={()=>begin('confirm')}>Bestätigen</button><label className="compact-color-toggle"><input type="checkbox" checked={rowColors} onChange={e=>setRowColors(e.target.checked)}/> Zeilenfärbung</label></div><div className="explorer-grid"><aside className="explorer-tree" aria-label={t.tree}>
-    <button type="button" className="tree-filter" aria-pressed={filter==='all'} onClick={()=>setFilter('all')}>{t.all} <span>{cases.length}</span></button>
-    <h3>{t.queues}</h3>{groups.map(id=><button key={id} type="button" className="tree-filter queue-tree-filter" aria-pressed={filter===id} style={{borderLeftColor:workspace?.queueColors[id]??defaultColors[id]}} onClick={()=>setFilter(id)}>{queueNames[id]} <span>{cases.filter(c=>c.queueId===id).length}</span></button>)}
-    <h3>{t.personal}</h3><button type="button" className="tree-filter" aria-pressed={filter==='bookmarks'} onClick={()=>setFilter('bookmarks')}>★ {t.bookmarks} <span>{cases.filter(c=>c.organization.bookmark).length}</span></button>
-    <button type="button" className="tree-filter" aria-pressed={filter==='confirmed'} onClick={()=>setFilter('confirmed')}>{t.confirmed}</button><button type="button" className="tree-filter" aria-pressed={filter==='dispatched'} onClick={()=>setFilter('dispatched')}>{t.dispatched}</button>
-    {orderedFolders.map(f=><div key={f.id} className="custom-folder" style={{paddingLeft:f.depth*15}}><button type="button" className="tree-filter" aria-pressed={filter===f.id} style={{borderLeftColor:f.color}} onClick={()=>setFilter(f.id)}>{f.label}<span>{cases.filter(c=>c.organization.folderId===f.id).length}</span></button><button type="button" className="text-button" title="Unterordner anlegen" aria-label={'Unterordner in '+f.label+' anlegen'} onClick={()=>{begin('folder',[]);setParentId(f.id);}}>＋</button><button type="button" className="text-button" aria-label={t.editFolder+': '+f.label} onClick={()=>{begin('rename',[]);setFolderId(f.id);setLabel(f.label);setColor(f.color);}}>⋯</button></div>)}
-   </aside><div ref={explorerContentRef} className="explorer-content">
-    <div className="explorer-toolbar"><strong>{visible.length} {t.cases} · {selection.length} {t.selected}</strong><button type="button" className="secondary" disabled={!visible.length||busy} onClick={()=>setSelection(visible.slice(0,100).map(c=>c.caseId))}>{t.selectVisible}</button><button type="button" className="secondary" disabled={!selection.length||busy} onClick={()=>{selectionAnchor.current=null;setSelection([]);}}>{t.clearSelection}</button>
-     <button type="button" className="secondary" disabled={!selection.length||busy} onClick={()=>begin('move')}>{t.moveSelection}</button><button type="button" className="secondary" disabled={!selection.length||busy} onClick={()=>begin('color')}>{t.markSelection}</button><button type="button" className="secondary" disabled={busy||!canConfirm(selected)} onClick={()=>begin('confirm')}>{t.confirmSelection}</button><button type="button" className="secondary" disabled={busy||!canDispatch(selected)} onClick={()=>begin('dispatch')}>{t.dispatchSelection}</button>
-     {groups.includes(filter)&&<button type="button" className="secondary" onClick={()=>{begin('queueColor',[]);setFolderId(filter);setColor(workspace?.queueColors[filter]??defaultColors[filter]);}}>{t.queueColor}</button>}
-    </div>
-    <div className="explorer-table-scroll"><table className={"explorer-table"+(rowColors?" status-row-colors":"")}><thead><tr><th>{t.selection}</th><th>{t.caseTitle}</th><th>{t.caseId}</th><th>{t.status}</th><th>{t.folder}</th><th>{t.actions}</th></tr></thead><tbody>{visible.map(c=><tr key={c.caseId} ref={node=>{rowRefs.current[c.caseId]=node;}} tabIndex={0} aria-selected={selection.includes(c.caseId)} style={{'--case-color':caseColor(c)} as CSSProperties} data-status={c.organization.dispatched?'complete':c.organization.confirmed?'complete':c.queueId} onClick={e=>{setActiveCase(c.caseId);if((e.target as HTMLElement).closest("button,input"))return;selectRow(c.caseId,e.shiftKey,e.ctrlKey||e.metaKey);e.currentTarget.focus();}} onDoubleClick={()=>open(c.caseId)} onContextMenu={e=>context(e,c.caseId)} onKeyDown={e=>rowKey(e,c.caseId)}>
+<div className={"explorer-grid"+(!navOpen?" navigation-hidden":"")}><div className="explorer-nav-resize" role="separator" aria-label="Explorerbreite" aria-orientation="vertical" tabIndex={0} onKeyDown={e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();e.currentTarget.parentElement?.style.setProperty('--nav-width',Math.max(200,Math.min(360,(parseFloat(getComputedStyle(e.currentTarget.parentElement!).getPropertyValue('--nav-width'))||240)+(e.key==='ArrowRight'?10:-10)))+'px');}}} onPointerDown={e=>e.currentTarget.setPointerCapture(e.pointerId)} onPointerMove={e=>{if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.parentElement?.style.setProperty('--nav-width',Math.max(200,Math.min(360,e.clientX))+'px');}}/><aside className="explorer-tree" aria-label={t.tree}>
+    <NavTreeItem label={t.all} count={cases.filter(c=>platformCases||c.caseId.startsWith('reference-')).length} selected={filter==='all'} onSelect={()=>setFilter('all')}/>
+    <h3>{t.queues}</h3>{groups.map(id=><NavTreeItem key={id} label={queueNames[id]} count={cases.filter(c=>c.queueId===id&&(platformCases||c.caseId.startsWith('reference-'))).length} selected={filter===id} color={workspace?.queueColors[id]??defaultColors[id]} onSelect={()=>setFilter(id)} onContext={e=>{e.preventDefault();const bounds=e.currentTarget.getBoundingClientRect();setNavMenu({x:bounds.right,y:bounds.top,id,folder:false});}}/>)}
+    <h3>{t.personal}<button className="text-button" aria-label="Neuer Ordner in meiner Ablage" title={t.newFolder} onClick={()=>begin('folder',[])}>+</button></h3>
+    <NavTreeItem kind="bookmark" color="#d4a017" label={t.bookmarks} count={cases.filter(c=>c.organization.bookmark&&(platformCases||c.caseId.startsWith('reference-'))).length} selected={filter==='bookmarks'} onSelect={()=>setFilter('bookmarks')}/>
+    <NavTreeItem kind="confirmed" color="#2e9e8f" label={t.confirmed} count={cases.filter(c=>c.organization.confirmed&&!c.organization.dispatched&&(platformCases||c.caseId.startsWith('reference-'))).length} selected={filter==='confirmed'} onSelect={()=>setFilter('confirmed')}/>
+    <NavTreeItem kind="dispatch" label={t.dispatched} count={cases.filter(c=>c.organization.dispatched&&(platformCases||c.caseId.startsWith('reference-'))).length} selected={filter==='dispatched'} onSelect={()=>setFilter('dispatched')}/>
+    {orderedFolders.map(f=><div key={f.id} className="custom-folder" style={{paddingLeft:f.depth*15}}><NavTreeItem kind="folder" label={f.label} count={cases.filter(c=>c.organization.folderId===f.id&&(platformCases||c.caseId.startsWith('reference-'))).length} selected={filter===f.id} color={f.color} onSelect={()=>setFilter(f.id)} onContext={e=>{e.preventDefault();const bounds=e.currentTarget.getBoundingClientRect();setNavMenu({x:bounds.right,y:bounds.top,id:f.id,folder:true});}}/><button type="button" className="text-button" title="Unterordner anlegen" aria-label={'Unterordner in '+f.label+' anlegen'} onClick={()=>{begin('folder',[]);setParentId(f.id);}}>＋</button><button type="button" className="text-button" aria-label={t.editFolder+': '+f.label} onClick={()=>{begin('rename',[]);setFolderId(f.id);setLabel(f.label);setColor(f.color);}}>⋯</button></div>)}
+    <NavTreeItem kind="folder" label={t.unfiled} count={cases.filter(c=>!c.organization.folderId&&(platformCases||c.caseId.startsWith('reference-'))).length} selected={filter==='unfiled'} onSelect={()=>setFilter('unfiled')}/>
+    <label className="platform-toggle"><input type="checkbox" checked={platformCases} onChange={e=>setPlatformCases(e.target.checked)}/>{ui.platformCases}</label>
+   </aside><div ref={explorerContentRef} className={"explorer-content"+(rightDetail?" detail-right":"")}>{opened?<div className="opened-case"><header className="case-header"><button type="button" className="secondary" onClick={back}>{de.workspace.back}</button><h2>{current&&caseIdentity(opened,current.title).person+' · '+caseIdentity(opened,current.title).subject}</h2><span className="case-identifier">{current&&caseIdentity(opened,current.title).number}</span>{current&&<span className="opened-case-status" role="status">{status(current)}</span>}<div id="full-case-copy"/></header><DocumentCaseFile key={opened} caseId={opened} initialView={openedView} showAssessment copyTargetId="full-case-copy"/></div>:<>
+
+    <div className="explorer-table-scroll"><table className={"explorer-table"+(rowColors?" status-row-colors":"")}><thead><tr><th><input type="checkbox" aria-label={t.selectVisible} checked={visible.length>0&&visible.slice(0,100).every(c=>selection.includes(c.caseId))} disabled={!visible.length||busy} onChange={e=>setSelection(e.target.checked?visible.slice(0,100).map(c=>c.caseId):[])}/></th><th aria-sort={sort==='title'?(descending?'descending':'ascending'):'none'}><button onClick={()=>sortBy('title')}>{ui.subject}</button></th><th aria-sort={sort==='number'?(descending?'descending':'ascending'):'none'}><button onClick={()=>sortBy('number')}>{ui.number}</button></th><th aria-sort={sort==='status'?(descending?'descending':'ascending'):'none'}><button onClick={()=>sortBy('status')}>{ui.status}</button></th><th>{ui.question}</th><th>{ui.next}</th><th>{ui.result}</th><th>{ui.documents}</th>{showFolder&&<th>{t.folder}</th>}</tr><tr className="table-filter-row"><th/><th><input aria-label={ui.subjectFilter} placeholder={ui.contains} value={columnQuery} onChange={e=>setColumnQuery(e.target.value)}/></th><th><input aria-label={ui.number+ui.filterSuffix} placeholder={ui.contains} value={extraFilters.number??''} onChange={e=>setExtraFilters({...extraFilters,number:e.target.value})}/></th><th><select aria-label={ui.statusFilter} value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}><option value="">{ui.all}</option>{groups.map(id=><option key={id} value={id}>{queueNames[id]}</option>)}</select></th>{[['question',ui.question],['next',ui.next],['result',ui.result],['documents',ui.documents],...(showFolder?[['folder',t.folder]]:[])].map(([key,label])=><th key={key}><input aria-label={label+ui.filterSuffix} placeholder={ui.contains} value={extraFilters[key]??''} onChange={e=>setExtraFilters({...extraFilters,[key]:e.target.value})}/></th>)}</tr></thead><tbody>{visible.map(c=><tr key={c.caseId} ref={node=>{rowRefs.current[c.caseId]=node;}} tabIndex={0} aria-selected={selection.includes(c.caseId)} style={{'--case-color':caseColor(c)} as CSSProperties} data-status={c.organization.dispatched?'complete':c.organization.confirmed?'complete':c.queueId} onClick={e=>{setActiveCase(c.caseId);if((e.target as HTMLElement).closest("button,input"))return;selectRow(c.caseId,e.shiftKey,e.ctrlKey||e.metaKey);e.currentTarget.focus();}} onDoubleClick={()=>open(c.caseId)} onContextMenu={e=>context(e,c.caseId)} onKeyDown={e=>rowKey(e,c.caseId)}>
      <td><input type="checkbox" aria-label={t.selectCase+': '+c.caseId} checked={selection.includes(c.caseId)} disabled={busy} onChange={()=>selectRow(c.caseId,false,true)}/></td>
-     <td><button ref={node=>{openButtons.current[c.caseId]=node;}} type="button" className="case-title-button" aria-label={de.workQueues.select+': '+c.caseId} onClick={()=>open(c.caseId)}>{c.organization.bookmark&&<span aria-label={t.bookmarked}>★ </span>}{c.title}</button>{c.organization.note&&<small className="case-note">{c.organization.note}</small>}</td><td className="case-identifier">{c.caseId}</td><td><span className="queue-badge">{status(c)}</span></td><td>{c.organization.color&&<span className="personal-mark-chip" style={{backgroundColor:c.organization.color}} aria-label="Eigene Farbmarkierung"/>}{folders.find(f=>f.id===c.organization.folderId)?.label??'—'}</td><td><button type="button" className="secondary" aria-label={t.caseActions} onClick={e=>context(e,c.caseId)}>⋯</button></td>
+     <td><button ref={node=>{openButtons.current[c.caseId]=node;}} type="button" className="case-title-button" aria-label={de.workQueues.select+': '+c.caseId} onClick={()=>open(c.caseId)}>{c.organization.bookmark&&<span aria-label={t.bookmarked}>☆ </span>}{caseIdentity(c.caseId,c.title).person&&caseIdentity(c.caseId,c.title).person+' · '}{caseIdentity(c.caseId,c.title).subject}</button>{c.organization.note&&<small className="case-note">{c.organization.note}</small>}</td><td className="case-identifier" title={c.caseId}>{caseIdentity(c.caseId,c.title).number}<span className="visually-hidden">{c.caseId}</span></td><td><span className="queue-badge">{status(c)}</span></td><td title={catalog[c.caseId]?.context?.question}>{catalog[c.caseId]?.context?.request??ui.noTechnical}</td><td>{(ui.nextSteps as Record<string,string>)[c.queueId]??de.unknown}{!!summaries[c.caseId]?.findings.length&&<span title={summaries[c.caseId].findings.join(' · ')}> · {summaries[c.caseId].findings.length} {ui.openPoints}</span>}{c.organization.color&&<span className="personal-mark-chip" style={{backgroundColor:c.organization.color}} aria-label="Eigene Farbmarkierung"/>}</td><td>{resultLabel(c)}</td><td>{summaries[c.caseId]?.documents.length??''}</td>{showFolder&&<td>{folders.find(f=>f.id===c.organization.folderId)?.label??''}</td>}
     </tr>)}</tbody></table>{!workspace?<p role="status">{de.documents.loading}</p>:!visible.length&&<p>{t.noCases}</p>}</div>
     {detailOpen&&<>
-     <div className="explorer-pane-splitter" role="separator" aria-label="Fallliste und Detailbereich vergrößern oder verkleinern" aria-orientation="horizontal" aria-valuemin={25} aria-valuemax={70} aria-valuenow={detailPercent} tabIndex={0}
+     <div className="explorer-pane-splitter" role="separator" aria-label="Fallliste und Detailbereich vergrößern oder verkleinern" aria-orientation={rightDetail?"vertical":"horizontal"} aria-valuemin={25} aria-valuemax={70} aria-valuenow={detailPercent} tabIndex={0}
       onPointerDown={event=>{resizing.current=true;event.currentTarget.setPointerCapture(event.pointerId);}}
       onPointerMove={resizeDetail}
       onPointerUp={event=>{resizing.current=false;if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);}}
@@ -130,18 +205,18 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
       <span aria-hidden="true">⋮⋮</span>
      </div>
      <section className="explorer-detail-pane" style={{flexBasis:detailPercent+'%'}} aria-label="Fallakte und Dokumente">
-      {focused?<><header className="explorer-detail-heading"><strong title={focused.title}>{focused.title}</strong><span className="case-identifier">{focused.caseId}</span><span className="opened-case-status">{status(focused)}</span><div className="explorer-detail-actions">
+      {focused?<><header className="explorer-detail-heading"><strong title={focused.title}>{caseIdentity(focused.caseId,focused.title).person+' · '+caseIdentity(focused.caseId,focused.title).subject}</strong><span className="case-identifier">{caseIdentity(focused.caseId,focused.title).number}</span><span className="opened-case-status">{status(focused)}</span><div className="explorer-detail-actions">
        <button type="button" className="secondary" onClick={()=>open(focused.caseId,'documents')}>Vollansicht</button>
-       <button type="button" className="secondary" onClick={()=>begin('move',[focused.caseId])}>Verschieben nach …</button>
-       <button type="button" className="secondary" onClick={()=>begin('color',[focused.caseId])}>Markieren</button>
-       <button type="button" className="secondary" disabled={busy} onClick={()=>command('BOOKMARK',[focused.caseId],{value:!focused.organization.bookmark})}>{focused.organization.bookmark?'Lesezeichen entfernen':'Lesezeichen setzen'}</button>
-      </div></header>
-      <DocumentCaseFile key={focused.caseId} caseId={focused.caseId} initialView="documents" showAssessment/>
+      </div><div id="inline-case-copy"/></header>
+      <DocumentCaseFile key={focused.caseId} caseId={focused.caseId} initialView="documents" showAssessment copyTargetId="inline-case-copy"/>
       </>:<p className="explorer-detail-empty">Fall in der Tabelle auswählen, um Dokumente und Prüfergebnis hier anzuzeigen.</p>}
      </section>
     </>}
-    <footer className="explorer-footer" role="status">Anzeige {visible.length} von {cases.length} · {selection.length} ausgewählt · {filter==='all'&&!query?'Kein Filter':'Filter aktiv'} · {t.localNotice}</footer>
-   </div></div></>}
+   </>}</div></div>
+  <footer className="explorer-footer" role="status"><span>{visible.length} von {cases.filter(c=>platformCases||c.caseId.startsWith('reference-')).length} Fällen · {selection.length} ausgewählt · {filter==='all'&&!query&&!columnQuery&&!statusFilter&&!Object.values(extraFilters).some(Boolean)?'Kein Filter':'Filter aktiv'}{(query||columnQuery||statusFilter||Object.values(extraFilters).some(Boolean)||filter!=='all')&&<button onClick={()=>{setQuery('');setColumnQuery('');setExtraFilters({});setStatusFilter('');setFilter('all');}}>{ui.resetFilters}</button>}</span><span title={ui.session}>{ui.clinicalScope}</span></footer>
+  {navMenu&&<div className="case-context-menu" role="menu" aria-label="Exploreraktionen" style={{left:Math.min(navMenu.x,window.innerWidth-250),top:Math.min(navMenu.y,window.innerHeight-120)}} onKeyDown={e=>{if(e.key==='Escape')setNavMenu(null);}} onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget))setNavMenu(null);}} ref={element=>element?.querySelector<HTMLButtonElement>('button')?.focus()}>
+   <button role="menuitem" onClick={()=>{const item=navMenu;if(item.folder){const f=folders.find(f=>f.id===item.id);begin('rename',[]);setFolderId(item.id);setLabel(f?.label??'');setColor(f?.color??'#497ab7');}else{begin('queueColor',[]);setFolderId(item.id);setColor(workspace?.queueColors[item.id]??defaultColors[item.id]);}}}>{navMenu.folder?ui.folderEdit:ui.queueColor}</button>
+  </div>}
   {menu&&<div ref={menuRef} className={"case-context-menu"+(menu.x>window.innerWidth-530?" submenu-to-left":"")} role="menu" aria-label={t.caseActions} style={{left:menu.x,top:menu.y}} onKeyDown={e=>{if(e.key==='Escape'){setMenu(null);returnFocus.current?.focus();}if(e.key==='Tab')setMenu(null);if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const buttons=Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')??[]);const i=buttons.indexOf(document.activeElement as HTMLButtonElement);buttons[e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus();}}}>
     <button type="button" role="menuitem" onClick={()=>open(menu.ids[0])}>{de.workQueues.select}</button>
     <div className={"context-submenu"+(coarsePointer?" touch-submenu":"")}><button type="button" role="menuitem" aria-haspopup="true" aria-expanded={coarsePointer?subMenu==='color':undefined} onClick={()=>setSubMenu(prev=>prev==='color'?null:'color')}>Markieren <span aria-hidden="true">›</span></button><div className={"context-submenu-panel"+(coarsePointer&&subMenu==='color'?" is-open":"")} role="group" aria-label="Farbmarkierung">{Object.entries(colorPresets).map(([name,hex])=><button key={name} type="button" onClick={()=>{const ids=menu.ids;setMenu(null);command('COLOR',ids,{color:hex});}}><span className="color-swatch" style={{backgroundColor:hex}}/>{t.colors[name as keyof typeof t.colors]}</button>)}<label className="menu-custom-color">Eigene Farbe<input type="color" aria-label="Eigene Markierungsfarbe" defaultValue="#497ab7" onChange={e=>{const ids=menu.ids;setMenu(null);command('COLOR',ids,{color:e.target.value});}}/></label><button type="button" onClick={()=>{const ids=menu.ids;setMenu(null);command('COLOR',ids,{color:null});}}>Markierung entfernen</button></div></div>

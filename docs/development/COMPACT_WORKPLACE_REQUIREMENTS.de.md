@@ -62,3 +62,55 @@ Tastatur: Pfeile, Enter, Esc, Entf mit Bestätigung ausschließlich für eigene 
 Implementieren in nachvollziehbaren Slices: (1) Shell/Statusfarben/Kompakttabelle; (2) serverseitige Filter/Sortierung/Spalten; (3) dauerhafter Split-Dokumentbereich; (4) Prüfungsregister; (5) persönliche Ablage und Einstellungen; (6) Export/Sicherung; (7) sichere Sammelaktionen; (8) Tastatur/Fehler/Glossar/Desktop-Bridge.
 
 Eine Anforderung ist erst erfüllt, wenn die tatsächliche Funktion/Datenspeicherung und API-Grenze getestet ist. Tests müssen mindestens 20 Zeilen bei 1080p, Statusfarbe samt Text, kontextgebundene aktive Fallanzeige, fehlende unberechtigte Aktionen, Dokumentansicht ohne Seitenwechsel und reproduzierbare Revisionskonflikte prüfen. Ausstehende fachliche Zuordnungen (Statusliste, Pflichtspalten, Hauptsystem-URL, Dateiformate, Mehrfachordner, 50k-Falllast) als explizite Review-Punkte führen, nicht erraten.
+
+## Umsetzung des ergänzenden Layoutauftrags (Issue #286)
+
+Die neuere konkrete Layoutvorlage setzt das Chrome-Budget auf 32 px Menü + 36 px
+Symbolleiste + 24 px Statusleiste. Der Standardteiler folgt ihr mit 45 % Liste und
+55 % Detail. Für die Abnahme gelten damit mindestens zwölf sichtbare Zeilen bei
+geöffnetem Detail und 24 mögliche Zeilenplätze bei geschlossenem Detail; die
+frühere pauschale Vorgabe von 20 Zeilen bei geöffnetem Detail ist ersetzt.
+
+Die normale Ansicht startet mit den 22 medizinischen Referenzakten. Die 100
+historischen Plattformfixtures bleiben vollständig vorhanden, über Extras und
+optional „Plattformfälle einbeziehen“. Fallnummer, Person und fachlicher Auftrag
+werden aus vorhandenen Aktenbezeichnungen dargestellt; technische IDs bleiben
+Such-/API-Schlüssel. Die fachlichen Pflege-Kurztitel werden in den externen Fallprofilen geführt.
+Knowledge-Bezeichnungen und technische Schlüssel bleiben für Replay unverändert. Organisationsstatus und Prüfergebnis bleiben getrennt.
+
+Die vorhandenen 90 PDFs sind die Ausgangsakte, keine neu erfundene Begutachtung.
+31 strukturierte Beleganlagen erhalten eine lesbare Tabelle auf Seite 2; der
+kontrollierte Übermittlungsvermerk, Inputs und Fundstellen bleiben unverändert.
+Nachweise, offene Punkte und Prüfanlass stammen aus denselben Dokumentendaten;
+Nachforderungsschreiben ersetzen weiterhin keine fehlenden Arztberichte. Die
+öffentliche Referenzkennzeichnung und unveränderten Outcome-/Inputtests bleiben
+maßgeblich. Zuständigkeit ist mangels erfasster Zuweisung ausdrücklich „Nicht
+zugewiesen“; Eingang, Priorität und Wiedervorlage werden nicht erfunden.
+
+Die Fallprüfung zeigt Ergebnis und Fundstellen nebeneinander. Scores erscheinen
+erst im aufklappbaren Register „Prüfung und Regelgrundlagen“, mit Originalwerten,
+Vergleich, Regelversion, Release und Quelle aus der verlustfrei gelesenen Prüfspur.
+Die vollständige Prüfspur bleibt erreichbar. Negative Teilbewertungen werden
+neutral dargestellt; UNKNOWN und nicht anwendbar behalten eigene Bezeichnungen.
+
+Explorer-Einträge verwenden dieselbe NavTreeItem-Komponente. Farbänderung für
+Arbeitslisten und Ordnerbearbeitung sind auch im Explorer-Kontextmenü erreichbar.
+Die Tabelle hat lokale Filter und stabile Sortierung für den begrenzten Demo-
+Bestand. Die Vollakte erhält Explorer, Menü-, Symbol- und Statusleiste. Dokumente
+werden ausschließlich über die Dateiliste gewählt. Der gemeinsame Viewer nutzt
+lokale PNG-Seiten des originalen PDFs, fortlaufende Seiten, ResizeObserver,
+Breiten-/Ganzseiten-/Prozentzoom, Drehung, Seitenfeld, Quellensprung und Download.
+Es wird kein neues PDF- oder OCR-Parsing behauptet. Die vorhandenen Vorschauen
+haben 100 dpi; hochauflösendes PDF-Rendering und Textsuche bleiben separate Arbeit.
+
+Ansichtsdichte, Trenner, Ordnerspalte, Sortierung und Zoom gelten ausdrücklich für
+die Sitzung. Persistente benutzergebundene Ansichten (#281), mehrere Ordner,
+Produktivpagination, Spaltenverschiebung/-breiten, Wiedervorlage und PDF-/Word-
+Prüfberichte werden nicht durch Browser-Speicher oder scheinbar aktive Funktionen
+ersetzt. Backend-/API-Verträge bleiben in diesem Präsentationsschritt unverändert.
+Die bestehende serverseitige Ablagepersistenz im Demoprozess bleibt erhalten.
+
+CI prüft reale API-Browserabläufe und erstellt Vorher-/Nachher-Bilder bei
+1920×1080 und 1366×768. Die Vorherbilder stammen aus dem exakten PR-Basiscommit,
+nicht aus nachgebautem HTML. Die Bilder liegen im CI-Artefakt
+`workbench-browser-results`.

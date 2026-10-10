@@ -37,9 +37,25 @@ Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Sta
 Gutachtenauftrag zur Zusammenhangsfrage / Seite 2
 NC-2026-4116 | Michael Dorn
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4116 | Michael Dorn | 08.10.2026
+Angaben aus Gutachtenauftrag zur Zusammenhangsfrage. Diese Anlage ist Bestandteil
+desselben Berichts. Sie ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Unfallereignis dokumentiert
+Ja
+Erstbefund beigefügt
+Nicht angegeben
+Zuordnung und Prüfauftrag
+Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 accident_event_documented=YES
 initial_findings_attached=UNKNOWN
