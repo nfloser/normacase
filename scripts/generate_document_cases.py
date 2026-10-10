@@ -6,7 +6,7 @@ import json
 import re
 import subprocess
 from xml.sax.saxutils import escape
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -102,9 +102,8 @@ def clinical_pdf(path, case_id, title, values, source_id, narrative, authored=No
     source=next(item for item in SOURCES if item['id']==source_id)
     story.extend([Spacer(1,14),Paragraph('Strukturbezug: '+escape(source['title'])+'; '+escape(source['version'])+'. Eigenes Berichtslayout, kein amtliches Originalformular.',styles['Normal'])])
     if values:
-        story.extend([PageBreak(),Paragraph('Technische Übermittlungsanlage',styles['Heading1']),Paragraph('Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches Dokumentenverständnis und kein institutionelles Austauschformat.',styles['Normal'])])
-        for line in ['NCF1']+[key+'='+value for key,value in values.items()]+['END-NCF1']:
-            story.append(Paragraph(escape(line),styles['Code']))
+        story.extend([PageBreak(),Paragraph(escape(issuer),styles['Heading2']),Paragraph('Erfasste Angaben zur Fallprüfung',styles['Title']),Paragraph(escape(profile['caseNumber'])+' | '+escape(profile['person'])+' | '+escape(date),styles['Normal']),Spacer(1,12),Paragraph('Angaben aus '+escape(title)+'. Diese Anlage ist Bestandteil desselben Berichts. Sie ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.',styles['Normal']),Spacer(1,12),table,Spacer(1,12),Paragraph('Zuordnung und Prüfauftrag',styles['Heading2']),Paragraph(escape(profile.get('question',CONTEXTS[case_id]['question'])),styles['Normal']),Paragraph('Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen. Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.',styles['Normal']),Spacer(1,12),Paragraph('Übermittlungsvermerk',styles['Heading2']),Paragraph('Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger Arztbriefe oder Scans.',styles['Normal'])])
+        story.append(KeepTogether([Paragraph(escape(line),styles['Code']) for line in ['NCF1']+[key+'='+value for key,value in values.items()]+['END-NCF1']]))
     def footer(canvas,doc):
         canvas.setStrokeColor(colors.HexColor('#256da8')); canvas.line(55,43,540,43)
         canvas.setFont('NCRegular',8); canvas.drawString(55,30,profile['caseNumber']+' | '+profile['person']); canvas.drawRightString(540,30,'Seite '+str(doc.page))
@@ -129,7 +128,7 @@ def build_case(case_id,title,pack_path,source_id,parts,evidence,scope,expected=N
     documents=[];observations=[]
     context=CONTEXTS.get(case_id)
     profile=BUNDLES.get(case_id)
-    if profile and context: context={**context,'background':profile['background']}
+    if profile and context: context={**context,'background':profile['background'],'request':profile.get('request',context['request']),'question':profile.get('question',context['question'])}
     authored_documents={}
     if profile:
         title=profile['title']

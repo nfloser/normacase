@@ -3,6 +3,7 @@ import {createPortal} from 'react-dom';
 import { parse } from 'lossless-json';
 import de from './de.json';
 import type { Pack } from './model';
+import {WorkspaceIcon} from './WorkspaceIcon';
 import {DocumentViewer} from './DocumentViewer';
 import {RecordedCriteria} from './RecordedCriteria';
 import {caseIdentity} from './casePresentation';
@@ -65,8 +66,8 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
   }
 
   const copyActions=<div className="case-copy-actions">
-       <button type="button" className="secondary" disabled={!file} onClick={()=>file&&copyText(caseIdentity(file.caseId,file.title).number)}>Aktenzeichen kopieren</button>
-       <button type="button" className="secondary" disabled={!file||!assessment} title={!assessment?'Für diesen Vorgang liegt kein regelbasiertes Prüfergebnis vor.':undefined} onClick={()=>file&&assessment&&copyText(assessmentCopyText(file,assessment))}>Ergebnistext kopieren</button>
+       <button type="button" className="secondary" disabled={!file} onClick={()=>file&&copyText(caseIdentity(file.caseId,file.title).number)}><WorkspaceIcon name="copy"/>{ui.copyId}</button>
+       <button type="button" className="secondary" disabled={!file||!assessment} title={!assessment?'Für diesen Vorgang liegt kein regelbasiertes Prüfergebnis vor.':undefined} onClick={()=>file&&assessment&&copyText(assessmentCopyText(file,assessment))}><WorkspaceIcon name="copy"/>{ui.copyResult}</button>
        {copyNotice&&<span role="status" className="case-copy-notice">{copyNotice}</span>}
       </div>;
   // Ignore an old result immediately on case switch, before the effect cleans it up.
@@ -87,11 +88,12 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
         <p><strong>{text.scope}: </strong>{file.scope}</p><details><summary>{ui.check}</summary>        {showAssessment&&!!assessment?.assessment.domainOutputs?.length&&<section className="case-domain-results"><h4>{de.domainOutputs}</h4><dl>{assessment.assessment.domainOutputs.map(output=><div key={output.outputId}><dt>{resolvedPresentation?.outputs?.[output.outputId]?.label??de.outputReference}</dt><dd>{output.value.kind==='UNKNOWN'?de.unknown:(resolvedPresentation?.outputs?.[output.outputId]?.choices[output.value.choice??'']??de.unknown)}</dd></div>)}</dl></section>}
 {showAssessment&&assessment&&<><p>{de.release}: {assessment.assessment.knowledgeRelease} · {de.date}: {assessment.assessment.assessmentDate}</p><RecordedCriteria rule={assessment.assessment.ruleTrace} outputs={assessment.assessment.domainOutputs} presentation={resolvedPresentation}/><DecisionTrace rule={assessment.assessment.ruleTrace} outputs={assessment.assessment.domainOutputs} presentation={resolvedPresentation}/><details><summary>{de.trace}</summary><pre>{file.assessmentJson}</pre></details></>}</details></div>
         <details className="document-observations" open><summary>{text.observations}</summary><p>{text.observationsHelp}</p>
-          <table><thead><tr><th>{ui.criterion}</th><th>{ui.value}</th><th>{ui.source}</th></tr></thead><tbody>{file.observations.map((item,i)=><tr key={i}><td>{resolvedPresentation?.fields[item.field]??de.fieldReference}</td><td>{values[item.value]??item.value.replace('.',',')}</td><td><span className="observation-document">{file.documents.find(d=>d.id===item.id)?.title}</span><button type="button" className="source-page-link" aria-label={file.documents.find(d=>d.id===item.id)?.title+', '+text.page+' '+item.page} onClick={()=>{setSelected(item.id);setSourcePage(item.page);setView('documents');}}>{text.page} {item.page}</button></td></tr>)}</tbody></table>
+          {file.documents.filter(document=>file.observations.some(item=>item.id===document.id)).map(document=><div key={document.id} className="observation-source-group"><p className="observation-document">{ui.source}: {document.title}</p><table><thead><tr><th>{ui.criterion}</th><th>{ui.value}</th><th>{ui.source}</th></tr></thead><tbody>{file.observations.filter(item=>item.id===document.id).map((item,i)=><tr key={i}><td>{resolvedPresentation?.fields[item.field]??de.fieldReference}</td><td>{values[item.value]??item.value.replace('.',',')}</td><td><button type="button" className="source-page-link" aria-label={document.title+', '+text.page+' '+item.page} onClick={()=>{setSelected(item.id);setSourcePage(item.page);setView('documents');}}>{text.page} {item.page}</button></td></tr>)}</tbody></table></div>)}
+
         </details>
         <details><summary>{text.source}</summary><p>{file.source.title}</p><p>{text.sourceVersion}: {file.source.version}</p><a href={file.source.url} target="_blank" rel="noopener noreferrer">{text.source}</a></details>
       </div>:view!=='documents'?<div className="case-result-view">{view==='data'?<><h4>{ui.fileData}</h4><dl><dt>{ui.number}</dt><dd>{caseIdentity(file.caseId,file.title).number}</dd><dt>{ui.subject}</dt><dd>{caseIdentity(file.caseId,file.title).subject}</dd><dt>{ui.owner}</dt><dd>{ui.unassigned}</dd></dl><p>{file.context?.background}</p><p>{file.context?.question}</p></>:<p>{view==='history'?ui.noHistory:ui.noNotes}</p>}</div>:<div className="case-documents-view"><aside className="document-case-summary" aria-label={de.workspace.analysis}>
-        <h4>{text.fileList}</h4><ul className="case-file-list">{file.documents.map(item=><li key={item.id}><button type="button" className="secondary" aria-pressed={selected===item.id} onClick={()=>{setSelected(item.id);setSourcePage(1);}}>{item.title}<small>{item.mediaType==='application/pdf'?'PDF · '+item.pages+' '+text.page:item.mediaType==='image/png'?'PNG':text.textFile}</small></button></li>)}</ul>
+        <h4>{text.fileList}</h4><ul className="case-file-list">{file.documents.map(item=><li key={item.id}><button type="button" className="secondary" aria-pressed={selected===item.id} onClick={()=>{setSelected(item.id);setSourcePage(1);}}><WorkspaceIcon name="document"/>{item.title}<small>{item.mediaType==='application/pdf'?'PDF · '+item.pages+' '+text.page:item.mediaType==='image/png'?'PNG':text.textFile}</small></button></li>)}</ul>
       </aside>{document&&<DocumentViewer key={url} document={document} url={url} page={sourcePage} onPage={setSourcePage}/>}</div>}
 
     </>}

@@ -626,6 +626,9 @@
     "filterSuffix": " filtern",
     "subjectFilter": "Fallauftrag filtern",
     "statusFilter": "Bearbeitungsstand filtern",
-    "openPoints": "offene Punkte"
+    "openPoints": "offene Punkte",
+    "inclusiveRange": "Untergrenze ≤ Wert ≤ Obergrenze",
+    "referenceTitle": "Dokument",
+    "actionUnavailable": "Für die aktuelle Auswahl nicht verfügbar"
   }
 }

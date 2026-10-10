@@ -515,7 +515,9 @@
       }
     },
     "background": "Erika Stein, 72 Jahre. mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Die fachliche Erhebung hat die Modulsummen 2, 4, 1, 8, 2 und 3 dokumentiert. NormaCase rechnet diese Angaben nach; es bewertet weder die Diagnose noch einzelne Fähigkeiten und vergibt keinen Pflegegrad.",
-    "title": "NC-2026-4105 · Erika Stein · Pflege-Score: Modulsummenabgleich"
+    "title": "NC-2026-4105 · Erika Stein · Pflege-Score: Modulsummenabgleich",
+    "request": "Pflegebegutachtung – Abgleich der dokumentierten Modulerhebung",
+    "question": "Sind die festgestellten Modulsummen vollständig und widerspruchsfrei belegt, und welche rechnerischen Teilbewertungen ergeben sich daraus?"
   },
   "reference-care-missing": {
     "person": "Karl Neumann",
@@ -637,7 +639,9 @@
       }
     },
     "background": "Karl Neumann, 72 Jahre. mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Für fünf Module liegen fachlich festgestellte Summen vor. Die Summe für Modul 4, Selbstversorgung, fehlt. Sie wird weder aus der Diagnose abgeleitet noch durch Null ersetzt.",
-    "title": "NC-2026-4106 · Karl Neumann · Pflege-Score: Modulsumme fehlt"
+    "title": "NC-2026-4106 · Karl Neumann · Pflege-Score: Modulsumme fehlt",
+    "request": "Pflegebegutachtung – Abgleich der dokumentierten Modulerhebung",
+    "question": "Sind die festgestellten Modulsummen vollständig und widerspruchsfrei belegt, und welche rechnerischen Teilbewertungen ergeben sich daraus?"
   },
   "reference-care-out-of-range": {
     "person": "Ruth Wagner",
@@ -759,7 +763,9 @@
       }
     },
     "background": "Ruth Wagner, 72 Jahre. Der übermittelte Bogen nennt für Modul 1, Mobilität, die Summe 16. Diese Angabe wird gegen den zulässigen Bereich geprüft und muss geklärt werden. Die übrigen Modulsummen bleiben erhalten; eine fachliche Neubeurteilung wird nicht vorgetäuscht.",
-    "title": "NC-2026-4107 · Ruth Wagner · Pflege-Score: Wert außerhalb des Bereichs"
+    "title": "NC-2026-4107 · Ruth Wagner · Pflege-Score: Wert außerhalb des Bereichs",
+    "request": "Pflegebegutachtung – Abgleich der dokumentierten Modulerhebung",
+    "question": "Sind die festgestellten Modulsummen vollständig und widerspruchsfrei belegt, und welche rechnerischen Teilbewertungen ergeben sich daraus?"
   },
   "reference-care-conflicting": {
     "person": "Peter Hoffmann",
@@ -862,7 +868,9 @@
       }
     },
     "background": "Peter Hoffmann, 72 Jahre. Der erste Modulbogen nennt für Selbstversorgung die Summe 8. Eine zweite Anlage nennt 3. Ohne Klärung bleibt diese Modulsumme unbekannt. Keine Quelle wird automatisch als maßgeblich ausgewählt.",
-    "title": "NC-2026-4108 · Peter Hoffmann · Pflege-Score: widersprüchliche Modulsummen"
+    "title": "NC-2026-4108 · Peter Hoffmann · Pflege-Score: widersprüchliche Modulsummen",
+    "request": "Pflegebegutachtung – Abgleich der dokumentierten Modulerhebung",
+    "question": "Sind die festgestellten Modulsummen vollständig und widerspruchsfrei belegt, und welche rechnerischen Teilbewertungen ergeben sich daraus?"
   },
   "reference-reha-complete": {
     "person": "Claudia Becker",

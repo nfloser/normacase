@@ -42,9 +42,34 @@ Originalformular.
 Modulbogen – MD-Lehrbeispiel / Seite 2
 NC-2026-4113 | Helga Brandt
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4113 | Helga Brandt | 08.10.2026
+Angaben aus Modulbogen – MD-Lehrbeispiel. Diese Anlage ist Bestandteil desselben Berichts.
+Sie ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Modul 1: Mobilität
+0
+Modul 2: Kognition und Kommunikation
+11
+Modul 3: Verhalten und psychische Problemlagen
+3
+Modul 4: Selbstversorgung
+15
+Modul 5: Krankheit und Therapie
+2
+Modul 6: Alltagsleben und Kontakte
+6
+Zuordnung und Prüfauftrag
+Wie werden die veröffentlichten Modulsummen gewichtet und welche Unterlagen belegen den
+Alltag?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 module_1_sum=0
 module_2_sum=11

@@ -40,9 +40,34 @@ Eigenes Berichtslayout, kein amtliches Originalformular.
 Pflege - dokumentierte Modulsummen / Seite 2
 NC-2026-4106 | Karl Neumann
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4106 | Karl Neumann | 08.10.2026
+Angaben aus Pflege - dokumentierte Modulsummen. Diese Anlage ist Bestandteil desselben
+Berichts. Sie ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Modul 1: Mobilität
+2
+Modul 2: Kognition und Kommunikation
+4
+Modul 3: Verhalten und psychische Problemlagen
+1
+Modul 4: Selbstversorgung
+Nicht angegeben
+Modul 5: Krankheit und Therapie
+2
+Modul 6: Alltagsleben und Kontakte
+3
+Zuordnung und Prüfauftrag
+Sind die festgestellten Modulsummen vollständig und widerspruchsfrei belegt, und welche
+rechnerischen Teilbewertungen ergeben sich daraus?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 module_1_sum=2
 module_2_sum=4

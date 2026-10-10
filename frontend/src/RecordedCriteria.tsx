@@ -4,7 +4,7 @@ import type {Presentation} from './model';
 import {displayDecimal,displayValue,type ConditionTrace,type RuleTrace,type OutputTrace} from './trace';
 const ui=de.clinicalWorkspace,labels={...de,unrecorded:de.decisionTrace.unrecorded};
 function leaves(condition:ConditionTrace):ConditionTrace[]{return condition.children.length?(condition.kind==='all'||condition.kind==='any'?condition.children.flatMap(leaves):[condition,...condition.children.flatMap(leaves)]):[condition];}
-function comparator(kind:string){return ({number_gte:'≥',field_equals:'=',number_in_range:'Bereich',requires_evidence:'Nachweis',NUMERIC_GREATER_THAN_OR_EQUAL:'≥',NUMERIC_LESS_THAN_OR_EQUAL:'≤',NUMERIC_GREATER_THAN:'>',NUMERIC_LESS_THAN:'<',NUMBER_AT_LEAST:'≥',NUMBER_AT_MOST:'≤',NUMBER_EQUALS:'=',TRUTH_EQUALS:'=',NUMBER_RANGE:'Bereich',NUMERIC_RANGE:'Bereich',NUMERIC_AT_LEAST:'≥',NUMERIC_AT_MOST:'≤',EVIDENCE_PRESENT:'Nachweis'} as Record<string,string>)[kind]??(de.decisionTrace.conditions as Record<string,string>)[kind]??de.decisionTrace.unrecorded;}
+function comparator(kind:string){return ({number_gte:'≥',field_equals:'=',number_in_range:ui.inclusiveRange,requires_evidence:de.evidence} as Record<string,string>)[kind]??(de.decisionTrace.conditions as Record<string,string>)[kind]??de.decisionTrace.unrecorded;}
 export function RecordedCriteria({rule,outputs,presentation}:{rule?:RuleTrace;outputs?:OutputTrace[];presentation?:Presentation}){
  if(!rule&&!outputs?.length)return null;
  const rows=[...(rule?[{label:de.decisionTrace.entry,condition:rule.condition,source:rule.source}]:[]),...(outputs??[]).map(o=>({label:presentation?.outputs?.[o.outputId]?.label??de.outputReference,condition:o.condition,source:o.source}))];

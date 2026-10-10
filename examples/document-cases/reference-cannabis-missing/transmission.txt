@@ -31,9 +31,25 @@ Berichtslayout, kein amtliches Originalformular.
 Arztfragebogen / Seite 2
 NC-2026-4121 | Ute Lorenz
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4121 | Ute Lorenz | 08.10.2026
+Angaben aus Arztfragebogen. Diese Anlage ist Bestandteil desselben Berichts. Sie ergänzt
+keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Therapieziel dokumentiert
+Ja
+Vorbehandlungen belegt
+Nicht angegeben
+Zuordnung und Prüfauftrag
+Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 treatment_goal_documented=YES
 previous_treatments_attached=UNKNOWN

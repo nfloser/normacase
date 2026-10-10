@@ -46,9 +46,40 @@ amtliches Originalformular.
 Krankenbeförderung - Angaben zur Verordnung / Seite 2
 NC-2026-4103 | Sabine Winter
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4103 | Sabine Winter | 08.10.2026
+Angaben aus Krankenbeförderung - Angaben zur Verordnung. Diese Anlage ist Bestandteil
+desselben Berichts. Sie ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Ambulante Behandlung
+Ja
+Medizinische Notwendigkeit ausdrücklich bestätigt
+Ja
+Merkzeichen aG
+Nein
+Merkzeichen Bl
+Nein
+Merkzeichen H
+Nein
+Pflegegrad laut Bescheid
+4
+Dauerhafte Mobilitätsbeeinträchtigung bei Pflegegrad 3
+Nein
+Pflegestufe 2 am 31.12.2016
+Nein
+Pflegegrad mindestens 3 seit 01.01.2017
+Nein
+Zuordnung und Prüfauftrag
+Welche Angaben verhindern eine eindeutige Prüfung der Genehmigungsfiktion nach KT-RL § 8
+Abs. 3?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 ambulatory_treatment=YES
 strict_medical_necessity=YES
@@ -87,9 +118,24 @@ amtliches Originalformular.
 Pflegekassenbescheid / Seite 2
 NC-2026-4103 | Sabine Winter
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4103 | Sabine Winter | 08.10.2026
+Angaben aus Pflegekassenbescheid. Diese Anlage ist Bestandteil desselben Berichts. Sie
+ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Pflegegrad laut Bescheid
+3
+Zuordnung und Prüfauftrag
+Welche Angaben verhindern eine eindeutige Prüfung der Genehmigungsfiktion nach KT-RL § 8
+Abs. 3?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 care_grade=3
 END-NCF1

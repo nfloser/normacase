@@ -80,6 +80,8 @@ im fachlichen Kurztitel. Die ursprünglichen Akten/Knowledge-Bezeichnungen bleib
 für Replay unverändert. Organisationsstatus und Prüfergebnis bleiben getrennt.
 
 Die vorhandenen 90 PDFs sind die Ausgangsakte, keine neu erfundene Begutachtung.
+31 strukturierte Beleganlagen erhalten eine lesbare Tabelle auf Seite 2; der
+kontrollierte Übermittlungsvermerk, Inputs und Fundstellen bleiben unverändert.
 Nachweise, offene Punkte und Prüfanlass stammen aus denselben Dokumentendaten;
 Nachforderungsschreiben ersetzen weiterhin keine fehlenden Arztberichte. Die
 öffentliche Referenzkennzeichnung und unveränderten Outcome-/Inputtests bleiben

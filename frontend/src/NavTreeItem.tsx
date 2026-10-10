@@ -1,5 +1,5 @@
+import {WorkspaceIcon} from './WorkspaceIcon';
 import type {CSSProperties,MouseEvent,KeyboardEvent} from 'react';
 export function NavTreeItem({label,count,selected,color='#7a93ab',kind='list',onSelect,onContext}:{label:string;count:number;selected:boolean;color?:string;kind?:'list'|'folder'|'bookmark'|'confirmed'|'dispatch';onSelect:()=>void;onContext?:(event:MouseEvent<HTMLButtonElement>|KeyboardEvent<HTMLButtonElement>)=>void}){
- const path=kind==='folder'?'M2 5h6l2 2h12v13H2z':kind==='bookmark'?'m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z':kind==='confirmed'?'m4 12 5 5L20 6':kind==='dispatch'?'M3 5h18v14H3z M3 5l9 8 9-8':'M4 5h16M4 12h16M4 19h16';
- return <button type="button" className="tree-filter" title={label} aria-pressed={selected} style={{borderLeftColor:color} as CSSProperties} onClick={onSelect} onContextMenu={onContext} onKeyDown={e=>{if(e.key==='ContextMenu'||e.shiftKey&&e.key==='F10'){onContext?.(e);}}}><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5"><path d={path}/></svg>{label}<span>{count}</span></button>;
+ return <button type="button" className="tree-filter" title={label} aria-pressed={selected} style={{borderLeftColor:color} as CSSProperties} onClick={onSelect} onContextMenu={onContext} onKeyDown={e=>{if(e.key==='ContextMenu'||e.shiftKey&&e.key==='F10'){onContext?.(e);}}}><WorkspaceIcon name={kind}/>{label}<span>{count}</span></button>;
 }

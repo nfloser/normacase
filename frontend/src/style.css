@@ -504,3 +504,8 @@ h2,h3,h4,h5{font-size:14px;font-weight:600}strong{font-weight:600}main p{line-he
 .explorer-tree .tree-filter svg{flex-shrink:0}.case-header>[id$="case-copy"],.explorer-detail-heading>#inline-case-copy{margin-left:auto;min-width:0}
 .case-result-view>.document-observations{grid-column:2;grid-row:1}.case-result-view>details:not(.document-observations){grid-column:1}.case-result-summary .recorded-criteria{overflow:auto}.explorer-footer{z-index:5}
 @media(max-width:1100px){.case-result-view>.document-observations{grid-column:1;grid-row:auto}}
+.case-explorer .explorer-table thead{position:sticky;top:0;z-index:2}.case-explorer .explorer-table th{position:static}
+.compact-workplace-toolbar button[aria-pressed=true]{color:var(--nc-primary);background:var(--nc-selected)}
+.case-result-view .result-banner h4{font-size:15px;line-height:1.35;font-weight:600;margin:0}
+.workspace-navigation summary{list-style:none}.workspace-navigation summary::-webkit-details-marker{display:none}
+.workspace-icon{flex-shrink:0;vertical-align:middle;margin-right:4px}.tree-filter .workspace-icon{margin-right:0}.compact-workplace-toolbar .workspace-icon{width:14px;height:14px}

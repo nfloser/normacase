@@ -41,6 +41,11 @@ for(const viewport of [{width:1920,height:1080},{width:1366,height:768}]){
   await expect(explorer.getByLabel('Dokument auswählen')).toHaveCount(0);
   await page.screenshot({path:`test-results/clinical-documents-${viewport.width}.png`});
   await explorer.getByLabel('Zoommodus').selectOption('150');
+  await expect(explorer.getByLabel('Seitenzahl')).toHaveValue('2');
+  await explorer.locator('.page-stage').dispatchEvent('wheel',{ctrlKey:true,deltaY:-80});
+  await expect(explorer.getByLabel('Zoommodus')).not.toHaveValue('150');
+  await expect(explorer.getByLabel('Seitenzahl')).toHaveValue('2');
+  await explorer.getByLabel('Zoommodus').selectOption('150');
   await explorer.locator('.case-file-list button').filter({hasText:'Hausärztlicher Arztbrief'}).click();
   await expect(explorer.getByLabel('Zoommodus')).toHaveValue('150');
   await explorer.locator('.page-stage').focus();await page.keyboard.press('Control+0');

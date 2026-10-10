@@ -40,9 +40,27 @@ Berichtslayout, kein amtliches Originalformular.
 Rehabilitationsantrag und Verordnungsangaben / Seite 2
 NC-2026-4111 | Martin Engel
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4111 | Martin Engel | 08.10.2026
+Angaben aus Rehabilitationsantrag und Verordnungsangaben. Diese Anlage ist Bestandteil
+desselben Berichts. Sie ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Rehabilitationsziel dokumentiert
+Ja
+Funktionseinschränkungen beschrieben
+Ja
+Befundbericht beigefügt
+Nicht angegeben
+Zuordnung und Prüfauftrag
+Welche Anlage fehlt für die vorgesehene Unterlagensichtung?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 reha_goal=YES
 functional_limitation=YES

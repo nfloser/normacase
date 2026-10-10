@@ -31,9 +31,25 @@ Eigenes Berichtslayout, kein amtliches Originalformular.
 Onkologie - Zusammenstellung der Unterlagen / Seite 2
 NC-2026-4110 | Thomas Falk
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4110 | Thomas Falk | 08.10.2026
+Angaben aus Onkologie - Zusammenstellung der Unterlagen. Diese Anlage ist Bestandteil
+desselben Berichts. Sie ergänzt keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Diagnose durch Bericht dokumentiert
+Ja
+Therapieverlauf dokumentiert
+Ja
+Zuordnung und Prüfauftrag
+Sind Diagnosebericht, Therapieverlauf und Board-Protokoll in der Akte enthalten?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 diagnosis_documented=YES
 history_documented=YES
@@ -66,9 +82,23 @@ Eigenes Berichtslayout, kein amtliches Originalformular.
 Board-Protokoll / Seite 2
 NC-2026-4110 | Thomas Falk
 Seite 2
-Technische Übermittlungsanlage
-Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
-Dokumentenverständnis und kein institutionelles Austauschformat.
+Fallkoordination Lindenhof
+ Erfasste Angaben zur Fallprüfung
+NC-2026-4110 | Thomas Falk | 08.10.2026
+Angaben aus Board-Protokoll. Diese Anlage ist Bestandteil desselben Berichts. Sie ergänzt
+keine Befunde; unbekannte Angaben werden nicht ersetzt.
+Angabe
+Wert
+Board-Protokoll beigefügt
+Ja
+Zuordnung und Prüfauftrag
+Sind Diagnosebericht, Therapieverlauf und Board-Protokoll in der Akte enthalten?
+Die bezeichneten Nachweise und der Verlauf sind beim Abgleich zu berücksichtigen.
+Widersprüche bleiben offen. Nachforderungsschreiben ersetzen keine Nachweise. Die
+Zusammenstellung enthält keinen verbindlichen medizinischen oder rechtlichen Entscheid.
+Übermittlungsvermerk
+Kontrollierte Übernahme der dokumentierten Angaben; keine Texterkennung beliebiger
+Arztbriefe oder Scans.
 NCF1
 board_attached=YES
 END-NCF1
