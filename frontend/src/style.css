@@ -525,3 +525,9 @@ h2,h3,h4,h5{font-size:14px;font-weight:600}strong{font-weight:600}main p{line-he
 .processing-list-help{padding:0 8px;color:var(--nc-muted);font-size:var(--nc-tiny);line-height:1.4}
 
 .case-explorer .explorer-table th:first-child{width:48px}
+
+/* Reserve the same bookmark space in every row; symbols never indent case text. */
+.case-explorer .explorer-table td .case-title-button{display:flex;align-items:center;width:100%;gap:4px}
+.case-bookmark-slot{display:inline-flex;align-items:center;justify-content:center;width:16px;min-width:16px;flex:0 0 16px}
+.case-label{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.case-explorer .explorer-table td .case-note{padding-left:20px}
