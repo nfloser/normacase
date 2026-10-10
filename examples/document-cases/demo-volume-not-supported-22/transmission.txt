@@ -1,0 +1,51 @@
+SYNTHETISCHE DEMO - demo-volume-not-supported-22
+Kontrollierter PDF-Text, keine OCR.
+
+Prüfauftrag und Anlagenübersicht / Seite 1
+Synthetisch | demo-volume-not-supported-22 | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Prüfauftrag und Anlagenübersicht
+Fiktive Einrichtung / Testperson demo-volume-not-supported-22 / Datum 10.10.2026
+Auftrag zur regelbasierten Demonstrationsprüfung. Diese Kriterien sind fiktiv und keine
+medizinische Regel.
+Angabe
+Dokumentierter Wert
+Auftragsangaben vollständig
+Ja
+Quelle der Dokumentstruktur: md-hilfsmittel. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Prüfauftrag und Anlagenübersicht / Seite 2
+Synthetisch | demo-volume-not-supported-22 | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+request_complete=YES
+END-NCF1
+
+Bestätigung des fiktiven Prüfkriteriums / Seite 1
+Synthetisch | demo-volume-not-supported-22 | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Bestätigung des fiktiven Prüfkriteriums
+Fiktive Einrichtung / Testperson demo-volume-not-supported-22 / Datum 10.10.2026
+Fiktiver Nachweis. Die dokumentierte Bestätigung ist ausschließlich für die Demonstration
+bestimmt.
+Angabe
+Dokumentierter Wert
+Fiktives Demokriterium bestätigt
+Nein
+Quelle der Dokumentstruktur: md-hilfsmittel. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Bestätigung des fiktiven Prüfkriteriums / Seite 2
+Synthetisch | demo-volume-not-supported-22 | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+criteria_confirmed=NO
+END-NCF1
+

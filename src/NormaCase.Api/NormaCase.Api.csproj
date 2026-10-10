@@ -16,4 +16,9 @@
     <Content Include="../../knowledge/demo-*/presentation.de-DE.json" Link="Presentation/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../examples/cases/*.json" Link="Examples/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../examples/document-cases/**" Link="DocumentCases/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../knowledge/public-reference/kt-rl-8-3/pack.json" Link="ReferenceKnowledge/kt-rl-8-3.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../knowledge/public-reference/pflege-adult-score/pack.json" Link="ReferenceKnowledge/pflege-adult-score.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

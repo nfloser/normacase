@@ -1,0 +1,34 @@
+SYNTHETISCHE DEMO - reference-reha-missing
+Kontrollierter PDF-Text, keine OCR.
+
+Rehabilitation - Auftragsangaben / Seite 1
+Synthetisch | reference-reha-missing | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Rehabilitation - Auftragsangaben
+Fiktive Einrichtung / Testperson reference-reha-missing / Datum 10.10.2026
+Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach orthopädischer
+Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene Fallangaben,
+keine ärztliche Empfehlung.
+Angabe
+Dokumentierter Wert
+Rehabilitationsziel dokumentiert
+Ja
+Funktionseinschränkungen beschrieben
+Ja
+Befundbericht beigefügt
+Nicht angegeben
+Quelle der Dokumentstruktur: kbv-reha. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Rehabilitation - Auftragsangaben / Seite 2
+Synthetisch | reference-reha-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+reha_goal=YES
+functional_limitation=YES
+findings_attached=UNKNOWN
+END-NCF1
+

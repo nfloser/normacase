@@ -1,0 +1,35 @@
+SYNTHETISCHE DEMO - reference-oncology-missing
+Kontrollierter PDF-Text, keine OCR.
+
+Onkologie - Zusammenstellung der Unterlagen / Seite 1
+Synthetisch | reference-oncology-missing | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Onkologie - Zusammenstellung der
+ Unterlagen
+Fiktive Einrichtung / Testperson reference-oncology-missing / Datum 10.10.2026
+Fiktive Testperson mit dokumentierter Lymphomerkrankung. Histologischer Bericht und
+mehrstufiger Therapieverlauf sind in der Aktenübersicht benannt. Präparat und
+Nutzen-Risiko-Bewertung werden hier nicht festgelegt.
+Angabe
+Dokumentierter Wert
+Diagnose durch Bericht dokumentiert
+Ja
+Therapieverlauf dokumentiert
+Ja
+Board-Protokoll beigefügt
+Nicht angegeben
+Quelle der Dokumentstruktur: md-car-t. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Onkologie - Zusammenstellung der Unterlagen / Seite 2
+Synthetisch | reference-oncology-missing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+diagnosis_documented=YES
+history_documented=YES
+board_attached=UNKNOWN
+END-NCF1
+
