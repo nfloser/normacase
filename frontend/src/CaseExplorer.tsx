@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import de from './de.json';
+import {browserWorkspaceHost,type WorkspaceHost} from './workspaceHost';
 import {DocumentCaseFile} from './DocumentCaseFile';
 const t=de.explorer;
 type Folder={id:string;label:string;color:string};
@@ -8,9 +9,10 @@ type Case={caseId:string;title:string;queueId:string;canConfirm:boolean;organiza
 type Workspace={revision:number;localSimulation:boolean;folders:Folder[];queueColors:Record<string,string>;cases:Case[];audit:{sequence:number;action:string;caseIds:string[]}[]};
 type Dialog='folder'|'move'|'color'|'note'|'confirm'|'dispatch'|'queueColor'|'rename'|'delete';
 const queueNames:Record<string,string>={...de.workQueues.queues,documents:t.documentReview};
+const colorPresets={blue:'#497ab7',teal:'#24708f',green:'#287554',amber:'#b7791f',purple:'#7956a3',rose:'#a54866'};
 const defaultColors:Record<string,string>={approval:'#24708f',clarification:'#b7791f',review:'#a54866',technical:'#7956a3',documents:'#497ab7'};
 
-export function CaseExplorer(){
+export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={}){
  const [workspace,setWorkspace]=useState<Workspace|null>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
  const [query,setQuery]=useState(''),[filter,setFilter]=useState('all'),[selection,setSelection]=useState<string[]>([]),[opened,setOpened]=useState('');
  const [openedView,setOpenedView]=useState<'result'|'documents'>('result');
@@ -20,7 +22,7 @@ export function CaseExplorer(){
  const pending=useRef<AbortController|null>(null),returnFocus=useRef<HTMLElement|null>(null);
  async function refresh(signal?:AbortSignal){const response=await fetch('/api/demo-workspace',{signal});if(!response.ok)throw new Error();setWorkspace(await response.json());}
  useEffect(()=>{const controller=new AbortController();refresh(controller.signal).catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});return()=>{controller.abort();pending.current?.abort();};},[]);
- useEffect(()=>{if(!menu)return;menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus();const close=(event:PointerEvent)=>{if(!menuRef.current?.contains(event.target as Node))setMenu(null);};document.addEventListener('pointerdown',close);return()=>document.removeEventListener('pointerdown',close);},[menu]);
+ useEffect(()=>{if(!menu)return;menuRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();const close=(event:PointerEvent)=>{if(!menuRef.current?.contains(event.target as Node))setMenu(null);};document.addEventListener('pointerdown',close);return()=>document.removeEventListener('pointerdown',close);},[menu]);
  useEffect(()=>{if(dialog&&!dialogRef.current?.open)dialogRef.current?.showModal();},[dialog]);
  function closeDialog(){dialogRef.current?.close();setDialog(null);returnFocus.current?.focus();}
  function begin(kind:Dialog,ids=selection,focus?:HTMLElement){returnFocus.current=focus??document.activeElement as HTMLElement;setMenu(null);setTargets(ids);setLabel('');setNote(workspace?.cases.find(c=>c.caseId===ids[0])?.organization.note??'');setFolderId(workspace?.folders[0]?.id??'');setColor('#497ab7');setDialog(kind);}
@@ -29,13 +31,13 @@ export function CaseExplorer(){
   try{const response=await fetch('/api/demo-workspace/commands',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({action,caseIds:ids,expectedRevision:workspace.revision,operationId:crypto.randomUUID(),...extra})});
    if(!response.ok){let message=de.networkError;try{message=(await response.json()).message??message;}catch{}setError(message);await refresh(controller.signal);return;}
    const result=await response.json();if(controller.signal.aborted)return;setWorkspace(result.workspace);setNotice(action==='DISPATCH'?t.dispatchedNotice:t.saved);closeDialog();
-   if(result.packageJson){const url=URL.createObjectURL(new Blob([result.packageJson],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='normacase-versand-demo-'+result.workspace.revision+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+   if(result.packageJson)host.saveJson('normacase-versand-demo-'+result.workspace.revision+'.json',result.packageJson);
   }catch{if(!controller.signal.aborted)setError(t.completionUnknown);}finally{if(!controller.signal.aborted)setBusy(false);}
  }
  function open(id:string,view:'result'|'documents'='result'){setMenu(null);setOpenedView(view);setOpened(id);}
  function back(){const id=opened;setOpened('');requestAnimationFrame(()=>openButtons.current[id]?.focus());}
  function context(event:React.MouseEvent|React.KeyboardEvent,id:string){event.preventDefault();const ids=selection.includes(id)?selection:[id];setSelection(ids);returnFocus.current=event.currentTarget as HTMLElement;const box=event.currentTarget.getBoundingClientRect();const mouse='clientX' in event;setMenu({x:Math.max(8,Math.min(mouse?event.clientX:box.left+20,window.innerWidth-280)),y:Math.max(8,Math.min(mouse?event.clientY:box.top+20,window.innerHeight-380)),ids});}
- const folders=workspace?.folders??[],cases=workspace?.cases??[],selected=cases.filter(c=>selection.includes(c.caseId));
+ const folders=[...(workspace?.folders??[])].sort((a,b)=>a.label.localeCompare(b.label,'de-DE',{sensitivity:'base'})||a.id.localeCompare(b.id)),cases=workspace?.cases??[],selected=cases.filter(c=>selection.includes(c.caseId));
  const groups=['approval','clarification','review','technical','documents'];
  function matches(c:Case){return (filter==='all'||filter==='bookmarks'&&c.organization.bookmark||filter==='confirmed'&&c.organization.confirmed&&!c.organization.dispatched||filter==='dispatched'&&c.organization.dispatched||filter==='unfiled'&&!c.organization.folderId||filter===c.queueId||filter===c.organization.folderId)&&(c.caseId+' '+c.title+' '+c.organization.note).toLocaleLowerCase('de-DE').includes(query.toLocaleLowerCase('de-DE'));}
  const visible=cases.filter(matches).sort((a,b)=>Number(b.caseId.startsWith('reference-'))-Number(a.caseId.startsWith('reference-'))||a.caseId.localeCompare(b.caseId));
@@ -49,6 +51,7 @@ export function CaseExplorer(){
   {error&&<p className="error" role="alert">{error}</p>}{notice&&<p className="explorer-notice" role="status">{notice}</p>}
   {opened?<div className="opened-case"><header className="case-header"><button type="button" className="secondary" onClick={back}>{de.workspace.back}</button><h2>{current?.title}</h2><span className="case-identifier">{opened}</span></header><DocumentCaseFile key={opened} caseId={opened} initialView={openedView} showAssessment/></div>:<>
    <header className="explorer-header"><div><h2>{t.heading}</h2><p>{t.localNotice}</p></div><label className="field explorer-search">{t.search}<input value={query} onChange={e=>setQuery(e.target.value)} placeholder={t.searchPlaceholder}/></label></header>
+   <nav className="explorer-navigation" aria-label={t.navigation}><button type="button" className="secondary" aria-pressed={filter==='all'} onClick={()=>setFilter('all')}>{t.all}</button><button type="button" className="secondary" aria-pressed={filter==='bookmarks'} onClick={()=>setFilter('bookmarks')}>{t.bookmarks}</button><button type="button" className="secondary" aria-pressed={filter==='unfiled'} onClick={()=>setFilter('unfiled')}>{t.unfiled}</button><button type="button" className="secondary" disabled={busy} onClick={()=>refresh().catch(()=>setError(de.networkError))}>{t.refresh}</button></nav>
    <div className="explorer-grid"><aside className="explorer-tree" aria-label={t.tree}>
     <button type="button" className="tree-filter" aria-pressed={filter==='all'} onClick={()=>setFilter('all')}>{t.all} <span>{cases.length}</span></button>
     <h3>{t.queues}</h3>{groups.map(id=><details key={id} className="tree-group"><summary style={{borderLeftColor:workspace?.queueColors[id]??defaultColors[id]}}><button type="button" className="tree-filter" aria-pressed={filter===id} onClick={e=>{e.preventDefault();setFilter(id);}}>{queueNames[id]} <span>{cases.filter(c=>c.queueId===id).length}</span></button></summary><ul>{cases.filter(c=>c.queueId===id).map(c=><li key={c.caseId}><details><summary onContextMenu={e=>context(e,c.caseId)}><button type="button" onClick={()=>open(c.caseId)}>{c.caseId}</button></summary><ul><li><button type="button" onClick={()=>open(c.caseId)}>{de.workspace.resultView}</button></li><li><button type="button" onClick={()=>open(c.caseId,'documents')}>{de.documents.heading}</button></li></ul></details></li>)}</ul></details>)}
@@ -67,16 +70,17 @@ export function CaseExplorer(){
     </tr>)}</tbody></table>{!workspace?<p role="status">{de.documents.loading}</p>:!visible.length&&<p>{t.noCases}</p>}</div>
     <footer className="explorer-footer">{t.organizationHelp}</footer>
    </div></div></>}
-  {menu&&<div ref={menuRef} className="case-context-menu" role="menu" aria-label={t.caseActions} style={{left:menu.x,top:menu.y}} onKeyDown={e=>{if(e.key==='Escape'){setMenu(null);returnFocus.current?.focus();}if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const buttons=Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')??[]);const i=buttons.indexOf(document.activeElement as HTMLButtonElement);buttons[(i+(e.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus();}}}>
+  {menu&&<div ref={menuRef} className="case-context-menu" role="menu" aria-label={t.caseActions} style={{left:menu.x,top:menu.y}} onKeyDown={e=>{if(e.key==='Escape'){setMenu(null);returnFocus.current?.focus();}if(e.key==='Tab')setMenu(null);if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const buttons=Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')??[]);const i=buttons.indexOf(document.activeElement as HTMLButtonElement);buttons[e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowDown'?1:buttons.length-1))%buttons.length]?.focus();}}}>
     <button type="button" role="menuitem" onClick={()=>open(menu.ids[0])}>{de.workQueues.select}</button>
     <button type="button" role="menuitem" disabled={busy} onClick={()=>{const ids=menu.ids;setMenu(null);command('BOOKMARK',ids,{value:!menuCases.every(c=>c.organization.bookmark)});}}>{menuCases.every(c=>c.organization.bookmark)?t.removeBookmark:t.addBookmark}</button>
-    <button type="button" role="menuitem" onClick={()=>begin('move',menu.ids)}>{t.move}</button><button type="button" role="menuitem" onClick={()=>begin('color',menu.ids)}>{t.mark}</button><button type="button" role="menuitem" disabled={menu.ids.length!==1} onClick={()=>begin('note',menu.ids)}>{t.note}</button>
+    <button type="button" role="menuitem" onClick={()=>begin('move',menu.ids)}>{t.move}</button><button type="button" role="menuitem" disabled={busy||!menuCases.some(c=>c.organization.folderId)} onClick={()=>{const ids=menu.ids;setMenu(null);command('MOVE',ids,{folderId:null});}}>{t.removeFromFolder}</button><button type="button" role="menuitem" onClick={()=>begin('color',menu.ids)}>{t.mark}</button><button type="button" role="menuitem" disabled={menu.ids.length!==1} onClick={()=>begin('note',menu.ids)}>{t.note}</button>
     <button type="button" role="menuitem" disabled={busy||!canConfirm(menuCases)} onClick={()=>begin('confirm',menu.ids)}>{t.confirmCase}</button><button type="button" role="menuitem" disabled={busy||!canDispatch(menuCases)} onClick={()=>begin('dispatch',menu.ids)}>{t.dispatchCases}</button>
   </div>}
   {dialog&&<dialog ref={dialogRef} className="explorer-dialog" aria-label={t.dialogTitles[dialog]} onCancel={e=>{if(busy)e.preventDefault();else closeDialog();}}><form onSubmit={e=>{e.preventDefault();if(dialog==='folder'||dialog==='rename')command(dialog==='folder'?'CREATE_FOLDER':'UPDATE_FOLDER',[],{folderId:dialog==='rename'?folderId:null,label,color});else if(dialog==='delete')command('DELETE_FOLDER',[],{folderId});else if(dialog==='move')command('MOVE',targets,{folderId:folderId||null});else if(dialog==='color')command('COLOR',targets,{color});else if(dialog==='queueColor')command('QUEUE_COLOR',[],{folderId,color});else if(dialog==='note')command('NOTE',targets,{note});else command(dialog==='confirm'?'CONFIRM':'DISPATCH',targets);}}>
    <h2>{t.dialogTitles[dialog]}</h2>
    {(dialog==='folder'||dialog==='rename')&&<label className="field">{t.folderName}<input autoFocus required maxLength={80} value={label} onChange={e=>setLabel(e.target.value)}/></label>}
    {['folder','rename','color','queueColor'].includes(dialog)&&<label className="field">{dialog==='folder'||dialog==='rename'?t.folderColor:t.markColor}<input type="color" value={color} onChange={e=>setColor(e.target.value)}/></label>}
+   {['folder','rename','color','queueColor'].includes(dialog)&&<div className="color-presets" role="group" aria-label={t.colorPresets}>{Object.entries(colorPresets).map(([key,value])=><button key={key} type="button" aria-pressed={color===value} onClick={()=>setColor(value)}><span style={{backgroundColor:value}} aria-hidden="true"/>{t.colors[key as keyof typeof t.colors]}</button>)}</div>}
    {dialog==='move'&&<label className="field">{t.targetFolder}<select autoFocus value={folderId} onChange={e=>setFolderId(e.target.value)}><option value="">{t.unfiled}</option>{folders.map(f=><option key={f.id} value={f.id}>{f.label}</option>)}</select></label>}
    {dialog==='note'&&<label className="field">{t.note}<textarea autoFocus maxLength={1000} value={note} onChange={e=>setNote(e.target.value)}/></label>}
    {dialog==='confirm'&&<p>{t.confirmHelp} ({targets.length} {t.cases})</p>}{dialog==='dispatch'&&<p>{t.dispatchHelp} ({targets.length} {t.cases})</p>}{dialog==='delete'&&<p>{t.deleteHelp}</p>}

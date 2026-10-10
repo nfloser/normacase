@@ -33,3 +33,21 @@ test('eligible batch is confirmed and downloaded as explicit local dispatch simu
  expect((await download).suggestedFilename()).toMatch(/normacase-versand.*json/);
  await expect(explorer.getByRole('table').getByText('Versand simuliert',{exact:true})).toBeVisible();
 });
+
+test('keyboard menu returns focus and removes only the folder assignment',async({page})=>{
+ await page.goto('/#work-queues');const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ await row.focus();await row.press('Shift+F10');
+ await expect(page.getByRole('menuitem',{name:'Fall öffnen',exact:true})).toBeFocused();
+ await page.keyboard.press('End');await page.keyboard.press('Escape');await expect(row).toBeFocused();
+ await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
+ await page.getByRole('dialog').getByLabel('Ordnername').fill('Tastaturablage');
+ await page.getByRole('button',{name:'Blau',exact:true}).click();
+ await page.getByRole('dialog').getByRole('button',{name:'Ordner speichern'}).click();
+ await row.getByRole('checkbox').check();await explorer.getByRole('button',{name:'Auswahl verschieben',exact:true}).click();
+ await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Tastaturablage'});
+ await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
+ await row.press('Shift+F10');await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
+ await expect(row).toContainText('Ohne eigenen Ordner');
+});
