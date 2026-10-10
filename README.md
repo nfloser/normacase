@@ -6,7 +6,7 @@ The platform separates executable application code from versioned domain knowled
 
 ## Project status
 
-NormaCase has an executable synthetic end-to-end demonstration: normalized JSON/XML intake, deterministic assessment, persisted work queues, human review, outbound delivery and restart/backup restoration. Windows and Linux self-contained previews and browser/database integration are verified in CI. This is **not** a production assessment system or domain-approved knowledge base.
+NormaCase has an executable synthetic end-to-end demonstration: normalized JSON/XML intake, deterministic assessment, persisted work queues, human review, outbound delivery and restart/backup restoration. Windows, Linux and macOS (Apple Silicon/Intel) self-contained previews and browser/database integration are verified in CI. This is **not** a production assessment system or domain-approved knowledge base.
 
 The institution-independent platform scope also includes live case/action permissions and audited administration, durable reviewed Knowledge activation, immutable corrections and targeted clarification, policy-gated batch review and authorized paginated queues. Integrated API, German workbench, PostgreSQL and native update/recovery acceptance are recorded in the [readiness inventory](docs/project/EXTERNAL_DATA_FREE_READINESS.md).
 

@@ -10,6 +10,8 @@ import subprocess
 import tempfile
 import zipfile
 
+from preview_platform import SUPPORTED_RIDS
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -19,7 +21,7 @@ def digest(path):
 
 
 def build(rid, commit, output):
-    if rid not in {"linux-x64", "win-x64"} or not re.fullmatch(r"[0-9a-f]{40}", commit):
+    if rid not in SUPPORTED_RIDS or not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ValueError("A supported runtime and complete source commit are required")
     if not (ROOT / "src/NormaCase.Api/wwwroot/index.html").is_file():
         raise ValueError("Build the bundled frontend before packaging")
@@ -52,7 +54,7 @@ def build(rid, commit, output):
         shutil.copy2(ROOT / "compose.synthetic-review.yml", bundle / "compose.synthetic-review.yml")
         scripts = bundle / "scripts"
         scripts.mkdir()
-        for name in ("manage_installation.py", "installation.de.json", "check_preview.py", "workflow_smoke.py"):
+        for name in ("manage_installation.py", "installation.de.json", "check_preview.py", "workflow_smoke.py", "preview_platform.py"):
             shutil.copy2(ROOT / "scripts" / name, scripts / name)
         shutil.copy2(ROOT / "docs/development/OPERATIONAL_INSTALLATION.de.md", bundle / "BETRIEB.de.md")
         if rid == "win-x64":
@@ -81,7 +83,7 @@ def build(rid, commit, output):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--rid", choices=["linux-x64", "win-x64"], required=True)
+    parser.add_argument("--rid", choices=SUPPORTED_RIDS, required=True)
     parser.add_argument("--commit", required=True)
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts")
     arguments = parser.parse_args()

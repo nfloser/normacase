@@ -32,6 +32,27 @@ chmod +x pruefwerkstatt-starten.sh api/NormaCase.Api cli/NormaCase.Cli
 
 Öffne anschließend <http://localhost:5080>. Beenden: Strg+C.
 
+## macOS: Apple Silicon und Intel
+
+Wähle `osx-arm64` für einen Mac mit Apple-Chip (M1 und neuer), `osx-x64` für
+Intel. Verwende die native Architektur; Rosetta ist kein geprüfter Ersatz.
+Die Preview-CI prüft beide Architekturen unter macOS 15. Die jeweilige unterstützte
+.NET-10/macOS-Kombination steht in der
+[offiziellen macOS-Anleitung](https://learn.microsoft.com/de-de/dotnet/core/install/macos).
+
+Entpacke das gesamte ZIP. Öffne Terminal im entpackten Paketordner und führe aus:
+
+```sh
+chmod +x pruefwerkstatt-starten.sh api/NormaCase.Api cli/NormaCase.Cli
+./pruefwerkstatt-starten.sh
+```
+
+Öffne <http://localhost:5080> im Browser und lasse Terminal geöffnet.
+Beenden: Ctrl+C. Eine separate .NET-Installation ist nicht erforderlich.
+Dies ist ein lokales Browser-Testpaket, keine signierte oder notarisierte Mac-App.
+Die CI prüft keinen heruntergeladenen Gatekeeper-Dialog. Bei einer Schutzmeldung
+prüfe Paketquelle und Prüfsumme; deaktiviere die Schutzfunktionen nicht pauschal.
+
 ## Erste Prüfung
 
 Für eine reproduzierbare Präsentation liegt im Paket zusätzlich
@@ -59,7 +80,7 @@ deaktiviere keine Schutzfunktionen pauschal. Die Programme sind nicht signiert.
 ## Kommandozeile
 
 Der Offline-Evaluator liegt unter `cli/NormaCase.Cli.exe` (Windows) bzw.
-`cli/NormaCase.Cli` (Linux). `--help` zeigt die deutschen Aufrufhinweise.
+`cli/NormaCase.Cli` (Linux/macOS). `--help` zeigt die deutschen Aufrufhinweise.
 Beispiel aus dem Paketordner in PowerShell:
 
 ```powershell

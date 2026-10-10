@@ -1,6 +1,6 @@
 # Geprüfte Installation, Aktualisierung und Wiederherstellung
 
-Die Pakete für Windows x64 und Linux x64 enthalten die vollständige lokale Anwendung,
+Die Pakete für Windows x64, Linux x64 sowie macOS arm64/x64 enthalten die vollständige lokale Anwendung,
 Browserdateien, .NET-Laufzeit, synthetisches Wissen, PostgreSQL-Provisionierung und
 diese Anleitung. Die Anwendung braucht zur Laufzeit weder SDK, Node.js, Internet,
 CDN noch KI-Dienst. Der optionale Installationshelfer benötigt Python 3.11 oder neuer
@@ -24,7 +24,10 @@ python scripts/manage_installation.py status --root INSTALLATIONSORDNER
 python scripts/manage_installation.py run --root INSTALLATIONSORDNER
 ```
 
-Unter Windows verwende `--rid win-x64`. Die Version liegt unveränderlich unter
+Unter Windows verwende `--rid win-x64`, unter Apple Silicon `--rid osx-arm64`
+und unter Intel macOS `--rid osx-x64`. Der Starthelfer verweigert eine andere
+Architektur als die seines nativen Python-Prozesses. Der vollständige persistente
+Update-/Wiederherstellungsablauf ist weiterhin nur auf Linux in CI geprüft. Die Version liegt unveränderlich unter
 `releases/COMMIT`; `current.json` nennt den aktivierten und vorherigen Stand.
 Staging überschreibt keine vorhandene Version. Vor Aktivierung werden alle
 Paketdateien erneut geprüft. Ein laufender verwalteter Dienst oder ein belegter

@@ -12,6 +12,7 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 import zipfile
+from preview_platform import SUPPORTED_RIDS, runtime_library, host_rid
 from workflow_smoke import exercise_workflow
 
 
@@ -78,6 +79,8 @@ def extract_verified(archive, target):
 
 
 def check(archive, rid, commit):
+    if rid != host_rid():
+        raise ValueError("wrong_native_runtime")
     verify_archive_sidecar(archive)
     with tempfile.TemporaryDirectory(prefix="NormaCase preview ") as temporary:
         root = Path(temporary) / "extracted bundle"
@@ -89,7 +92,7 @@ def check(archive, rid, commit):
         platform = "0.1.0-preview+" + commit
         assert manifest["platformVersion"] == platform
         suffix = ".exe" if rid == "win-x64" else ""
-        runtime = "hostfxr.dll" if rid == "win-x64" else "libhostfxr.so"
+        runtime = runtime_library(rid)
         assert (root / "api" / runtime).is_file(), "API runtime missing"
         assert (root / "cli" / runtime).is_file(), "CLI runtime missing"
         for folder, name in [("api", "Api"), ("cli", "Cli")]:
@@ -104,6 +107,7 @@ def check(archive, rid, commit):
         environment = {**clean_environment, "SyntheticReview__Enabled": "false",
                        "SyntheticReview__PersistenceEnabled": "false", "DOTNET_ROOT": str(root / "absent-runtime"),
                        "DOTNET_ROOT_X64": str(root / "absent-runtime"),
+                       "DOTNET_ROOT_ARM64": str(root / "absent-runtime"),
                        "DOTNET_MULTILEVEL_LOOKUP": "0", "ASPNETCORE_ENVIRONMENT": "Production"}
         cli = root / "cli" / ("NormaCase.Cli" + suffix)
 
@@ -219,7 +223,7 @@ def check(archive, rid, commit):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--archive", type=Path, required=True)
-    parser.add_argument("--rid", choices=["linux-x64", "win-x64"], required=True)
+    parser.add_argument("--rid", choices=SUPPORTED_RIDS, required=True)
     parser.add_argument("--commit", required=True)
     arguments = parser.parse_args()
     check(arguments.archive, arguments.rid, arguments.commit)
