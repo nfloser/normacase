@@ -306,3 +306,38 @@ body { overflow:hidden; }
 .color-presets button[aria-pressed="true"] {outline:2px solid #24708f;outline-offset:2px}
 .color-presets span {width:1rem;height:1rem;border:1px solid #668092;border-radius:.15rem}
 .case-context-menu {max-height:calc(100dvh - 16px);overflow-y:auto;max-width:calc(100vw - 16px)}
+
+/* Arbeitsplatz kompakt: scoped to the explorer; user markings never determine row state. */
+.compact-workplace-toolbar{display:flex;align-items:center;gap:6px;padding:5px 10px;background:#f5f8fb;border-bottom:1px solid #c7d5e1;min-height:38px}
+.compact-workplace-toolbar button{padding:4px 9px;font-size:12px}
+.compact-color-toggle{display:inline-flex;align-items:center;gap:5px;margin-left:auto;font-size:12px;color:#123c63}
+.workplace-case-context{font-size:12px!important;color:#123c63!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68vw}
+.queue-tree-filter{border-left:5px solid #256da8;border-radius:0;margin:2px 0;min-height:28px;padding:3px 6px}
+.case-explorer .explorer-table{font-size:13px}
+.case-explorer .explorer-table th{padding:5px 7px;height:28px}
+.case-explorer .explorer-table td{padding:3px 7px;height:28px}
+.case-explorer .explorer-table .case-title-button{font-size:13px;line-height:1.15}
+.case-explorer .explorer-table tbody tr{border-left:0;background:#fff}
+.case-explorer .explorer-table.status-row-colors tbody tr[data-status="approval"],
+.case-explorer .explorer-table.status-row-colors tbody tr[data-status="complete"]{background:#ddf2dd}
+.case-explorer .explorer-table.status-row-colors tbody tr[data-status="clarification"]{background:#fff6cc}
+.case-explorer .explorer-table.status-row-colors tbody tr[data-status="review"]{background:#ffe3c7}
+.case-explorer .explorer-table.status-row-colors tbody tr[data-status="technical"]{background:#fbd9d9}
+.case-explorer .explorer-table.status-row-colors tbody tr[data-status="documents"]{background:#eadff5}
+.case-explorer .explorer-table tbody tr[aria-selected="true"]{background:#256da8!important;color:white}
+.case-explorer .explorer-table tbody tr[aria-selected="true"] .case-title-button,
+.case-explorer .explorer-table tbody tr[aria-selected="true"] .queue-badge,
+.case-explorer .explorer-table tbody tr[aria-selected="true"] .case-identifier{color:white}
+.case-explorer .explorer-table tbody tr[aria-selected="true"] input{accent-color:#123c63}
+
+/* Avoid document-like rows in the case queue; keep notes and IDs in tooltips/details. */
+.case-explorer .explorer-table tbody tr{height:28px;max-height:28px}
+.case-explorer .explorer-table td{height:28px;max-height:28px;padding-top:2px;padding-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:20px}
+.case-explorer .explorer-table td .case-note{display:none}
+.case-explorer .explorer-table td .case-title-button{display:inline-block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;vertical-align:middle;line-height:20px}
+.case-explorer .explorer-table td .case-identifier{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.case-explorer .explorer-table td button.secondary{padding:1px 4px;line-height:20px}
+.case-explorer .explorer-table td input[type=checkbox]{width:16px;height:16px;vertical-align:middle}
+
+.case-explorer .explorer-table td button{min-height:0;height:22px;max-height:22px;padding-top:0;padding-bottom:0}
+.case-explorer .explorer-table td input[type=checkbox]{min-height:0;height:16px}
