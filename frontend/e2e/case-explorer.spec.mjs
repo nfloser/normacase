@@ -96,5 +96,5 @@ test('personal folders can contain nested folders without changing case decision
  await explorer.getByRole('button',{name:'Unterordner in Arbeitsmappe anlegen'}).click();
  await dialog.getByLabel('Ordnername').fill('Heute prüfen');
  await dialog.getByRole('button',{name:'Ordner speichern'}).click();
- await expect(explorer.getByRole('button',{name:'Heute prüfen',exact:false})).toBeVisible();
+ await expect(explorer.locator('.custom-folder > .tree-filter').filter({hasText:'Heute prüfen'})).toBeVisible();
 });
