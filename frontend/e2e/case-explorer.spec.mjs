@@ -25,10 +25,10 @@ test('eligible batch is confirmed and downloaded as explicit local dispatch simu
  await page.goto('/#work-queues');const explorer=page.getByRole('region',{name:'Fallverwaltung'});
  await explorer.getByLabel('Fälle suchen').fill('reference-md-kraemer');
  await explorer.getByRole('row').filter({hasText:'reference-md-kraemer'}).getByRole('checkbox').check();
- await explorer.getByRole('button',{name:'Auswahl bestätigen (Demo)',exact:true}).click();
+ await explorer.getByRole('button',{name:'Auswahl bestätigen',exact:true}).click();
  await page.getByRole('dialog').getByRole('button',{name:'Bestätigen',exact:true}).click();
- await expect(explorer.getByRole('table').getByText('Bestätigt (Demo)',{exact:true})).toBeVisible();
- await explorer.getByRole('button',{name:'Auswahl abschicken (Demo)',exact:true}).click();
+ await expect(explorer.getByRole('table').getByText('Bestätigt',{exact:true})).toBeVisible();
+ await explorer.getByRole('button',{name:'Versand vorbereiten',exact:true}).click();
  const download=page.waitForEvent('download');await page.getByRole('dialog').getByRole('button',{name:'Versand simulieren',exact:true}).click();
  expect((await download).suggestedFilename()).toMatch(/normacase-versand.*json/);
  await expect(explorer.getByRole('table').getByText('Versand simuliert',{exact:true})).toBeVisible();
