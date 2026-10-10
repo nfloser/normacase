@@ -13,6 +13,7 @@ test('case overview opens a result-first detail with explicit documents and a re
  await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
  await expect(cases.locator('.pdf-page-image')).toBeVisible();
  await expect(cases.locator('.document-case-summary')).toContainText('Voraussetzungen erfüllt');
+ await expect(cases.locator('.document-case-summary .compact-case-result').getByRole('heading')).toBeInViewport();
  const bounds=await cases.locator('.pdf-page-image').boundingBox();
  expect(bounds.width).toBeLessThanOrEqual(560);expect(bounds.height).toBeLessThan(500);
  await expect(cases.locator('.pdf-page-image')).toHaveAttribute('src',/documents\/document-1\/pages\/1$/);

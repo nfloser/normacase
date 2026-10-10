@@ -226,3 +226,12 @@ body { overflow:hidden; }
  .pdf-page-image { max-height:330px; }
  .page-stage.zoomed .pdf-page-image { max-height:none; }
 }
+
+/* Keep the assessment visible above the document list at laptop sizes. */
+.document-case-summary { display:flex;flex-direction:column; }
+.document-case-summary .compact-case-result { order:-2;margin:0 0 8px; }
+.case-file-list button { padding:7px 9px;font-size:.85rem; }
+.case-view-navigation { padding:7px 0; }
+.case-header { padding:8px 0; }
+.document-toolbar { padding:7px 0; }
+.document-choice select { min-height:36px; }
