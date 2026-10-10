@@ -238,3 +238,6 @@ Die Demo-Ordnerzustände bleiben derzeit nur bis zum Neustart des Hosts erhalten
 In der Fallliste fokussiert ein Zeilenklick den Datensatz und wählt ihn aus; Doppelklick und Enter öffnen ihn. Das Rechtsklickmenü bietet verschachtelte Farben und Ordnerziele mit Hover-/Fokusöffnung. Einzelne Fallfarben sind als Chip sichtbar und ändern nie den fachlichen Status. In der geöffneten Akte liegen „Verschieben nach …“, „Markieren“, Lesezeichen und gegebenenfalls Bestätigen rechts in der Kopfzeile. Der PDF-Bildleser bietet Zoomschritte in 10-Prozent-Stufen zwischen 50 und 250 Prozent.
 
 Die vorhandenen Akten sind ausschließlich synthetische, teilweise quellengebundene Referenzfälle. Klinische Dokumente dürfen nur auf synthetischen Sachverhalten beruhen; noch nicht alle Fallakten enthalten vollständige Arztbriefe. Der Name der Falldemo ist keine fachliche Freigabe. Mehrfachordner/Unterordner, persistente Ablage und vollständige medizinische Dokumentensätze sind separate Folgearbeiten.
+
+
+Eigene Ablageordner können bis zu vier Ebenen tief Unterordner enthalten. Die Demo-API speichert die Elternbeziehung separat und legt keine Duplikate von Fallakten an. Beim Löschen eines Elternordners werden unmittelbare Unterordner auf dessen Ebene hochgezogen; Fallakten bleiben erhalten. Die Demo-Speicherung endet weiterhin beim Neustart.
