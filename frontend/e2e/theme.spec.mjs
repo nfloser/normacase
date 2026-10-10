@@ -1,4 +1,11 @@
 import {test,expect} from '@playwright/test';
+test('theme control stays reachable without widening a narrow workspace',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/#workbench');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ await page.getByLabel('Farbschema').selectOption('dark');
+ await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
 test('theme follows the system until explicitly changed and survives workspace navigation',async({page})=>{
  await page.emulateMedia({colorScheme:'dark'});await page.goto('/#work-queues');
  const scheme=page.getByLabel('Farbschema');await expect(scheme).toHaveValue('system');
