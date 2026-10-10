@@ -7,9 +7,13 @@ SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Onkologie - Zusammenstellung der
  Unterlagen
 Fiktive Einrichtung / Testperson reference-oncology-complete / Datum 10.10.2026
-Fiktive Testperson mit dokumentierter Lymphomerkrankung. Histologischer Bericht und
-mehrstufiger Therapieverlauf sind in der Aktenübersicht benannt. Präparat und
-Nutzen-Risiko-Bewertung werden hier nicht festgelegt.
+Synthetische Testperson O-01, 63 Jahre, mit dokumentierter Lymphomerkrankung: Ein
+Diagnosebericht, der bisherige Therapieverlauf und ein interdisziplinäres Board-Protokoll sind
+benannt. Die Demo dient der Unterlagensichtung auf Grundlage der öffentlichen Checkliste.
+Eine Therapie- oder Kostenentscheidung findet nicht statt. Fiktive Testperson mit
+dokumentierter Lymphomerkrankung. Histologischer Bericht und mehrstufiger
+Therapieverlauf sind in der Aktenübersicht benannt. Präparat und Nutzen-Risiko-Bewertung
+werden hier nicht festgelegt.
 Angabe
 Dokumentierter Wert
 Diagnose durch Bericht dokumentiert

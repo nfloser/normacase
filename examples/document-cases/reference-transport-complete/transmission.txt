@@ -7,8 +7,11 @@ SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Krankenbeförderung - Angaben zur
  Verordnung
 Fiktive Einrichtung / Testperson reference-transport-complete / Datum 10.10.2026
-Krankenfahrt mit Taxi/Mietwagen zur ambulanten Behandlung. Kein Krankentransportwagen.
-Eigene Testvorlage mit Inhalten angelehnt an Muster 4.
+Synthetische Testperson K-01, 78 Jahre: Für eine ambulante augenärztliche Behandlung
+wurde eine Krankenfahrt verordnet. Die medizinische Notwendigkeit ist ausdrücklich
+bestätigt. Der beigefügte Pflegekassenbescheid weist Pflegegrad 4 aus. Krankenfahrt mit
+Taxi/Mietwagen zur ambulanten Behandlung. Kein Krankentransportwagen. Eigene
+Testvorlage mit Inhalten angelehnt an Muster 4.
 Angabe
 Dokumentierter Wert
 Ambulante Behandlung

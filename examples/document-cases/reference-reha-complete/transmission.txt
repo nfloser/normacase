@@ -6,9 +6,12 @@ Synthetisch | reference-reha-complete | Seite 1
 SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Rehabilitation - Auftragsangaben
 Fiktive Einrichtung / Testperson reference-reha-complete / Datum 10.10.2026
-Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach orthopädischer
-Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene Fallangaben,
-keine ärztliche Empfehlung.
+Synthetische Testperson R-01, 56 Jahre, nach orthopädischer Behandlung: Die dokumentierte
+Gehstrecke beträgt 200 Meter. Als Ziel ist selbständige Alltagsmobilität genannt. Ein
+Befundbericht liegt bei. Die Demo zeigt die Unterlagen; sie entscheidet nicht über Indikation
+oder Bewilligung. Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach
+orthopädischer Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene
+Fallangaben, keine ärztliche Empfehlung.
 Angabe
 Dokumentierter Wert
 Rehabilitationsziel dokumentiert

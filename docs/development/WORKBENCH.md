@@ -199,3 +199,8 @@ Fundstelle wechselt direkt zur Dokumentansicht und fordert die entsprechende Sei
 an. Die PDF-Ansicht fordert Seitenbreite und eine ausgeblendete Miniaturleiste an;
 die genaue Darstellung hängt vom eingebauten PDF-Betrachter des Browsers ab.
 Die fiktiven Plattformtests bleiben getrennt unter „Arbeitslisten“ verfügbar.
+
+Die Referenzübersicht zeigt konkrete fachliche Fragestellungen. Im geöffneten Fall
+stehen Auftrag und Fragestellung unter dem Ergebnis; der erfundene Hintergrund ist
+über „Fallhintergrund ansehen“ zugänglich. Alle Angaben bleiben als synthetisch
+gekennzeichnet. Die Prüfung ist auf den jeweils angegebenen Umfang beschränkt.

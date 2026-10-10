@@ -99,3 +99,19 @@ Dafür werden reportlab, pypdf, Pillow und DejaVu Sans benötigt; die Laufzeit b
 sie nicht. Prüfe anschließend PDF-Rendering, Hash-/Provenienztests, Engine-Ergebnisse
 und den tatsächlichen Browserfluss. Die Corpusprüfung liest sämtliche PDFs zurück.
 Die Repository-Attribute fixieren LF für gehashte Text-/JSON-Dateien auch unter Windows.
+
+## Konkrete fachliche Beispielaufträge
+
+Die zwölf Referenzakten enthalten einen erfundenen Fallhintergrund, einen Auftrag
+und eine konkrete Fragestellung. Krankenfahrt und Pflege-Score verwenden die
+bereits vorhandenen eng begrenzten öffentlichen Referenzregeln; Reha und Onkologie
+bleiben Unterlagensichtungen. Die Alters-, Diagnose- und Alltagsangaben sind
+synthetische Erzählangaben. Sie werden nicht als neue Entscheidungskriterien
+interpretiert und nicht zur Ermittlung von Pflege-Modulsummen verwendet.
+
+Die Texte liegen in `scripts/document-case-context.de.json`; der Generator bindet
+den Hintergrund in die erste PDF und den Katalog ein. PDF-Text, extrahierte Werte,
+Prüfsummen und normierte Eingaben werden gemeinsam geprüft. Fehlende Nachweise für
+alternative, im konkreten Ergebnis nicht benötigte Prüfpfade werden nicht pauschal
+als zwingender Klärungsbedarf ausgegeben. Die eigentlichen Eingaben, unbekannten
+Werte und Regelergebnisse bleiben unverändert nachvollziehbar.

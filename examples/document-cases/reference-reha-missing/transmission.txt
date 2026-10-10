@@ -6,9 +6,12 @@ Synthetisch | reference-reha-missing | Seite 1
 SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Rehabilitation - Auftragsangaben
 Fiktive Einrichtung / Testperson reference-reha-missing / Datum 10.10.2026
-Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach orthopädischer
-Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene Fallangaben,
-keine ärztliche Empfehlung.
+Synthetische Testperson R-02, 56 Jahre, nach orthopädischer Behandlung: Einschränkungen
+der Gehstrecke und das Ziel selbständiger Alltagsmobilität sind beschrieben. Der
+angekündigte ärztliche Befundbericht fehlt. Eine Rehabilitationsindikation wird daraus nicht
+abgeleitet. Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach
+orthopädischer Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene
+Fallangaben, keine ärztliche Empfehlung.
 Angabe
 Dokumentierter Wert
 Rehabilitationsziel dokumentiert

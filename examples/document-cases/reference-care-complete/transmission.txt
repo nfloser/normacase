@@ -6,8 +6,12 @@ Synthetisch | reference-care-complete | Seite 1
 SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Pflege - dokumentierte Modulsummen
 Fiktive Einrichtung / Testperson reference-care-complete / Datum 10.10.2026
-Fiktive erwachsene Testperson. Die Modulsummen gelten als bereits fachlich festgestellt.
-Diese Demo ermittelt sie nicht aus Symptomen oder Diagnosen.
+Synthetische Testperson P-01, 72 Jahre, mit Unterstützungsbedarf im Alltag nach einem
+Schlaganfall. Die fachliche Erhebung hat die Modulsummen 2, 4, 1, 8, 2 und 3 dokumentiert.
+NormaCase rechnet diese Angaben nach; es bewertet weder die Diagnose noch einzelne
+Fähigkeiten und vergibt keinen Pflegegrad. Fiktive erwachsene Testperson. Die
+Modulsummen gelten als bereits fachlich festgestellt. Diese Demo ermittelt sie nicht aus
+Symptomen oder Diagnosen.
 Angabe
 Dokumentierter Wert
 Modul 1: Mobilität
