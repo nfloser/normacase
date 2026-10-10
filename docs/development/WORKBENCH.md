@@ -271,3 +271,15 @@ Pflichtangaben. Fachliches UNKNOWN bleibt unverändert; Dokument-only-Akten erha
 kein fiktives Ergebnis. Ein Hinweis kennzeichnet den Text als synthetischen
 Schulungsfall. Wenn die Zwischenablage nicht verfügbar ist, erscheint eine
 Fehlermeldung statt einer Erfolgsmeldung. Kein Datentransfer ins Hauptsystem.
+
+
+### Tastatur und Bereichsauswahl in der Fallverwaltung
+
+Pfeil hoch/runter sowie Pos1/Ende bewegen den Zeilenfokus und wählen den jeweiligen
+Fall aus. Shift erweitert die Auswahl vom letzten Auswahlanker bis zur Zielzeile;
+Shift-Klick verwendet denselben sichtbaren Bereich. Strg-/Cmd-Klick und Checkboxen
+schalten einzelne Fälle um und setzen einen neuen Anker. Ausgefilterte Fälle werden
+nicht über einen unsichtbaren Anker hinzugenommen. Ein Bereich über 100 Fälle wird
+mit Hinweis vollständig zurückgewiesen; die vorherige Auswahl bleibt erhalten.
+Bedienelemente innerhalb einer Zeile behalten ihre eigene Tastaturbedienung.
+Enter öffnet die fokussierte Akte, Shift+F10 das Kontextmenü.

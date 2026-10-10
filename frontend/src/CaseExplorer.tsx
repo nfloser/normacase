@@ -2,6 +2,7 @@ import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import de from './de.json';
 import {browserWorkspaceHost,type WorkspaceHost} from './workspaceHost';
 import {DocumentCaseFile} from './DocumentCaseFile';
+import {selectCaseRange} from './caseSelection';
 const t=de.explorer;
 type Folder={id:string;label:string;color:string;parentId:string|null};
 type Organization={folderId:string|null;color:string|null;bookmark:boolean;note:string;confirmed:boolean;dispatched:boolean};
@@ -20,6 +21,7 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  const [rowColors,setRowColors]=useState(true);
  const [detailOpen,setDetailOpen]=useState(true);
  const [detailPercent,setDetailPercent]=useState(45);
+ const selectionAnchor=useRef<string|null>(null),rowRefs=useRef<Record<string,HTMLTableRowElement|null>>({});
  const resizing=useRef(false),explorerContentRef=useRef<HTMLDivElement|null>(null);
  const [moreActions,setMoreActions]=useState(false);
  const [coarsePointer]=useState(()=>typeof window!=='undefined'&&window.matchMedia?.('(pointer: coarse)').matches===true);
@@ -60,7 +62,7 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  }
  function open(id:string,view:'result'|'documents'='result'){setMenu(null);setActiveCase(id);setOpenedView(view);setOpened(id);}
  function back(){const id=opened;setOpened('');requestAnimationFrame(()=>openButtons.current[id]?.focus());}
- function context(event:React.MouseEvent|React.KeyboardEvent,id:string){event.preventDefault();setSubMenu(null);const ids=selection.includes(id)?selection:[id];setActiveCase(id);setSelection(ids);returnFocus.current=event.currentTarget as HTMLElement;const box=event.currentTarget.getBoundingClientRect();const mouse='clientX' in event;setMenu({x:Math.max(8,Math.min(mouse?event.clientX:box.left+20,window.innerWidth-280)),y:Math.max(8,Math.min(mouse?event.clientY:box.top+20,window.innerHeight-380)),ids});}
+ function context(event:React.MouseEvent|React.KeyboardEvent,id:string){event.preventDefault();if(!selection.includes(id))selectionAnchor.current=id;setSubMenu(null);const ids=selection.includes(id)?selection:[id];setActiveCase(id);setSelection(ids);returnFocus.current=event.currentTarget as HTMLElement;const box=event.currentTarget.getBoundingClientRect();const mouse='clientX' in event;setMenu({x:Math.max(8,Math.min(mouse?event.clientX:box.left+20,window.innerWidth-280)),y:Math.max(8,Math.min(mouse?event.clientY:box.top+20,window.innerHeight-380)),ids});}
  const folders=[...(workspace?.folders??[])].sort((a,b)=>a.label.localeCompare(b.label,'de-DE',{sensitivity:'base'})||a.id.localeCompare(b.id)),cases=workspace?.cases??[],selected=cases.filter(c=>selection.includes(c.caseId));
  const orderedFolders:(Folder&{depth:number})[]=[];
  function appendFolders(parent:string|null,depth:number){for(const folder of folders.filter(f=>(f.parentId??null)===parent)){orderedFolders.push({...folder,depth});appendFolders(folder.id,depth+1);}}
@@ -68,6 +70,29 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  const groups=['approval','clarification','review','technical','documents'];
  function matches(c:Case){return (filter==='all'||filter==='bookmarks'&&c.organization.bookmark||filter==='confirmed'&&c.organization.confirmed&&!c.organization.dispatched||filter==='dispatched'&&c.organization.dispatched||filter==='unfiled'&&!c.organization.folderId||filter===c.queueId||filter===c.organization.folderId)&&(c.caseId+' '+c.title+' '+c.organization.note).toLocaleLowerCase('de-DE').includes(query.toLocaleLowerCase('de-DE'));}
  const visible=cases.filter(matches).sort((a,b)=>Number(b.caseId.startsWith('reference-'))-Number(a.caseId.startsWith('reference-'))||a.caseId.localeCompare(b.caseId));
+ function selectRow(id:string,range:boolean,toggle:boolean){
+  if(busy)return;
+  if(range){
+   const ids=selectCaseRange(visible.map(c=>c.caseId),selectionAnchor.current,id);
+   if(ids===null){setNotice(t.selectionLimit);return;}
+   setSelection(ids);if(!selectionAnchor.current||!visible.some(c=>c.caseId===selectionAnchor.current))selectionAnchor.current=id;
+  }else{
+   selectionAnchor.current=id;
+   setSelection(previous=>toggle?(previous.includes(id)?previous.filter(value=>value!==id):previous.length<100?[...previous,id]:previous):[id]);
+  }
+ }
+ function rowKey(event:React.KeyboardEvent<HTMLTableRowElement>,id:string){
+  if(event.target!==event.currentTarget)return;
+  if(event.key==='ContextMenu'||event.shiftKey&&event.key==='F10'){context(event,id);return;}
+  if(event.key==='Enter'){event.preventDefault();open(id);return;}
+  if(!['ArrowUp','ArrowDown','Home','End'].includes(event.key)||event.altKey||event.ctrlKey||event.metaKey)return;
+  event.preventDefault();
+  const index=visible.findIndex(c=>c.caseId===id);
+  const next=event.key==='Home'?0:event.key==='End'?visible.length-1:Math.max(0,Math.min(visible.length-1,index+(event.key==='ArrowDown'?1:-1)));
+  const target=visible[next];if(!target)return;
+  if(event.shiftKey&&!selectionAnchor.current)selectionAnchor.current=id;
+  selectRow(target.caseId,event.shiftKey,false);setActiveCase(target.caseId);rowRefs.current[target.caseId]?.focus();
+ }
  const canConfirm=(items:Case[])=>items.length>0&&items.every(c=>c.canConfirm&&!c.organization.confirmed&&!c.organization.dispatched);
  const canDispatch=(items:Case[])=>items.length>0&&items.every(c=>c.organization.confirmed&&!c.organization.dispatched);
  const current=cases.find(c=>c.caseId===opened);
@@ -87,12 +112,12 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
     <button type="button" className="tree-filter" aria-pressed={filter==='confirmed'} onClick={()=>setFilter('confirmed')}>{t.confirmed}</button><button type="button" className="tree-filter" aria-pressed={filter==='dispatched'} onClick={()=>setFilter('dispatched')}>{t.dispatched}</button>
     {orderedFolders.map(f=><div key={f.id} className="custom-folder" style={{paddingLeft:f.depth*15}}><button type="button" className="tree-filter" aria-pressed={filter===f.id} style={{borderLeftColor:f.color}} onClick={()=>setFilter(f.id)}>{f.label}<span>{cases.filter(c=>c.organization.folderId===f.id).length}</span></button><button type="button" className="text-button" title="Unterordner anlegen" aria-label={'Unterordner in '+f.label+' anlegen'} onClick={()=>{begin('folder',[]);setParentId(f.id);}}>＋</button><button type="button" className="text-button" aria-label={t.editFolder+': '+f.label} onClick={()=>{begin('rename',[]);setFolderId(f.id);setLabel(f.label);setColor(f.color);}}>⋯</button></div>)}
    </aside><div ref={explorerContentRef} className="explorer-content">
-    <div className="explorer-toolbar"><strong>{visible.length} {t.cases} · {selection.length} {t.selected}</strong><button type="button" className="secondary" disabled={!visible.length||busy} onClick={()=>setSelection(visible.slice(0,100).map(c=>c.caseId))}>{t.selectVisible}</button><button type="button" className="secondary" disabled={!selection.length||busy} onClick={()=>setSelection([])}>{t.clearSelection}</button>
+    <div className="explorer-toolbar"><strong>{visible.length} {t.cases} · {selection.length} {t.selected}</strong><button type="button" className="secondary" disabled={!visible.length||busy} onClick={()=>setSelection(visible.slice(0,100).map(c=>c.caseId))}>{t.selectVisible}</button><button type="button" className="secondary" disabled={!selection.length||busy} onClick={()=>{selectionAnchor.current=null;setSelection([]);}}>{t.clearSelection}</button>
      <button type="button" className="secondary" disabled={!selection.length||busy} onClick={()=>begin('move')}>{t.moveSelection}</button><button type="button" className="secondary" disabled={!selection.length||busy} onClick={()=>begin('color')}>{t.markSelection}</button><button type="button" className="secondary" disabled={busy||!canConfirm(selected)} onClick={()=>begin('confirm')}>{t.confirmSelection}</button><button type="button" className="secondary" disabled={busy||!canDispatch(selected)} onClick={()=>begin('dispatch')}>{t.dispatchSelection}</button>
      {groups.includes(filter)&&<button type="button" className="secondary" onClick={()=>{begin('queueColor',[]);setFolderId(filter);setColor(workspace?.queueColors[filter]??defaultColors[filter]);}}>{t.queueColor}</button>}
     </div>
-    <div className="explorer-table-scroll"><table className={"explorer-table"+(rowColors?" status-row-colors":"")}><thead><tr><th>{t.selection}</th><th>{t.caseTitle}</th><th>{t.caseId}</th><th>{t.status}</th><th>{t.folder}</th><th>{t.actions}</th></tr></thead><tbody>{visible.map(c=><tr key={c.caseId} tabIndex={0} aria-selected={selection.includes(c.caseId)} style={{'--case-color':caseColor(c)} as CSSProperties} data-status={c.organization.dispatched?'complete':c.organization.confirmed?'complete':c.queueId} onClick={e=>{setActiveCase(c.caseId);if((e.target as HTMLElement).closest("button,input"))return;setSelection(previous=>e.ctrlKey||e.metaKey?(previous.includes(c.caseId)?previous.filter(id=>id!==c.caseId):previous.length<100?[...previous,c.caseId]:previous):[c.caseId]);}} onDoubleClick={()=>open(c.caseId)} onContextMenu={e=>context(e,c.caseId)} onKeyDown={e=>{if(e.key==='ContextMenu'||e.shiftKey&&e.key==='F10')context(e,c.caseId);else if(e.key==='Enter'&&e.target===e.currentTarget)open(c.caseId);}}>
-     <td><input type="checkbox" aria-label={t.selectCase+': '+c.caseId} checked={selection.includes(c.caseId)} disabled={busy} onChange={e=>setSelection(e.target.checked?selection.length<100?[...selection,c.caseId]:selection:selection.filter(id=>id!==c.caseId))}/></td>
+    <div className="explorer-table-scroll"><table className={"explorer-table"+(rowColors?" status-row-colors":"")}><thead><tr><th>{t.selection}</th><th>{t.caseTitle}</th><th>{t.caseId}</th><th>{t.status}</th><th>{t.folder}</th><th>{t.actions}</th></tr></thead><tbody>{visible.map(c=><tr key={c.caseId} ref={node=>{rowRefs.current[c.caseId]=node;}} tabIndex={0} aria-selected={selection.includes(c.caseId)} style={{'--case-color':caseColor(c)} as CSSProperties} data-status={c.organization.dispatched?'complete':c.organization.confirmed?'complete':c.queueId} onClick={e=>{setActiveCase(c.caseId);if((e.target as HTMLElement).closest("button,input"))return;selectRow(c.caseId,e.shiftKey,e.ctrlKey||e.metaKey);e.currentTarget.focus();}} onDoubleClick={()=>open(c.caseId)} onContextMenu={e=>context(e,c.caseId)} onKeyDown={e=>rowKey(e,c.caseId)}>
+     <td><input type="checkbox" aria-label={t.selectCase+': '+c.caseId} checked={selection.includes(c.caseId)} disabled={busy} onChange={()=>selectRow(c.caseId,false,true)}/></td>
      <td><button ref={node=>{openButtons.current[c.caseId]=node;}} type="button" className="case-title-button" aria-label={de.workQueues.select+': '+c.caseId} onClick={()=>open(c.caseId)}>{c.organization.bookmark&&<span aria-label={t.bookmarked}>★ </span>}{c.title}</button>{c.organization.note&&<small className="case-note">{c.organization.note}</small>}</td><td className="case-identifier">{c.caseId}</td><td><span className="queue-badge">{status(c)}</span></td><td>{c.organization.color&&<span className="personal-mark-chip" style={{backgroundColor:c.organization.color}} aria-label="Eigene Farbmarkierung"/>}{folders.find(f=>f.id===c.organization.folderId)?.label??'—'}</td><td><button type="button" className="secondary" aria-label={t.caseActions} onClick={e=>context(e,c.caseId)}>⋯</button></td>
     </tr>)}</tbody></table>{!workspace?<p role="status">{de.documents.loading}</p>:!visible.length&&<p>{t.noCases}</p>}</div>
     {detailOpen&&<>
