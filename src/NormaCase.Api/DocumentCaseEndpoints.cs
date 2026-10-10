@@ -93,7 +93,7 @@ internal static class DocumentCaseEndpoints
                     throw new InvalidOperationException("Document fixture differs from original pitch case.");
             }
             cases.Add(entry.CaseId,new {entry.CaseId,entry.Title,entry.Scope,validationLevel=validation,
-                entry.Documents,entry.Observations,entry.Findings,entry.FieldLabels,source=sources[entry.SourceId],
+                entry.Documents,entry.Observations,entry.Findings,entry.FieldLabels,entry.EvidenceLabels,entry.OutputLabels,source=sources[entry.SourceId],
                 assessmentJson,inputJson});
         }
         app.MapGet("/api/document-cases",()=>Results.Json(new {sources=catalog.Sources,
@@ -123,7 +123,8 @@ internal static class DocumentCaseEndpoints
     private sealed record Catalog(int FormatVersion,Source[] Sources,Entry[] Cases);
     private sealed record Source(string Id,string Title,string Version,string Url,string Scope);
     private sealed record Entry(string CaseId,string Title,string? PackPath,string SourceId,string Scope,
-        string? ExpectedOutcome,string InputSha256,Document[] Documents,Observation[] Observations,string[] Findings,IReadOnlyDictionary<string,string> FieldLabels);
+        string? ExpectedOutcome,string InputSha256,Document[] Documents,Observation[] Observations,string[] Findings,IReadOnlyDictionary<string,string> FieldLabels,IReadOnlyDictionary<string,string> EvidenceLabels,IReadOnlyDictionary<string,OutputLabel> OutputLabels);
+    private sealed record OutputLabel(string Label,IReadOnlyDictionary<string,string> Choices);
     private sealed record Document(string Id,string Title,string Filename,string MediaType,string Sha256,int Pages,string SourceId);
     private sealed record Observation(string Id,int Page,string Field,string Value,string Method);
 }

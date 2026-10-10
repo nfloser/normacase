@@ -8,7 +8,7 @@ import type { RuleTrace, OutputTrace } from './trace';
 const text=de.documents;
 type Document={id:string;title:string;mediaType:string;pages:number;sha256:string};
 type Observation={id:string;page:number;field:string;value:string;method:string};
-type File={caseId:string;title:string;scope:string;validationLevel:string;documents:Document[];observations:Observation[];findings:string[];fieldLabels:Record<string,string>;source:{title:string;version:string;url:string};assessmentJson:string|null};
+type File={caseId:string;title:string;scope:string;validationLevel:string;documents:Document[];observations:Observation[];findings:string[];fieldLabels:Record<string,string>;evidenceLabels:Record<string,string>;outputLabels:Record<string,{label:string;choices:Record<string,string>}>;source:{title:string;version:string;url:string};assessmentJson:string|null};
 type Assessment={assessment:{outcome:string;ruleTrace?:RuleTrace;domainOutputs?:OutputTrace[]}};
 const outcomes:Record<string,string>={SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 const values:Record<string,string>={YES:text.yes,NO:text.no,UNKNOWN:text.unknown,NOT_APPLICABLE:text.notApplicable};
@@ -33,14 +33,14 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false}:{cas
     if(document?.mediaType==='text/plain')fetch(url,{signal:controller.signal}).then(response=>{if(!response.ok)throw new Error();return response.text();}).then(value=>{if(!controller.signal.aborted)setPlain(value);}).catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});
     return()=>controller.abort();
   },[url,document?.mediaType]);
-  const resolvedPresentation=presentation??(file?{title:file.title,description:file.scope,fields:file.fieldLabels,evidence:{severe_disability_card:de.documents.disabilityProof,care_grade_notice:de.documents.careProof,care_transition_classification_proof:de.documents.transitionProof},examples:[]}:undefined);
+  const resolvedPresentation=presentation??(file?{title:file.title,description:file.scope,fields:file.fieldLabels,evidence:file.evidenceLabels,outputs:file.outputLabels,examples:[]}:undefined);
   const assessment=file?.assessmentJson?parse(file.assessmentJson) as Assessment:null;
   // Ignore an old result immediately on case switch, before the effect cleans it up.
   if(file&&file.caseId!==caseId)return <p>{text.loading}</p>;
   return <section className="document-case-file" aria-label={text.heading}>
     <h4>{text.heading}</h4><p>{text.help}</p>
     {error?<p role="alert">{error}</p>:!file?<p role="status">{text.loading}</p>:<>
-      <p className="review-notice">{file.validationLevel==='PUBLIC_REFERENCE'?text.publicReference:text.synthetic}</p>
+      <p className="review-notice">{file.validationLevel==='PUBLIC_REFERENCE'?text.publicReference:file.assessmentJson?text.synthetic:text.documentOnly}</p>
       <p><strong>{text.scope}: </strong>{file.scope}</p>
       <div className="document-layout"><ul className="document-list">{file.documents.map(item=><li key={item.id}>
         <button type="button" className="secondary" aria-pressed={selected===item.id} onClick={()=>{setSelected(item.id);setSourcePage(1);setZoom(false);}}>{text.choose}: {item.title}</button>

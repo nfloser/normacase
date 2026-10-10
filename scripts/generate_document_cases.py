@@ -113,7 +113,7 @@ def build_case(case_id,title,pack_path,source_id,parts,evidence,scope,expected=N
     if any(v=='MISSING' for v in evidence.values()): findings.append('Ein erforderlicher Nachweis fehlt. Dokumentvorhandensein ersetzt keine fachliche Bestätigung.')
     write_json(directory/'input.json',normalized)
     input_hash=sha256((directory/'input.json').read_bytes()).hexdigest()
-    return {'caseId':case_id,'title':title,'packPath':pack_path,'sourceId':source_id,'scope':scope,'expectedOutcome':expected,'inputSha256':input_hash,'documents':documents,'observations':observations,'findings':findings,'fieldLabels':{o['field']:LABELS.get(o['field'],o['field']) for o in observations}}
+    return {'caseId':case_id,'title':title,'packPath':pack_path,'sourceId':source_id,'scope':scope,'expectedOutcome':expected,'inputSha256':input_hash,'documents':documents,'observations':observations,'findings':findings,'evidenceLabels':{'supporting_document':'Synthetischer Nachweis','severe_disability_card':'Schwerbehindertenausweis','care_grade_notice':'Pflegegradbescheid','care_transition_classification_proof':'Nachweis der Überleitung'},'outputLabels':({'approval_state':{'label':'Genehmigungsfiktion nach diesem Referenzpfad','choices':{'DEEMED_GRANTED':'Nach diesem Referenzpfad als erteilt anzusehen','SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE':'Dieser Referenzpfad ist nicht anwendbar'}}} if pack_path=='kt-rl-8-3' else {f'score_threshold_{t}':{'label':'Score-Schwelle '+t.replace('_',','),'choices':{'REACHED':'Erreicht','NOT_REACHED':'Nicht erreicht'}} for t in ['12_5','27','47_5','70','90']} if pack_path=='pflege-adult-score' else {}),'fieldLabels':{o['field']:LABELS.get(o['field'],o['field']) for o in observations}}
 
 def generate():
     cases=[]

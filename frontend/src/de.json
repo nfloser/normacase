@@ -424,9 +424,7 @@
     "textFile": "Textdatei",
     "zoomIn": "Scan vergrößern",
     "zoomOut": "Scan verkleinern",
-    "disabilityProof": "Schwerbehindertenausweis",
-    "careProof": "Pflegegradbescheid",
-    "transitionProof": "Nachweis der Überleitung",
-    "noRule": "Für diesen Dokumenttyp ist keine fachlich geprüfte Regel hinterlegt. Die Unterlagen können gesichtet werden; eine Entscheidung wird nicht erzeugt."
+    "noRule": "Für diesen Dokumenttyp ist keine fachlich geprüfte Regel hinterlegt. Die Unterlagen können gesichtet werden; eine Entscheidung wird nicht erzeugt.",
+    "documentOnly": "Synthetische Unterlagen zur Sichtung"
   }
 }
