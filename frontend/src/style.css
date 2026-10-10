@@ -378,4 +378,4 @@ body { overflow:hidden; }
 .application-workspace .explorer-search{display:flex;flex-direction:row;gap:8px;align-items:center}
 .application-workspace .explorer-search input{width:250px;height:30px;min-height:30px}
 .application-workspace .explorer-toolbar{padding:4px 8px;gap:4px;min-height:35px}
-.application-workspace .explorer-toolbar button{font-size:12px;min-height:28px}
+.application-workspace .explorer-toolbar button{font-size:.8rem;min-height:28px}
