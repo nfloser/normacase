@@ -25,10 +25,10 @@ test('eligible batch is confirmed and downloaded as explicit local dispatch simu
  await page.goto('/#work-queues');const explorer=page.getByRole('region',{name:'Fallverwaltung'});
  await explorer.getByLabel('Fälle suchen').fill('reference-md-kraemer');
  await explorer.getByRole('row').filter({hasText:'reference-md-kraemer'}).getByRole('checkbox').check();
- await explorer.getByRole('button',{name:'Auswahl bestätigen (Demo)',exact:true}).click();
+ await explorer.getByRole('button',{name:'Auswahl bestätigen',exact:true}).click();
  await page.getByRole('dialog').getByRole('button',{name:'Bestätigen',exact:true}).click();
- await expect(explorer.getByRole('table').getByText('Bestätigt (Demo)',{exact:true})).toBeVisible();
- await explorer.getByRole('button',{name:'Auswahl abschicken (Demo)',exact:true}).click();
+ await expect(explorer.getByRole('table').getByText('Bestätigt',{exact:true})).toBeVisible();
+ await explorer.getByRole('button',{name:'Versand vorbereiten',exact:true}).click();
  const download=page.waitForEvent('download');await page.getByRole('dialog').getByRole('button',{name:'Versand simulieren',exact:true}).click();
  expect((await download).suggestedFilename()).toMatch(/normacase-versand.*json/);
  await expect(explorer.getByRole('table').getByText('Versand simuliert',{exact:true})).toBeVisible();
@@ -49,7 +49,7 @@ test('keyboard menu returns focus and removes only the folder assignment',async(
  await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Tastaturablage'});
  await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
  await row.click({button:'right'});await expect(page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true})).toBeVisible();await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
- await expect(row).toContainText('Ohne eigenen Ordner');
+ await expect(row.locator('td').nth(4)).toHaveText('—');
 });
 
 test('compact workplace shows status color, case context and bounded list rows',async({page})=>{
@@ -67,4 +67,21 @@ test('compact workplace shows status color, case context and bounded list rows',
  await explorer.getByLabel('Zeilenfärbung').check();
  await expect(table).toHaveClass(/status-row-colors/);
  await expect(explorer.locator('.explorer-table tbody tr').first()).toHaveCSS('height','28px');
+});
+
+test('row selection and hover color command work without opening the file',async({page})=>{
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ await row.locator('td').nth(2).click();
+ await expect(row).toHaveAttribute('aria-selected','true');
+ await row.click({button:'right'});
+ await page.getByRole('menuitem',{name:/Markieren/}).hover();
+ await page.getByRole('group',{name:'Farbmarkierung'}).getByRole('button',{name:'Blau'}).click();
+ await expect(row.locator('.personal-mark-chip')).toBeVisible();
+ await row.dblclick();
+ await expect(explorer.getByRole('button',{name:'Verschieben nach …'})).toBeVisible();
+ await explorer.getByRole('button',{name:'Markieren',exact:true}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
 });

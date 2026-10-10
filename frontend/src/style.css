@@ -341,3 +341,25 @@ body { overflow:hidden; }
 
 .case-explorer .explorer-table td button{min-height:0;height:22px;max-height:22px;padding-top:0;padding-bottom:0}
 .case-explorer .explorer-table td input[type=checkbox]{min-height:0;height:16px}
+
+/* Compact interaction density with hover/focus quick-action flyouts. */
+.case-explorer .explorer-navigation.compact-explorer-navigation{padding:0 8px;margin:0;min-height:0;gap:4px}
+.compact-explorer-navigation button{min-height:26px;font-size:12px;padding:3px 8px}
+.opened-case-quick-actions{display:flex;gap:4px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.opened-case-quick-actions button{font-size:12px;min-height:30px;padding:4px 7px}
+.personal-mark-chip,.color-swatch{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid #637e96;vertical-align:middle;margin-right:6px;flex-shrink:0}
+.case-context-menu{overflow:visible!important}
+.context-submenu{position:relative}
+.context-submenu > button{display:flex;justify-content:space-between}
+.context-submenu-panel{display:none;position:absolute;left:calc(100% - 2px);top:-4px;z-index:65;width:220px;max-height:65vh;overflow:auto;background:#fff;border:1px solid #637e96;box-shadow:0 5px 16px #19344a33;padding:5px;border-radius:5px}
+.context-submenu:hover .context-submenu-panel,.context-submenu:focus-within .context-submenu-panel{display:block}
+.context-submenu-panel button{display:flex;align-items:center;gap:5px;min-height:30px;padding:5px 8px}
+.case-explorer .explorer-table tbody tr{cursor:pointer}
+.case-explorer .explorer-table td .personal-mark-chip{vertical-align:middle}
+.case-explorer .explorer-table tr[aria-selected="true"] .personal-mark-chip{border-color:#fff}
+.document-reader .page-controls button{min-height:30px}
+.document-reader .page-stage.zoomed{justify-content:flex-start;align-items:flex-start}
+.document-reader .page-stage.zoomed .pdf-page-image{margin:0;object-fit:contain}
+
+.case-context-menu.submenu-to-left .context-submenu-panel{left:auto;right:calc(100% - 2px)}
+.opened-case-status{padding:4px 7px;background:#eaf3f9;color:#123c63;font-size:12px;border-radius:4px;font-weight:600;white-space:nowrap}

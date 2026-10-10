@@ -18,7 +18,7 @@ test('case overview opens a result-first detail with explicit documents and a re
  await expect(cases.locator('.pdf-page-image')).toHaveAttribute('src',/documents\/document-1\/pages\/1$/);
  await cases.getByRole('button',{name:'Nächste Seite',exact:true}).click();
  await expect(cases.locator('.pdf-page-image')).toHaveAttribute('src',/pages\/2$/);
- await cases.getByRole('button',{name:'Seite vergrößern',exact:true}).click();
+ await cases.getByRole('button',{name:'Vergrößern',exact:true}).click();
  await expect(cases.locator('.page-stage')).toHaveClass(/zoomed/);
  await cases.getByRole('button',{name:'Ganze Seite',exact:true}).click();
  await expect(cases.locator('.page-stage')).not.toHaveClass(/zoomed/);
