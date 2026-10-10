@@ -18,6 +18,8 @@ public sealed class DocumentCaseTests : IClassFixture<WebApplicationFactory<Prog
     [InlineData("reference-transport-conflicting", "HumanReview")]
     [InlineData("reference-transport-negative", "NotSupported")]
     [InlineData("reference-care-complete", "Supported")]
+    [InlineData("reference-md-mueller", "Supported")]
+    [InlineData("reference-md-kraemer", "Supported")]
     [InlineData("reference-care-missing", "Incomplete")]
     [InlineData("reference-care-out-of-range", "HumanReview")]
     [InlineData("reference-care-conflicting", "Incomplete")]
@@ -64,7 +66,7 @@ public sealed class DocumentCaseTests : IClassFixture<WebApplicationFactory<Prog
             Assert.Contains("Synthetische Testperson",context.GetProperty("background").GetString());
             using var detail=JsonDocument.Parse(await client.GetStringAsync("/api/document-cases/"+id));
             Assert.Equal(context.GetRawText(),detail.RootElement.GetProperty("context").GetRawText());
-            if(id!.Contains("reha",StringComparison.Ordinal)||id.Contains("oncology",StringComparison.Ordinal))
+            if(!(id!.Contains("transport",StringComparison.Ordinal)||id.Contains("care",StringComparison.Ordinal)||id.StartsWith("reference-md-",StringComparison.Ordinal)))
                 Assert.Equal(JsonValueKind.Null,detail.RootElement.GetProperty("assessmentJson").ValueKind);
         }
     }

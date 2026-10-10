@@ -1,0 +1,70 @@
+SYNTHETISCHE DEMO - reference-md-mueller
+Kontrollierter PDF-Text, keine OCR.
+
+Modulbogen – MD-Lehrbeispiel / Seite 1
+Synthetisch | reference-md-mueller | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Modulbogen – MD-Lehrbeispiel
+Fiktive Einrichtung / Testperson reference-md-mueller / Datum 10.10.2026
+Synthetische Testperson L-01, 72 Jahre. Angelehnt an das veröffentlichte Lehrbeispiel Ingrid
+Müller: Unterstützung bei Körperpflege, Medikamenten und Tagesstruktur. Dokumente und
+Einrichtungen sind neu erfunden; die Modulsummen entsprechen der veröffentlichten
+Lehrtabelle. Die Tabelle übernimmt die publizierten Einzelpunktsummen. Vergleichswert im
+Lehrbeispiel: 48,75 gewichtete Punkte. Der historische Pflegegrad wird nicht als aktuelle
+Softwareentscheidung ausgegeben.
+Angabe
+Dokumentierter Wert
+Modul 1: Mobilität
+0
+Modul 2: Kognition und Kommunikation
+11
+Modul 3: Verhalten und psychische Problemlagen
+3
+Modul 4: Selbstversorgung
+15
+Modul 5: Krankheit und Therapie
+2
+Modul 6: Alltagsleben und Kontakte
+6
+Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Modulbogen – MD-Lehrbeispiel / Seite 2
+Synthetisch | reference-md-mueller | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+module_1_sum=0
+module_2_sum=11
+module_3_sum=3
+module_4_sum=15
+module_5_sum=2
+module_6_sum=6
+END-NCF1
+
+Pflegebericht – häusliche Unterstützung / Seite 1
+Synthetisch | reference-md-mueller | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Pflegebericht – häusliche Unterstützung
+Fiktive Einrichtung / Testperson reference-md-mueller / Datum 10.10.2026
+Betreuungszeitraum 01.10.–07.10.2026.
+Die fiktive Pflegeperson unterstützt morgens die Körperpflege und das Anziehen. Mahlzeiten
+werden bereitgestellt. Bei ungewohnter Tagesstruktur sind Erinnerungen und Begleitung
+erforderlich.
+Dieser Bericht ergänzt das Lehrbeispiel synthetisch; er ist keine Originalanlage des MD.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Pflegebericht – häusliche Unterstützung / Seite 2
+Synthetisch | reference-md-mueller | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+

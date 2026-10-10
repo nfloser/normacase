@@ -1,0 +1,60 @@
+SYNTHETISCHE DEMO - reference-aid-hearing
+Kontrollierter PDF-Text, keine OCR.
+
+Verordnung und Auftragsübersicht / Seite 1
+Synthetisch | reference-aid-hearing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Verordnung und Auftragsübersicht
+Fiktive Einrichtung / Testperson reference-aid-hearing / Datum 10.10.2026
+Synthetische Testperson H-01, 67 Jahre. Eine Hörversorgung wird angefragt. Die Akte enthält
+erfundene Unterlagen nach öffentlich beschriebenen Dokumentarten. Kein Leistungs- oder
+Eignungsentscheid. Angefragte Versorgung: Hörhilfenversorgung.
+Auftrag: Prüfung der Unterlagen durch die zuständige Fachstelle. Die Verordnung und eine
+Messbefundübersicht sind als fiktive Anlagen benannt. Hersteller, Produkt und Preis werden
+nicht festgelegt.
+Angabe
+Dokumentierter Wert
+Verordnung beigefügt
+Ja
+Messbefund beigefügt
+Ja
+Anpassbericht beigefügt
+Ja
+Quelle der Dokumentstruktur: md-hilfsmittel. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Verordnung und Auftragsübersicht / Seite 2
+Synthetisch | reference-aid-hearing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+prescription_attached=YES
+measurement_attached=YES
+fitting_report_attached=YES
+END-NCF1
+
+Anpassbericht und Messbefundübersicht / Seite 1
+Synthetisch | reference-aid-hearing | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Anpassbericht und Messbefundübersicht
+Fiktive Einrichtung / Testperson reference-aid-hearing / Datum 10.10.2026
+Messbedingungen und subjektive Alltagserfahrungen sind als Dokumentationsabschnitte
+vorgesehen.
+Vergleichsversorgung und Anpassverlauf bedürfen einer fachlichen Bewertung. Der Bericht
+demonstriert die Aktenstruktur; er liefert keine errechnete medizinische Wirksamkeit.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: md-hilfsmittel. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Anpassbericht und Messbefundübersicht / Seite 2
+Synthetisch | reference-aid-hearing | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+

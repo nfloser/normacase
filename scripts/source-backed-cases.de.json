@@ -1,0 +1,247 @@
+[
+  {
+    "caseId": "reference-md-mueller",
+    "title": "Pflege: Demenz und Unterstützung im Alltag",
+    "sourceId": "md-teaching-care",
+    "packPath": "pflege-adult-score",
+    "expectedOutcome": "SUPPORTED",
+    "scope": "Nachrechnung veröffentlichter Modulsummen; keine neue Pflegegradfeststellung.",
+    "documents": [
+      {
+        "title": "Modulbogen – MD-Lehrbeispiel",
+        "values": {
+          "module_1_sum": "0",
+          "module_2_sum": "11",
+          "module_3_sum": "3",
+          "module_4_sum": "15",
+          "module_5_sum": "2",
+          "module_6_sum": "6"
+        },
+        "narrative": "Die Tabelle übernimmt die publizierten Einzelpunktsummen. Vergleichswert im Lehrbeispiel: 48,75 gewichtete Punkte. Der historische Pflegegrad wird nicht als aktuelle Softwareentscheidung ausgegeben."
+      },
+      {
+        "title": "Pflegebericht – häusliche Unterstützung",
+        "values": {},
+        "narrative": "Betreuungszeitraum 01.10.–07.10.2026.\n\nDie fiktive Pflegeperson unterstützt morgens die Körperpflege und das Anziehen. Mahlzeiten werden bereitgestellt. Bei ungewohnter Tagesstruktur sind Erinnerungen und Begleitung erforderlich.\n\nDieser Bericht ergänzt das Lehrbeispiel synthetisch; er ist keine Originalanlage des MD."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-md-kraemer",
+    "title": "Pflege: Alltag nach Schlaganfall",
+    "sourceId": "md-teaching-care",
+    "packPath": "pflege-adult-score",
+    "expectedOutcome": "SUPPORTED",
+    "scope": "Nachrechnung veröffentlichter Modulsummen; keine neue Pflegegradfeststellung.",
+    "documents": [
+      {
+        "title": "Modulbogen – MD-Lehrbeispiel",
+        "values": {
+          "module_1_sum": "3",
+          "module_2_sum": "0",
+          "module_3_sum": "0",
+          "module_4_sum": "10",
+          "module_5_sum": "1",
+          "module_6_sum": "1"
+        },
+        "narrative": "Einzelpunktsummen aus der veröffentlichten Tabelle. Vergleichswert im Lehrbeispiel: 31,25 gewichtete Punkte. Eine eigenständige klinische Bewertung wird nicht vorgenommen."
+      },
+      {
+        "title": "Entlassungsbericht – ergänzter Schulungsbericht",
+        "values": {},
+        "narrative": "Anlass: Übergang aus der Rehabilitation in die häusliche Versorgung.\n\nVerlauf: Die fiktive Testperson benötigt Unterstützung beim Ankleiden und beim Vorbereiten der Medikamente. Ein Gehstock wird im Alltag genutzt; Treppen werden begleitet bewältigt.\n\nWeiterer Verlauf und konkrete Verordnungen bleiben der behandelnden Stelle vorbehalten."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-accident-complete",
+    "title": "Arbeitsunfall: Handgelenkverletzung",
+    "sourceId": "dguv-accident",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Gutachtenauftrag – Zusammenhangsfrage",
+        "values": {
+          "accident_event_documented": "YES",
+          "initial_findings_attached": "YES"
+        },
+        "narrative": "Auftrag angelehnt an DGUV A 2206.\n\nEreignis: Beim Bewegen einer Materialkiste im fiktiven Betrieb wird ein Stolpern mit Sturz auf die rechte Hand beschrieben. Fragestellung: Welche Erstbefunde und Vorschädigungen sind dokumentiert?\n\nDie Unterlagen werden für eine ärztliche Zusammenhangsbegutachtung zusammengestellt. Eine Anerkennung als Arbeitsunfall oder MdE-Schätzung ist nicht Gegenstand der Demo."
+      },
+      {
+        "title": "D-Arzt-Erstbericht – synthetischer Bericht",
+        "values": {
+          "initial_findings_attached": "YES",
+          "accident_event_documented": "YES"
+        },
+        "narrative": "Vorstellung am Ereignistag.\n\nBeschwerden: Schmerzen im rechten Handgelenk nach Sturz. Dokumentation: Untersuchung und Bildgebung sind in der Akte benannt; ein ausführlicher Befundtext ist der ärztlichen Prüfung zugeordnet.\n\nArbeitsaufgaben: Materialtransport und manuelles Greifen. Keine automatisierte Kausalitätsentscheidung."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-accident-missing",
+    "title": "Arbeitsunfall: Erstbefund fehlt",
+    "sourceId": "dguv-accident",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Gutachtenauftrag – Zusammenhangsfrage",
+        "values": {
+          "accident_event_documented": "YES",
+          "initial_findings_attached": "UNKNOWN"
+        },
+        "narrative": "Auftrag angelehnt an DGUV A 2206.\n\nEreignis: Beim Bewegen einer Materialkiste im fiktiven Betrieb wird ein Stolpern mit Sturz auf die rechte Hand beschrieben. Fragestellung: Welche Erstbefunde und Vorschädigungen sind dokumentiert?\n\nDie Unterlagen werden für eine ärztliche Zusammenhangsbegutachtung zusammengestellt. Eine Anerkennung als Arbeitsunfall oder MdE-Schätzung ist nicht Gegenstand der Demo."
+      },
+      {
+        "title": "Anlagenübersicht – ausstehender Erstbefund",
+        "values": {},
+        "narrative": "Ein Erstbericht wurde angekündigt, ist jedoch nicht beigefügt. Die fehlende Anlage wird nicht durch eine vermutete Diagnose ersetzt."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-accident-conflicting",
+    "title": "Arbeitsunfall: Unfallhergang widersprüchlich",
+    "sourceId": "dguv-accident",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Gutachtenauftrag – Zusammenhangsfrage",
+        "values": {
+          "accident_event_documented": "YES",
+          "initial_findings_attached": "YES"
+        },
+        "narrative": "Auftrag angelehnt an DGUV A 2206.\n\nEreignis: Beim Bewegen einer Materialkiste im fiktiven Betrieb wird ein Stolpern mit Sturz auf die rechte Hand beschrieben. Fragestellung: Welche Erstbefunde und Vorschädigungen sind dokumentiert?\n\nDie Unterlagen werden für eine ärztliche Zusammenhangsbegutachtung zusammengestellt. Eine Anerkennung als Arbeitsunfall oder MdE-Schätzung ist nicht Gegenstand der Demo."
+      },
+      {
+        "title": "D-Arzt-Erstbericht – synthetischer Bericht",
+        "values": {
+          "initial_findings_attached": "YES",
+          "accident_event_documented": "NO"
+        },
+        "narrative": "Vorstellung am Ereignistag.\n\nBeschwerden: Schmerzen im rechten Handgelenk nach Sturz. Dokumentation: Untersuchung und Bildgebung sind in der Akte benannt; ein ausführlicher Befundtext ist der ärztlichen Prüfung zugeordnet.\n\nDie zweite Schilderung verneint ein konkretes Ereignis. Der Widerspruch ist ausdrücklich ungeklärt."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-transfer-complete",
+    "title": "Überleitung: Krankenhaus → Kurzzeitpflege",
+    "sourceId": "kbv-transfer",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Überleitungsbericht – Kurzzeitpflege",
+        "values": {
+          "transfer_report_attached": "YES",
+          "medication_overview_attached": "YES"
+        },
+        "narrative": "Aufnehmende Einrichtung: Fiktives Pflegezentrum Nord.\n\nÜbergabe: Unterstützung bei Transfers, Körperpflege und Tagesstruktur ist im Bericht vorgesehen. Ansprechpartner ist die fiktive Entlasskoordination.\n\nDie Akte demonstriert eine sektorenübergreifende Informationsübergabe, keine FHIR-Konformitätsprüfung."
+      },
+      {
+        "title": "Medikationsübersicht – Begleitunterlage",
+        "values": {},
+        "narrative": "Eine aktuelle, ärztlich bestätigte Medikationsübersicht ist als synthetische Begleitunterlage dokumentiert. Präparate und Dosierungen sind bewusst nicht als Behandlungsvorgabe ausgefüllt."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-transfer-missing",
+    "title": "Überleitung: Medikationsübersicht fehlt",
+    "sourceId": "kbv-transfer",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Überleitungsbericht – Kurzzeitpflege",
+        "values": {
+          "transfer_report_attached": "YES",
+          "medication_overview_attached": "UNKNOWN"
+        },
+        "narrative": "Aufnehmende Einrichtung: Fiktives Pflegezentrum Nord.\n\nÜbergabe: Unterstützung bei Transfers, Körperpflege und Tagesstruktur ist im Bericht vorgesehen. Ansprechpartner ist die fiktive Entlasskoordination.\n\nDie Akte demonstriert eine sektorenübergreifende Informationsübergabe, keine FHIR-Konformitätsprüfung."
+      },
+      {
+        "title": "Anlagenanforderung – Medikationsübersicht",
+        "values": {},
+        "narrative": "Eine aktuelle, ärztlich bestätigte Medikationsübersicht ist angekündigt, aber noch nicht vorhanden. Rückfrage an die entlassende Einrichtung ist erforderlich."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-cannabis-complete",
+    "title": "Arzneimittel: Therapieverlauf dokumentiert",
+    "sourceId": "md-cannabinoid",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Arztfragebogen – synthetische Anfrage",
+        "values": {
+          "treatment_goal_documented": "YES",
+          "previous_treatments_attached": "YES"
+        },
+        "narrative": "Fragestellung angelehnt an den veröffentlichten MD-Arztfragebogen.\n\nTherapieziel: Im Antrag wird eine Verbesserung der Alltagsbelastbarkeit genannt. Diagnosebelege, Vorbehandlungen und Verlauf sollen von der fachlich zuständigen Stelle bewertet werden.\n\nDie Demo enthält keine Dosierung, Empfehlung oder Aussage zur Bewilligung."
+      },
+      {
+        "title": "Therapieverlauf – synthetische Begleitunterlage",
+        "values": {},
+        "narrative": "Vorbehandlungen sind als Anlage benannt. Gründe für Behandlungswechsel werden als offene fachliche Prüffragen geführt."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-cannabis-missing",
+    "title": "Arzneimittel: Vorbehandlungen fehlen",
+    "sourceId": "md-cannabinoid",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Arztfragebogen – synthetische Anfrage",
+        "values": {
+          "treatment_goal_documented": "YES",
+          "previous_treatments_attached": "UNKNOWN"
+        },
+        "narrative": "Fragestellung angelehnt an den veröffentlichten MD-Arztfragebogen.\n\nTherapieziel: Im Antrag wird eine Verbesserung der Alltagsbelastbarkeit genannt. Diagnosebelege, Vorbehandlungen und Verlauf sollen von der fachlich zuständigen Stelle bewertet werden.\n\nDie Demo enthält keine Dosierung, Empfehlung oder Aussage zur Bewilligung."
+      },
+      {
+        "title": "Anlagenübersicht – Therapieverlauf ausstehend",
+        "values": {},
+        "narrative": "Vorbehandlungen sind noch nicht belegt. Die Lücke verhindert eine vollständige Unterlagensichtung."
+      }
+    ]
+  },
+  {
+    "caseId": "reference-aid-hearing",
+    "title": "Hilfsmittel: Hörversorgung mit Vergleichsunterlagen",
+    "sourceId": "md-hilfsmittel",
+    "packPath": null,
+    "expectedOutcome": null,
+    "scope": "Unterlagensichtung ohne fachliche Entscheidung. Keine automatische Anerkennung, Bewilligung oder medizinische Empfehlung.",
+    "documents": [
+      {
+        "title": "Verordnung und Auftragsübersicht",
+        "values": {
+          "prescription_attached": "YES",
+          "measurement_attached": "YES",
+          "fitting_report_attached": "YES"
+        },
+        "narrative": "Angefragte Versorgung: Hörhilfenversorgung.\n\nAuftrag: Prüfung der Unterlagen durch die zuständige Fachstelle. Die Verordnung und eine Messbefundübersicht sind als fiktive Anlagen benannt. Hersteller, Produkt und Preis werden nicht festgelegt."
+      },
+      {
+        "title": "Anpassbericht und Messbefundübersicht",
+        "values": {},
+        "narrative": "Messbedingungen und subjektive Alltagserfahrungen sind als Dokumentationsabschnitte vorgesehen.\n\nVergleichsversorgung und Anpassverlauf bedürfen einer fachlichen Bewertung. Der Bericht demonstriert die Aktenstruktur; er liefert keine errechnete medizinische Wirksamkeit."
+      }
+    ]
+  }
+]

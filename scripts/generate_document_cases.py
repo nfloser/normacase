@@ -20,8 +20,12 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'examples/document-cases'
+PREVIEW_CACHE={(c['caseId'],d['id']):d for c in json.loads((OUT/'catalog.json').read_text()).get('cases',[]) for d in c['documents']} if (OUT/'catalog.json').exists() else {}
 CONTEXTS=json.loads((ROOT/'scripts/document-case-context.de.json').read_text())
 SOURCES = [
+ {'id':'md-teaching-care','title':'MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit, Lehrbeispiele','version':'Broschüre 2019, Tabellen S. 19 und 21','url':'https://md-bund.de/fileadmin/dokumente/Publikationen/SPV/Begutachtungsgrundlagen/19-05-20_NBI_Pflegebeduerftigkeit_Fach-Info_22_12_16.pdf','scope':'Öffentliche Lehrbeispiele, keine echten Patientenakten. Ergänzende Dokumente sind synthetisch.'},
+ {'id':'dguv-accident','title':'DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000','version':'A 2206 Stand 10/2025; F 1000 Stand 07/2018','url':'https://www.dguv.de/formtexte/aerzte/index.jsp','scope':'Originale öffentlich verlinkt; eigene synthetische Berichte. Keine Anerkennungs- oder MdE-Prüfung.'},
+ {'id':'kbv-transfer','title':'KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele','version':'Phase I, Version 1.0.0; Recherche 10.10.2026','url':'https://hub.kbv.de/pages/viewpage.action?navigatingVersions=true&pageId=117506312','scope':'Überleitung Krankenhaus/Pflege; eigene synthetische Akte, keine Schnittstellenkonformität.'},
  {'id':'kbv-transport','title':'KBV PraxisInfo Krankenbeförderung','version':'Januar 2025','url':'https://www.kbv.de/documents/infothek/publikationen/praxisinfo/praxisinfo-krankenbefoerderung.pdf','scope':'Formular 4, Grund der Beförderung, Beförderungsmittel und Begründung; kein vollständiger Leistungsentscheid.'},
  {'id':'md-pflege','title':'MD Bund Begutachtungs-Richtlinien Pflege','version':'26.08.2026, in Kraft 01.10.2026','url':'https://md-bund.de/fileadmin/dokumente/Publikationen/SPV/Begutachtungsgrundlagen/BRi_Pflege_26_08_2026.pdf','scope':'Bereits festgestellte Modulsummen, Abschnitt 5.10.1. Keine Bewertung aus Freitext und keine Pflegegradentscheidung.'},
  {'id':'kbv-reha','title':'KBV Medizinische Rehabilitation','version':'Recherche 10.10.2026','url':'https://www.kbv.de/praxis/verordnungen/rehabilitation','scope':'Verordnung auf Formular 61; eigene Demonstration von Angaben und Anlagen, kein Originalformular.'},
@@ -72,7 +76,8 @@ def write_json(path,value):
 def pdf(path, case_id, title, values, source_id, narrative):
     styles=getSampleStyleSheet(); story=[]
     for style in styles.byName.values(): style.fontName='NCBold' if 'Heading' in style.name or style.name=='Title' else 'NCRegular'
-    story += [Paragraph('SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE',styles['Heading2']),Paragraph(escape(title),styles['Title']),Paragraph('Fiktive Einrichtung / Testperson '+escape(case_id)+' / Datum 10.10.2026',styles['Normal']),Spacer(1,18),Paragraph(escape(narrative),styles['Normal']),Spacer(1,18)]
+    clinical=case_id in {c['caseId'] for c in json.loads((ROOT/'scripts/source-backed-cases.de.json').read_text())}
+    story += [Paragraph('Synthetischer Schulungsfall | Keine echte Patientenakte' if clinical else 'SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE',styles['Normal'] if clinical else styles['Heading2']),Paragraph(escape(title),styles['Title']),Paragraph('Fiktive Einrichtung / Testperson '+escape(case_id)+' / Datum 10.10.2026',styles['Normal']),Spacer(1,18),Paragraph(escape(narrative).replace('\n\n','<br/><br/>'),styles['Normal']),Spacer(1,18)]
     rows=[[Paragraph('Angabe',styles['Heading3']),Paragraph('Dokumentierter Wert',styles['Heading3'])]]
     for k,v in values.items(): rows.append([Paragraph(escape(LABELS.get(k,k)),styles['Normal']),Paragraph(escape(DISPLAY.get(v,v)),styles['Normal'])])
     table=Table(rows,colWidths=[285,185]);table.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.5,colors.HexColor('#65756d')),('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e9efeb')),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8),('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8)]));story.append(table)
@@ -94,11 +99,14 @@ def build_case(case_id,title,pack_path,source_id,parts,evidence,scope,expected=N
         for page_no,page in enumerate(reader.pages,1):
             content=page.extract_text()
             if 'NCF1' in content.splitlines(): observations+=extract(content,doc_id,set(values),page_no)
-        subprocess.run(['pdftoppm','-r','100','-png',str(path),str(directory/(doc_id+'-page'))],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
-        previews=[]
-        for page_no in range(1,len(reader.pages)+1):
-            preview=directory/(doc_id+'-page-'+str(page_no)+'.png')
-            previews.append({'page':page_no,'filename':preview.name,'sha256':sha256(preview.read_bytes()).hexdigest()})
+        cached=PREVIEW_CACHE.get((case_id,doc_id),{})
+        previews=cached.get('previews',[])
+        if cached.get('sha256')!=sha256(path.read_bytes()).hexdigest() or len(previews)!=len(reader.pages) or any(not (directory/p['filename']).exists() or sha256((directory/p['filename']).read_bytes()).hexdigest()!=p['sha256'] for p in previews):
+            subprocess.run(['pdftoppm','-r','100','-png',str(path),str(directory/(doc_id+'-page'))],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+            previews=[]
+            for page_no in range(1,len(reader.pages)+1):
+                preview=directory/(doc_id+'-page-'+str(page_no)+'.png')
+                previews.append({'page':page_no,'filename':preview.name,'sha256':sha256(preview.read_bytes()).hexdigest()})
         documents.append({'previews':previews,'id':doc_id,'title':doc_title,'filename':path.name,'mediaType':'application/pdf','sha256':sha256(path.read_bytes()).hexdigest(),'pages':len(reader.pages),'sourceId':source_id})
     # A raster attachment intentionally has no automatic extraction; the PDF remains the text source.
     if parts:
@@ -165,6 +173,10 @@ def generate():
         if variant=='complete': parts.append(('Board-Protokoll - synthetische Anlage',{'board_attached':'YES'},'Fiktive interdisziplinäre Fallbesprechung. Vorbefunde und bisheriger Verlauf sollen fachlich geprüft werden. Kein verbindlicher Therapieentscheid und keine Empfehlung eines Präparats.'))
         else:parts[0][1]['board_attached']='UNKNOWN'
         cases.append(build_case('reference-oncology-'+variant,'Onkologie: '+('Unterlagen vorhanden' if variant=='complete' else 'Board-Protokoll fehlt'),None,'md-car-t',parts,{},'Nur Dokumentdemonstration auf Basis der veröffentlichten CAR-T-Checkliste. Keine Therapiebewertung.'))
-    write_json(OUT/'catalog.json',{'formatVersion':1,'sources':SOURCES,'cases':cases})
+    LABELS.update({'accident_event_documented':'Unfallereignis dokumentiert','initial_findings_attached':'Erstbefund beigefügt','transfer_report_attached':'Überleitungsbericht beigefügt','medication_overview_attached':'Medikationsübersicht beigefügt','treatment_goal_documented':'Therapieziel dokumentiert','previous_treatments_attached':'Vorbehandlungen belegt','prescription_attached':'Verordnung beigefügt','measurement_attached':'Messbefund beigefügt','fitting_report_attached':'Anpassbericht beigefügt'})
+    for authored in json.loads((ROOT/'scripts/source-backed-cases.de.json').read_text()):
+        parts=[(d['title'],d['values'],d['narrative']) for d in authored['documents']]
+        cases.append(build_case(authored['caseId'],authored['title'],authored['packPath'],authored['sourceId'],parts,{},authored['scope'],authored['expectedOutcome']))
+    write_json(OUT/'catalog.json' ,{'formatVersion':1,'sources':SOURCES,'cases':cases})
 
 if __name__=='__main__': generate()

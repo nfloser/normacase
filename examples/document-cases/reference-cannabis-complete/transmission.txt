@@ -1,0 +1,58 @@
+SYNTHETISCHE DEMO - reference-cannabis-complete
+Kontrollierter PDF-Text, keine OCR.
+
+Arztfragebogen – synthetische Anfrage / Seite 1
+Synthetisch | reference-cannabis-complete | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Arztfragebogen – synthetische Anfrage
+Fiktive Einrichtung / Testperson reference-cannabis-complete / Datum 10.10.2026
+Synthetische Testperson A-complete, 58 Jahre, mit chronischer Schmerzsymptomatik. Die
+Anfrage dient ausschließlich der Dokumentensichtung; Wirksamkeit, Anspruch und
+Verordnungsbefugnis werden nicht bewertet. Fragestellung angelehnt an den veröffentlichten
+MD-Arztfragebogen.
+Therapieziel: Im Antrag wird eine Verbesserung der Alltagsbelastbarkeit genannt.
+Diagnosebelege, Vorbehandlungen und Verlauf sollen von der fachlich zuständigen Stelle
+bewertet werden.
+Die Demo enthält keine Dosierung, Empfehlung oder Aussage zur Bewilligung.
+Angabe
+Dokumentierter Wert
+Therapieziel dokumentiert
+Ja
+Vorbehandlungen belegt
+Ja
+Quelle der Dokumentstruktur: md-cannabinoid. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Arztfragebogen – synthetische Anfrage / Seite 2
+Synthetisch | reference-cannabis-complete | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+treatment_goal_documented=YES
+previous_treatments_attached=YES
+END-NCF1
+
+Therapieverlauf – synthetische Begleitunterlage / Seite 1
+Synthetisch | reference-cannabis-complete | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Therapieverlauf – synthetische
+ Begleitunterlage
+Fiktive Einrichtung / Testperson reference-cannabis-complete / Datum 10.10.2026
+Vorbehandlungen sind als Anlage benannt. Gründe für Behandlungswechsel werden als offene
+fachliche Prüffragen geführt.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: md-cannabinoid. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Therapieverlauf – synthetische Begleitunterlage / Seite 2
+Synthetisch | reference-cannabis-complete | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+

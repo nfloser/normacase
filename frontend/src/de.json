@@ -400,7 +400,7 @@
     "sourceVersion": "Quellenstand",
     "scope": "Umfang der Prüfung",
     "referenceHeading": "Dokumentfälle nach öffentlichen Grundlagen",
-    "referenceHelp": "Synthetische Referenzfälle zeigen Dokumente nach öffentlichen Grundlagen. Krankenfahrt und Pflege-Score werden eng begrenzt geprüft; Rehabilitation und Onkologie zeigen Unterlagen ohne fachliche Entscheidung. Keine Freigabe durch den Medizinischen Dienst.",
+    "referenceHelp": "Synthetische Akten zu Krankenfahrt, Pflege, Rehabilitation, Onkologie, Arbeitsunfall, Überleitung, Arzneimitteln und Hilfsmitteln. Nur Krankenfahrt und Pflege-Score verwenden eng begrenzte öffentliche Referenzregeln. Keine fachliche Freigabe.",
     "loading": "Dokumentakte wird geladen …",
     "findings": "Was muss geklärt werden?",
     "observations": "Angaben und Fundstellen",

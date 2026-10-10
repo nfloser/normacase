@@ -1,0 +1,69 @@
+SYNTHETISCHE DEMO - reference-md-kraemer
+Kontrollierter PDF-Text, keine OCR.
+
+Modulbogen – MD-Lehrbeispiel / Seite 1
+Synthetisch | reference-md-kraemer | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Modulbogen – MD-Lehrbeispiel
+Fiktive Einrichtung / Testperson reference-md-kraemer / Datum 10.10.2026
+Synthetische Testperson L-02, 75 Jahre. Angelehnt an Otto Krämer: Nach Schlaganfall
+bestehen Einschränkungen beim Gehen und bei Handbewegungen. Angehörige unterstützen
+die Selbstversorgung. Die neuen Berichte sind synthetisch. Einzelpunktsummen aus der
+veröffentlichten Tabelle. Vergleichswert im Lehrbeispiel: 31,25 gewichtete Punkte. Eine
+eigenständige klinische Bewertung wird nicht vorgenommen.
+Angabe
+Dokumentierter Wert
+Modul 1: Mobilität
+3
+Modul 2: Kognition und Kommunikation
+0
+Modul 3: Verhalten und psychische Problemlagen
+0
+Modul 4: Selbstversorgung
+10
+Modul 5: Krankheit und Therapie
+1
+Modul 6: Alltagsleben und Kontakte
+1
+Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Modulbogen – MD-Lehrbeispiel / Seite 2
+Synthetisch | reference-md-kraemer | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+module_1_sum=3
+module_2_sum=0
+module_3_sum=0
+module_4_sum=10
+module_5_sum=1
+module_6_sum=1
+END-NCF1
+
+Entlassungsbericht – ergänzter Schulungsbericht / Seite 1
+Synthetisch | reference-md-kraemer | Seite 1
+Synthetischer Schulungsfall | Keine echte Patientenakte
+ Entlassungsbericht – ergänzter
+ Schulungsbericht
+Fiktive Einrichtung / Testperson reference-md-kraemer / Datum 10.10.2026
+Anlass: Übergang aus der Rehabilitation in die häusliche Versorgung.
+Verlauf: Die fiktive Testperson benötigt Unterstützung beim Ankleiden und beim Vorbereiten
+der Medikamente. Ein Gehstock wird im Alltag genutzt; Treppen werden begleitet bewältigt.
+Weiterer Verlauf und konkrete Verordnungen bleiben der behandelnden Stelle vorbehalten.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Entlassungsbericht – ergänzter Schulungsbericht / Seite 2
+Synthetisch | reference-md-kraemer | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+

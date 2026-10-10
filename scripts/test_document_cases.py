@@ -33,7 +33,7 @@ class RetainedCorpusTests(unittest.TestCase):
         from pypdf import PdfReader
         root=fixtures.OUT
         catalog=json.loads((root/'catalog.json').read_text())
-        self.assertEqual(len(catalog['cases']),112)
+        self.assertEqual(len(catalog['cases']),122)
         for case in catalog['cases']:
             directory=root/case['caseId']
             input_bytes=(directory/'input.json').read_bytes()
@@ -56,6 +56,20 @@ class RetainedCorpusTests(unittest.TestCase):
             self.assertEqual(observations,case['observations'])
             self.assertEqual(fixtures.normalize(observations)['facts'],input['facts'])
             self.assertTrue(all(o['id']!='scan' for o in observations))
+
+    def test_additional_cases_cover_public_teaching_cases_and_multiple_document_families(self):
+        import json
+        catalog=json.loads((fixtures.OUT/'catalog.json').read_text())
+        cases={c['caseId']:c for c in catalog['cases']}
+        for id in ['reference-md-mueller','reference-md-kraemer','reference-accident-complete','reference-accident-missing','reference-accident-conflicting','reference-transfer-complete','reference-transfer-missing','reference-cannabis-complete','reference-cannabis-missing','reference-aid-hearing']:
+            self.assertIn(id,cases)
+            case=cases[id]
+            self.assertTrue(case['context']['question'])
+            self.assertGreaterEqual(len(case['documents']),4)
+            if not id.startswith('reference-md-'):
+                self.assertIsNone(case['packPath'])
+        self.assertEqual([o['value'] for o in cases['reference-md-mueller']['observations'][:6]],['0','11','3','15','2','6'])
+        self.assertTrue(cases['reference-accident-conflicting']['findings'])
 
     def test_reference_context_is_retained_in_the_first_pdf(self):
         import json

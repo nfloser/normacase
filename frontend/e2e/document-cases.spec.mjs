@@ -37,3 +37,16 @@ test('reference documents expose conflicts, German provenance and actual engine 
  await references.getByRole('button',{name:'Pflege-Score: Modulsumme fehlt',exact:true}).click();
  await expect(references.getByText(/Fehlende Angabe: Modul 4/)).toBeVisible();
 });
+
+test('source-backed case families include clinical files without inventing decisions',async({page})=>{
+ await page.goto('/#reference-cases');
+ const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await cases.getByRole('button',{name:'Arbeitsunfall: Handgelenkverletzung',exact:true}).click();
+ await expect(cases.getByText(/Für diesen Dokumenttyp ist keine fachlich geprüfte Regel/)).toBeVisible();
+ await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
+ await expect(cases.locator('.pdf-page-image')).toBeVisible();
+ await expect(cases.locator('.case-file-list')).toContainText('D-Arzt-Erstbericht');
+ await cases.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
+ await cases.getByRole('button',{name:'Pflege: Demenz und Unterstützung im Alltag',exact:true}).click();
+ await expect(cases.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
+});
