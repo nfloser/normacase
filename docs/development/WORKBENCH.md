@@ -204,3 +204,14 @@ Die Referenzübersicht zeigt konkrete fachliche Fragestellungen. Im geöffneten 
 stehen Auftrag und Fragestellung unter dem Ergebnis; der erfundene Hintergrund ist
 über „Fallhintergrund ansehen“ zugänglich. Alle Angaben bleiben als synthetisch
 gekennzeichnet. Die Prüfung ist auf den jeweils angegebenen Umfang beschränkt.
+
+
+## Persönliche Fallorganisation
+
+Die Startansicht „Arbeitslisten“ ist ein medizinisch blauer Explorer mit Arbeitslistenbaum, Falltabelle und separater Fallansicht. Fälle lassen sich per Doppelklick, Eingabetaste oder Rechtsklick öffnen. Das Kontextmenü ist auch mit Umschalt+F10 erreichbar. Der Dokumenteintrag im Baum öffnet direkt den begrenzten Dokumentleser.
+
+Eigene Ordner können angelegt, umbenannt, eingefärbt und gelöscht werden. Ausgewählte Fälle können in diese Ordner verschoben werden; dies verändert ausschließlich die Zuordnung, niemals Quelldateien oder Prüfergebnisse. Beim Löschen eines Ordners bleiben alle Fälle erhalten. Arbeitslisten und Fälle sind unabhängig einfärbbar. Fallfarben lassen sich zurücksetzen. Dunkle Schrift auf heller Oberfläche bleibt unabhängig von der gewählten Farbe lesbar; Farbe ist eine zusätzliche Randmarkierung. Lesezeichen und Fallnotizen erleichtern die persönliche Wiedervorlage.
+
+Die Organisation liegt im Speicher des lokalen Demo-Servers: Browser-Neuladen erhält sie, ein Neustart setzt sie zurück. Maximal 50 Ordner, 100 Fälle je Aktion, 1000 Zeichen je Notiz und 500 Änderungen je Serverlauf. Revisionen verhindern versehentliches Überschreiben; wiederholte identische Operationskennungen liefern denselben Erfolg. Der Demo-Pfad ist bei aktiviertem persistentem Review-Host deaktiviert.
+
+„Bestätigen (Demo)“ und „Abschicken (Demo)“ sind ausdrücklich lokale Probeläufe. Nur vollständige, dafür geeignete Fälle können gemeinsam bestätigt werden; eine ungeeignete Auswahl wird vollständig abgelehnt. Versand erzeugt ausschließlich eine herunterladbare JSON-Datei mit unveränderten Assessment-Zeichenfolgen und `SYNTHETIC_LOCAL_ONLY`. Es gibt weder eine MD-Übertragung noch eine rechtlich verbindliche Freigabe.

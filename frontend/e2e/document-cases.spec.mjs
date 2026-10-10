@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 
 test('case file opens PDF, scan and text with source links and keeps cases isolated',async({page})=>{
- await page.goto('/#work-queues');
+ await page.goto('/#volume-cases');
  const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
  await queues.getByRole('button',{name:'Fall öffnen: demo-g-supported',exact:true}).click();
  await queues.getByRole('button',{name:'Dokumente',exact:true}).click();

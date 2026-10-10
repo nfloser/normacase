@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('German workload preview summarizes 100 routed cases and keeps representative drill-down', async ({page})=>{
-  await page.goto('/#work-queues');
+  await page.goto('/#volume-cases');
   const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
   await expect(queues.getByText('100 Fälle automatisch vorbereitet',{exact:true})).toBeVisible();
   await expect(queues.getByRole('heading',{name:'Zur Freigabe vorbereitet (60)'})).toBeVisible();
