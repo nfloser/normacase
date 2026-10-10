@@ -15,3 +15,14 @@ test('reading, help and action colors meet WCAG AA on their actual surfaces',()=
  assert.ok(contrast('ffffff','256da8')>=4.5);
  assert.ok(contrast('123c63','eaf3f9')>=4.5);
 });
+
+test('dark theme reading and status colors meet AA contrast',()=>{
+ const block=css.match(/:root\[data-theme=dark\]\{([^}]+)\}/)[1];
+ const token=name=>block.match(new RegExp('--nc-'+name+':#([0-9a-f]{6})'))[1];
+ for(const bg of [token('surface'),token('background'),token('light'),'183e38','403621','493126','462730','343048']){
+  assert.ok(contrast(token('text'),bg)>=4.5);
+  assert.ok(contrast(token('muted'),bg)>=4.5);
+ }
+ assert.ok(contrast(token('action'),token('surface'))>=4.5);
+ assert.ok(contrast(token('button-border'),token('background'))>=3);
+});

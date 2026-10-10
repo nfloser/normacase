@@ -648,5 +648,12 @@
     "dispatchHelp": "Erstellt und lädt ein lokales Versandpaket herunter. Anschließend erscheint der Fall in „Versand simuliert“. Es wird nichts extern übermittelt.",
     "confirmedNext": "Versandpaket erstellen",
     "completeNext": "Lokales Versandpaket erstellt"
+  },
+  "theme": {
+    "label": "Farbschema",
+    "system": "System",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "help": "Farbschema für diese Sitzung. System folgt der Darstellungseinstellung des Betriebssystems."
   }
 }

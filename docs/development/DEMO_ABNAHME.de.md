@@ -99,3 +99,13 @@ zu prüfen; Konfliktverhalten bleibt durch die vorhandenen API-Tests abgedeckt.
 Fallbezeichnungen verwenden in jeder Tabellenzeile einen gleich breiten
 Lesezeichenplatz. Das Setzen oder Entfernen des Sterns verschiebt weder den
 Textanfang noch die Spalten; optionale Notizen beginnen auf derselben Textkante.
+
+### Helle und dunkle Darstellung
+
+„Farbschema“ rechts im Menüband bietet System, Hell und Dunkel. System reagiert
+auf die Betriebssystemeinstellung; eine explizite Auswahl hat Vorrang. Die Auswahl
+bleibt beim Wechsel des Arbeitsbereichs in dieser Sitzung erhalten. Sie wird
+nicht in localStorage, sessionStorage oder Cookies gespeichert; dauerhafte
+benutzergebundene Ansichten bleiben Aufgabe #281. PDF-/Scanseiten behalten ihre
+Originalfarben. Die umgebende Dokumentenansicht, Tabellen, Fallakten, Kontextmenüs,
+Dialoge und Extras verwenden die dunklen medizinisch-blauen Farben.
