@@ -25,7 +25,7 @@ test('reference documents expose conflicts, German provenance and actual engine 
  await expect(references.getByText(/Widersprüchliche Angaben: Pflegegrad/)).toBeVisible();
  await expect(references.getByRole('heading',{name:'Prüfergebnis: Manuelle Prüfung erforderlich',exact:true})).toBeVisible();
  await references.getByText('Angaben und Fundstellen',{exact:true}).click();
- await expect(references.getByText('Ambulante Behandlung',{exact:true})).toBeVisible();
+ await expect(references.locator('.document-observations').getByText('Ambulante Behandlung',{exact:true})).toBeVisible();
  await references.getByRole('button',{name:/Angaben zur Verordnung, Seite 2/}).first().click();
  await expect(references.locator('iframe')).toHaveAttribute('src',/#page=2$/);
  await references.screenshot({path:'test-results/document-cases-desktop.png'});
