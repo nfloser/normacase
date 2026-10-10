@@ -1,7 +1,8 @@
 # Build and verification of synthetic previews
 
 The preview pipeline publishes self-contained, untrimmed .NET 10 API and CLI
-executables for Windows x64 and Linux x64. The native runner for each target builds
+executables for Windows x64, Linux x64, macOS Apple Silicon (`osx-arm64`)
+and macOS Intel (`osx-x64`). The native runner for each target builds
 the canonical frontend before publishing. No runtime project dependencies change.
 
 ```sh
@@ -12,7 +13,13 @@ python scripts/build_preview.py --rid linux-x64 --commit FULL_40_CHARACTER_GIT_S
 python scripts/check_preview.py --archive artifacts/normacase-synthetic-preview-linux-x64.zip --rid linux-x64 --commit FULL_40_CHARACTER_GIT_SHA
 ```
 
-Use `win-x64` on Windows. Existing output archives are never silently replaced.
+Use `win-x64` on Windows, `osx-arm64` on native Apple Silicon and `osx-x64`
+on Intel macOS. The matching native runners are `macos-15` (arm64) and
+`macos-15-intel` (x64), as documented in the
+[GitHub runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
+The checks reject a target different from the native host and verify the correct
+`.dll`, `.so` or `.dylib` runtime library. On Apple Silicon, shared arm64 runtime
+lookup is explicitly disabled too. Existing output archives are never silently replaced.
 The archive contains independent API/CLI runtime directories, bundled assets,
 synthetic knowledge/examples, a platform-specific launcher, German start and pitch instructions
 and a manifest. InformationalVersion is explicitly `0.1.0-preview+<full SHA>`.
@@ -53,3 +60,9 @@ Future release publication must archive the complete tested package and describe
 known synthetic/security/domain limits. Production authentication, governed
 knowledge activation, domain review and operator backup/restore remain separate
 milestones; distributing a preview does not complete them.
+
+Mac builds are local browser previews, not `.app`/DMG installers. Signing,
+notarization, Gatekeeper download behavior, Safari-specific browser tests and
+persistent database update/recovery on macOS remain separate validations.
+The existing database installation/recovery matrix runs on Linux; native Mac
+previews exercise the same exact CLI/API replay and synthetic workflow.
