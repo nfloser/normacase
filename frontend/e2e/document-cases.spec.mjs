@@ -7,7 +7,7 @@ test('case file opens PDF, scan and text with source links and keeps cases isola
  await queues.getByRole('button',{name:'Dokumente',exact:true}).click();
  const file=queues.getByRole('region',{name:'Dokumentakte'});
  await expect(file.getByLabel('Dokument auswählen')).toHaveValue('document-1');
- await expect(file.locator('iframe')).toHaveAttribute('src',/demo-g-supported\/documents\/document-1#page=1&view=FitH&navpanes=0$/);
+ await expect(file.locator('.pdf-page-image')).toHaveAttribute('src',/demo-g-supported\/documents\/document-1\/pages\/1$/);
  const downloadPromise=page.waitForEvent('download');await file.getByRole('link',{name:'Herunterladen'}).click();
  expect((await downloadPromise).suggestedFilename()).toBe('demo-g-supported-document-1.pdf');
  await file.getByLabel('Dokument auswählen').selectOption({label:'Scan-Anlage (ohne automatische Texterkennung)'});
@@ -28,7 +28,7 @@ test('reference documents expose conflicts, German provenance and actual engine 
  await expect(references.getByRole('heading',{name:'Prüfergebnis: Manuelle Prüfung erforderlich',exact:true})).toBeVisible();
  await expect(references.locator('.document-observations').getByText('Ambulante Behandlung',{exact:true})).toBeVisible();
  await references.getByRole('button',{name:/Angaben zur Verordnung, Seite 2/}).first().click();
- await expect(references.locator('iframe')).toHaveAttribute('src',/#page=2&view=FitH&navpanes=0$/);
+ await expect(references.locator('.pdf-page-image')).toHaveAttribute('src',/pages\/2$/);
  await references.screenshot({path:'test-results/document-cases-desktop.png'});
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();

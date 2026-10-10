@@ -32,6 +32,26 @@ public sealed class DocumentCaseTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
+    public async Task Pdf_pages_are_bound_to_the_original_document_and_unknown_pages_fail()
+    {
+        using var file=JsonDocument.Parse(await client.GetStringAsync("/api/document-cases/reference-transport-complete"));
+        var doc=file.RootElement.GetProperty("documents")[0];
+        var previews=doc.GetProperty("previews").EnumerateArray().ToArray();
+        Assert.Equal(doc.GetProperty("pages").GetInt32(),previews.Length);
+        foreach(var page in previews)
+        {
+            var response=await client.GetAsync("/api/document-cases/reference-transport-complete/documents/document-1/pages/"+page.GetProperty("page").GetInt32());
+            Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+            Assert.Equal("image/png",response.Content.Headers.ContentType!.MediaType);
+            Assert.Equal("no-store",response.Headers.CacheControl!.ToString());
+            Assert.Equal(page.GetProperty("sha256").GetString(),Convert.ToHexStringLower(SHA256.HashData(await response.Content.ReadAsByteArrayAsync())));
+        }
+        foreach(var suffix in new[]{"0","3","-1","999"})
+            Assert.Equal(HttpStatusCode.NotFound,(await client.GetAsync("/api/document-cases/reference-transport-complete/documents/document-1/pages/"+suffix)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound,(await client.GetAsync("/api/document-cases/reference-transport-complete/documents/scan/pages/1")).StatusCode);
+    }
+
+    [Fact]
     public async Task Reference_context_remains_external_and_document_only_cases_have_no_assessment()
     {
         using var catalog=JsonDocument.Parse(await client.GetStringAsync("/api/document-cases"));

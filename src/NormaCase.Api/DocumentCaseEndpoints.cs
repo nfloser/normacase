@@ -22,6 +22,7 @@ internal static class DocumentCaseEndpoints
             throw new InvalidOperationException("Invalid synthetic document catalog.");
         var sources=catalog.Sources.ToDictionary(x=>x.Id,StringComparer.Ordinal);
         var cases=new Dictionary<string,object>(StringComparer.Ordinal);
+        var pageContent=new Dictionary<(string,string,int),byte[]>();
         var content=new Dictionary<(string,string),(byte[] Bytes,Document Metadata)>();
         foreach(var entry in catalog.Cases)
         {
@@ -48,6 +49,19 @@ internal static class DocumentCaseEndpoints
                 Verify(bytes,doc.Sha256);
                 if(bytes.Length>2*1024*1024)throw new InvalidOperationException("Document exceeds demo limit.");
                 content.Add((entry.CaseId,doc.Id),(bytes,doc));
+                var previews=doc.Previews??[];
+                if((doc.MediaType=="application/pdf"?doc.Pages:0)!=previews.Length||doc.Pages>20)
+                    throw new InvalidOperationException("Invalid document previews.");
+                foreach(var preview in previews)
+                {
+                    if(preview.Page<1||preview.Page>doc.Pages||preview.Filename!=doc.Id+"-page-"+preview.Page+".png")
+                        throw new InvalidOperationException("Invalid page identity.");
+                    var image=File.ReadAllBytes(Path.Combine(directory,preview.Filename));
+                    Verify(image,preview.Sha256);
+                    if(image.Length>2*1024*1024||!image.AsSpan().StartsWith(new byte[]{137,80,78,71,13,10,26,10}))
+                        throw new InvalidOperationException("Invalid page image.");
+                    pageContent.Add((entry.CaseId,doc.Id,preview.Page),image);
+                }
             }
             foreach(var observation in entry.Observations)
             {
@@ -105,6 +119,9 @@ internal static class DocumentCaseEndpoints
                 .Select(x=>new{x.CaseId,x.Title,x.Scope,x.Context})}));
         app.MapGet("/api/document-cases/{caseId}",(string caseId)=>cases.TryGetValue(caseId,out var item)
             ?Results.Json(item):DemoHost.Error("unknown_work_case",404));
+        app.MapGet("/api/document-cases/{caseId}/documents/{documentId}/pages/{page:int}",
+            (string caseId,string documentId,int page)=>pageContent.TryGetValue((caseId,documentId,page),out var image)
+                ?Results.File(image,"image/png"):DemoHost.Error("unknown_work_case",404));
         app.MapGet("/api/document-cases/{caseId}/documents/{documentId}",
             (HttpContext context,string caseId,string documentId,bool? download)=>
             {
@@ -130,6 +147,7 @@ internal static class DocumentCaseEndpoints
         CaseContext? Context,string? ExpectedOutcome,string InputSha256,Document[] Documents,Observation[] Observations,string[] Findings,IReadOnlyDictionary<string,string> FieldLabels,IReadOnlyDictionary<string,string> EvidenceLabels,IReadOnlyDictionary<string,OutputLabel> OutputLabels);
     private sealed record CaseContext(string Request,string Question,string Background);
     private sealed record OutputLabel(string Label,IReadOnlyDictionary<string,string> Choices);
-    private sealed record Document(string Id,string Title,string Filename,string MediaType,string Sha256,int Pages,string SourceId);
+    private sealed record Document(string Id,string Title,string Filename,string MediaType,string Sha256,int Pages,string SourceId,Preview[]? Previews);
+    private sealed record Preview(int Page,string Filename,string Sha256);
     private sealed record Observation(string Id,int Page,string Field,string Value,string Method);
 }

@@ -426,7 +426,16 @@
     "zoomOut": "Scan verkleinern",
     "noRule": "Für diesen Dokumenttyp ist keine fachlich geprüfte Regel hinterlegt. Die Unterlagen können gesichtet werden; eine Entscheidung wird nicht erzeugt.",
     "documentOnly": "Synthetische Unterlagen zur Sichtung",
-    "select": "Dokument auswählen"
+    "select": "Dokument auswählen",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "fitPage": "Ganze Seite",
+    "enlargePage": "Seite vergrößern",
+    "of": "von",
+    "fileList": "Unterlagen",
+    "previewFailed": "Die Seitenvorschau konnte nicht geladen werden. Öffne das Original oder lade es herunter.",
+    "readerHelp": "Die Vorschau zeigt eine Seite des Original-PDFs. Zum Lesen vergrößern oder das Original öffnen.",
+    "documentReviewResult": "Unterlagensichtung · keine fachliche Entscheidung"
   },
   "workspace": {
     "navigation": "Arbeitsbereiche",

@@ -196,8 +196,8 @@ Tastaturfokus auf den zuvor geöffneten Fall. Die Startansicht zeigt Ergebnis,
 Klärungsbedarf, Prüfumfang und die dokumentierten Angaben mit Fundstellen.
 „Dokumente“ öffnet den Beleg in einem eigenen breiten Bereich. Ein Klick auf eine
 Fundstelle wechselt direkt zur Dokumentansicht und fordert die entsprechende Seite
-an. Die PDF-Ansicht fordert Seitenbreite und eine ausgeblendete Miniaturleiste an;
-die genaue Darstellung hängt vom eingebauten PDF-Betrachter des Browsers ab.
+an. Die PDF-Ansicht zeigt lokal gerenderte Seiten mit eigener Seitenwahl und Zoom.
+Die Ganzseitenansicht bleibt im Fenster begrenzt; die Originaldatei ist separat verfügbar.
 Die fiktiven Plattformtests bleiben getrennt unter „Arbeitslisten“ verfügbar.
 
 Die Referenzübersicht zeigt konkrete fachliche Fragestellungen. Im geöffneten Fall
