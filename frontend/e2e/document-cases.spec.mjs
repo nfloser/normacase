@@ -20,7 +20,7 @@ test('case file opens PDF, scan and text with source links and keeps cases isola
 });
 
 test('reference documents expose conflicts, German provenance and actual engine outcome on mobile',async({page})=>{
- await page.goto('/');const references=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await page.goto('/#reference-cases');const references=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
  await references.getByRole('button',{name:'Krankenfahrt: widersprüchliche Nachweise',exact:true}).click();
  await expect(references.getByText(/Widersprüchliche Angaben: Pflegegrad/)).toBeVisible();
  await expect(references.getByRole('heading',{name:'Prüfergebnis: Manuelle Prüfung erforderlich',exact:true})).toBeVisible();

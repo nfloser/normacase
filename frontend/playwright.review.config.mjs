@@ -17,6 +17,7 @@ if (!credential || !connection) throw new Error('Reviewed workbench test configu
 
 export default defineConfig({
   testDir: './e2e-reviewed',
+  outputDir: 'test-results/review',
   workers: 1,
   use: { baseURL: 'http://localhost:5080', browserName: 'chromium' },
   webServer: {

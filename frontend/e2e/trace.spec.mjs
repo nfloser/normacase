@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
 async function example(page,pack,id) {
-  await page.goto('/');
+  await page.goto('/#workbench');
   await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption(pack);
   await page.getByLabel('Beispiel auswählen').selectOption(id);
   await page.getByRole('button',{name:'Beispiel laden'}).click();
@@ -83,7 +83,7 @@ test('independent output traces keep their own recorded results and sources',asy
 });
 
 test('historical snapshot replay never gets current presentation labels',async({page})=>{
-  await page.goto('/');
+  await page.goto('/#workbench');
   const input=await readFile('../examples/cases/demo-d-supported.json','utf8');
   const captured=await page.request.post('/api/snapshots/synthetic.demo-d',{headers:{'Content-Type':'application/json'},data:input});
   expect(captured.ok()).toBe(true);
@@ -95,7 +95,7 @@ test('historical snapshot replay never gets current presentation labels',async({
 });
 
 test('a recorded negation is presented explicitly without changing its child',async({page})=>{
-  await page.goto('/');
+  await page.goto('/#workbench');
   const input=await readFile('../examples/cases/demo-a-supported.json','utf8');
   const response=await page.request.post('/api/snapshots/synthetic.demo-a',{headers:{'Content-Type':'application/json'},data:input});
   expect(response.ok()).toBe(true);

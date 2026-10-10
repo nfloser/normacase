@@ -8,7 +8,7 @@ async function loadAndEvaluate(page, exampleId) {
 }
 
 test('the synthetic pitch story is repeatable from incomplete through explicit outcomes', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#workbench');
   await page.getByRole('combobox', { name: 'Prüfbereich' }).selectOption('synthetic.demo-g');
   await expect(page.getByText('Vollständig fiktives Showcase ohne medizinische oder sozialmedizinische Aussagekraft.')).toBeVisible();
 

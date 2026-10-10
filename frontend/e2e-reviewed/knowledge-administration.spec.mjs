@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { randomUUID, createHash } from 'node:crypto';
 async function login(page,credential){
- await page.goto('/');
+ await page.goto('/#review');
  const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
  await region.getByLabel('Lokaler Review-Schlüssel').fill(credential);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();

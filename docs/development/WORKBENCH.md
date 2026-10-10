@@ -168,3 +168,22 @@ Die Arbeitslisten besitzen jetzt eigene PDF-/Scan-/Textakten mit Fundstellen,
 Vorschau und Download. Zwölf zusätzliche Referenzakten zeigen öffentlich
 recherchierte Inhaltsbereiche. [Dokumentakten](DOCUMENT_CASES.de.md) beschreibt
 Bedienung, Testadapter und die ausdrücklichen fachlichen Grenzen.
+
+## Gemeinsamer Arbeitsplatz für Browser und Desktop
+
+Die Oberfläche verwendet einen kompakten Arbeitsplatz mit festen Arbeitsbereichen:
+Arbeitslisten, Referenzfälle, Prüfwerkstatt, Review und Vorgänge. Auf Desktopgrößen
+bleiben Navigation und Demo-Hinweis sichtbar; die Fallliste links, Dokumente in der
+Mitte und Ergebnis/Fundstellen rechts scrollen unabhängig. Lange Dokumente bleiben
+im Dokumentbereich. Auf schmalen Fenstern werden die Bereiche untereinander angeordnet;
+die Fallliste bleibt begrenzt hoch. Größere Schriften und Browser-Zoom bleiben möglich.
+
+Die Navigation verwendet ausschließlich feste URL-Fragmente (z. B. `#workbench`),
+keine Falldaten. Eingaben bleiben während eines Bereichswechsels im Speicher; ein
+Neuladen setzt sie zurück. Review-Anmeldung und Abmeldung behalten ihre bisherigen
+Sicherheits- und Löschregeln. Snapshot-Werkzeuge liegen in der Prüfwerkstatt; ein
+Prüfbereich für Vorgänge lässt sich direkt im Bereich „Vorgänge“ auswählen.
+
+Dies ist die gemeinsame React-Präsentationsschicht für den Browser und einen späteren
+Desktop-Host. Ein nativer Fenster-Host und institutionelle MD-Adapter sind damit noch
+nicht implementiert. Die APIs und der deterministische Kern ändern sich nicht.

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 const credential=process.env.NORMACASE_REVIEW_E2E_CREDENTIAL;
 if(!credential)throw new Error('Reviewed workbench test configuration is required');
 async function login(page){
- await page.goto('/');
+ await page.goto('/#review');
  const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
  await region.getByLabel('Lokaler Review-Schlüssel').fill(credential);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
@@ -117,7 +117,7 @@ test('two browsers review, recover a real stale conflict and preserve immutable 
 test('administrator resolves a stale suspension, changes live access and sees the audit',async({page})=>{
  const administrator=process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL;
  if(!administrator)throw new Error('Administrator test credential is required');
- await page.goto('/');
+ await page.goto('/#review');
  const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
  await region.getByLabel('Lokaler Review-Schlüssel').fill(administrator);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
@@ -174,7 +174,7 @@ test('separate administrators propose and approve a durable entitlement snapshot
  const administrator=process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL;
  const approver=process.env.NORMACASE_REVIEW_E2E_ENTITLEMENT_APPROVER_CREDENTIAL;
  if(!administrator||!approver)throw new Error('Entitlement administration credentials are required');
- await page.goto('/');const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
+ await page.goto('/#review');const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
  await region.getByLabel('Lokaler Review-Schlüssel').fill(administrator);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
  const entitlements=region.getByRole('region',{name:'Fall- und Aktionsberechtigungen verwalten'});

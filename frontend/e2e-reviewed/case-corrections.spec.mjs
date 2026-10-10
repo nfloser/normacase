@@ -9,7 +9,7 @@ test('correct an incomplete intake, inspect readonly history and reapprove throu
   data:{formatVersion:1,order:'browser-correction-order',message:'browser-original-input',revision:'1',input}});
  expect(accepted.status()).toBe(200);
  const original=await (await page.request.get('/api/review/work-cases/'+caseId+'/history/0',{headers:{Authorization:'Bearer '+credential}})).json();
- await page.goto('/');
+ await page.goto('/#review');
  const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
  await region.getByLabel('Lokaler Review-Schlüssel').fill(credential);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();
@@ -60,7 +60,7 @@ test('correct an incomplete intake, inspect readonly history and reapprove throu
 });
 
 test('logout aborts delayed case history and clears retained correction content',async({page})=>{
- await page.goto('/');
+ await page.goto('/#review');
  const region=page.getByRole('region',{name:'Persistente synthetische Fallprüfung'});
  await region.getByLabel('Lokaler Review-Schlüssel').fill(credential);
  await region.getByRole('button',{name:'Review-Modus anmelden'}).click();

@@ -24,6 +24,9 @@ test('shared workspace keeps navigation and three case panels inside a desktop w
  await expect(queues.locator('iframe')).toHaveAttribute('src',/demo-g-supported/);
  await expect(nav.getByRole('link',{name:'Arbeitslisten',exact:true})).toHaveAttribute('aria-current','page');
  await page.screenshot({path:'test-results/compact-workspace-desktop.png'});
+ await page.setViewportSize({width:1280,height:720});
+ expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ await page.screenshot({path:'test-results/compact-workspace-laptop.png'});
 });
 
 test('workspace routes survive reload and keyboard focus stays in the visible view',async({page})=>{
@@ -37,4 +40,13 @@ test('workspace routes survive reload and keyboard focus stays in the visible vi
  await page.setViewportSize({width:390,height:844});
  await expect(nav).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
+
+test('document service failure retains the independent recorded assessment',async({page})=>{
+ await page.route('**/api/document-cases/demo-g-supported',route=>route.fulfill({status:503,body:''}));
+ await page.goto('/');
+ const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
+ await queues.getByRole('button',{name:'Fall öffnen: demo-g-supported',exact:true}).click();
+ await expect(queues.getByRole('alert')).toBeVisible();
+ await expect(queues.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
 });

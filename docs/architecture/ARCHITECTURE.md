@@ -97,3 +97,11 @@ definitions and labels remain external knowledge/presentation concerns.
 See [WORKFLOWS.md](WORKFLOWS.md). Knowledge Pack integration, actor authorization,
 persistence, timers and automatic assessment-driven transitions remain separate
 reviewed slices.
+
+## Shared workbench presentation
+
+The browser workbench uses viewport-bound queue/document/analysis panels and explicit
+workspace routes. This same React presentation layer can be hosted in a future native
+window; it does not depend on a desktop-specific bridge. Navigation stores only fixed
+view identifiers in URL fragments and no case data in browser storage. Native hosting
+and institution-specific adapters remain separate deployment/integration decisions.
