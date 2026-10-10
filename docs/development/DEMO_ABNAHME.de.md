@@ -90,3 +90,8 @@ Persönliche Farbmarkierungen stehen direkt hinter dem Auswahlkästchen. Im
 Kontextmenü gibt es nur „Verschieben nach“; der Toolbar-Dialog bleibt für die
 Sammelablage erhalten. Die Quellenwerttabellen verwenden feste proportionale
 Spalten und richten Werte und Überschriften links bündig aus.
+
+Die öffentlichen Browsertests verwenden einen Worker: Alle Testseiten teilen sich
+denselben lokalen Workspace mit optimistischer Revision. Parallele schreibende
+Tests würden absichtlich Revisionskonflikte auslösen statt isolierte Bedienabläufe
+zu prüfen; Konfliktverhalten bleibt durch die vorhandenen API-Tests abgedeckt.
