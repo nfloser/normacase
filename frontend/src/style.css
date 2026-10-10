@@ -299,3 +299,10 @@ body { overflow:hidden; }
  .explorer-table { min-width:740px; }
  .case-header .case-identifier { display:none; }
 }
+
+.explorer-navigation {display:flex;gap:.5rem;flex-wrap:wrap;padding:.6rem 0;border-bottom:1px solid var(--border);margin-bottom:.7rem}
+.color-presets {display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0}
+.color-presets button {display:flex;align-items:center;gap:.35rem;background:#fff;color:#18384b;border:1px solid #668092;padding:.4rem .55rem;border-radius:.3rem}
+.color-presets button[aria-pressed="true"] {outline:2px solid #24708f;outline-offset:2px}
+.color-presets span {width:1rem;height:1rem;border:1px solid #668092;border-radius:.15rem}
+.case-context-menu {max-height:calc(100dvh - 16px);overflow-y:auto;max-width:calc(100vw - 16px)}

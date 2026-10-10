@@ -531,6 +531,18 @@
       "queueColor": "Arbeitslistenfarbe",
       "rename": "Ordner bearbeiten",
       "delete": "Ordner löschen"
+    },
+    "removeFromFolder": "Aus Ordner entfernen",
+    "refresh": "Ansicht aktualisieren",
+    "navigation": "Ablage und Ansichten",
+    "colorPresets": "Vordefinierte Farben",
+    "colors": {
+      "blue": "Blau",
+      "teal": "Türkis",
+      "green": "Grün",
+      "amber": "Bernstein",
+      "purple": "Violett",
+      "rose": "Rosa"
     }
   }
 }
