@@ -32,6 +32,24 @@ public sealed class DocumentCaseTests : IClassFixture<WebApplicationFactory<Prog
     }
 
     [Fact]
+    public async Task Reference_context_remains_external_and_document_only_cases_have_no_assessment()
+    {
+        using var catalog=JsonDocument.Parse(await client.GetStringAsync("/api/document-cases"));
+        foreach(var item in catalog.RootElement.GetProperty("cases").EnumerateArray())
+        {
+            var id=item.GetProperty("caseId").GetString();
+            var context=item.GetProperty("context");
+            Assert.False(string.IsNullOrWhiteSpace(context.GetProperty("request").GetString()));
+            Assert.False(string.IsNullOrWhiteSpace(context.GetProperty("question").GetString()));
+            Assert.Contains("Synthetische Testperson",context.GetProperty("background").GetString());
+            using var detail=JsonDocument.Parse(await client.GetStringAsync("/api/document-cases/"+id));
+            Assert.Equal(context.GetRawText(),detail.RootElement.GetProperty("context").GetRawText());
+            if(id!.Contains("reha",StringComparison.Ordinal)||id.Contains("oncology",StringComparison.Ordinal))
+                Assert.Equal(JsonValueKind.Null,detail.RootElement.GetProperty("assessmentJson").ValueKind);
+        }
+    }
+
+    [Fact]
     public async Task Every_pitch_case_has_bound_documents_without_changing_results()
     {
         using var queues = JsonDocument.Parse(await client.GetStringAsync("/api/work-queues"));

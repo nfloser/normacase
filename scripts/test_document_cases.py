@@ -54,6 +54,27 @@ class RetainedCorpusTests(unittest.TestCase):
             self.assertEqual(fixtures.normalize(observations)['facts'],input['facts'])
             self.assertTrue(all(o['id']!='scan' for o in observations))
 
+    def test_reference_context_is_retained_in_the_first_pdf(self):
+        import json
+        from pypdf import PdfReader
+        catalog=json.loads((fixtures.OUT/'catalog.json').read_text())
+        for case in catalog['cases']:
+            context=case.get('context')
+            if not case['caseId'].startswith('reference-'):
+                self.assertIsNone(context)
+                continue
+            self.assertTrue(all(context[key] for key in ['request','question','background']))
+            content=PdfReader(fixtures.OUT/case['caseId']/'document-1.pdf').pages[0].extract_text()
+            self.assertIn(' '.join(context['background'].split()),' '.join(content.split()))
+
+    def test_transport_complete_has_no_false_missing_evidence_warning(self):
+        import json
+        catalog=json.loads((fixtures.OUT/'catalog.json').read_text())
+        case=next(c for c in catalog['cases'] if c['caseId']=='reference-transport-complete')
+        self.assertEqual(case['findings'],[])
+        missing=next(c for c in catalog['cases'] if c['caseId']=='reference-transport-missing')
+        self.assertTrue(any('Medizinische Notwendigkeit' in f for f in missing['findings']))
+
     def test_retained_decimal_json_does_not_round(self):
         import tempfile,json
         from decimal import Decimal

@@ -6,8 +6,11 @@ Synthetisch | reference-care-conflicting | Seite 1
 SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Pflege - dokumentierte Modulsummen
 Fiktive Einrichtung / Testperson reference-care-conflicting / Datum 10.10.2026
-Fiktive erwachsene Testperson. Die Modulsummen gelten als bereits fachlich festgestellt.
-Diese Demo ermittelt sie nicht aus Symptomen oder Diagnosen.
+Synthetische Testperson P-04, 72 Jahre: Der erste Modulbogen nennt für Selbstversorgung die
+Summe 8. Eine zweite Anlage nennt 3. Ohne Klärung bleibt diese Modulsumme unbekannt.
+Keine Quelle wird automatisch als maßgeblich ausgewählt. Fiktive erwachsene Testperson.
+Die Modulsummen gelten als bereits fachlich festgestellt. Diese Demo ermittelt sie nicht aus
+Symptomen oder Diagnosen.
 Angabe
 Dokumentierter Wert
 Modul 1: Mobilität

@@ -6,8 +6,11 @@ Synthetisch | reference-care-out-of-range | Seite 1
 SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Pflege - dokumentierte Modulsummen
 Fiktive Einrichtung / Testperson reference-care-out-of-range / Datum 10.10.2026
-Fiktive erwachsene Testperson. Die Modulsummen gelten als bereits fachlich festgestellt.
-Diese Demo ermittelt sie nicht aus Symptomen oder Diagnosen.
+Synthetische Testperson P-03, 72 Jahre: Der übermittelte Bogen nennt für Modul 1, Mobilität,
+die Summe 16. Diese Angabe wird gegen den zulässigen Bereich geprüft und muss geklärt
+werden. Die übrigen Modulsummen bleiben erhalten; eine fachliche Neubeurteilung wird nicht
+vorgetäuscht. Fiktive erwachsene Testperson. Die Modulsummen gelten als bereits fachlich
+festgestellt. Diese Demo ermittelt sie nicht aus Symptomen oder Diagnosen.
 Angabe
 Dokumentierter Wert
 Modul 1: Mobilität

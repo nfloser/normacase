@@ -39,3 +39,26 @@ test('document service failure retains the independent recorded assessment',asyn
  await expect(queues.getByRole('alert')).toBeVisible();
  await expect(queues.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
 });
+
+test('concrete transport context is retained and unrelated missing evidence is not a clarification',async({page})=>{
+ await page.goto('/');
+ const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
+ await expect(cases.getByText('Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung',{exact:true})).toBeVisible();
+ await expect(cases.getByText('Was muss geklärt werden?',{exact:true})).toHaveCount(0);
+ await cases.getByText('Fallhintergrund ansehen',{exact:true}).click();
+ await expect(cases.getByText(/Synthetische Testperson K-01, 78 Jahre/)).toBeVisible();
+ await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
+ const content=await (await page.request.get('/api/document-cases/reference-transport-complete/documents/transmission')).text();
+ expect(content).toContain('Synthetische Testperson K-01, 78 Jahre');
+});
+
+test('care reference exposes its knowledge-defined score outputs directly',async({page})=>{
+ await page.goto('/');
+ const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await cases.getByRole('button',{name:'Pflege-Score: vollständig',exact:true}).click();
+ const outputs=cases.locator('.case-domain-results');
+ await expect(outputs.getByText('Score-Schwelle 12,5',{exact:true})).toBeVisible();
+ await expect(outputs.locator('dd').first()).toContainText('Erreicht');
+ await expect(cases.locator('iframe')).toHaveCount(0);
+});

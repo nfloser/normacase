@@ -7,8 +7,11 @@ SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
  Krankenbeförderung - Angaben zur
  Verordnung
 Fiktive Einrichtung / Testperson reference-transport-missing / Datum 10.10.2026
-Krankenfahrt mit Taxi/Mietwagen zur ambulanten Behandlung. Kein Krankentransportwagen.
-Eigene Testvorlage mit Inhalten angelehnt an Muster 4.
+Synthetische Testperson K-02, 78 Jahre: Die Verordnung nennt eine ambulante Behandlung
+und Pflegegrad 4. Die ausdrückliche Angabe zur medizinischen Notwendigkeit fehlt. Der
+Pflegekassenbescheid ist beigefügt. Krankenfahrt mit Taxi/Mietwagen zur ambulanten
+Behandlung. Kein Krankentransportwagen. Eigene Testvorlage mit Inhalten angelehnt an
+Muster 4.
 Angabe
 Dokumentierter Wert
 Ambulante Behandlung

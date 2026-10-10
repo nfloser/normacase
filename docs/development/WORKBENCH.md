@@ -173,10 +173,10 @@ Bedienung, Testadapter und die ausdrücklichen fachlichen Grenzen.
 
 Die Oberfläche verwendet einen kompakten Arbeitsplatz mit festen Arbeitsbereichen:
 Arbeitslisten, Referenzfälle, Prüfwerkstatt, Review und Vorgänge. Auf Desktopgrößen
-bleiben Navigation und Demo-Hinweis sichtbar; die Fallliste links, Dokumente in der
-Mitte und Ergebnis/Fundstellen rechts scrollen unabhängig. Lange Dokumente bleiben
-im Dokumentbereich. Auf schmalen Fenstern werden die Bereiche untereinander angeordnet;
-die Fallliste bleibt begrenzt hoch. Größere Schriften und Browser-Zoom bleiben möglich.
+bleiben Navigation und Demo-Hinweis sichtbar. Die Fallübersicht wird beim Öffnen
+eines Falls durch dessen Ergebnisansicht ersetzt. Ergebnisansicht und Dokumente
+sind getrennte Fallansichten; lange Inhalte scrollen innerhalb des Arbeitsbereichs.
+Auf schmalen Fenstern darf der Inhalt über die Seite scrollen. Größere Schriften und Browser-Zoom bleiben möglich.
 
 Die Navigation verwendet ausschließlich feste URL-Fragmente (z. B. `#workbench`),
 keine Falldaten. Eingaben bleiben während eines Bereichswechsels im Speicher; ein
@@ -199,3 +199,8 @@ Fundstelle wechselt direkt zur Dokumentansicht und fordert die entsprechende Sei
 an. Die PDF-Ansicht fordert Seitenbreite und eine ausgeblendete Miniaturleiste an;
 die genaue Darstellung hängt vom eingebauten PDF-Betrachter des Browsers ab.
 Die fiktiven Plattformtests bleiben getrennt unter „Arbeitslisten“ verfügbar.
+
+Die Referenzübersicht zeigt konkrete fachliche Fragestellungen. Im geöffneten Fall
+stehen Auftrag und Fragestellung unter dem Ergebnis; der erfundene Hintergrund ist
+über „Fallhintergrund ansehen“ zugänglich. Alle Angaben bleiben als synthetisch
+gekennzeichnet. Die Prüfung ist auf den jeweils angegebenen Umfang beschränkt.

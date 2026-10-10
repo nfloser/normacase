@@ -19,6 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'examples/document-cases'
+CONTEXTS=json.loads((ROOT/'scripts/document-case-context.de.json').read_text())
 SOURCES = [
  {'id':'kbv-transport','title':'KBV PraxisInfo Krankenbeförderung','version':'Januar 2025','url':'https://www.kbv.de/documents/infothek/publikationen/praxisinfo/praxisinfo-krankenbefoerderung.pdf','scope':'Formular 4, Grund der Beförderung, Beförderungsmittel und Begründung; kein vollständiger Leistungsentscheid.'},
  {'id':'md-pflege','title':'MD Bund Begutachtungs-Richtlinien Pflege','version':'26.08.2026, in Kraft 01.10.2026','url':'https://md-bund.de/fileadmin/dokumente/Publikationen/SPV/Begutachtungsgrundlagen/BRi_Pflege_26_08_2026.pdf','scope':'Bereits festgestellte Modulsummen, Abschnitt 5.10.1. Keine Bewertung aus Freitext und keine Pflegegradentscheidung.'},
@@ -83,8 +84,11 @@ def pdf(path, case_id, title, values, source_id, narrative):
 def build_case(case_id,title,pack_path,source_id,parts,evidence,scope,expected=None):
     directory=OUT/case_id;directory.mkdir(parents=True,exist_ok=True)
     documents=[];observations=[]
+    context=CONTEXTS.get(case_id)
     for index,(doc_title,values,narrative) in enumerate(parts,1):
-        doc_id=f'document-{index}';path=directory/(doc_id+'.pdf');pdf(path,case_id,doc_title,values,source_id,narrative)
+        doc_id=f'document-{index}';path=directory/(doc_id+'.pdf')
+        if context and index==1: narrative=context['background']+' '+narrative
+        pdf(path,case_id,doc_title,values,source_id,narrative)
         reader=PdfReader(path)
         for page_no,page in enumerate(reader.pages,1):
             content=page.extract_text()
@@ -110,10 +114,10 @@ def build_case(case_id,title,pack_path,source_id,parts,evidence,scope,expected=N
         values={o['value'] for o in observations if o['field']==key}
         if len(values)>1: findings.append('Widersprüchliche Angaben: '+LABELS.get(key,key)+'. Der Wert bleibt unbekannt.')
         elif normalized['facts'][key]['kind']=='UNKNOWN': findings.append('Fehlende Angabe: '+LABELS.get(key,key)+'.')
-    if any(v=='MISSING' for v in evidence.values()): findings.append('Ein erforderlicher Nachweis fehlt. Dokumentvorhandensein ersetzt keine fachliche Bestätigung.')
+    if evidence.get('supporting_document')=='MISSING': findings.append('Ein erforderlicher Nachweis fehlt. Dokumentvorhandensein ersetzt keine fachliche Bestätigung.')
     write_json(directory/'input.json',normalized)
     input_hash=sha256((directory/'input.json').read_bytes()).hexdigest()
-    return {'caseId':case_id,'title':title,'packPath':pack_path,'sourceId':source_id,'scope':scope,'expectedOutcome':expected,'inputSha256':input_hash,'documents':documents,'observations':observations,'findings':findings,'evidenceLabels':{'supporting_document':'Synthetischer Nachweis','severe_disability_card':'Schwerbehindertenausweis','care_grade_notice':'Pflegegradbescheid','care_transition_classification_proof':'Nachweis der Überleitung'},'outputLabels':({'approval_state':{'label':'Genehmigungsfiktion nach diesem Referenzpfad','choices':{'DEEMED_GRANTED':'Nach diesem Referenzpfad als erteilt anzusehen','SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE':'Dieser Referenzpfad ist nicht anwendbar'}}} if pack_path=='kt-rl-8-3' else {f'score_threshold_{t}':{'label':'Score-Schwelle '+t.replace('_',','),'choices':{'REACHED':'Erreicht','NOT_REACHED':'Nicht erreicht'}} for t in ['12_5','27','47_5','70','90']} if pack_path=='pflege-adult-score' else {}),'fieldLabels':{o['field']:LABELS.get(o['field'],o['field']) for o in observations}}
+    return {'caseId':case_id,'context':context,'title':title,'packPath':pack_path,'sourceId':source_id,'scope':scope,'expectedOutcome':expected,'inputSha256':input_hash,'documents':documents,'observations':observations,'findings':findings,'evidenceLabels':{'supporting_document':'Synthetischer Nachweis','severe_disability_card':'Schwerbehindertenausweis','care_grade_notice':'Pflegegradbescheid','care_transition_classification_proof':'Nachweis der Überleitung'},'outputLabels':({'approval_state':{'label':'Genehmigungsfiktion nach diesem Referenzpfad','choices':{'DEEMED_GRANTED':'Nach diesem Referenzpfad als erteilt anzusehen','SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE':'Dieser Referenzpfad ist nicht anwendbar'}}} if pack_path=='kt-rl-8-3' else {f'score_threshold_{t}':{'label':'Score-Schwelle '+t.replace('_',','),'choices':{'REACHED':'Erreicht','NOT_REACHED':'Nicht erreicht'}} for t in ['12_5','27','47_5','70','90']} if pack_path=='pflege-adult-score' else {}),'fieldLabels':{o['field']:LABELS.get(o['field'],o['field']) for o in observations}}
 
 def generate():
     cases=[]

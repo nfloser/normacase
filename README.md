@@ -223,7 +223,8 @@ Krankenfahrt, Pflege-Score, Rehabilitation und Onkologie; die letzten beiden ble
 Unterlagensichtung ohne fachliche Entscheidung. Details und Grenzen:
 [Dokumentakten](docs/development/DOCUMENT_CASES.de.md).
 
-Die Browser-Demo nutzt denselben kompakten Arbeitsplatz, der für ein späteres
-Desktop-Fenster vorgesehen ist: Fallliste links, Dokumente mittig, Ergebnis und
-Fundstellen rechts. Weitere Werkzeuge sind über feste Arbeitsbereiche erreichbar.
+Die Browser-Demo nutzt den für ein späteres Desktop-Fenster vorgesehenen
+Arbeitsplatz: Fallübersicht, Ergebnisansicht mit Begründung und Fundstellen sowie
+eine ausdrücklich geöffnete Dokumentansicht. Weitere Werkzeuge sind über feste
+Arbeitsbereiche erreichbar.
 Ein nativer Desktop-Host ist damit noch nicht enthalten.

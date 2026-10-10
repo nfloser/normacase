@@ -445,6 +445,9 @@
     "caseViews": "Fallansichten",
     "resultView": "Ergebnis und Begründung",
     "documentsView": "Dokumente",
-    "openDocuments": "Dokumente ansehen"
+    "openDocuments": "Dokumente ansehen",
+    "context": "Fallhintergrund und Auftrag",
+    "question": "Fragestellung",
+    "background": "Fallhintergrund ansehen"
   }
 }
