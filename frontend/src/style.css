@@ -531,3 +531,61 @@ h2,h3,h4,h5{font-size:14px;font-weight:600}strong{font-weight:600}main p{line-he
 .case-bookmark-slot{display:inline-flex;align-items:center;justify-content:center;width:16px;min-width:16px;flex:0 0 16px}
 .case-label{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .case-explorer .explorer-table td .case-note{padding-left:20px}
+
+/* Medical blue themes share geometry and leave document pixels unchanged. */
+:root{color-scheme:light}
+:root[data-theme=dark]{
+ color-scheme:dark;
+ --nc-primary:#b5d9ff;--nc-action:#81baff;--nc-light:#20384f;--nc-background:#0f1b28;--nc-surface:#172635;--nc-line:#3c5268;--nc-button-border:#61778f;--nc-text:#e1ebf5;--nc-muted:#acbbcc;--nc-selected:#284d70;--nc-viewer:#0a1520;
+ --nc-shadow:0 4px 12px rgba(0,0,0,.45);
+}
+.theme-control{position:relative;display:flex;align-items:center;flex-shrink:0;margin-left:8px}
+.application-workspace{width:100%;min-width:0}
+.application-workspace .workspace-navigation{min-width:0;max-width:100%}
+html[data-theme=dark] .empty-symbol{background:var(--nc-light);color:var(--nc-primary)}
+html[data-theme=dark] .document-case-summary{background:var(--nc-background);color:var(--nc-text)}
+html[data-theme=dark] .case-file-list button[aria-pressed=true]{background:var(--nc-selected)}
+html[data-theme=dark] .color-presets button{background:var(--nc-surface);color:var(--nc-text);border-color:var(--nc-button-border)}
+.theme-control select{width:85px;height:24px;min-height:24px;font-size:var(--nc-small);background:var(--nc-surface);color:var(--nc-text)}
+html[data-theme=dark] :is(.card,.opened-case,.case-result-view,.explorer-table-scroll,.document-case-file,.case-context-menu,.context-submenu-panel,.explorer-dialog,.workspace-extras-list,.workspace-help,.case-analysis-panel,.document-text,.workflow-tools,.reviewed-work-queues){background:var(--nc-surface);color:var(--nc-text);border-color:var(--nc-line)}
+html[data-theme=dark] :is(input,select,textarea){background:var(--nc-background);color:var(--nc-text);border-color:var(--nc-button-border);accent-color:var(--nc-action)}
+html[data-theme=dark] :is(p,dt,dd,small,summary,.field,.source,.source>span,.workflow-help,.section-head p,.eyebrow,.case-note,.queue-badge,.reader-help,.review-notice,.local){color:var(--nc-muted)}
+html[data-theme=dark] :is(h1,h2,h3,h4,h5,strong,button.case-title-button){color:inherit}
+html[data-theme=dark] :is(a,.text-button,.source-page-link){color:var(--nc-action)}
+html[data-theme=dark] :is(.secondary,.case-context-menu button,.context-submenu-panel button){background:transparent;color:var(--nc-primary);border-color:var(--nc-button-border)}
+html[data-theme=dark] :is(.case-context-menu button,.context-submenu-panel button,.secondary):hover:not(:disabled){background:var(--nc-light)}
+html[data-theme=dark] .primary{background:#256da8;color:#fff}
+html[data-theme=dark] .primary:hover:not(:disabled){background:#1d5687}
+html[data-theme=dark] :is(pre,.notice,.explorer-notice,.opened-case-status,.queue-card,.queue-case,.workflow-history,.source){background:var(--nc-light);color:var(--nc-text);border-color:var(--nc-line)}
+html[data-theme=dark] :is(.missing,.outcome.incomplete,.outcome.human_review){background:#403621;color:#ffebbf;border-color:#a08348}
+html[data-theme=dark] :is(.error,.outcome.not_supported){background:#462730;color:#ffd9d1;border-color:#ac7280}
+html[data-theme=dark] .outcome{background:#183e38;color:var(--nc-text);border-color:#4b867a}
+html[data-theme=dark] :is(.section-head,.source,.document-observations td,.recorded-criteria td){border-color:var(--nc-line)}
+html[data-theme=dark] .case-explorer .explorer-table th{background:var(--nc-light)}
+html[data-theme=dark] .case-explorer .explorer-table tbody tr{background:var(--nc-surface);color:var(--nc-text)}
+html[data-theme=dark] .case-explorer .explorer-table td{border-color:var(--nc-line)}
+html[data-theme=dark] .case-explorer .explorer-table.status-row-colors tbody tr:is([data-status=approval],[data-status=complete]){background:#183e38}
+html[data-theme=dark] .case-explorer .explorer-table.status-row-colors tbody tr[data-status=clarification]{background:#403621}
+html[data-theme=dark] .case-explorer .explorer-table.status-row-colors tbody tr[data-status=review]{background:#493126}
+html[data-theme=dark] .case-explorer .explorer-table.status-row-colors tbody tr[data-status=technical]{background:#462730}
+html[data-theme=dark] .case-explorer .explorer-table.status-row-colors tbody tr[data-status=documents]{background:#343048}
+html[data-theme=dark] .case-explorer .explorer-table tbody tr[aria-selected=true]{background:#256da8!important;color:#fff}
+html[data-theme=dark] .case-explorer .explorer-table tbody tr[aria-selected=true] :is(.case-title-button,.case-identifier,.queue-badge){color:#fff}
+html[data-theme=dark] .case-explorer .explorer-footer{background:var(--nc-background)}
+html[data-theme=dark] .brandmark{color:var(--nc-background)}
+html[data-theme=dark] dialog::backdrop{background:rgba(0,0,0,.6)}
+html[data-theme=dark] :is(.pdf-page-image,.document-reader img){filter:none}
+
+html[data-theme=dark] :is(.batch-review,.workload-summary,.identity-list li,.batch-warning){background:var(--nc-light);color:var(--nc-text);border-color:var(--nc-line)}
+html[data-theme=dark] :is(.batch-choice,.batch-result span,.workload-total span,.workload-counts span,.queue-more){color:var(--nc-muted)}
+html[data-theme=dark] .workload-total strong{color:var(--nc-primary)}
+html[data-theme=dark] input::placeholder{color:var(--nc-muted)}
+
+html[data-theme=dark] .workspace-extras-list a:hover{background:var(--nc-light)}
+html[data-theme=dark] .workspace-extras>summary{background:transparent;color:var(--nc-primary);border-color:var(--nc-line)}
+html[data-theme=dark] .case-explorer .custom-folder>.tree-filter[aria-pressed=true]{background:var(--nc-selected)}
+html[data-theme=dark] .case-explorer .context-submenu-panel .menu-custom-color{color:var(--nc-primary)}
+html[data-theme=dark] .case-explorer .context-submenu.touch-submenu .context-submenu-panel.is-open{background:var(--nc-surface)}
+html[data-theme=dark] .case-list-panel{background:var(--nc-background);border-color:var(--nc-line)}
+html[data-theme=dark] .case-empty{color:var(--nc-muted)}
+html[data-theme=dark] .workspace-navigation a[aria-current=page]{background:#256da8;color:#fff}

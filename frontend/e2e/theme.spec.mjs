@@ -1,0 +1,43 @@
+import {test,expect} from '@playwright/test';
+test('theme control stays reachable without widening a narrow workspace',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/#workbench');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ await page.getByLabel('Farbschema').selectOption('dark');
+ await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
+test('theme follows the system until explicitly changed and survives workspace navigation',async({page})=>{
+ await page.emulateMedia({colorScheme:'dark'});await page.goto('/#work-queues');
+ const scheme=page.getByLabel('Farbschema');await expect(scheme).toHaveValue('system');
+ await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await scheme.selectOption('light');await page.emulateMedia({colorScheme:'dark'});
+ await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+ await scheme.selectOption('system');await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await page.emulateMedia({colorScheme:'light'});await expect(page.locator('html')).toHaveAttribute('data-theme','light');
+ await scheme.selectOption('dark');await page.getByRole('navigation',{name:'Arbeitsbereiche'}).getByText('Extras',{exact:true}).click();await page.locator('.workspace-extras-list a[href="#workbench"]').click();
+ await expect(scheme).toHaveValue('dark');await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ expect(await page.evaluate(()=>[localStorage.length,sessionStorage.length])).toEqual([0,0]);
+ await page.screenshot({path:'test-results/dark-workbench.png'});
+});
+for(const width of [1366,1920])test(`dark case file, sources and dialogs remain readable at ${width}`,async({page})=>{
+ await page.setViewportSize({width,height:1080});await page.goto('/#work-queues');
+ await page.getByLabel('Farbschema').selectOption('dark');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await expect(explorer.locator('.explorer-tree')).toHaveCSS('background-color','rgb(15, 27, 40)');
+ await page.getByLabel('Fälle suchen').fill('reference-care-complete');
+ await explorer.locator('tbody tr').dblclick();
+ await expect(explorer.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
+ await page.screenshot({path:`test-results/dark-case-${width}.png`});
+ await explorer.getByRole('button',{name:'Dokumente',exact:true}).click();
+ await expect(explorer.locator('.document-case-summary')).toHaveCSS('background-color','rgb(15, 27, 40)');
+ await expect(explorer.locator('.pdf-page-image').first()).toHaveCSS('filter','none');
+ await page.screenshot({path:`test-results/dark-documents-${width}.png`});
+ await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
+ await expect(page.getByRole('dialog')).toHaveCSS('background-color','rgb(23, 38, 53)');
+ await page.screenshot({path:`test-results/dark-dialog-${width}.png`});
+ await page.getByRole('dialog').getByRole('button',{name:'Abbrechen'}).click();
+ await explorer.getByRole('button',{name:'← Liste',exact:true}).click();
+ await explorer.locator('tbody tr').click({button:'right'});
+ await expect(page.getByRole('menu',{name:'Fallaktionen'})).toHaveCSS('background-color','rgb(23, 38, 53)');
+ await page.screenshot({path:`test-results/dark-context-${width}.png`});
+});
