@@ -52,3 +52,13 @@ test('concrete transport context is retained and unrelated missing evidence is n
  const content=await (await page.request.get('/api/document-cases/reference-transport-complete/documents/transmission')).text();
  expect(content).toContain('Synthetische Testperson K-01, 78 Jahre');
 });
+
+test('care reference exposes its knowledge-defined score outputs directly',async({page})=>{
+ await page.goto('/');
+ const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await cases.getByRole('button',{name:'Pflege-Score: vollständig',exact:true}).click();
+ const outputs=cases.locator('.case-domain-results');
+ await expect(outputs.getByText('Score-Schwelle 12,5',{exact:true})).toBeVisible();
+ await expect(outputs.locator('dd').first()).toContainText('Erreicht');
+ await expect(cases.locator('iframe')).toHaveCount(0);
+});

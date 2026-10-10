@@ -50,6 +50,7 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
         <div className="result-banner">{analysis}{showAssessment&&(assessment?<h4>{de.result}: {outcomes[assessment.assessment.outcome]??de.unknown}</h4>:<p>{text.noRule}</p>)}</div>
 
         {!!file.findings.length&&<div className="missing"><h4>{text.findings}</h4><ul>{file.findings.map((finding,i)=><li key={i}>{finding}</li>)}</ul></div>}
+        {showAssessment&&!!assessment?.assessment.domainOutputs?.length&&<section className="case-domain-results"><h4>{de.domainOutputs}</h4><dl>{assessment.assessment.domainOutputs.map(output=><div key={output.outputId}><dt>{resolvedPresentation?.outputs?.[output.outputId]?.label??de.outputReference}</dt><dd>{output.value.kind==='UNKNOWN'?de.unknown:(resolvedPresentation?.outputs?.[output.outputId]?.choices[output.value.choice??'']??de.unknown)}</dd></div>)}</dl></section>}
         {file.context&&<section className="case-context" aria-label={de.workspace.context}><h4>{file.context.request}</h4><p><strong>{de.workspace.question}: </strong>{file.context.question}</p><details><summary>{de.workspace.background}</summary><p>{file.context.background}</p></details></section>}
         <p><strong>{text.scope}: </strong>{file.scope}</p>
         <details className="document-observations" open><summary>{text.observations}</summary><p>{text.observationsHelp}</p>
