@@ -5,7 +5,7 @@ test('case file opens PDF, scan and text with source links and keeps cases isola
  const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
  await queues.getByRole('button',{name:'Fall öffnen: demo-g-supported',exact:true}).click();
  const file=queues.getByRole('region',{name:'Dokumentakte'});
- await expect(file.getByRole('heading',{name:'Prüfauftrag und Anlagenübersicht',exact:true})).toBeVisible();
+ await expect(file.getByLabel('Dokument auswählen')).toHaveValue('document-1');
  await expect(file.locator('iframe')).toHaveAttribute('src',/demo-g-supported\/documents\/document-1#page=1$/);
  const downloadPromise=page.waitForEvent('download');await file.getByRole('link',{name:'Herunterladen'}).click();
  expect((await downloadPromise).suggestedFilename()).toBe('demo-g-supported-document-1.pdf');

@@ -40,13 +40,13 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
   return <section className="document-case-file" aria-label={text.heading}>
 
     {error||!file?<div className="case-file-grid"><div className="document-main-panel">{error?<p role="alert">{error}</p>:<p role="status">{text.loading}</p>}</div><aside className="case-analysis-panel" aria-label={de.workspace.analysis}>{analysis}</aside></div>:<>
-      <div className="case-file-grid"><div className="document-main-panel"><h4>{text.heading}</h4>
+      <div className="case-file-grid"><div className="document-main-panel">
       <p className="review-notice">{file.validationLevel==='PUBLIC_REFERENCE'?text.publicReference:file.assessmentJson?text.synthetic:text.documentOnly}</p>
       <div className="document-layout"><label className="field document-choice">{text.select}
         <select value={selected} onChange={event=>{setSelected(event.target.value);setSourcePage(1);setZoom(false);}}>{file.documents.map(item=><option key={item.id} value={item.id}>{item.title}</option>)}</select>
         {document&&<small>{document.mediaType==='application/pdf'?'PDF':document.mediaType==='text/plain'?text.textFile:text.scan} · {document.pages} {text.page}</small>}
       </label>
-      {document&&<div className="document-viewer"><h5>{document.title}</h5>
+      {document&&<div className="document-viewer">
         <div className="document-actions"><a href={url} target="_blank" rel="noopener noreferrer">{text.newWindow}</a><a href={url+'?download=true'} download>{text.download}</a></div>
         {document.mediaType==='application/pdf'?<iframe key={url+sourcePage} title={text.preview+': '+document.title} src={url+'#page='+sourcePage}/>:document.mediaType==='text/plain'?<pre className="document-text">{plain||text.loading}</pre>:<><button type="button" className="secondary" aria-pressed={zoom} onClick={()=>setZoom(!zoom)}>{zoom?text.zoomOut:text.zoomIn}</button><div className={zoom?'scan-preview zoomed':'scan-preview'}><img src={url} alt={document.title}/></div></>}
       </div>}</div>

@@ -26,6 +26,9 @@ test('shared workspace keeps navigation and three case panels inside a desktop w
  await page.screenshot({path:'test-results/compact-workspace-desktop.png'});
  await page.setViewportSize({width:1280,height:720});
  expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ const preview=await queues.locator('iframe').boundingBox();
+ expect(preview.height).toBeGreaterThanOrEqual(200);
+ expect(preview.y+preview.height).toBeLessThanOrEqual(720);
  await page.screenshot({path:'test-results/compact-workspace-laptop.png'});
 });
 
