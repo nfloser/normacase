@@ -95,3 +95,7 @@ Die öffentlichen Browsertests verwenden einen Worker: Alle Testseiten teilen si
 denselben lokalen Workspace mit optimistischer Revision. Parallele schreibende
 Tests würden absichtlich Revisionskonflikte auslösen statt isolierte Bedienabläufe
 zu prüfen; Konfliktverhalten bleibt durch die vorhandenen API-Tests abgedeckt.
+
+Fallbezeichnungen verwenden in jeder Tabellenzeile einen gleich breiten
+Lesezeichenplatz. Das Setzen oder Entfernen des Sterns verschiebt weder den
+Textanfang noch die Spalten; optionale Notizen beginnen auf derselben Textkante.
