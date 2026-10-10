@@ -1,0 +1,42 @@
+SYNTHETISCHE DEMO - reference-care-out-of-range
+Kontrollierter PDF-Text, keine OCR.
+
+Pflege - dokumentierte Modulsummen / Seite 1
+Synthetisch | reference-care-out-of-range | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Pflege - dokumentierte Modulsummen
+Fiktive Einrichtung / Testperson reference-care-out-of-range / Datum 10.10.2026
+Fiktive erwachsene Testperson. Die Modulsummen gelten als bereits fachlich festgestellt.
+Diese Demo ermittelt sie nicht aus Symptomen oder Diagnosen.
+Angabe
+Dokumentierter Wert
+Modul 1: Mobilität
+16
+Modul 2: Kognition und Kommunikation
+4
+Modul 3: Verhalten und psychische Problemlagen
+1
+Modul 4: Selbstversorgung
+8
+Modul 5: Krankheit und Therapie
+2
+Modul 6: Alltagsleben und Kontakte
+3
+Quelle der Dokumentstruktur: md-pflege. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Pflege - dokumentierte Modulsummen / Seite 2
+Synthetisch | reference-care-out-of-range | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+module_1_sum=16
+module_2_sum=4
+module_3_sum=1
+module_4_sum=8
+module_5_sum=2
+module_6_sum=3
+END-NCF1
+

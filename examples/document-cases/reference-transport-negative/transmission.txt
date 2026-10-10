@@ -1,0 +1,78 @@
+SYNTHETISCHE DEMO - reference-transport-negative
+Kontrollierter PDF-Text, keine OCR.
+
+Krankenbeförderung - Angaben zur Verordnung / Seite 1
+Synthetisch | reference-transport-negative | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Krankenbeförderung - Angaben zur
+ Verordnung
+Fiktive Einrichtung / Testperson reference-transport-negative / Datum 10.10.2026
+Krankenfahrt mit Taxi/Mietwagen zur ambulanten Behandlung. Kein Krankentransportwagen.
+Eigene Testvorlage mit Inhalten angelehnt an Muster 4.
+Angabe
+Dokumentierter Wert
+Ambulante Behandlung
+Ja
+Medizinische Notwendigkeit ausdrücklich bestätigt
+Nein
+Merkzeichen aG
+Nein
+Merkzeichen Bl
+Nein
+Merkzeichen H
+Nein
+Pflegegrad laut Bescheid
+2
+Dauerhafte Mobilitätsbeeinträchtigung bei
+Pflegegrad 3
+Nein
+Pflegestufe 2 am 31.12.2016
+Nein
+Pflegegrad mindestens 3 seit 01.01.2017
+Nein
+Quelle der Dokumentstruktur: kbv-transport. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Krankenbeförderung - Angaben zur Verordnung / Seite 2
+Synthetisch | reference-transport-negative | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+ambulatory_treatment=YES
+strict_medical_necessity=NO
+disability_marker_ag=NO
+disability_marker_bl=NO
+disability_marker_h=NO
+care_grade=2
+care_grade_3_permanent_mobility_transport_need=NO
+care_level_2_on_2016_12_31=NO
+care_grade_3_or_higher_since_2017_01_01=NO
+END-NCF1
+
+Pflegekassenbescheid - synthetischer Nachweis / Seite 1
+Synthetisch | reference-transport-negative | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Pflegekassenbescheid - synthetischer
+ Nachweis
+Fiktive Einrichtung / Testperson reference-transport-negative / Datum 10.10.2026
+Erfundener Bescheid zum Nachweis des dokumentierten Pflegegrades. Kein realer
+Leistungsbescheid.
+Angabe
+Dokumentierter Wert
+Pflegegrad laut Bescheid
+2
+Quelle der Dokumentstruktur: kbv-transport. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Pflegekassenbescheid - synthetischer Nachweis / Seite 2
+Synthetisch | reference-transport-negative | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+care_grade=2
+END-NCF1
+

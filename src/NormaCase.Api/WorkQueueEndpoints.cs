@@ -97,6 +97,7 @@ internal static class WorkQueueEndpoints
             throw new InvalidOperationException("Synthetic workload fixture must contain exactly 100 cases.");
 
         var details = items.ToDictionary(item => item.CaseId, StringComparer.Ordinal);
+        DocumentCaseEndpoints.Map(app, platformVersion, caseId => details.TryGetValue(caseId, out var item) ? item.AssessmentJson : null);
         app.MapGet("/api/work-queues", () => Results.Json(new
         {
             configurationId = configuration.Id,

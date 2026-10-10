@@ -1,0 +1,56 @@
+SYNTHETISCHE DEMO - reference-reha-complete
+Kontrollierter PDF-Text, keine OCR.
+
+Rehabilitation - Auftragsangaben / Seite 1
+Synthetisch | reference-reha-complete | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Rehabilitation - Auftragsangaben
+Fiktive Einrichtung / Testperson reference-reha-complete / Datum 10.10.2026
+Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach orthopädischer
+Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene Fallangaben,
+keine ärztliche Empfehlung.
+Angabe
+Dokumentierter Wert
+Rehabilitationsziel dokumentiert
+Ja
+Funktionseinschränkungen beschrieben
+Ja
+Quelle der Dokumentstruktur: kbv-reha. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Rehabilitation - Auftragsangaben / Seite 2
+Synthetisch | reference-reha-complete | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+reha_goal=YES
+functional_limitation=YES
+END-NCF1
+
+Ärztlicher Befundbericht / Seite 1
+Synthetisch | reference-reha-complete | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Ärztlicher Befundbericht
+Fiktive Einrichtung / Testperson reference-reha-complete / Datum 10.10.2026
+Fiktiver Verlauf: Belastbarkeit eingeschränkt, Gehstrecke 200 Meter laut Testangabe. Befund
+und Ziel sind für die Unterlagensichtung dokumentiert. Keine Bewertung einer
+Rehabilitationsindikation.
+Angabe
+Dokumentierter Wert
+Befundbericht beigefügt
+Ja
+Quelle der Dokumentstruktur: kbv-reha. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Ärztlicher Befundbericht / Seite 2
+Synthetisch | reference-reha-complete | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+findings_attached=YES
+END-NCF1
+

@@ -1,0 +1,23 @@
+SYNTHETISCHE DEMO - demo-volume-technical-04
+Kontrollierter PDF-Text, keine OCR.
+
+Übermittlungsprotokoll / Seite 1
+Synthetisch | demo-volume-technical-04 | Seite 1
+SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+ Übermittlungsprotokoll
+Fiktive Einrichtung / Testperson demo-volume-technical-04 / Datum 10.10.2026
+Der synthetische Eingang ist technisch ungültig. Es wurde keine fachliche Bewertung erzeugt.
+Angabe
+Dokumentierter Wert
+Quelle der Dokumentstruktur: md-hilfsmittel. Eigenes Layout; keine Kopie eines amtlichen
+Formulars. Alle Angaben sind erfunden.
+Keine echte Unterschrift, keine medizinische Empfehlung.
+
+Übermittlungsprotokoll / Seite 2
+Synthetisch | demo-volume-technical-04 | Seite 2
+Strukturierte Demo-Übermittlung
+Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
+MD-Austauschformat und keine freie Dokumenterkennung.
+NCF1
+END-NCF1
+
