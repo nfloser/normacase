@@ -425,7 +425,8 @@
     "zoomIn": "Scan vergrößern",
     "zoomOut": "Scan verkleinern",
     "noRule": "Für diesen Dokumenttyp ist keine fachlich geprüfte Regel hinterlegt. Die Unterlagen können gesichtet werden; eine Entscheidung wird nicht erzeugt.",
-    "documentOnly": "Synthetische Unterlagen zur Sichtung"
+    "documentOnly": "Synthetische Unterlagen zur Sichtung",
+    "select": "Dokument auswählen"
   },
   "workspace": {
     "navigation": "Arbeitsbereiche",

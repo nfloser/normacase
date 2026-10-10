@@ -9,14 +9,14 @@ test('case file opens PDF, scan and text with source links and keeps cases isola
  await expect(file.locator('iframe')).toHaveAttribute('src',/demo-g-supported\/documents\/document-1#page=1$/);
  const downloadPromise=page.waitForEvent('download');await file.getByRole('link',{name:'Herunterladen'}).click();
  expect((await downloadPromise).suggestedFilename()).toBe('demo-g-supported-document-1.pdf');
- await file.getByRole('button',{name:/Dokument öffnen: Scan-Anlage/}).click();
+ await file.getByLabel('Dokument auswählen').selectOption({label:'Scan-Anlage (ohne automatische Texterkennung)'});
  await expect(file.getByRole('img')).toBeVisible();
  await file.getByRole('button',{name:'Scan vergrößern'}).click();await expect(file.locator('.scan-preview')).toHaveClass(/zoomed/);
- await file.getByRole('button',{name:'Dokument öffnen: Textübermittlung der Test-PDFs'}).click();
+ await file.getByLabel('Dokument auswählen').selectOption({label:'Textübermittlung der Test-PDFs'});
  await expect(file.locator('.document-text')).toContainText('NCF1');
  await queues.getByRole('button',{name:'Fall öffnen: demo-g-review',exact:true}).click();
  await expect(file.getByText(/Ein erforderlicher Nachweis fehlt/)).toBeVisible();
- await expect(file.getByRole('button',{name:/Dokument öffnen: Bestätigung/})).toHaveCount(0);
+ await expect(file.locator('option').filter({hasText:'Bestätigung'})).toHaveCount(0);
 });
 
 test('reference documents expose conflicts, German provenance and actual engine outcome on mobile',async({page})=>{
