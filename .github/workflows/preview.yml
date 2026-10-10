@@ -23,8 +23,16 @@ jobs:
         include:
           - os: ubuntu-24.04
             rid: linux-x64
+            python: python3
           - os: windows-2025
             rid: win-x64
+            python: python
+          - os: macos-15
+            rid: osx-arm64
+            python: python3
+          - os: macos-15-intel
+            rid: osx-x64
+            python: python3
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
@@ -39,16 +47,17 @@ jobs:
           dotnet-version: 10.0.x
       - name: Test preview integrity and immutable installation handling
         run: |
-          python scripts/test_preview_integrity.py
-          python scripts/test_installation.py
+          ${{ matrix.python }} scripts/test_preview_platform.py
+          ${{ matrix.python }} scripts/test_preview_integrity.py
+          ${{ matrix.python }} scripts/test_installation.py
       - run: npm ci
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
       - name: Publish and archive native executables
-        run: python scripts/build_preview.py --rid ${{ matrix.rid }} --commit ${{ github.event.pull_request.head.sha || github.sha }}
+        run: ${{ matrix.python }} scripts/build_preview.py --rid ${{ matrix.rid }} --commit ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Exercise extracted preview without shared runtime lookup
-        run: python scripts/check_preview.py --archive artifacts/normacase-synthetic-preview-${{ matrix.rid }}.zip --rid ${{ matrix.rid }} --commit ${{ github.event.pull_request.head.sha || github.sha }}
+        run: ${{ matrix.python }} scripts/check_preview.py --archive artifacts/normacase-synthetic-preview-${{ matrix.rid }}.zip --rid ${{ matrix.rid }} --commit ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: synthetic-preview-${{ matrix.rid }}

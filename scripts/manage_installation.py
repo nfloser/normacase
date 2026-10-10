@@ -11,12 +11,13 @@ import socket
 import subprocess
 import tempfile
 import uuid
+from preview_platform import SUPPORTED_RIDS, host_rid
 from check_preview import extract_verified, verify_archive_sidecar
 
 MESSAGES = json.loads(Path(__file__).with_name("installation.de.json").read_text(encoding="utf-8"))
 
 def identity(manifest, rid, commit):
-    if (not re.fullmatch(r"[0-9a-f]{40}", commit) or rid not in {"linux-x64", "win-x64"}
+    if (not re.fullmatch(r"[0-9a-f]{40}", commit) or rid not in SUPPORTED_RIDS
             or manifest.get("formatVersion") != 1 or manifest.get("sourceCommit") != commit
             or manifest.get("runtimeIdentifier") != rid
             or manifest.get("validationLevel") != "SYNTHETIC"
@@ -58,7 +59,7 @@ def verify_release(root, commit):
     return release, manifest
 
 def stage(root, archive, rid, commit):
-    if not re.fullmatch(r"[0-9a-f]{40}", commit) or rid not in {"linux-x64", "win-x64"}:
+    if not re.fullmatch(r"[0-9a-f]{40}", commit) or rid not in SUPPORTED_RIDS:
         raise ValueError("invalid_release_identity")
     verify_archive_sidecar(archive)
     with lock(root, "installation"):
@@ -122,7 +123,7 @@ def run(root):
             if value is None:
                 raise ValueError("no_active_release")
             release, manifest = verify_release(root, value["sourceCommit"])
-            expected = "win-x64" if os.name == "nt" else "linux-x64"
+            expected = host_rid()
             if manifest["runtimeIdentifier"] != expected:
                 raise ValueError("wrong_runtime")
             executable = release / "api" / ("NormaCase.Api.exe" if os.name == "nt" else "NormaCase.Api")
@@ -139,7 +140,7 @@ def main():
             command.add_argument("--commit", required=True, help=MESSAGES["commit"])
         if name == "stage":
             command.add_argument("--archive", type=Path, required=True, help=MESSAGES["archive"])
-            command.add_argument("--rid", choices=["linux-x64", "win-x64"], required=True, help=MESSAGES["rid"])
+            command.add_argument("--rid", choices=SUPPORTED_RIDS, required=True, help=MESSAGES["rid"])
     args = parser.parse_args()
     root = args.root.resolve()
     try:
