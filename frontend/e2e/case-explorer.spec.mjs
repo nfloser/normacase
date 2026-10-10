@@ -27,11 +27,11 @@ test('eligible batch is confirmed and downloaded as explicit local dispatch simu
  await explorer.getByRole('row').filter({hasText:'reference-md-kraemer'}).getByRole('checkbox').check();
  await explorer.getByRole('button',{name:'Auswahl bestätigen (Demo)',exact:true}).click();
  await page.getByRole('dialog').getByRole('button',{name:'Bestätigen',exact:true}).click();
- await expect(explorer.getByText('Bestätigt (Demo)',{exact:true})).toBeVisible();
+ await expect(explorer.getByRole('table').getByText('Bestätigt (Demo)',{exact:true})).toBeVisible();
  await explorer.getByRole('button',{name:'Auswahl abschicken (Demo)',exact:true}).click();
  const download=page.waitForEvent('download');await page.getByRole('dialog').getByRole('button',{name:'Versand simulieren',exact:true}).click();
  expect((await download).suggestedFilename()).toMatch(/normacase-versand.*json/);
- await expect(explorer.getByText('Versand simuliert',{exact:true})).toBeVisible();
+ await expect(explorer.getByRole('table').getByText('Versand simuliert',{exact:true})).toBeVisible();
 });
 
 test('keyboard menu returns focus and removes only the folder assignment',async({page})=>{
