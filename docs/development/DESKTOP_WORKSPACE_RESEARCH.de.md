@@ -18,3 +18,6 @@ und Fundstellen bleiben an die Originalseite gebunden. Lange Inhalte scrollen in
 Panels, nicht im gesamten Desktop-Fenster. Kleine Fenster dürfen vertikal scrollen.
 Dies ist eine gemeinsame React-Oberfläche für Browser und späteren Desktop-Host;
 eine native Installation oder produktive BG-/MD-Anbindung wird nicht behauptet.
+
+Die ergänzende [Artcraft-Recherche](ARTCRAFT_WORKSPACE_RESEARCH.de.md) dokumentiert
+konkrete Quellpfade für Ordner, Farben, Kontextaktionen und die spätere Desktop-Grenze.
