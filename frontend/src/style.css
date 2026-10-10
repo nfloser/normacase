@@ -329,3 +329,12 @@ body { overflow:hidden; }
 .case-explorer .explorer-table tbody tr[aria-selected="true"] .queue-badge,
 .case-explorer .explorer-table tbody tr[aria-selected="true"] .case-identifier{color:white}
 .case-explorer .explorer-table tbody tr[aria-selected="true"] input{accent-color:#123c63}
+
+/* Avoid document-like rows in the case queue; keep notes and IDs in tooltips/details. */
+.case-explorer .explorer-table tbody tr{height:28px;max-height:28px}
+.case-explorer .explorer-table td{height:28px;max-height:28px;padding-top:2px;padding-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:20px}
+.case-explorer .explorer-table td .case-note{display:none}
+.case-explorer .explorer-table td .case-title-button{display:inline-block;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;vertical-align:middle;line-height:20px}
+.case-explorer .explorer-table td .case-identifier{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.case-explorer .explorer-table td button.secondary{padding:1px 4px;line-height:20px}
+.case-explorer .explorer-table td input[type=checkbox]{width:16px;height:16px;vertical-align:middle}
