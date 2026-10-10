@@ -1,37 +1,115 @@
-SYNTHETISCHE DEMO - reference-reha-missing
+Schulungsakte - NC-2026-4111 | Martin Engel
 Kontrollierter PDF-Text, keine OCR.
 
-Rehabilitation - Auftragsangaben / Seite 1
-Synthetisch | reference-reha-missing | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
- Rehabilitation - Auftragsangaben
-Fiktive Einrichtung / Testperson reference-reha-missing / Datum 10.10.2026
-Synthetische Testperson R-02, 56 Jahre, nach orthopädischer Behandlung: Einschränkungen
-der Gehstrecke und das Ziel selbständiger Alltagsmobilität sind beschrieben. Der
-angekündigte ärztliche Befundbericht fehlt. Eine Rehabilitationsindikation wird daraus nicht
-abgeleitet. Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach
-orthopädischer Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene
-Fallangaben, keine ärztliche Empfehlung.
+Rehabilitationsantrag und Verordnungsangaben / Seite 1
+NC-2026-4111 | Martin Engel
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Rehabilitationsantrag und
+ Verordnungsangaben
+NC-2026-4111 | Martin Engel | 56 Jahre | 08.10.2026
+Martin Engel, 56 Jahre. nach orthopädischer Behandlung: Einschränkungen der Gehstrecke
+und das Ziel selbständiger Alltagsmobilität sind beschrieben. Der angekündigte ärztliche
+Befundbericht fehlt. Eine Rehabilitationsindikation wird daraus nicht abgeleitet.
+Anlass und Funktionsbezug
+Nach orthopädischer Behandlung wird Unterstützung zur Wiedergewinnung selbständiger
+Alltagsmobilität beantragt. Die angegebene Gehstrecke beträgt 200 Meter. Längere Wege
+und Treppen schränken die Teilhabe im Alltag ein. Die Angaben beschreiben die aktuelle
+Alltagssituation.
+Ziele und Kontextfaktoren
+Martin Engel möchte Einkäufe im Nahbereich und Wege zu Terminen wieder eigenständig
+bewältigen. Angehörige helfen derzeit bei längeren Wegen. Als Ziel ist selbständige
+Alltagsmobilität angegeben. Die Zuordnung zum zuständigen Träger und die fachliche
+Rehabilitationsentscheidung werden in dieser Akte nicht vorweggenommen.
+Anlagenstand
+Der ärztliche Befundbericht ist angekündigt, aber nicht eingegangen. Ein Therapiebericht
+ersetzt die fehlende ärztliche Anlage nicht.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Rehabilitationsziel dokumentiert
 Ja
 Funktionseinschränkungen beschrieben
 Ja
 Befundbericht beigefügt
 Nicht angegeben
-Quelle der Dokumentstruktur: kbv-reha. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 
-Rehabilitation - Auftragsangaben / Seite 2
-Synthetisch | reference-reha-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Rehabilitationsantrag und Verordnungsangaben / Seite 2
+NC-2026-4111 | Martin Engel
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 reha_goal=YES
 functional_limitation=YES
 findings_attached=UNKNOWN
 END-NCF1
+
+Therapie- und Belastungsverlauf / Seite 1
+NC-2026-4111 | Martin Engel
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Therapiezentrum Lindenhof
+ Therapie- und Belastungsverlauf
+NC-2026-4111 | Martin Engel | 56 Jahre | 06.10.2026
+Verlauf der Alltagserprobung
+Beobachtungszeitraum 21.09.2026 bis 06.10.2026. Im Vordergrund stehen Wege in der
+Wohnung und im Nahbereich. Die im Antrag genannten 200 Meter werden als übernommene
+Fallangabe geführt; eine unabhängige standardisierte Gehstreckenmessung wird nicht
+behauptet.
+Aktivitäten und Teilhabe
+Beim Planen längerer Wege werden Pausen und Unterstützung berücksichtigt. Als
+alltagsbezogenes Ziel werden eigenständige Einkäufe und Wege zu Terminen benannt. Martin
+Engel schildert Unsicherheit bei Treppen. Der Bericht beschreibt den Verlauf und enthält keine
+neue ärztliche Verordnung.
+Rückmeldung zur weiteren Planung
+Die Testperson möchte selbständige Einkäufe und Wege zu Terminen wieder aufnehmen. Die
+Belastbarkeit bei längeren Wegen bleibt eingeschränkt. Für die Besprechung werden
+Therapieverlauf und Selbstauskunft zusammengeführt; die ärztliche Anlage ist gesondert zu
+berücksichtigen.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
+
+Anforderung ärztlicher Unterlagen / Seite 1
+NC-2026-4111 | Martin Engel
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Anforderung ärztlicher Unterlagen
+NC-2026-4111 | Martin Engel | 56 Jahre | 09.10.2026
+Offener Punkt
+Bitte reichen Sie den angekündigten ärztlichen Befundbericht nach. Vorhanden sind
+Verordnungsangaben und Therapieverlauf; die fehlende Anlage wird nicht als vorhanden
+markiert.
+Weiterer Bearbeitungsschritt
+Die Rückmeldung ist offen. Die Anforderung dokumentiert ausschließlich die Unterlagenlücke;
+sie ist weder eine Ablehnung noch ein Ersatz für den fehlenden Befundbericht.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
+
+Prüfauftrag und Aktenvermerk / Seite 1
+NC-2026-4111 | Martin Engel
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Prüfauftrag und Aktenvermerk
+NC-2026-4111 | Martin Engel | 56 Jahre | 10.10.2026
+Auftrag und Fragestellung
+Rehabilitationsantrag mit fehlendem Befundbericht. Welche Anlage fehlt für die vorgesehene
+Unterlagensichtung? Die Prüfung bleibt auf den dokumentierten Umfang beschränkt.
+Erzählangaben aus ergänzenden Berichten werden nicht automatisch in neue fachliche
+Kriterien umgewandelt.
+Stand der Bearbeitung
+Die Unterlagen wurden am 10.10.2026 für die Fallbesprechung zusammengestellt. Fehlende
+Angabe: Befundbericht beigefügt.
+Nächster Schritt
+Unterlagen und Fundstellen sind mit dem dokumentierten Auftrag abzugleichen. Offene
+Angaben und widersprüchliche Nachweise bleiben erkennbar. Eine fachliche Entscheidung
+außerhalb des vorhandenen Referenzpfads wird nicht vorweggenommen.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 

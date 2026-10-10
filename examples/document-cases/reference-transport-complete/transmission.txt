@@ -1,19 +1,27 @@
-SYNTHETISCHE DEMO - reference-transport-complete
+Schulungsakte - NC-2026-4101 | Marlene Berg
 Kontrollierter PDF-Text, keine OCR.
 
 Krankenbeförderung - Angaben zur Verordnung / Seite 1
-Synthetisch | reference-transport-complete | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+NC-2026-4101 | Marlene Berg
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Krankenbeförderung - Angaben zur
  Verordnung
-Fiktive Einrichtung / Testperson reference-transport-complete / Datum 10.10.2026
-Synthetische Testperson K-01, 78 Jahre: Für eine ambulante augenärztliche Behandlung
-wurde eine Krankenfahrt verordnet. Die medizinische Notwendigkeit ist ausdrücklich
-bestätigt. Der beigefügte Pflegekassenbescheid weist Pflegegrad 4 aus. Krankenfahrt mit
-Taxi/Mietwagen zur ambulanten Behandlung. Kein Krankentransportwagen. Eigene
-Testvorlage mit Inhalten angelehnt an Muster 4.
+NC-2026-4101 | Marlene Berg | 78 Jahre | 08.10.2026
+Marlene Berg, 78 Jahre. Für eine ambulante augenärztliche Behandlung wurde eine
+Krankenfahrt verordnet. Die medizinische Notwendigkeit ist ausdrücklich bestätigt. Der
+beigefügte Pflegekassenbescheid weist Pflegegrad 4 aus.
+Anlass und Unterlagenbezug
+Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Ist die
+Genehmigungsfiktion nach KT-RL § 8 Abs. 3 im dokumentierten Referenzpfad erfüllt?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Ambulante Behandlung
 Ja
 Medizinische Notwendigkeit ausdrücklich bestätigt
@@ -26,22 +34,21 @@ Merkzeichen H
 Nein
 Pflegegrad laut Bescheid
 4
-Dauerhafte Mobilitätsbeeinträchtigung bei
-Pflegegrad 3
+Dauerhafte Mobilitätsbeeinträchtigung bei Pflegegrad 3
 Nein
 Pflegestufe 2 am 31.12.2016
 Nein
 Pflegegrad mindestens 3 seit 01.01.2017
 Nein
-Quelle der Dokumentstruktur: kbv-transport. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
 
 Krankenbeförderung - Angaben zur Verordnung / Seite 2
-Synthetisch | reference-transport-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4101 | Marlene Berg
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 ambulatory_treatment=YES
 strict_medical_necessity=YES
@@ -54,28 +61,79 @@ care_level_2_on_2016_12_31=NO
 care_grade_3_or_higher_since_2017_01_01=NO
 END-NCF1
 
-Pflegekassenbescheid - synthetischer Nachweis / Seite 1
-Synthetisch | reference-transport-complete | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
- Pflegekassenbescheid - synthetischer
- Nachweis
-Fiktive Einrichtung / Testperson reference-transport-complete / Datum 10.10.2026
-Erfundener Bescheid zum Nachweis des dokumentierten Pflegegrades. Kein realer
-Leistungsbescheid.
+Pflegekassenbescheid / Seite 1
+NC-2026-4101 | Marlene Berg
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Pflegekassenbescheid
+NC-2026-4101 | Marlene Berg | 78 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Die beigefügte Bescheidanlage dokumentiert den Pflegegrad für den Nachweisabgleich.
+Maßgeblich für diesen Aktenbestand ist der unten aufgeführte Wert. Abweichende Angaben in
+einer anderen Unterlage werden gesondert zur Klärung vorgelegt.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Pflegegrad laut Bescheid
 4
-Quelle der Dokumentstruktur: kbv-transport. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
 
-Pflegekassenbescheid - synthetischer Nachweis / Seite 2
-Synthetisch | reference-transport-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Pflegekassenbescheid / Seite 2
+NC-2026-4101 | Marlene Berg
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 care_grade=4
 END-NCF1
+
+Behandlungsbestätigung und Terminnachweis / Seite 1
+NC-2026-4101 | Marlene Berg
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Augenärztliche Praxis Lindenhof
+ Behandlungsbestätigung und
+ Terminnachweis
+NC-2026-4101 | Marlene Berg | 78 Jahre | 07.10.2026
+Behandlungsanlass
+Eine ambulante augenärztliche Behandlung ist vorgesehen. Die Akte betrifft die Beförderung
+mit Taxi oder Mietwagen, nicht einen Krankentransportwagen. Der Termin und die
+Verordnungsangaben werden zur Prüfung des eng begrenzten Referenzpfads
+zusammengestellt.
+Abgleich mit der Verordnung
+Die medizinische Notwendigkeit ist in der Verordnung ausdrücklich bestätigt. Der
+Terminnachweis dokumentiert nur den ambulanten Behandlungsanlass; er ist kein
+zusätzlicher Leistungsentscheid.
+Unterlagenbezug
+Der Pflegegrad wird ausschließlich anhand der hierzu beigefügten Dokumente betrachtet.
+Dieser Terminbeleg ersetzt weder einen Pflegekassenbescheid noch Angaben zu alternativen
+Anspruchswegen.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
+
+Antrag auf Krankenfahrt und Anlagenverzeichnis / Seite 1
+NC-2026-4101 | Marlene Berg
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Antrag auf Krankenfahrt und
+ Anlagenverzeichnis
+NC-2026-4101 | Marlene Berg | 78 Jahre | 09.10.2026
+Anliegen
+Beantragt wird eine Krankenfahrt zur ambulanten Behandlung mit Taxi oder Mietwagen. Die
+Verordnung und der Pflegekassenbescheid mit Pflegegrad 4 sind beigefügt.
+Bearbeitungsstand
+Die Prüfung betrifft ausschließlich die dokumentierte Genehmigungsfiktion im vorhandenen
+Wissenspaket. Aus einem unvollständigen oder nicht erfüllten Referenzpfad wird keine
+allgemeine Leistungsablehnung abgeleitet. Angaben zu anderen Anspruchswegen werden
+nicht erfunden.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
 

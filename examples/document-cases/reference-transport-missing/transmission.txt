@@ -1,19 +1,28 @@
-SYNTHETISCHE DEMO - reference-transport-missing
+Schulungsakte - NC-2026-4102 | Heinz Sommer
 Kontrollierter PDF-Text, keine OCR.
 
 Krankenbeförderung - Angaben zur Verordnung / Seite 1
-Synthetisch | reference-transport-missing | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+NC-2026-4102 | Heinz Sommer
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Krankenbeförderung - Angaben zur
  Verordnung
-Fiktive Einrichtung / Testperson reference-transport-missing / Datum 10.10.2026
-Synthetische Testperson K-02, 78 Jahre: Die Verordnung nennt eine ambulante Behandlung
-und Pflegegrad 4. Die ausdrückliche Angabe zur medizinischen Notwendigkeit fehlt. Der
-Pflegekassenbescheid ist beigefügt. Krankenfahrt mit Taxi/Mietwagen zur ambulanten
-Behandlung. Kein Krankentransportwagen. Eigene Testvorlage mit Inhalten angelehnt an
-Muster 4.
+NC-2026-4102 | Heinz Sommer | 78 Jahre | 08.10.2026
+Heinz Sommer, 78 Jahre. Die Verordnung nennt eine ambulante Behandlung und Pflegegrad
+4. Die ausdrückliche Angabe zur medizinischen Notwendigkeit fehlt. Der
+Pflegekassenbescheid ist beigefügt.
+Anlass und Unterlagenbezug
+Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Kann der Referenzpfad
+ohne ausdrückliche Bestätigung der medizinischen Notwendigkeit abschließend geprüft
+werden?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Ambulante Behandlung
 Ja
 Medizinische Notwendigkeit ausdrücklich bestätigt
@@ -26,22 +35,21 @@ Merkzeichen H
 Nein
 Pflegegrad laut Bescheid
 4
-Dauerhafte Mobilitätsbeeinträchtigung bei
-Pflegegrad 3
+Dauerhafte Mobilitätsbeeinträchtigung bei Pflegegrad 3
 Nein
 Pflegestufe 2 am 31.12.2016
 Nein
 Pflegegrad mindestens 3 seit 01.01.2017
 Nein
-Quelle der Dokumentstruktur: kbv-transport. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
 
 Krankenbeförderung - Angaben zur Verordnung / Seite 2
-Synthetisch | reference-transport-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4102 | Heinz Sommer
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 ambulatory_treatment=YES
 strict_medical_necessity=UNKNOWN
@@ -54,28 +62,77 @@ care_level_2_on_2016_12_31=NO
 care_grade_3_or_higher_since_2017_01_01=NO
 END-NCF1
 
-Pflegekassenbescheid - synthetischer Nachweis / Seite 1
-Synthetisch | reference-transport-missing | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
- Pflegekassenbescheid - synthetischer
- Nachweis
-Fiktive Einrichtung / Testperson reference-transport-missing / Datum 10.10.2026
-Erfundener Bescheid zum Nachweis des dokumentierten Pflegegrades. Kein realer
-Leistungsbescheid.
+Pflegekassenbescheid / Seite 1
+NC-2026-4102 | Heinz Sommer
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Pflegekassenbescheid
+NC-2026-4102 | Heinz Sommer | 78 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Die beigefügte Bescheidanlage dokumentiert den Pflegegrad für den Nachweisabgleich.
+Maßgeblich für diesen Aktenbestand ist der unten aufgeführte Wert. Abweichende Angaben in
+einer anderen Unterlage werden gesondert zur Klärung vorgelegt.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Pflegegrad laut Bescheid
 4
-Quelle der Dokumentstruktur: kbv-transport. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
 
-Pflegekassenbescheid - synthetischer Nachweis / Seite 2
-Synthetisch | reference-transport-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Pflegekassenbescheid / Seite 2
+NC-2026-4102 | Heinz Sommer
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 care_grade=4
 END-NCF1
+
+Behandlungsbestätigung und Terminnachweis / Seite 1
+NC-2026-4102 | Heinz Sommer
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Augenärztliche Praxis Lindenhof
+ Behandlungsbestätigung und
+ Terminnachweis
+NC-2026-4102 | Heinz Sommer | 78 Jahre | 07.10.2026
+Behandlungsanlass
+Eine ambulante augenärztliche Behandlung ist vorgesehen. Die Akte betrifft die Beförderung
+mit Taxi oder Mietwagen, nicht einen Krankentransportwagen. Der Termin und die
+Verordnungsangaben werden zur Prüfung des eng begrenzten Referenzpfads
+zusammengestellt.
+Abgleich mit der Verordnung
+Die ausdrückliche Bestätigung der medizinischen Notwendigkeit fehlt in der Verordnung.
+Dieser Terminnachweis ergänzt die Angabe nicht stillschweigend.
+Unterlagenbezug
+Der Pflegegrad wird ausschließlich anhand der hierzu beigefügten Dokumente betrachtet.
+Dieser Terminbeleg ersetzt weder einen Pflegekassenbescheid noch Angaben zu alternativen
+Anspruchswegen.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
+
+Rückfrage zur Verordnung / Seite 1
+NC-2026-4102 | Heinz Sommer
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Rückfrage zur Verordnung
+NC-2026-4102 | Heinz Sommer | 78 Jahre | 09.10.2026
+Anliegen
+Bitte bestätigen Sie die medizinische Notwendigkeit ausdrücklich mit einer nachvollziehbaren
+Angabe. Bis zum Eingang bleibt das Feld unbekannt.
+Bearbeitungsstand
+Die Prüfung betrifft ausschließlich die dokumentierte Genehmigungsfiktion im vorhandenen
+Wissenspaket. Aus einem unvollständigen oder nicht erfüllten Referenzpfad wird keine
+allgemeine Leistungsablehnung abgeleitet. Angaben zu anderen Anspruchswegen werden
+nicht erfunden.
+Strukturbezug: KBV PraxisInfo Krankenbeförderung; Januar 2025. Eigenes Berichtslayout, kein
+amtliches Originalformular.
 

@@ -92,6 +92,32 @@ class RetainedCorpusTests(unittest.TestCase):
         missing=next(c for c in catalog['cases'] if c['caseId']=='reference-transport-missing')
         self.assertTrue(any('Medizinische Notwendigkeit' in f for f in missing['findings']))
 
+    def test_reference_bundles_are_complete_and_do_not_change_assessment_inputs(self):
+        import json
+        from pypdf import PdfReader
+        catalog=json.loads((fixtures.OUT/'catalog.json').read_text())
+        bundles=json.loads((fixtures.ROOT/'scripts/clinical-case-bundles.de.json').read_text())
+        baseline=json.loads((fixtures.ROOT/'scripts/reference-input-baseline.json').read_text())
+        for case in catalog['cases']:
+            if case['caseId'] not in bundles: continue
+            profile=bundles[case['caseId']]
+            self.assertEqual(case['inputSha256'],baseline[case['caseId']])
+            pdfs=[d for d in case['documents'] if d['mediaType']=='application/pdf']
+            self.assertGreaterEqual(len(pdfs),4)
+            self.assertLessEqual(len(case['documents']),10)
+            self.assertIn(profile['caseNumber'],case['title'])
+            for document in pdfs:
+                self.assertNotIn('Demo',document['title'])
+                content=' '.join(PdfReader(fixtures.OUT/case['caseId']/document['filename']).pages[0].extract_text().split())
+                self.assertIn(profile['person'],content)
+                self.assertIn(profile['caseNumber'],content)
+            for supplement in profile['documents']:
+                document=next(d for d in pdfs if d['title']==supplement['title'])
+                content=' '.join(p.extract_text() for p in PdfReader(fixtures.OUT/case['caseId']/document['filename']).pages)
+                for section in supplement['sections']:
+                    self.assertIn(section['heading'],content)
+            self.assertTrue(all(o['id'].startswith('document-') for o in case['observations']))
+
     def test_retained_decimal_json_does_not_round(self):
         import tempfile,json
         from decimal import Decimal

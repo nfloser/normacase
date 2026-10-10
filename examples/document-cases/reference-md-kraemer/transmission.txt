@@ -1,18 +1,27 @@
-SYNTHETISCHE DEMO - reference-md-kraemer
+Schulungsakte - NC-2026-4114 | Rolf Lindner
 Kontrollierter PDF-Text, keine OCR.
 
 Modulbogen – MD-Lehrbeispiel / Seite 1
-Synthetisch | reference-md-kraemer | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4114 | Rolf Lindner
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Modulbogen – MD-Lehrbeispiel
-Fiktive Einrichtung / Testperson reference-md-kraemer / Datum 10.10.2026
-Synthetische Testperson L-02, 75 Jahre. Angelehnt an Otto Krämer: Nach Schlaganfall
-bestehen Einschränkungen beim Gehen und bei Handbewegungen. Angehörige unterstützen
-die Selbstversorgung. Die neuen Berichte sind synthetisch. Einzelpunktsummen aus der
-veröffentlichten Tabelle. Vergleichswert im Lehrbeispiel: 31,25 gewichtete Punkte. Eine
-eigenständige klinische Bewertung wird nicht vorgenommen.
+NC-2026-4114 | Rolf Lindner | 75 Jahre | 08.10.2026
+Rolf Lindner, 75 Jahre. Angelehnt an Otto Krämer: Nach Schlaganfall bestehen
+Einschränkungen beim Gehen und bei Handbewegungen. Angehörige unterstützen die
+Selbstversorgung. Die neuen Berichte sind synthetisch.
+Anlass und Unterlagenbezug
+Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die
+Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der
+Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Modul 1: Mobilität
 3
 Modul 2: Kognition und Kommunikation
@@ -25,15 +34,16 @@ Modul 5: Krankheit und Therapie
 1
 Modul 6: Alltagsleben und Kontakte
 1
-Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
 
 Modulbogen – MD-Lehrbeispiel / Seite 2
-Synthetisch | reference-md-kraemer | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4114 | Rolf Lindner
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 module_1_sum=3
 module_2_sum=0
@@ -43,27 +53,93 @@ module_5_sum=1
 module_6_sum=1
 END-NCF1
 
-Entlassungsbericht – ergänzter Schulungsbericht / Seite 1
-Synthetisch | reference-md-kraemer | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
- Entlassungsbericht – ergänzter
- Schulungsbericht
-Fiktive Einrichtung / Testperson reference-md-kraemer / Datum 10.10.2026
-Anlass: Übergang aus der Rehabilitation in die häusliche Versorgung.
-Verlauf: Die fiktive Testperson benötigt Unterstützung beim Ankleiden und beim Vorbereiten
-der Medikamente. Ein Gehstock wird im Alltag genutzt; Treppen werden begleitet bewältigt.
-Weiterer Verlauf und konkrete Verordnungen bleiben der behandelnden Stelle vorbehalten.
-Angabe
-Dokumentierter Wert
-Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Entlassungsbericht / Seite 1
+NC-2026-4114 | Rolf Lindner
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Entlassungsbericht
+NC-2026-4114 | Rolf Lindner | 75 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Übergang aus der Rehabilitation in die häusliche Versorgung. Unterstützung beim Ankleiden
+und Vorbereiten der Tagesmedikation ist dokumentiert. Im Alltag wird ein Gehstock genutzt;
+Treppen werden mit Begleitung bewältigt. Angehörige unterstützen die weitere Versorgung.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
 
-Entlassungsbericht – ergänzter Schulungsbericht / Seite 2
-Synthetisch | reference-md-kraemer | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
-NCF1
-END-NCF1
+Hausärztlicher Arztbrief / Seite 1
+NC-2026-4114 | Rolf Lindner
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Praxis am Lindenplatz
+ Hausärztlicher Arztbrief
+NC-2026-4114 | Rolf Lindner | 75 Jahre | 30.09.2026
+Anlass und Vorbefunde
+Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur
+Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden
+Verlaufsnotizen und die Schilderung der Angehörigen.
+Alltagsbezogener Verlauf
+Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen
+Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird
+Unterstützung benötigt. Die Angehörigen beschreiben einen wiederkehrenden
+Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte
+Erhebung im Modulbogen.
+Versorgung und offene Angaben
+Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die
+Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten
+Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll
+und Modulbogen gemeinsam vorgelegt.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
+
+Pflegeprotokoll und Angehörigenbericht / Seite 1
+NC-2026-4114 | Rolf Lindner
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Ambulanter Dienst Lindenhof
+ Pflegeprotokoll und Angehörigenbericht
+NC-2026-4114 | Rolf Lindner | 75 Jahre | 07.10.2026
+Beobachtungszeitraum
+01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur
+und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie
+sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments.
+Tagesbezogene Einträge
+01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit
+vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends:
+Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die
+Fallbesprechung zusammengestellt. Nach einem Schlaganfall bestehen Einschränkungen bei
+längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der
+Vorbereitung der Tagesmedikation wird Unterstützung benötigt.
+Abgleich mit dem Modulbogen
+Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Die
+Erzählangaben werden dem Bogen als zusätzliche Lesedokumentation beigefügt.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
+
+Antrag und Anlagenverzeichnis / Seite 1
+NC-2026-4114 | Rolf Lindner
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Antrag und Anlagenverzeichnis
+NC-2026-4114 | Rolf Lindner | 75 Jahre | 08.10.2026
+Auftrag
+Beantragt ist die Sichtung des häuslichen Unterstützungsbedarfs. Vorliegend werden die
+dokumentierten Modulsummen für die Nachrechnung zusammengestellt. Die Angehörigen
+berichten über die Versorgung im Alltag und nehmen an der Fallbesprechung teil.
+Anlagen und Bearbeitungsstand
+Vorhanden sind Modulbogen, hausärztliche Zusammenfassung, ergänzender Verlauf und
+Pflegeprotokoll. Die Unterlagen betreffen dieselbe Person und denselben Erhebungszeitraum.
+Die Erzählangaben und die tabellarischen Summen werden als getrennte
+Dokumentationsbestandteile geführt.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
 

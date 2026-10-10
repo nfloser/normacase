@@ -1,58 +1,106 @@
-SYNTHETISCHE DEMO - reference-transfer-complete
+Schulungsakte - NC-2026-4118 | Hanna Frank
 Kontrollierter PDF-Text, keine OCR.
 
 Überleitungsbericht – Kurzzeitpflege / Seite 1
-Synthetisch | reference-transfer-complete | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4118 | Hanna Frank
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Überleitungsbericht – Kurzzeitpflege
-Fiktive Einrichtung / Testperson reference-transfer-complete / Datum 10.10.2026
-Synthetische Testperson T-complete, 72 Jahre. Nach stationärer Behandlung soll eine
-Kurzzeitpflege die Alltagsversorgung übernehmen. Angelehnt an die öffentliche
-KBV-Fallfamilie; Ereignisse und Anlagen sind erfunden. Aufnehmende Einrichtung: Fiktives
-Pflegezentrum Nord.
-Übergabe: Unterstützung bei Transfers, Körperpflege und Tagesstruktur ist im Bericht
-vorgesehen. Ansprechpartner ist die fiktive Entlasskoordination.
-Die Akte demonstriert eine sektorenübergreifende Informationsübergabe, keine
-FHIR-Konformitätsprüfung.
+NC-2026-4118 | Hanna Frank | 72 Jahre | 08.10.2026
+Hanna Frank, 72 Jahre. Nach stationärer Behandlung soll eine Kurzzeitpflege die
+Alltagsversorgung übernehmen. Angelehnt an die öffentliche KBV-Fallfamilie; Ereignisse und
+Anlagen sind erfunden.
+Anlass und Unterlagenbezug
+Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht,
+Unterstützungsbedarf und Medikationsübersicht dokumentiert?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Überleitungsbericht beigefügt
 Ja
 Medikationsübersicht beigefügt
 Ja
-Quelle der Dokumentstruktur: kbv-transfer. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
 
 Überleitungsbericht – Kurzzeitpflege / Seite 2
-Synthetisch | reference-transfer-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4118 | Hanna Frank
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 transfer_report_attached=YES
 medication_overview_attached=YES
 END-NCF1
 
 Medikationsübersicht – Begleitunterlage / Seite 1
-Synthetisch | reference-transfer-complete | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4118 | Hanna Frank
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Medikationsübersicht – Begleitunterlage
-Fiktive Einrichtung / Testperson reference-transfer-complete / Datum 10.10.2026
-Eine aktuelle, ärztlich bestätigte Medikationsübersicht ist als synthetische Begleitunterlage
-dokumentiert. Präparate und Dosierungen sind bewusst nicht als Behandlungsvorgabe
-ausgefüllt.
-Angabe
-Dokumentierter Wert
-Quelle der Dokumentstruktur: kbv-transfer. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+NC-2026-4118 | Hanna Frank | 72 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Die aktuelle Medikationsübersicht ist als Begleitunterlage zur Überleitung geführt. Die
+Behandlungsdetails sind in dieser Schulungsakte nicht ausgefüllt. Für eine tatsächliche
+Versorgung wäre die ärztlich bestätigte vollständige Übersicht erforderlich.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
 
-Medikationsübersicht – Begleitunterlage / Seite 2
-Synthetisch | reference-transfer-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
-NCF1
-END-NCF1
+Entlassungsbrief und Versorgungszusammenfassung / Seite 1
+NC-2026-4118 | Hanna Frank
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Klinik Lindenhof
+ Entlassungsbrief und
+Versorgungszusammenfassung
+NC-2026-4118 | Hanna Frank | 72 Jahre | 06.10.2026
+Übergang in die Versorgung
+Nach stationärer Behandlung ist eine Überleitung in Kurzzeitpflege vorgesehen. Die
+Entlasskoordination hat den Unterstützungsbedarf mit der aufnehmenden Einrichtung
+abgestimmt. Der Bericht fasst die versorgungsbezogenen Angaben für den Übergang
+zusammen.
+Alltagsbezogener Unterstützungsbedarf
+Unterstützung ist bei Transfers, Körperpflege und Tagesstruktur dokumentiert. Die Familie ist
+in die Abstimmung des Übergangs einbezogen. Die aufnehmende Einrichtung soll die
+vorhandenen Ressourcen und den benötigten Hilfebedarf bei Aufnahme überprüfen.
+Begleitunterlagen
+Eine Medikationsübersicht ist als Begleitunterlage in der Akte geführt. Präparate und
+Dosierungen sind im Schulungsbestand nicht festgelegt; die Anlage darf nicht als
+Behandlungsvorgabe verwendet werden.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
+
+Pflegeübergabe und Aufnahmeabstimmung / Seite 1
+NC-2026-4118 | Hanna Frank
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Pflegezentrum Nord
+ Pflegeübergabe und Aufnahmeabstimmung
+NC-2026-4118 | Hanna Frank | 72 Jahre | 08.10.2026
+Aufnahmevorbereitung
+Die Kurzzeitpflege übernimmt die im Überleitungsbericht beschriebenen
+Unterstützungsaufgaben. Die Entlasskoordination und die aufnehmende Einrichtung gleichen
+Unterlagenstand und Ansprechpartnerfunktion ab. Die Übergabe wird fallbezogen
+dokumentiert.
+Übergabecheck
+Benötigt werden nachvollziehbare Angaben zu Transfers, Selbstversorgung und
+Tagesstruktur. Der vorhandene Medikationsübersichtseintrag enthält bewusst keine
+ausgefüllte Verordnung.
+Rückmeldung bei Aufnahme
+Bitte bestätigen Sie den Eingang der Begleitunterlagen und dokumentieren Sie noch fehlende
+Angaben. Abweichungen zwischen Überleitungsbericht und Aufnahmebeobachtung sollen an
+die Entlasskoordination zurückgemeldet werden.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
 

@@ -1,18 +1,27 @@
-SYNTHETISCHE DEMO - reference-care-conflicting
+Schulungsakte - NC-2026-4108 | Peter Hoffmann
 Kontrollierter PDF-Text, keine OCR.
 
 Pflege - dokumentierte Modulsummen / Seite 1
-Synthetisch | reference-care-conflicting | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+NC-2026-4108 | Peter Hoffmann
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Pflege - dokumentierte Modulsummen
-Fiktive Einrichtung / Testperson reference-care-conflicting / Datum 10.10.2026
-Synthetische Testperson P-04, 72 Jahre: Der erste Modulbogen nennt für Selbstversorgung die
-Summe 8. Eine zweite Anlage nennt 3. Ohne Klärung bleibt diese Modulsumme unbekannt.
-Keine Quelle wird automatisch als maßgeblich ausgewählt. Fiktive erwachsene Testperson.
-Die Modulsummen gelten als bereits fachlich festgestellt. Diese Demo ermittelt sie nicht aus
-Symptomen oder Diagnosen.
+NC-2026-4108 | Peter Hoffmann | 72 Jahre | 08.10.2026
+Peter Hoffmann, 72 Jahre. Der erste Modulbogen nennt für Selbstversorgung die Summe 8.
+Eine zweite Anlage nennt 3. Ohne Klärung bleibt diese Modulsumme unbekannt. Keine Quelle
+wird automatisch als maßgeblich ausgewählt.
+Anlass und Unterlagenbezug
+Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die
+Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der
+Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Modul 1: Mobilität
 2
 Modul 2: Kognition und Kommunikation
@@ -25,15 +34,15 @@ Modul 5: Krankheit und Therapie
 2
 Modul 6: Alltagsleben und Kontakte
 3
-Quelle der Dokumentstruktur: md-pflege. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: MD Bund Begutachtungs-Richtlinien Pflege; 26.08.2026, in Kraft 01.10.2026.
+Eigenes Berichtslayout, kein amtliches Originalformular.
 
 Pflege - dokumentierte Modulsummen / Seite 2
-Synthetisch | reference-care-conflicting | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4108 | Peter Hoffmann
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 module_1_sum=2
 module_2_sum=4
@@ -44,25 +53,85 @@ module_6_sum=3
 END-NCF1
 
 Abweichender Modulnachweis / Seite 1
-Synthetisch | reference-care-conflicting | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+NC-2026-4108 | Peter Hoffmann
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Abweichender Modulnachweis
-Fiktive Einrichtung / Testperson reference-care-conflicting / Datum 10.10.2026
-Widerspruch zur ersten Anlage. Kein automatisches Bevorzugen einer Quelle.
+NC-2026-4108 | Peter Hoffmann | 72 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die
+Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der
+Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Modul 4: Selbstversorgung
 3
-Quelle der Dokumentstruktur: md-pflege. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: MD Bund Begutachtungs-Richtlinien Pflege; 26.08.2026, in Kraft 01.10.2026.
+Eigenes Berichtslayout, kein amtliches Originalformular.
 
 Abweichender Modulnachweis / Seite 2
-Synthetisch | reference-care-conflicting | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4108 | Peter Hoffmann
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 module_4_sum=3
 END-NCF1
+
+Hausärztlicher Arztbrief / Seite 1
+NC-2026-4108 | Peter Hoffmann
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Praxis am Lindenplatz
+ Hausärztlicher Arztbrief
+NC-2026-4108 | Peter Hoffmann | 72 Jahre | 30.09.2026
+Anlass und Vorbefunde
+Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur
+Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden
+Verlaufsnotizen und die Schilderung der Angehörigen.
+Alltagsbezogener Verlauf
+Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen
+Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird
+Unterstützung benötigt. Die Angehörigen beschreiben einen wiederkehrenden
+Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte
+Erhebung im Modulbogen.
+Versorgung und offene Angaben
+Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die
+Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten
+Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll
+und Modulbogen gemeinsam vorgelegt.
+Strukturbezug: MD Bund Begutachtungs-Richtlinien Pflege; 26.08.2026, in Kraft 01.10.2026.
+Eigenes Berichtslayout, kein amtliches Originalformular.
+
+Pflegeprotokoll und Angehörigenbericht / Seite 1
+NC-2026-4108 | Peter Hoffmann
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Ambulanter Dienst Lindenhof
+ Pflegeprotokoll und Angehörigenbericht
+NC-2026-4108 | Peter Hoffmann | 72 Jahre | 07.10.2026
+Beobachtungszeitraum
+01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur
+und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie
+sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments.
+Tagesbezogene Einträge
+01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit
+vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends:
+Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die
+Fallbesprechung zusammengestellt. Nach einem Schlaganfall bestehen Einschränkungen bei
+längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der
+Vorbereitung der Tagesmedikation wird Unterstützung benötigt.
+Abgleich mit dem Modulbogen
+Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen.
+Zwei Anlagen enthalten unterschiedliche Summen zur Selbstversorgung; der Bericht löst
+diesen Widerspruch nicht auf.
+Strukturbezug: MD Bund Begutachtungs-Richtlinien Pflege; 26.08.2026, in Kraft 01.10.2026.
+Eigenes Berichtslayout, kein amtliches Originalformular.
 

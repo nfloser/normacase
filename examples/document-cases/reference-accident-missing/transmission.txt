@@ -1,57 +1,105 @@
-SYNTHETISCHE DEMO - reference-accident-missing
+Schulungsakte - NC-2026-4116 | Michael Dorn
 Kontrollierter PDF-Text, keine OCR.
 
-Gutachtenauftrag – Zusammenhangsfrage / Seite 1
-Synthetisch | reference-accident-missing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
- Gutachtenauftrag – Zusammenhangsfrage
-Fiktive Einrichtung / Testperson reference-accident-missing / Datum 10.10.2026
-Synthetische Testperson U-missing, 42 Jahre, Materialtransport. Der fiktive Vorgang betrifft
-Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf. Auftrag
-angelehnt an DGUV A 2206.
-Ereignis: Beim Bewegen einer Materialkiste im fiktiven Betrieb wird ein Stolpern mit Sturz auf
-die rechte Hand beschrieben. Fragestellung: Welche Erstbefunde und Vorschädigungen sind
-dokumentiert?
-Die Unterlagen werden für eine ärztliche Zusammenhangsbegutachtung zusammengestellt.
-Eine Anerkennung als Arbeitsunfall oder MdE-Schätzung ist nicht Gegenstand der Demo.
+Gutachtenauftrag zur Zusammenhangsfrage / Seite 1
+NC-2026-4116 | Michael Dorn
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Gutachtenauftrag zur
+Zusammenhangsfrage
+NC-2026-4116 | Michael Dorn | 42 Jahre | 08.10.2026
+Michael Dorn, 42 Jahre. Materialtransport. Der fiktive Vorgang betrifft Beschwerden am
+Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf.
+Auftrag und Ereignisangabe
+Ereignisdatum 28.09.2026, Tätigkeit Materialtransport. In der ersten Schilderung wird ein
+Stolpern beim Bewegen einer Materialkiste mit Sturz auf die rechte Hand angegeben. Die
+Zusammenhangsfrage betrifft die dokumentierten Handgelenkbeschwerden, die zeitnahen
+Befunde und mögliche abweichende Angaben.
+Fragestellungen
+Welche Beschwerden und Erstbefunde sind dokumentiert? Stimmen Ereignisbeschreibung
+und zeitlicher Verlauf überein? Welche Unterlagen sind noch anzufordern? Ein unfallbedingter
+Zusammenhang, die Anerkennung oder eine MdE werden durch diese Zusammenstellung
+nicht festgestellt.
+Anlagenstand
+Der angekündigte D-Arzt-Erstbericht liegt noch nicht vor. Die Arbeitgeberanzeige und die
+spätere Stellungnahme ersetzen diesen Erstbefund nicht.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Unfallereignis dokumentiert
 Ja
 Erstbefund beigefügt
 Nicht angegeben
-Quelle der Dokumentstruktur: dguv-accident. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
 
-Gutachtenauftrag – Zusammenhangsfrage / Seite 2
-Synthetisch | reference-accident-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Gutachtenauftrag zur Zusammenhangsfrage / Seite 2
+NC-2026-4116 | Michael Dorn
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 accident_event_documented=YES
 initial_findings_attached=UNKNOWN
 END-NCF1
 
 Anlagenübersicht – ausstehender Erstbefund / Seite 1
-Synthetisch | reference-accident-missing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
- Anlagenübersicht – ausstehender Erstbefund
-Fiktive Einrichtung / Testperson reference-accident-missing / Datum 10.10.2026
-Ein Erstbericht wurde angekündigt, ist jedoch nicht beigefügt. Die fehlende Anlage wird nicht
-durch eine vermutete Diagnose ersetzt.
-Angabe
-Dokumentierter Wert
-Quelle der Dokumentstruktur: dguv-accident. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+NC-2026-4116 | Michael Dorn
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Anlagenübersicht – ausstehender
+ Erstbefund
+NC-2026-4116 | Michael Dorn | 42 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche
+Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
 
-Anlagenübersicht – ausstehender Erstbefund / Seite 2
-Synthetisch | reference-accident-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
-NCF1
-END-NCF1
+Arbeitgeberanzeige und Ereignisschilderung / Seite 1
+NC-2026-4116 | Michael Dorn
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Werkbetrieb Lindenhof
+ Arbeitgeberanzeige und
+ Ereignisschilderung
+NC-2026-4116 | Michael Dorn | 42 Jahre | 29.09.2026
+Arbeitsplatz und Ereignis
+Am 28.09.2026 wurde während des Materialtransports ein Stolpern mit Sturz auf die rechte
+Hand gemeldet. Arbeitsaufgabe war das Bewegen einer Materialkiste. Die Anzeige gibt die
+betriebliche Schilderung wieder; eine unabhängige Beobachtung durch die berichtende Stelle
+wird nicht behauptet.
+Beschwerden und zeitlicher Bezug
+Nach der Meldung wurden Beschwerden am rechten Handgelenk angegeben. Michael Dorn
+stellte sich am Ereignistag zur Untersuchung vor. Angaben zu Vorschäden und der
+vollständige radiologische Befund sind in der Zusammenstellung nicht gesichert.
+Abgleich
+Die Anzeige ist ein eigener Nachweis der Ereignisschilderung und kein medizinischer
+Kausalitätsbeweis. Die fachliche Beurteilung erfolgt erst nach Abgleich mit den medizinischen
+Unterlagen.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
+
+Nachforderung des Erstberichts / Seite 1
+NC-2026-4116 | Michael Dorn
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Nachforderung des Erstberichts
+NC-2026-4116 | Michael Dorn | 42 Jahre | 09.10.2026
+Anlass
+Der D-Arzt-Erstbericht vom 28.09.2026 wurde angekündigt, ist aber nicht eingegangen. Bitte
+übermitteln Sie ihn einschließlich der dokumentierten Untersuchungsbefunde.
+Klärungsbedarf
+Die fehlende Anlage darf weder durch die Arbeitgeberanzeige noch durch einen späteren
+Verlauf ersetzt werden. Die Unterlagensichtung bleibt offen.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
 

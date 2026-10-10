@@ -1,67 +1,131 @@
-SYNTHETISCHE DEMO - reference-accident-conflicting
+Schulungsakte - NC-2026-4117 | Jens Weber
 Kontrollierter PDF-Text, keine OCR.
 
-Gutachtenauftrag – Zusammenhangsfrage / Seite 1
-Synthetisch | reference-accident-conflicting | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
- Gutachtenauftrag – Zusammenhangsfrage
-Fiktive Einrichtung / Testperson reference-accident-conflicting / Datum 10.10.2026
-Synthetische Testperson U-conflicting, 42 Jahre, Materialtransport. Der fiktive Vorgang betrifft
-Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf. Auftrag
-angelehnt an DGUV A 2206.
-Ereignis: Beim Bewegen einer Materialkiste im fiktiven Betrieb wird ein Stolpern mit Sturz auf
-die rechte Hand beschrieben. Fragestellung: Welche Erstbefunde und Vorschädigungen sind
-dokumentiert?
-Die Unterlagen werden für eine ärztliche Zusammenhangsbegutachtung zusammengestellt.
-Eine Anerkennung als Arbeitsunfall oder MdE-Schätzung ist nicht Gegenstand der Demo.
+Gutachtenauftrag zur Zusammenhangsfrage / Seite 1
+NC-2026-4117 | Jens Weber
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Gutachtenauftrag zur
+Zusammenhangsfrage
+NC-2026-4117 | Jens Weber | 42 Jahre | 08.10.2026
+Jens Weber, 42 Jahre. Materialtransport. Der fiktive Vorgang betrifft Beschwerden am
+Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf.
+Auftrag und Ereignisangabe
+Ereignisdatum 28.09.2026, Tätigkeit Materialtransport. In der ersten Schilderung wird ein
+Stolpern beim Bewegen einer Materialkiste mit Sturz auf die rechte Hand angegeben. Die
+Zusammenhangsfrage betrifft die dokumentierten Handgelenkbeschwerden, die zeitnahen
+Befunde und mögliche abweichende Angaben.
+Fragestellungen
+Welche Beschwerden und Erstbefunde sind dokumentiert? Stimmen Ereignisbeschreibung
+und zeitlicher Verlauf überein? Welche Unterlagen sind noch anzufordern? Ein unfallbedingter
+Zusammenhang, die Anerkennung oder eine MdE werden durch diese Zusammenstellung
+nicht festgestellt.
+Anlagenstand
+Der Erstbericht und die Arbeitgeberanzeige liegen vor. Die Angaben zum konkreten Ereignis
+weichen voneinander ab und müssen fachlich geklärt werden.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Unfallereignis dokumentiert
 Ja
 Erstbefund beigefügt
 Ja
-Quelle der Dokumentstruktur: dguv-accident. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
 
-Gutachtenauftrag – Zusammenhangsfrage / Seite 2
-Synthetisch | reference-accident-conflicting | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Gutachtenauftrag zur Zusammenhangsfrage / Seite 2
+NC-2026-4117 | Jens Weber
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 accident_event_documented=YES
 initial_findings_attached=YES
 END-NCF1
 
-D-Arzt-Erstbericht – synthetischer Bericht / Seite 1
-Synthetisch | reference-accident-conflicting | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
- D-Arzt-Erstbericht – synthetischer Bericht
-Fiktive Einrichtung / Testperson reference-accident-conflicting / Datum 10.10.2026
-Vorstellung am Ereignistag.
-Beschwerden: Schmerzen im rechten Handgelenk nach Sturz. Dokumentation: Untersuchung
-und Bildgebung sind in der Akte benannt; ein ausführlicher Befundtext ist der ärztlichen
-Prüfung zugeordnet.
-Die zweite Schilderung verneint ein konkretes Ereignis. Der Widerspruch ist ausdrücklich
-ungeklärt.
+Durchgangsarztbericht - Erstvorstellung / Seite 1
+NC-2026-4117 | Jens Weber
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Unfallambulanz Lindenhof
+ Durchgangsarztbericht - Erstvorstellung
+NC-2026-4117 | Jens Weber | 42 Jahre | 28.09.2026
+Vorstellung und Eigenangabe
+Vorstellung am 28.09.2026 wegen Schmerzen im rechten Handgelenk. Bei der Erstvorstellung
+wird kein konkretes Sturzereignis angegeben. Diese Schilderung weicht von der späteren
+Arbeitgeberanzeige ab; eine Auflösung des Widerspruchs liegt nicht vor.
+Befunddokumentation
+Beschwerden am rechten Handgelenk bei Greifen und Belastung. Untersuchung und
+Bildgebung sind als durchgeführte Maßnahmen benannt. Der eigenständige radiologische
+Befund ist nicht beigefügt und wurde gesondert angefordert. Angaben zu Vorschäden sind
+noch abzugleichen.
+Arbeitsbezug und offene Befunde
+Die Tätigkeit umfasst Materialtransport und manuelles Greifen. Für die Zusammenhangsfrage
+sind Erstvorstellung und späterer Verlauf zusammenzuführen. Die Befundanforderung und die
+Ereignisschilderung sind als getrennte Unterlagen in der Akte geführt.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Erstbefund beigefügt
 Ja
 Unfallereignis dokumentiert
 Nein
-Quelle der Dokumentstruktur: dguv-accident. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
 
-D-Arzt-Erstbericht – synthetischer Bericht / Seite 2
-Synthetisch | reference-accident-conflicting | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Durchgangsarztbericht - Erstvorstellung / Seite 2
+NC-2026-4117 | Jens Weber
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 initial_findings_attached=YES
 accident_event_documented=NO
 END-NCF1
+
+Arbeitgeberanzeige und Ereignisschilderung / Seite 1
+NC-2026-4117 | Jens Weber
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Werkbetrieb Lindenhof
+ Arbeitgeberanzeige und
+ Ereignisschilderung
+NC-2026-4117 | Jens Weber | 42 Jahre | 29.09.2026
+Arbeitsplatz und Ereignis
+Am 28.09.2026 wurde während des Materialtransports ein Stolpern mit Sturz auf die rechte
+Hand gemeldet. Arbeitsaufgabe war das Bewegen einer Materialkiste. Die Anzeige gibt die
+betriebliche Schilderung wieder; eine unabhängige Beobachtung durch die berichtende Stelle
+wird nicht behauptet.
+Beschwerden und zeitlicher Bezug
+Nach der Meldung wurden Beschwerden am rechten Handgelenk angegeben. Jens Weber
+stellte sich am Ereignistag zur Untersuchung vor. Angaben zu Vorschäden und der
+vollständige radiologische Befund sind in der Zusammenstellung nicht gesichert.
+Abgleich
+Die Anzeige ist ein eigener Nachweis der Ereignisschilderung und kein medizinischer
+Kausalitätsbeweis. Sie widerspricht der Ereignisangabe im Erstbericht. Beide Fassungen
+bleiben in der Akte erhalten.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
+
+Stellungnahme zum Verlauf und offene Befundanforderung / Seite 1
+NC-2026-4117 | Jens Weber
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Stellungnahme zum Verlauf und offene
+ Befundanforderung
+NC-2026-4117 | Jens Weber | 42 Jahre | 09.10.2026
+Anlass
+Für die Zusammenhangsfrage werden Ereignisschilderung, Erstvorstellung und weiterer
+Verlauf zusammengeführt. Beschwerden bei manuellem Greifen werden weiterhin als
+Fallangabe geführt; die Akte enthält keine gesicherte Prognose.
+Klärungsbedarf
+Der eigenständige radiologische Befund und Angaben zu möglichen Vorschäden werden
+angefordert. Zusätzlich ist die Abweichung zwischen verneintem Ereignis in der
+Erstvorstellung und gemeldetem Sturz in der Arbeitgeberanzeige zu klären.
+Strukturbezug: DGUV Gutachtenauftrag A 2206 und D-Arztbericht F 1000; A 2206 Stand
+10/2025; F 1000 Stand 07/2018. Eigenes Berichtslayout, kein amtliches Originalformular.
 
