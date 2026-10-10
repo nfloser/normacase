@@ -75,9 +75,8 @@ Die normale Ansicht startet mit den 22 medizinischen Referenzakten. Die 100
 historischen Plattformfixtures bleiben vollständig vorhanden, über Extras und
 optional „Plattformfälle einbeziehen“. Fallnummer, Person und fachlicher Auftrag
 werden aus vorhandenen Aktenbezeichnungen dargestellt; technische IDs bleiben
-Such-/API-Schlüssel. Die Anzeige ersetzt „Pflege-Score“ durch „Pflege“ ausschließlich
-im fachlichen Kurztitel. Die ursprünglichen Akten/Knowledge-Bezeichnungen bleiben
-für Replay unverändert. Organisationsstatus und Prüfergebnis bleiben getrennt.
+Such-/API-Schlüssel. Die fachlichen Pflege-Kurztitel werden in den externen Fallprofilen geführt.
+Knowledge-Bezeichnungen und technische Schlüssel bleiben für Replay unverändert. Organisationsstatus und Prüfergebnis bleiben getrennt.
 
 Die vorhandenen 90 PDFs sind die Ausgangsakte, keine neu erfundene Begutachtung.
 31 strukturierte Beleganlagen erhalten eine lesbare Tabelle auf Seite 2; der

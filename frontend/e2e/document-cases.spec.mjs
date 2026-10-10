@@ -35,7 +35,7 @@ test('reference documents expose conflicts, German provenance and actual engine 
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
  await references.screenshot({path:'test-results/document-cases-mobile.png'});
  await references.getByRole('button',{name:'← Liste',exact:true}).click();
- await references.getByRole('button',{name:'NC-2026-4106 · Karl Neumann · Pflege-Score: Modulsumme fehlt',exact:true}).click();
+ await references.getByRole('button',{name:'NC-2026-4106 · Karl Neumann · Pflege: Modulsumme fehlt',exact:true}).click();
  await expect(references.getByText(/Fehlende Angabe: Modul 4/)).toBeVisible();
 });
 

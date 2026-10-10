@@ -8,7 +8,7 @@ test('case overview opens a result-first detail with explicit documents and a re
  await cases.getByRole('button',{name:'NC-2026-4101 · Marlene Berg · Krankenfahrt: ambulante Behandlung',exact:true}).click();
  await expect(cases.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
  await expect(cases.locator('iframe')).toHaveCount(0);
- await expect(cases.getByRole('button',{name:'NC-2026-4105 · Erika Stein · Pflege-Score: Modulsummenabgleich',exact:true})).toHaveCount(0);
+ await expect(cases.getByRole('button',{name:'NC-2026-4105 · Erika Stein · Pflege: Modulsummenabgleich',exact:true})).toHaveCount(0);
  await page.screenshot({path:'test-results/case-result-laptop.png'});
  await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
  await expect(cases.locator('.pdf-page-image').first()).toBeVisible();
@@ -66,7 +66,7 @@ test('concrete transport context is retained and unrelated missing evidence is n
 test('care reference exposes its knowledge-defined score outputs directly',async({page})=>{
  await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await cases.getByRole('button',{name:'NC-2026-4105 · Erika Stein · Pflege-Score: Modulsummenabgleich',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4105 · Erika Stein · Pflege: Modulsummenabgleich',exact:true}).click();
  const outputs=cases.locator('.case-domain-results');
  await expect(outputs).toBeHidden();
  await cases.getByText('Prüfung und Regelgrundlagen',{exact:true}).click();

@@ -629,6 +629,7 @@
     "openPoints": "offene Punkte",
     "inclusiveRange": "Untergrenze ≤ Wert ≤ Obergrenze",
     "referenceTitle": "Dokument",
-    "actionUnavailable": "Für die aktuelle Auswahl nicht verfügbar"
+    "actionUnavailable": "Für die aktuelle Auswahl nicht verfügbar",
+    "platformCheck": "Plattformprüfung"
   }
 }

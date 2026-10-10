@@ -109,6 +109,6 @@ export function ReferenceDocumentCases() {
   return <section id="reference-cases" className="card reference-document-cases case-first" aria-label={text.referenceHeading}>
     {!selected?<div className="case-overview"><h2>{text.referenceHeading}</h2><p>{text.referenceHelp}</p>
       {error&&<p role="alert">{error}</p>}<ul className="reference-list">{cases.map(item=><li key={item.caseId}><button ref={node=>{buttons.current[item.caseId]=node;}} type="button" className="secondary" onClick={()=>setSelected(item.caseId)}>{item.title}</button><p>{item.context?.question??item.scope}</p></li>)}</ul>
-    </div>:<div className="opened-case"><header className="case-header"><button type="button" className="secondary" onClick={back}>{de.workspace.back}</button><h2>{cases.find(item=>item.caseId===selected)?.title.replace('Pflege-Score:','Pflege:')}</h2><div id="reference-case-copy"/></header><DocumentCaseFile key={selected} caseId={selected} showAssessment copyTargetId="reference-case-copy"/></div>}
+    </div>:<div className="opened-case"><header className="case-header"><button type="button" className="secondary" onClick={back}>{de.workspace.back}</button><h2>{cases.find(item=>item.caseId===selected)?.title}</h2><div id="reference-case-copy"/></header><DocumentCaseFile key={selected} caseId={selected} showAssessment copyTargetId="reference-case-copy"/></div>}
   </section>;
 }
