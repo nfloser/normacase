@@ -54,7 +54,7 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
   if(!workspace||busy)return;setBusy(true);setError('');setNotice('');const controller=new AbortController();pending.current=controller;
   try{const response=await fetch('/api/demo-workspace/commands',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({action,caseIds:ids,expectedRevision:workspace.revision,operationId:crypto.randomUUID(),...extra})});
    if(!response.ok){let message=de.networkError;try{message=(await response.json()).message??message;}catch{}setError(message);await refresh(controller.signal);return;}
-   const result=await response.json();if(controller.signal.aborted)return;setWorkspace(result.workspace);setNotice(action==='DISPATCH'?t.dispatchedNotice:t.saved);closeDialog();
+   const result=await response.json();if(controller.signal.aborted)return;setWorkspace(result.workspace);setNotice(action==='DISPATCH'?t.dispatchedNotice:t.saved);if(dialog)closeDialog();
    if(result.packageJson)host.saveJson('normacase-versand-demo-'+result.workspace.revision+'.json',result.packageJson);
   }catch{if(!controller.signal.aborted)setError(t.completionUnknown);}finally{if(!controller.signal.aborted)setBusy(false);}
  }

@@ -50,3 +50,24 @@ test('source-backed case families include clinical files without inventing decis
  await cases.getByRole('button',{name:'Pflege: Demenz und Unterstützung im Alltag',exact:true}).click();
  await expect(cases.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
 });
+
+test('clipboard result summary includes only recorded outcome and provenance',async({page})=>{
+ await page.addInitScript(()=>{
+  Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async(value)=>{window.__normacaseCopied=value;}}});
+ });
+ await page.goto('/#reference-cases');
+ const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
+ const file=cases.getByRole('region',{name:'Dokumentakte'});
+ await file.getByRole('button',{name:'Ergebnistext kopieren'}).click();
+ const summary=await page.evaluate(()=>window.__normacaseCopied);
+ expect(summary).toContain('Prüfergebnis: Voraussetzungen erfüllt');
+ expect(summary).toContain('Wissensstand:');
+ expect(summary).toContain('Prüfdatum:');
+ expect(summary).toContain('Synthetischer Schulungsfall');
+ await file.getByRole('button',{name:'Aktenzeichen kopieren'}).click();
+ expect(await page.evaluate(()=>window.__normacaseCopied)).toBe('reference-transport-complete');
+ await cases.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
+ await cases.getByRole('button',{name:'Arbeitsunfall: Handgelenkverletzung',exact:true}).click();
+ await expect(cases.getByRole('button',{name:'Ergebnistext kopieren'})).toBeDisabled();
+});

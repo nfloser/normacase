@@ -437,3 +437,11 @@ body { overflow:hidden; }
  .case-explorer .custom-folder > .text-button{opacity:1;pointer-events:auto}
 }
 
+
+/* Explicit, operator-triggered transfer of recorded assessment text. */
+.case-copy-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-left:auto;min-width:0}
+.case-copy-actions button{min-height:28px;padding:4px 8px;white-space:nowrap;font-size:.8rem}
+.case-copy-notice{font-size:.8rem;color:#123c63}
+.case-explorer .explorer-detail-pane .case-copy-actions{gap:4px}
+.case-explorer .explorer-detail-pane .case-copy-actions button{min-height:26px;padding:3px 6px}
+@media(max-width:900px){.case-copy-actions{margin-left:0}}
