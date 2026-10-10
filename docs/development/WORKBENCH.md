@@ -258,3 +258,16 @@ und lässt sich mit Pfeil auf/ab in Fünf-Prozent-Schritten steuern. F4 blendet
 den Detailbereich ein oder aus. Auf schmalen Fenstern stehen die Bereiche
 untereinander mit eigenem Scrollen. Diese Größen werden in der Demo derzeit
 noch nicht als persönliche Einstellungen gespeichert.
+
+
+## Prüfergebnis zur Übernahme kopieren
+
+Die Aktionsleiste in der Fallakte bietet „Aktenzeichen kopieren“ und – nur falls
+für diesen Fall tatsächlich ein Assessment vorliegt – „Ergebnistext kopieren“.
+Der Text wird erst nach einem Benutzerklick lokal in die Zwischenablage
+übertragen und enthält ausschließlich das serverseitig bereitgestellte Ergebnis
+sowie vorhandenes Prüfdatum, Knowledge-Release, Plattformstand und ggf. fehlende
+Pflichtangaben. Fachliches UNKNOWN bleibt unverändert; Dokument-only-Akten erhalten
+kein fiktives Ergebnis. Ein Hinweis kennzeichnet den Text als synthetischen
+Schulungsfall. Wenn die Zwischenablage nicht verfügbar ist, erscheint eine
+Fehlermeldung statt einer Erfolgsmeldung. Kein Datentransfer ins Hauptsystem.
