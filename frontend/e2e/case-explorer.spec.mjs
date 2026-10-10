@@ -143,3 +143,26 @@ test('coarse-pointer submenu expands inline and applies a personal folder color'
   await expect(row.locator('.personal-mark-chip')).toBeVisible();
  }finally{await context.close();}
 });
+
+test('layout settings survive reload without storing case identifiers',async({page})=>{
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ await row.locator('td').nth(2).click();
+ const splitter=explorer.getByRole('separator',{name:/Fallliste und Detailbereich/});
+ await splitter.focus();await page.keyboard.press('ArrowUp');
+ await expect(splitter).toHaveAttribute('aria-valuenow','50');
+ await explorer.getByLabel('Zeilenfärbung').uncheck();
+ await page.keyboard.press('F4');
+ await expect(explorer.getByRole('region',{name:'Fallakte und Dokumente'})).toHaveCount(0);
+ const raw=await page.evaluate(()=>localStorage.getItem('normacase.ui.layout.v1'));
+ expect(raw).toContain('"detailPercent":50');
+ expect(raw).not.toContain('reference-md-mueller');
+ await page.reload();
+ await explorer.getByRole('button',{name:'Details anzeigen (F4)'}).click();
+ await expect(splitter).toHaveAttribute('aria-valuenow','50');
+ await expect(explorer.getByLabel('Zeilenfärbung')).not.toBeChecked();
+ await page.evaluate(()=>localStorage.setItem('normacase.ui.layout.v1','{"detailPercent":"corrupt"}'));
+ await page.reload();
+ await expect(splitter).toHaveAttribute('aria-valuenow','45');
+});
