@@ -46,6 +46,9 @@ class RetainedCorpusTests(unittest.TestCase):
                 if document['mediaType']=='application/pdf':
                     reader=PdfReader(path)
                     self.assertEqual(len(reader.pages),document['pages'])
+                    self.assertEqual(len(document['previews']),document['pages'])
+                    for preview in document['previews']:
+                        self.assertEqual(sha256((directory/preview['filename']).read_bytes()).hexdigest(),preview['sha256'])
                     for page_no,page in enumerate(reader.pages,1):
                         content=page.extract_text()
                         if 'NCF1' in content.splitlines():

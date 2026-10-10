@@ -115,3 +115,17 @@ Prüfsummen und normierte Eingaben werden gemeinsam geprüft. Fehlende Nachweise
 alternative, im konkreten Ergebnis nicht benötigte Prüfpfade werden nicht pauschal
 als zwingender Klärungsbedarf ausgegeben. Die eigentlichen Eingaben, unbekannten
 Werte und Regelergebnisse bleiben unverändert nachvollziehbar.
+
+## Begrenzte Seitenvorschau
+
+Der eingebettete Browser-PDF-Viewer wurde durch lokal vorgerenderte PNG-Seiten
+ersetzt. „Ganze Seite“ passt genau eine Seite in den verbleibenden Fensterbereich;
+„Seite vergrößern“ erlaubt Scrollen nur innerhalb des Lesebereichs. Seitenwahl,
+Unterlagenliste und Ergebnis bleiben separat erreichbar. Original-PDF, Textfassung
+und Download bleiben erhalten. PNG-Seiten sind reine Anzeige, keine OCR-Quelle.
+
+Der Autorengenerator benötigt zusätzlich Poppler (`pdftoppm`, 100 dpi). Jede
+Vorschauseite ist im Katalog mit Dokument, Seite und SHA-256 gebunden. Die API
+prüft Identität, Seitenanzahl, PNG-Signatur, Größe und Hash vor Bereitstellung;
+fehlende Vorschauen liefern keine geratenen Inhalte. Poppler ist keine
+Laufzeitabhängigkeit der Windows-Demo.

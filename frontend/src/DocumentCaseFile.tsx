@@ -19,7 +19,7 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
   const [file,setFile]=useState<File|null>(null);
   const [selected,setSelected]=useState('');
   const [error,setError]=useState('');
-  const [plain,setPlain]=useState('');const [sourcePage,setSourcePage]=useState(1);const [zoom,setZoom]=useState(false);
+  const [plain,setPlain]=useState('');const [sourcePage,setSourcePage]=useState(1);const [zoom,setZoom]=useState(false);const [previewFailed,setPreviewFailed]=useState(false);
   useEffect(()=>{
     const controller=new AbortController();setView('result');setFile(null);setSelected('');setError('');setPlain('');setSourcePage(1);setZoom(false);
     fetch('/api/document-cases/'+encodeURIComponent(caseId),{signal:controller.signal})
@@ -35,6 +35,7 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
     if(document?.mediaType==='text/plain')fetch(url,{signal:controller.signal}).then(response=>{if(!response.ok)throw new Error();return response.text();}).then(value=>{if(!controller.signal.aborted)setPlain(value);}).catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});
     return()=>controller.abort();
   },[url,document?.mediaType]);
+  useEffect(()=>{setPreviewFailed(false);},[selected,sourcePage,caseId]);
   const resolvedPresentation=presentation??(file?{title:file.title,description:file.scope,fields:file.fieldLabels,evidence:file.evidenceLabels,outputs:file.outputLabels,examples:[]}:undefined);
   const assessment=file?.assessmentJson?parse(file.assessmentJson) as Assessment:null;
   // Ignore an old result immediately on case switch, before the effect cleans it up.
@@ -58,14 +59,31 @@ export function DocumentCaseFile({caseId,presentation,showAssessment=false,analy
         </details>
         {showAssessment&&assessment&&<><DecisionTrace rule={assessment.assessment.ruleTrace} outputs={assessment.assessment.domainOutputs} presentation={resolvedPresentation}/><details><summary>{de.trace}</summary><pre>{file.assessmentJson}</pre></details></>}
         <details><summary>{text.source}</summary><p>{file.source.title}</p><p>{text.sourceVersion}: {file.source.version}</p><a href={file.source.url} target="_blank" rel="noopener noreferrer">{text.source}</a></details>
-      </div>:<div className="case-documents-view"><div className="document-toolbar">
+      </div>:<div className="case-documents-view"><aside className="document-case-summary" aria-label={de.workspace.analysis}>
+        <h4>{text.fileList}</h4><ul className="case-file-list">{file.documents.map(item=><li key={item.id}><button type="button" className="secondary" aria-pressed={selected===item.id} onClick={()=>{setSelected(item.id);setSourcePage(1);setZoom(false);}}>{item.title}<small>{item.mediaType==='application/pdf'?'PDF · '+item.pages+' '+text.page:item.mediaType==='image/png'?'PNG':text.textFile}</small></button></li>)}</ul>
+        <div className="compact-case-result">{analysis}{showAssessment&&(assessment?<h4>{de.result}: {outcomes[assessment.assessment.outcome]??de.unknown}</h4>:<h4>{text.documentReviewResult}</h4>)}</div>
+        {file.context&&<p>{file.context.question}</p>}
+        {!!file.findings.length&&<div className="missing"><h4>{text.findings}</h4><ul>{file.findings.map((finding,i)=><li key={i}>{finding}</li>)}</ul></div>}
+        <button type="button" className="secondary" onClick={()=>setView('result')}>{de.workspace.resultView}</button>
+      </aside><div className="document-reader"><div className="document-toolbar">
         <label className="field document-choice">{text.select}<select value={selected} onChange={event=>{setSelected(event.target.value);setSourcePage(1);setZoom(false);}}>{file.documents.map(item=><option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
         {document&&<div className="document-actions"><a href={url} target="_blank" rel="noopener noreferrer">{text.newWindow}</a><a href={url+'?download=true'} download>{text.download}</a></div>}
       </div>
       {document&&<div className="document-viewer">
-        {document.mediaType==='application/pdf'?<iframe key={url+sourcePage} title={text.preview+': '+document.title} src={url+'#page='+sourcePage+'&view=FitH&navpanes=0'}/>:document.mediaType==='text/plain'?<pre className="document-text">{plain||text.loading}</pre>:<><button type="button" className="secondary" aria-pressed={zoom} onClick={()=>setZoom(!zoom)}>{zoom?text.zoomOut:text.zoomIn}</button><div className={zoom?'scan-preview zoomed':'scan-preview'}><img src={url} alt={document.title}/></div></>}
+        {document.mediaType==='application/pdf'?<>
+          <div className="page-controls" aria-label={text.preview}>
+            <button type="button" className="secondary" aria-label={text.previousPage} disabled={sourcePage<=1} onClick={()=>setSourcePage(sourcePage-1)}>‹</button>
+            <span role="status">{text.page} {sourcePage} {text.of} {document.pages}</span>
+            <button type="button" className="secondary" aria-label={text.nextPage} disabled={sourcePage>=document.pages} onClick={()=>setSourcePage(sourcePage+1)}>›</button>
+            <button type="button" className="secondary" aria-pressed={!zoom} onClick={()=>setZoom(false)}>{text.fitPage}</button>
+            <button type="button" className="secondary" aria-pressed={zoom} onClick={()=>setZoom(true)}>{text.enlargePage}</button>
+          </div>
+          <div className={zoom?'page-stage zoomed':'page-stage'} key={url+sourcePage+zoom}>
+            {previewFailed?<p role="alert">{text.previewFailed}</p>:<img className="pdf-page-image" src={url+'/pages/'+sourcePage} alt={text.preview+': '+document.title+' · '+text.page+' '+sourcePage} onError={()=>setPreviewFailed(true)}/>}
+          </div><p className="reader-help">{text.readerHelp}</p>
+        </>:document.mediaType==='text/plain'?<pre className="document-text">{plain||text.loading}</pre>:<><button type="button" className="secondary" aria-pressed={zoom} onClick={()=>setZoom(!zoom)}>{zoom?text.zoomOut:text.zoomIn}</button><div className={zoom?'scan-preview zoomed':'scan-preview'}><img src={url} alt={document.title}/></div></>}
       </div>}
-      </div>}
+      </div></div>}
     </>}
   </section>;
 }

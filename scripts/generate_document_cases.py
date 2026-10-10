@@ -4,6 +4,7 @@ from decimal import Decimal
 from hashlib import sha256
 import json
 import re
+import subprocess
 from xml.sax.saxutils import escape
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet
@@ -93,7 +94,12 @@ def build_case(case_id,title,pack_path,source_id,parts,evidence,scope,expected=N
         for page_no,page in enumerate(reader.pages,1):
             content=page.extract_text()
             if 'NCF1' in content.splitlines(): observations+=extract(content,doc_id,set(values),page_no)
-        documents.append({'id':doc_id,'title':doc_title,'filename':path.name,'mediaType':'application/pdf','sha256':sha256(path.read_bytes()).hexdigest(),'pages':len(reader.pages),'sourceId':source_id})
+        subprocess.run(['pdftoppm','-r','100','-png',str(path),str(directory/(doc_id+'-page'))],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+        previews=[]
+        for page_no in range(1,len(reader.pages)+1):
+            preview=directory/(doc_id+'-page-'+str(page_no)+'.png')
+            previews.append({'page':page_no,'filename':preview.name,'sha256':sha256(preview.read_bytes()).hexdigest()})
+        documents.append({'previews':previews,'id':doc_id,'title':doc_title,'filename':path.name,'mediaType':'application/pdf','sha256':sha256(path.read_bytes()).hexdigest(),'pages':len(reader.pages),'sourceId':source_id})
     # A raster attachment intentionally has no automatic extraction; the PDF remains the text source.
     if parts:
         path=directory/'scan.png'; image=Image.new('RGB',(1000,1350),'#f4f3ef');draw=ImageDraw.Draw(image);font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',22)
