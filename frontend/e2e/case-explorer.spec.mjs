@@ -143,3 +143,23 @@ test('coarse-pointer submenu expands inline and applies a personal folder color'
   await expect(row.locator('.personal-mark-chip')).toBeVisible();
  }finally{await context.close();}
 });
+
+test('late bookmark completion does not dismiss a newly opened folder dialog',async({page})=>{
+ await page.route('**/api/demo-workspace/commands',async route=>{
+  const payload=route.request().postDataJSON();
+  if(payload.action==='BOOKMARK')await new Promise(resolve=>setTimeout(resolve,400));
+  await route.continue();
+ });
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ await row.getByRole('button',{name:'Fallaktionen',exact:true}).click();
+ await page.getByRole('menuitem',{name:'Lesezeichen setzen',exact:true}).click();
+ await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
+ const dialog=page.getByRole('dialog');
+ await expect(dialog.getByLabel('Ordnername')).toBeVisible();
+ await expect(row.locator('[aria-label="Lesezeichen gesetzt"]')).toBeVisible();
+ await expect(dialog.getByLabel('Ordnername')).toBeVisible();
+ await dialog.getByLabel('Ordnername').fill('Verlässlich geöffnet');
+});
