@@ -1,53 +1,39 @@
 import {test,expect} from '@playwright/test';
 
-test('shared workspace keeps navigation and three case panels inside a desktop window',async({page})=>{
- await page.setViewportSize({width:1440,height:900});
- await page.goto('/');
- const nav=page.getByRole('navigation',{name:'Arbeitsbereiche'});
- const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
- await queues.getByRole('button',{name:'Fall öffnen: demo-g-supported',exact:true}).click();
- await expect(queues.locator('iframe')).toBeVisible();
- const sizes=await page.evaluate(()=>({height:document.documentElement.scrollHeight,width:document.documentElement.scrollWidth,windowHeight:innerHeight,windowWidth:innerWidth}));
- expect(sizes.height).toBeLessThanOrEqual(sizes.windowHeight);
- expect(sizes.width).toBeLessThanOrEqual(sizes.windowWidth);
- const left=await queues.locator('.case-list-panel').boundingBox();
- const middle=await queues.locator('.document-main-panel').boundingBox();
- const right=await queues.locator('.case-analysis-panel').boundingBox();
- expect(left.x+left.width).toBeLessThanOrEqual(middle.x);
- expect(middle.x+middle.width).toBeLessThanOrEqual(right.x);
- await nav.getByRole('link',{name:'Referenzfälle',exact:true}).click();
- await expect(queues).toBeHidden();
- const references=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await references.getByRole('button',{name:'Krankenfahrt: widersprüchliche Nachweise',exact:true}).click();
- await expect(references.getByText(/Widersprüchliche Angaben: Pflegegrad/)).toBeVisible();
- await nav.getByRole('link',{name:'Arbeitslisten',exact:true}).click();
- await expect(queues.locator('iframe')).toHaveAttribute('src',/demo-g-supported/);
- await expect(nav.getByRole('link',{name:'Arbeitslisten',exact:true})).toHaveAttribute('aria-current','page');
- await page.screenshot({path:'test-results/compact-workspace-desktop.png'});
+test('case overview opens a result-first detail with explicit documents and a return path',async({page})=>{
  await page.setViewportSize({width:1280,height:720});
- expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
- const preview=await queues.locator('iframe').boundingBox();
- expect(preview.height).toBeGreaterThanOrEqual(200);
- expect(preview.y+preview.height).toBeLessThanOrEqual(720);
- await page.screenshot({path:'test-results/compact-workspace-laptop.png'});
+ await page.goto('/');
+ const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await expect(cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true})).toBeVisible();
+ await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
+ await expect(cases.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
+ await expect(cases.locator('iframe')).toHaveCount(0);
+ await expect(cases.getByRole('button',{name:'Pflege-Score: vollständig',exact:true})).toHaveCount(0);
+ await page.screenshot({path:'test-results/case-result-laptop.png'});
+ await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
+ await expect(cases.locator('iframe')).toBeVisible();
+ await expect(cases.locator('iframe')).toHaveAttribute('src',/#page=1&view=FitH&navpanes=0$/);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBeTruthy();
+ await page.screenshot({path:'test-results/case-documents-laptop.png'});
+ await cases.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
+ await expect(cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true})).toBeFocused();
+ await expect(cases.locator('iframe')).toHaveCount(0);
+ await page.setViewportSize({width:390,height:844});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
 });
 
-test('workspace routes survive reload and keyboard focus stays in the visible view',async({page})=>{
+test('workspace routes and keyboard navigation expose only the current view',async({page})=>{
  await page.goto('/#workbench');
  await expect(page.getByLabel('Prüfbereich',{exact:true})).toBeVisible();
- await expect(page.getByRole('region',{name:'Fallwarteschlangen'})).toBeHidden();
  const nav=page.getByRole('navigation',{name:'Arbeitsbereiche'});
- await nav.getByRole('link',{name:'Arbeitslisten',exact:true}).focus();
- await page.keyboard.press('Enter');
+ await nav.getByRole('link',{name:'Arbeitslisten',exact:true}).focus();await page.keyboard.press('Enter');
  await expect(page.getByRole('region',{name:'Fallwarteschlangen'})).toBeVisible();
- await page.setViewportSize({width:390,height:844});
- await expect(nav).toBeVisible();
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+ await expect(page.getByLabel('Prüfbereich',{exact:true})).toBeHidden();
 });
 
 test('document service failure retains the independent recorded assessment',async({page})=>{
  await page.route('**/api/document-cases/demo-g-supported',route=>route.fulfill({status:503,body:''}));
- await page.goto('/');
+ await page.goto('/#work-queues');
  const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
  await queues.getByRole('button',{name:'Fall öffnen: demo-g-supported',exact:true}).click();
  await expect(queues.getByRole('alert')).toBeVisible();
