@@ -631,5 +631,22 @@
     "referenceTitle": "Dokument",
     "actionUnavailable": "Für die aktuelle Auswahl nicht verfügbar",
     "platformCheck": "Plattformprüfung"
+  },
+  "caseProcessing": {
+    "heading": "Nächster Bearbeitungsschritt",
+    "confirm": "Prüfergebnis und Belege prüfen. Anschließend den Fall bestätigen.",
+    "blocked": "Bestätigung gesperrt: Für diesen Fall liegt kein vollständiges, bestätigungsfähiges Prüfergebnis vor. Offene Angaben und Nachweise klären und die Prüfung abschließen.",
+    "dispatch": "Der Fall ist bestätigt. Jetzt das Versandpaket erstellen und herunterladen.",
+    "complete": "Versandpaket lokal erstellt. Es wurde nichts an ein externes System übermittelt.",
+    "confirmAction": "Fall bestätigen",
+    "dispatchAction": "Versandpaket erstellen",
+    "openResult": "Ergebnis und offene Punkte ansehen",
+    "listsHelp": "Bestätigt und Versand simuliert sind Statusansichten. Fälle erscheinen dort durch Bestätigen und Versandpaket erstellen. Verschieben nach ändert nur die eigene Ablage.",
+    "moveTo": "Verschieben nach",
+    "noFolders": "Noch keine eigenen Ordner vorhanden.",
+    "confirmationHelp": "Nach Bestätigen erscheint der Fall in „Bestätigt“. Danach können Sie mit „Versandpaket erstellen“ ein lokales Paket herunterladen. Die Bestätigung ist keine medizinische oder rechtliche Freigabe.",
+    "dispatchHelp": "Erstellt und lädt ein lokales Versandpaket herunter. Anschließend erscheint der Fall in „Versand simuliert“. Es wird nichts extern übermittelt.",
+    "confirmedNext": "Versandpaket erstellen",
+    "completeNext": "Lokales Versandpaket erstellt"
   }
 }
