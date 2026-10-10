@@ -413,3 +413,21 @@ body { overflow:hidden; }
  .case-explorer .explorer-detail-heading strong{max-width:100%}
  .case-explorer .explorer-detail-actions{flex-wrap:wrap;margin-left:0}
 }
+
+/* Artcraft-inspired menu behavior: fly-out on hover/focus with pointer, inline
+   accordion for touch/coarse pointers, without copying third-party components. */
+.case-explorer .context-submenu.touch-submenu .context-submenu-panel{position:static;max-height:0;padding:0;border:0;box-shadow:none;overflow:hidden;display:none}
+.case-explorer .context-submenu.touch-submenu:hover .context-submenu-panel:not(.is-open),
+.case-explorer .context-submenu.touch-submenu:focus-within .context-submenu-panel:not(.is-open){display:none}
+.case-explorer .context-submenu.touch-submenu .context-submenu-panel.is-open{display:block;max-height:190px;overflow-y:auto;width:100%;padding:5px;border-top:1px solid #b7cddb;background:#f5f8fb}
+.case-explorer .context-submenu-panel .menu-custom-color{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.8rem;padding:5px 8px;color:#123c63}
+.case-explorer .context-submenu-panel .menu-custom-color input{height:29px;width:52px;min-width:52px;padding:2px;border-radius:4px;cursor:pointer}
+.case-explorer .custom-folder{min-height:29px;margin:2px 0;gap:2px}
+.case-explorer .custom-folder > .tree-filter{border-left:5px solid;border-radius:0;min-height:28px;padding:3px 6px;background:transparent;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.case-explorer .custom-folder > .tree-filter[aria-pressed=true]{background:#dcebf8}
+.case-explorer .custom-folder > .text-button{opacity:0;pointer-events:none;min-height:25px;padding:2px 4px;font-size:14px;transition:opacity .12s}
+.case-explorer .custom-folder:hover > .text-button,
+.case-explorer .custom-folder:focus-within > .text-button{opacity:1;pointer-events:auto}
+@media(hover:none){
+ .case-explorer .custom-folder > .text-button{opacity:1;pointer-events:auto}
+}
