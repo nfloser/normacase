@@ -215,3 +215,5 @@ Eigene Ordner können angelegt, umbenannt, eingefärbt und gelöscht werden. Aus
 Die Organisation liegt im Speicher des lokalen Demo-Servers: Browser-Neuladen erhält sie, ein Neustart setzt sie zurück. Maximal 50 Ordner, 100 Fälle je Aktion, 1000 Zeichen je Notiz und 500 Änderungen je Serverlauf. Revisionen verhindern versehentliches Überschreiben; wiederholte identische Operationskennungen liefern denselben Erfolg. Der Demo-Pfad ist bei aktiviertem persistentem Review-Host deaktiviert.
 
 „Bestätigen (Demo)“ und „Abschicken (Demo)“ sind ausdrücklich lokale Probeläufe. Nur vollständige, dafür geeignete Fälle können gemeinsam bestätigt werden; eine ungeeignete Auswahl wird vollständig abgelehnt. Versand erzeugt ausschließlich eine herunterladbare JSON-Datei mit unveränderten Assessment-Zeichenfolgen und `SYNTHETIC_LOCAL_ONLY`. Es gibt weder eine MD-Übertragung noch eine rechtlich verbindliche Freigabe.
+
+Persönliche Ordner besitzen einen aufklappbaren Fallbaum mit direkten Unteransichten für Ergebnis und Dokumente. Der eigene Filterknopf neben dem Baum behält die tabellarische Ordneransicht bei.

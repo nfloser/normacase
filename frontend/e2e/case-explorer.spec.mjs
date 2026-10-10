@@ -51,3 +51,25 @@ test('keyboard menu returns focus and removes only the folder assignment',async(
  await row.press('Shift+F10');await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
  await expect(row).toContainText('Ohne eigenen Ordner');
 });
+
+test('personal colored folder expands into case result and document nodes',async({page})=>{
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ await row.getByRole('checkbox').check();
+ await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
+ await page.getByRole('dialog').getByLabel('Ordnername').fill('Meine Prüffälle');
+ await page.getByRole('dialog').getByRole('button',{name:'Ordner speichern'}).click();
+ await explorer.getByRole('button',{name:'Auswahl verschieben',exact:true}).click();
+ await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Meine Prüffälle'});
+ await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
+ const folder=explorer.locator('.personal-folder-tree').filter({has:page.locator('summary', {hasText:'Meine Prüffälle'})});
+ await folder.locator(':scope > summary').click();
+ await expect(folder.getByText('reference-md-mueller')).toBeVisible();
+ const caseNode=folder.locator('li > details').filter({has:page.locator('summary',{hasText:'reference-md-mueller'})}).first();
+ await caseNode.locator(':scope > summary').click();
+ await expect(caseNode.getByRole('button',{name:'Dokumente',exact:true})).toBeVisible();
+ await caseNode.getByRole('button',{name:'Dokumente',exact:true}).click();
+ await expect(explorer.getByRole('button',{name:'Zur Fallübersicht',exact:true})).toBeVisible();
+});
