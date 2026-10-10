@@ -32,6 +32,8 @@ test('incomplete file explains the blocked action instead of allowing a status m
  await expect(actions).toContainText('Bestätigung gesperrt');
  await expect(actions.getByRole('button',{name:'Fall bestätigen',exact:true})).toBeDisabled();
  await expect(actions.getByRole('button',{name:'Versandpaket erstellen'})).toBeDisabled();
+ await explorer.locator('.opened-case').getByRole('button',{name:'Dokumente',exact:true}).click();
+ await expect(explorer.locator('.case-file-list')).toBeVisible();
  await actions.getByRole('button',{name:'Ergebnis und offene Punkte ansehen'}).click();
  await expect(explorer.getByRole('heading',{name:'Prüfergebnis: Angaben unvollständig',exact:true})).toBeVisible();
 });
