@@ -29,6 +29,7 @@ for(const width of [1366,1920])test(`dark case file, sources and dialogs remain 
  await expect(explorer.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
  await page.screenshot({path:`test-results/dark-case-${width}.png`});
  await explorer.getByRole('button',{name:'Dokumente',exact:true}).click();
+ await expect(explorer.locator('.document-case-summary')).toHaveCSS('background-color','rgb(15, 27, 40)');
  await expect(explorer.locator('.pdf-page-image').first()).toHaveCSS('filter','none');
  await page.screenshot({path:`test-results/dark-documents-${width}.png`});
  await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
