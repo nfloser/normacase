@@ -436,10 +436,15 @@
     "list": "Fälle auswählen",
     "analysis": "Ergebnis und Fundstellen",
     "details": "Fallinformationen",
-    "help": "Arbeitsliste → Fall auswählen → Dokumente und Prüfergebnis ansehen.",
+    "help": "Fall auswählen → Ergebnis und Begründung prüfen → Belege öffnen.",
     "summary": "Arbeitslast",
     "tools": "Weitere Werkzeuge",
     "replay": "Snapshot prüfen",
-    "workflowPack": "Prüfbereich für Vorgänge"
+    "workflowPack": "Prüfbereich für Vorgänge",
+    "back": "Zur Fallübersicht",
+    "caseViews": "Fallansichten",
+    "resultView": "Ergebnis und Begründung",
+    "documentsView": "Dokumente",
+    "openDocuments": "Dokumente ansehen"
   }
 }

@@ -187,3 +187,15 @@ Prüfbereich für Vorgänge lässt sich direkt im Bereich „Vorgänge“ auswä
 Dies ist die gemeinsame React-Präsentationsschicht für den Browser und einen späteren
 Desktop-Host. Ein nativer Fenster-Host und institutionelle MD-Adapter sind damit noch
 nicht implementiert. Die APIs und der deterministische Kern ändern sich nicht.
+
+### Fallübersicht und Ergebnis zuerst
+
+Der Start öffnet die fachlichen Referenzfälle. Ein Klick auf einen Fall ersetzt die
+Übersicht durch die Fallansicht; „Zur Fallübersicht“ führt zurück und stellt den
+Tastaturfokus auf den zuvor geöffneten Fall. Die Startansicht zeigt Ergebnis,
+Klärungsbedarf, Prüfumfang und die dokumentierten Angaben mit Fundstellen.
+„Dokumente“ öffnet den Beleg in einem eigenen breiten Bereich. Ein Klick auf eine
+Fundstelle wechselt direkt zur Dokumentansicht und fordert die entsprechende Seite
+an. Die PDF-Ansicht fordert Seitenbreite und eine ausgeblendete Miniaturleiste an;
+die genaue Darstellung hängt vom eingebauten PDF-Betrachter des Browsers ab.
+Die fiktiven Plattformtests bleiben getrennt unter „Arbeitslisten“ verfügbar.

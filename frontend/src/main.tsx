@@ -16,7 +16,7 @@ const outcomes: Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de
 
 function App() {
   const views=['work-queues','reference-cases','workbench','review','workflow'];
-  const readView=()=>views.includes(window.location.hash.slice(1))?window.location.hash.slice(1):'work-queues';
+  const readView=()=>views.includes(window.location.hash.slice(1))?window.location.hash.slice(1):'reference-cases';
   const [view,setView]=useState(readView);
   useEffect(()=>{const changed=()=>setView(readView());window.addEventListener('hashchange',changed);return()=>window.removeEventListener('hashchange',changed);},[]);
   const [packs,setPacks]=useState<Pack[]>([]);

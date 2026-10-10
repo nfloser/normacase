@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { parse } from 'lossless-json';
 import de from './de.json';
 import type { Pack } from './model';
@@ -16,6 +16,8 @@ const outcomes:Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.
 const representativeLimit=5;
 
 export function CaseWorkQueues({packs}:{packs:Pack[]}) {
+  const buttons=useRef<Record<string,HTMLButtonElement|null>>({});
+  function back(){const previous=selected;setDetail(null);setSelected('');setBusy(false);requestAnimationFrame(()=>buttons.current[previous]?.focus());}
   const [expanded,setExpanded]=useState<Record<string,boolean>>({});
   const [queues,setQueues]=useState<Queue[]>([]);
   const [totalCases,setTotalCases]=useState(0);
@@ -44,8 +46,8 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
   const pack=packs.find(pack=>pack.packId===detail?.packId);
   const statuses:Record<string,string>={PRESENT:de.present,MISSING:de.missing,CONFLICTING:de.conflicting};
   const queueLabels=text.queues as Record<string,string>;
-  return <section id="work-queues" className="card work-queues" aria-label={text.heading}>
-    <div className="case-workspace-grid"><aside className="case-list-panel" aria-label={de.workspace.list}><h2>{text.heading}</h2>
+  return <section id="work-queues" className="card work-queues case-first" aria-label={text.heading}>
+    <div className="case-workspace-grid"><aside hidden={!!selected} className="case-list-panel" aria-label={de.workspace.list}><h2>{text.heading}</h2>
     {!!totalCases&&<div className="workload-summary" aria-label={text.summaryHeading}>
       <div className="workload-total"><strong>{totalCases} {text.summaryTotal}</strong></div>
       <div className="workload-counts">{queues.map(queue=><div key={queue.queueId}>
@@ -54,11 +56,11 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
     </div>}
     <div className="queue-grid">{queues.map(queue=><section key={queue.queueId}>
       <h3>{queueLabels[queue.queueId]??de.unknown} ({queue.items.length})</h3>
-      <ul>{queue.items.slice(0,expanded[queue.queueId]?queue.items.length:representativeLimit).map(item=><li key={item.caseId}><button type="button" className="secondary" aria-pressed={selected===item.caseId} onClick={()=>{if(selected!==item.caseId){setDetail(null);setSelected(item.caseId);}}}>{text.select}: {item.caseId}</button></li>)}
+      <ul>{queue.items.slice(0,expanded[queue.queueId]?queue.items.length:representativeLimit).map(item=><li key={item.caseId}><button ref={node=>{buttons.current[item.caseId]=node;}} type="button" className="secondary" aria-pressed={selected===item.caseId} onClick={()=>{if(selected!==item.caseId){setDetail(null);setSelected(item.caseId);}}}>{text.select}: {item.caseId}</button></li>)}
         {queue.items.length>representativeLimit&&!expanded[queue.queueId]&&<li className="queue-more">{text.moreCases.replace('{count}',String(queue.items.length-representativeLimit))}</li>}
       </ul>{queue.items.length>representativeLimit&&<button type="button" className="secondary" aria-expanded={!!expanded[queue.queueId]} onClick={()=>setExpanded({...expanded,[queue.queueId]:!expanded[queue.queueId]})}>{expanded[queue.queueId]?de.documents.showLess:de.documents.showAll}</button>}
     </section>)}</div>
-    </aside><div className="case-detail-panel" aria-live="polite">{busy&&<p>{text.loading}</p>}{error&&<p role="alert">{error}</p>}
+    </aside><div className="case-detail-panel" hidden={!selected} aria-live="polite"><header className="case-header"><button type="button" className="secondary" onClick={back}>{de.workspace.back}</button><h2>{selected}</h2></header>{busy&&<p>{text.loading}</p>}{error&&<p role="alert">{error}</p>}
     {detail&&<article><h3>{text.detail}: {detail.caseId}</h3>
       <DocumentCaseFile key={detail.caseId} caseId={detail.caseId} presentation={pack?.presentation} analysis={<>
       <p>{(text.states as Record<string,string>)[detail.stateId]??de.unknown}</p>
@@ -70,6 +72,6 @@ export function CaseWorkQueues({packs}:{packs:Pack[]}) {
         <DecisionTrace rule={assessment.assessment.ruleTrace} outputs={assessment.assessment.domainOutputs} presentation={pack?.presentation}/>
       </>:<><p>{text.noAssessment}</p><details><summary>{de.workspace.details}</summary><dl><dt>{text.caseRevision}</dt><dd>{detail.caseRevision}</dd><dt>{text.processRevision}</dt><dd>{detail.processRevision}</dd></dl></details></>}
     </>}/>
-    </article>}{!detail&&!busy&&!error&&<div className="case-empty"><h3>{de.workspace.details}</h3><p>{de.workspace.empty}</p></div>}</div></div>
+    </article>}</div></div>
   </section>;
 }
