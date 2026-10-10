@@ -360,3 +360,6 @@ body { overflow:hidden; }
 .document-reader .page-controls button{min-height:30px}
 .document-reader .page-stage.zoomed{justify-content:flex-start;align-items:flex-start}
 .document-reader .page-stage.zoomed .pdf-page-image{margin:0;object-fit:contain}
+
+.case-context-menu.submenu-to-left .context-submenu-panel{left:auto;right:calc(100% - 2px)}
+.opened-case-status{padding:4px 7px;background:#eaf3f9;color:#123c63;font-size:12px;border-radius:4px;font-weight:600;white-space:nowrap}
