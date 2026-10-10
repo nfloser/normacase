@@ -108,3 +108,13 @@ Auswahl und eingeblendeter Detailakte. Im Zielordner und seinen fachlichen
 Arbeits-/Statuslisten bleibt er zugänglich. „Aus Ordner entfernen“ bringt ihn
 wieder in den Eingang. Zähler folgen der tatsächlichen Zuordnung; Prüfung,
 Bestätigung und Versandstatus ändern sich dadurch nicht.
+
+### Helle und dunkle Darstellung
+
+„Farbschema“ rechts im Menüband bietet System, Hell und Dunkel. System reagiert
+auf die Betriebssystemeinstellung; eine explizite Auswahl hat Vorrang. Die Auswahl
+bleibt beim Wechsel des Arbeitsbereichs in dieser Sitzung erhalten. Sie wird
+nicht in localStorage, sessionStorage oder Cookies gespeichert; dauerhafte
+benutzergebundene Ansichten bleiben Aufgabe #281. PDF-/Scanseiten behalten ihre
+Originalfarben. Die umgebende Dokumentenansicht, Tabellen, Fallakten, Kontextmenüs,
+Dialoge und Extras verwenden die dunklen medizinisch-blauen Farben.

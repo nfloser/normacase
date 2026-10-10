@@ -93,6 +93,13 @@ Optimize for the shortest verified path to the target operating model, not for t
 9. Treat security, privacy, determinism, provenance and historical replay as acceptance criteria of each slice, not a later hardening phase.
 10. When external process details are unknown, record the question and keep the boundary replaceable rather than guessing.
 
+## Platform compatibility
+
+- Maintain Windows x64, Linux x64 and macOS (Apple Silicon arm64 and Intel x64) compatibility for the local workbench and evaluator.
+- Platform-specific filesystem, process, launcher and native-library behavior belongs behind explicit host/packaging boundaries; do not add Windows-only dependencies to shared product code.
+- The preview matrix must build and exercise each native target on a matching runner before merging changes that affect those targets. Preserve self-contained runtime, offline assets, deterministic results and German start instructions.
+- A future desktop host must retain macOS as a first-class target. Signed/notarized macOS app distribution and Safari-specific UI validation require separate explicit verification; native preview CI does not establish either.
+
 ## Product language
 
 - German (de-DE) is the default for the complete user-facing product: navigation, forms, field labels, validation and error messages, workflow/status descriptions, human-readable Decision Traces, reports, exports and user help.

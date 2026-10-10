@@ -37,7 +37,7 @@ for(const viewport of [{width:1920,height:1080},{width:1366,height:768}]){
   await expect(explorer.locator('.page-stage')).toHaveAttribute('data-zoom-mode','width');
   await expect(explorer.locator('.viewer-page')).toHaveCount(2);
   await expect(explorer.getByLabel('Seitenzahl')).toHaveValue('2');
-  const image=await explorer.locator('.pdf-page-image').first().boundingBox();expect(image.width).toBeGreaterThan(600);
+  await expect.poll(async()=> (await explorer.locator('.pdf-page-image').first().boundingBox())?.width??0).toBeGreaterThan(600);
   await expect(explorer.getByLabel('Dokument auswählen')).toHaveCount(0);
   await page.screenshot({path:`test-results/clinical-documents-${viewport.width}.png`});
   await explorer.getByLabel('Zoommodus').selectOption('150');

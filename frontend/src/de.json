@@ -641,12 +641,19 @@
     "confirmAction": "Fall bestätigen",
     "dispatchAction": "Versandpaket erstellen",
     "openResult": "Ergebnis und offene Punkte ansehen",
-    "listsHelp": "Bestätigt und Versand simuliert sind Statusansichten. Fälle erscheinen dort durch Bestätigen und Versandpaket erstellen. Verschieben nach ändert nur die eigene Ablage.",
+    "listsHelp": "„Alle Fälle“ zeigt Vorgänge ohne eigenen Ordner. Bestätigt und Versand simuliert sind Statusansichten. Fälle erscheinen dort durch Bestätigen und Versandpaket erstellen. Verschieben nach ändert nur die eigene Ablage.",
     "moveTo": "Verschieben nach",
     "noFolders": "Noch keine eigenen Ordner vorhanden.",
     "confirmationHelp": "Nach Bestätigen erscheint der Fall in „Bestätigt“. Danach können Sie mit „Versandpaket erstellen“ ein lokales Paket herunterladen. Die Bestätigung ist keine medizinische oder rechtliche Freigabe.",
     "dispatchHelp": "Erstellt und lädt ein lokales Versandpaket herunter. Anschließend erscheint der Fall in „Versand simuliert“. Es wird nichts extern übermittelt.",
     "confirmedNext": "Versandpaket erstellen",
     "completeNext": "Lokales Versandpaket erstellt"
+  },
+  "theme": {
+    "label": "Farbschema",
+    "system": "System",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "help": "Farbschema für diese Sitzung. System folgt der Darstellungseinstellung des Betriebssystems."
   }
 }
