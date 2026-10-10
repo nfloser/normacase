@@ -72,3 +72,26 @@ Spezifikationen, Rollen, Korrektur-/Nachforderungspolitik, fachlich freigegebene
 Knowledge Packs sowie Datenschutz- und Betriebsfreigaben ab. Diese Anforderungen
 werden vor einem produktiven Pilot verbindlich geklärt. Batch-Freigabe und echte
 MD-Adapter werden nicht als Bestandteil dieses Demo-Abschlusses behauptet.
+
+### Fall bestätigen und Versandpaket erstellen
+
+In Vollansicht und Detailbereich zeigt „Nächster Bearbeitungsschritt“ die Aktionen
+für genau diesen Fall. Vollständige, vom bestehenden Server als bestätigungsfähig
+gekennzeichnete Ergebnisse können mit „Fall bestätigen“ bestätigt werden. Danach
+ist „Versandpaket erstellen“ verfügbar: Der Bestätigungsdialog erstellt ein lokales
+JSON-Paket zum Herunterladen. Es findet keine externe Übermittlung statt.
+„Bestätigt“ und „Versand simuliert“ filtern diese Bearbeitungszustände; sie sind
+keine Zielordner für „Verschieben nach“. Eigene Ordner ändern nur die Ablage.
+Bei unvollständigen, unklaren oder reinen Dokumentfällen erklärt die Fallakte die
+Sperre und verweist auf Ergebnis/offene Punkte. Eine Bestätigung der öffentlichen
+Referenzprüfung ersetzt keine medizinische oder rechtliche Freigabe.
+
+Persönliche Farbmarkierungen stehen direkt hinter dem Auswahlkästchen. Im
+Kontextmenü gibt es nur „Verschieben nach“; der Toolbar-Dialog bleibt für die
+Sammelablage erhalten. Die Quellenwerttabellen verwenden feste proportionale
+Spalten und richten Werte und Überschriften links bündig aus.
+
+Die öffentlichen Browsertests verwenden einen Worker: Alle Testseiten teilen sich
+denselben lokalen Workspace mit optimistischer Revision. Parallele schreibende
+Tests würden absichtlich Revisionskonflikte auslösen statt isolierte Bedienabläufe
+zu prüfen; Konfliktverhalten bleibt durch die vorhandenen API-Tests abgedeckt.

@@ -24,7 +24,7 @@ try{
   await page.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true}).waitFor();
   await page.screenshot({path:`test-results/before/result-${width}.png`});
   await page.getByRole('button',{name:'Dokumente',exact:true}).click();
-  await page.locator('.pdf-page-image').waitFor();
+  await page.locator('.pdf-page-image').first().waitFor();
   await page.screenshot({path:`test-results/before/documents-${width}.png`});await page.close();
  }
 }finally{
