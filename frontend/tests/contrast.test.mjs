@@ -7,5 +7,10 @@ function contrast(a,b){const values=[luminance(a),luminance(b)].sort((a,b)=>b-a)
 test('reading, help and action colors meet WCAG AA on their actual surfaces',()=>{
  for(const [fg,bg] of [['19344a','f1f5fa'],['425a70','ffffff'],['425a70','e6eef6'],['ffffff','155b91'],['285674','f1f5fa'],['425a70','ffffff'],['91513f','fff0ee']])assert.ok(contrast(fg,bg)>=4.5,`${fg}/${bg}`);
  assert.ok(contrast('637e96','fbfdff')>=3);assert.ok(contrast('155b91','ffffff')>=3);
- assert.doesNotMatch(css,/font-size:(10|11|12|13)px/);
+ // 12–13px are limited to the explicitly compact case grid and toolbar.
+ const smallRules=css.match(/[^{}]+\\{[^{}]*font-size:(?:10|11|12|13)px[^{}]*\\}/g)??[];
+ for(const rule of smallRules)assert.match(rule,/compact-workplace-toolbar|compact-color-toggle|workplace-case-context|case-explorer \\.explorer-table/);
+ assert.ok(contrast('19344a','fff6cc')>=4.5);
+ assert.ok(contrast('19344a','fbd9d9')>=4.5);
+ assert.ok(contrast('ffffff','256da8')>=4.5);
 });
