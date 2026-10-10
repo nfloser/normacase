@@ -363,3 +363,19 @@ body { overflow:hidden; }
 
 .case-context-menu.submenu-to-left .context-submenu-panel{left:auto;right:calc(100% - 2px)}
 .opened-case-status{padding:4px 7px;background:#eaf3f9;color:#123c63;font-size:12px;border-radius:4px;font-weight:600;white-space:nowrap}
+
+/* Dense desktop workbench header: auxiliary modules stay under Extras. */
+.application-workspace .workspace-navigation{min-height:34px;display:flex;align-items:center;gap:4px;margin:0;padding:2px 7px}
+.application-workspace .workspace-navigation a{font-size:12px;padding:5px 10px;min-height:28px}
+.workspace-extras{position:relative;margin:0}
+.workspace-extras > summary{font-size:12px;padding:5px 10px;color:#123c63;min-height:28px;line-height:18px;border:1px solid #b7cddb;border-radius:4px;background:#f5f8fb;white-space:nowrap}
+.workspace-extras-list{position:absolute;left:0;top:100%;z-index:40;min-width:180px;background:#fff;padding:5px;border:1px solid #7b97ab;box-shadow:0 4px 15px #123c6333;display:grid;gap:3px}
+.workspace-extras-list a{display:block;white-space:nowrap;color:#123c63}
+.workspace-extras-list a:hover{background:#eaf3f9}
+.application-workspace .workspace-status{font-size:12px;padding:1px 7px;min-height:20px}
+.application-workspace .explorer-header{padding:5px 12px;min-height:54px}
+.application-workspace .explorer-header h2{font-size:16px}
+.application-workspace .explorer-search{display:flex;flex-direction:row;gap:8px;align-items:center}
+.application-workspace .explorer-search input{width:250px;height:30px;min-height:30px}
+.application-workspace .explorer-toolbar{padding:4px 8px;gap:4px;min-height:35px}
+.application-workspace .explorer-toolbar button{font-size:.8rem;min-height:28px}

@@ -9,7 +9,7 @@ test('reading, help and action colors meet WCAG AA on their actual surfaces',()=
  assert.ok(contrast('637e96','fbfdff')>=3);assert.ok(contrast('155b91','ffffff')>=3);
  // 12–13px are limited to the explicitly compact case grid and toolbar.
  const smallRules=css.match(/[^{}]+\{[^{}]*font-size:(?:10|11|12|13)px[^{}]*\}/g)??[];
- for(const rule of smallRules)assert.match(rule,/compact-workplace-toolbar|compact-color-toggle|workplace-case-context|compact-explorer-navigation|opened-case-quick-actions|opened-case-status|case-explorer \.explorer-table/);
+ for(const rule of smallRules)assert.match(rule,/compact-workplace-toolbar|compact-color-toggle|workplace-case-context|compact-explorer-navigation|workspace-navigation|workspace-extras|workspace-status|opened-case-quick-actions|opened-case-status|case-explorer \.explorer-table/);
  assert.ok(contrast('19344a','fff6cc')>=4.5);
  assert.ok(contrast('19344a','fbd9d9')>=4.5);
  assert.ok(contrast('ffffff','256da8')>=4.5);

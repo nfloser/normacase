@@ -71,3 +71,13 @@ test('care reference exposes its knowledge-defined score outputs directly',async
  await expect(outputs.locator('dd').first()).toContainText('Erreicht');
  await expect(cases.locator('iframe')).toHaveCount(0);
 });
+
+test('extras navigation keeps the primary workplace compact and opens reference files',async({page})=>{
+ await page.goto('/#work-queues');
+ const nav=page.getByRole('navigation',{name:'Arbeitsbereiche'});
+ await expect(nav.getByRole('link',{name:'Arbeitslisten',exact:true})).toBeVisible();
+ await expect(nav.getByRole('link',{name:'Referenzfälle',exact:true})).toBeHidden();
+ await nav.getByText('Extras').click();
+ await nav.getByRole('link',{name:'Referenzfälle',exact:true}).click();
+ await expect(page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'})).toBeVisible();
+});

@@ -107,7 +107,8 @@ function App() {
   const title=pack?.presentation?.title??selected;
   return <><a className="skip-link" href="#main-content">{de.documents.skip}</a><header className="top"><a className="brand" href="/"><span className="brandmark">N</span>{de.app}<span className="brand-divider">/</span><span className="sub">{de.subtitle}</span></a><span className="local"><span/>{de.local}</span></header>
     <main id="main-content" tabIndex={-1} className="application-workspace"><h1 className="visually-hidden">{de.app}</h1><nav className="workspace-navigation" aria-label={de.workspace.navigation}>
-      {[["work-queues",de.documents.queues],["volume-cases",de.documents.volume],["reference-cases",de.documents.references],["workbench",de.documents.workbench],["review",de.workspace.review],["workflow",de.workspace.workflow]].map(([id,label])=><a key={id} href={'#'+id} aria-current={view===id?'page':undefined}>{label}</a>)}
+      <a href="#work-queues" aria-current={view==='work-queues'?'page':undefined}>{de.documents.queues}</a>
+      <details className="workspace-extras"><summary>Extras ▾</summary><div className="workspace-extras-list">{[["reference-cases",de.documents.references],["volume-cases",de.documents.volume],["workbench",de.documents.workbench],["review",de.workspace.review],["workflow",de.workspace.workflow]].map(([id,label])=><a key={id} href={'#'+id} aria-current={view===id?'page':undefined}>{label}</a>)}</div></details>
     </nav><div className="workspace-status"><span>{de.notice}</span><span>{de.workspace.help}</span></div>
     <div className="workspace-view" hidden={view!=='work-queues'}><CaseExplorer/></div><div className="workspace-view" hidden={view!=='volume-cases'}><CaseWorkQueues packs={packs}/></div>
     <div className="workspace-view" hidden={view!=='reference-cases'}><ReferenceDocumentCases/></div>
