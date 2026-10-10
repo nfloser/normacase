@@ -1,58 +1,105 @@
-SYNTHETISCHE DEMO - reference-cannabis-missing
+Schulungsakte - NC-2026-4121 | Ute Lorenz
 Kontrollierter PDF-Text, keine OCR.
 
-Arztfragebogen – synthetische Anfrage / Seite 1
-Synthetisch | reference-cannabis-missing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
- Arztfragebogen – synthetische Anfrage
-Fiktive Einrichtung / Testperson reference-cannabis-missing / Datum 10.10.2026
-Synthetische Testperson A-missing, 58 Jahre, mit chronischer Schmerzsymptomatik. Die
-Anfrage dient ausschließlich der Dokumentensichtung; Wirksamkeit, Anspruch und
-Verordnungsbefugnis werden nicht bewertet. Fragestellung angelehnt an den veröffentlichten
-MD-Arztfragebogen.
-Therapieziel: Im Antrag wird eine Verbesserung der Alltagsbelastbarkeit genannt.
-Diagnosebelege, Vorbehandlungen und Verlauf sollen von der fachlich zuständigen Stelle
-bewertet werden.
-Die Demo enthält keine Dosierung, Empfehlung oder Aussage zur Bewilligung.
+Arztfragebogen / Seite 1
+NC-2026-4121 | Ute Lorenz
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Arztfragebogen
+NC-2026-4121 | Ute Lorenz | 58 Jahre | 08.10.2026
+Ute Lorenz, 58 Jahre. mit chronischer Schmerzsymptomatik. Die Anfrage dient ausschließlich
+der Dokumentensichtung; Wirksamkeit, Anspruch und Verordnungsbefugnis werden nicht
+bewertet.
+Anlass und Unterlagenbezug
+Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und
+ein dokumentiertes Therapieziel vorhanden?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Therapieziel dokumentiert
 Ja
 Vorbehandlungen belegt
 Nicht angegeben
-Quelle der Dokumentstruktur: md-cannabinoid. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: MD Bayern Arztfragebogen zu Cannabinoiden; 10.01.2024. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 
-Arztfragebogen – synthetische Anfrage / Seite 2
-Synthetisch | reference-cannabis-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Arztfragebogen / Seite 2
+NC-2026-4121 | Ute Lorenz
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 treatment_goal_documented=YES
 previous_treatments_attached=UNKNOWN
 END-NCF1
 
 Anlagenübersicht – Therapieverlauf ausstehend / Seite 1
-Synthetisch | reference-cannabis-missing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4121 | Ute Lorenz
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Anlagenübersicht – Therapieverlauf
  ausstehend
-Fiktive Einrichtung / Testperson reference-cannabis-missing / Datum 10.10.2026
-Vorbehandlungen sind noch nicht belegt. Die Lücke verhindert eine vollständige
-Unterlagensichtung.
-Angabe
-Dokumentierter Wert
-Quelle der Dokumentstruktur: md-cannabinoid. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+NC-2026-4121 | Ute Lorenz | 58 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und
+ein dokumentiertes Therapieziel vorhanden?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Strukturbezug: MD Bayern Arztfragebogen zu Cannabinoiden; 10.01.2024. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 
-Anlagenübersicht – Therapieverlauf ausstehend / Seite 2
-Synthetisch | reference-cannabis-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
-NCF1
-END-NCF1
+Ärztlicher Bericht zur Schmerz- und Alltagssituation / Seite 1
+NC-2026-4121 | Ute Lorenz
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Schmerzambulanz Lindenhof
+ Ärztlicher Bericht zur Schmerz- und
+ Alltagssituation
+NC-2026-4121 | Ute Lorenz | 58 Jahre | 30.09.2026
+Anlass und Ziel
+Chronische Schmerzsymptomatik mit eingeschränkter Alltagsbelastbarkeit. Das im Antrag
+benannte Ziel ist eine Verbesserung der Belastbarkeit bei alltäglichen Tätigkeiten. Die
+bisherigen Behandlungen und der Verlauf sollen für die fachliche Stellungnahme
+zusammengeführt werden.
+Bisherige Versorgung
+Vorbehandlungen und Gründe für Behandlungswechsel werden anhand der beigefügten
+Unterlagen geprüft. Der Arztfragebogen führt die Abschnitte Anamnese, bisherige Therapie,
+Alternativen und Therapieziel getrennt. Nicht ausgefüllte Detailangaben sind bei der
+behandelnden Stelle anzufragen.
+Fragestellung an die behandelnde Stelle
+Bitte ergänzen Sie den zeitlichen Verlauf der bisherigen Maßnahmen und die dokumentierten
+Gründe für Änderungen. Das im Antrag genannte Ziel soll mit konkreten
+Alltagsbeobachtungen erläutert werden.
+Strukturbezug: MD Bayern Arztfragebogen zu Cannabinoiden; 10.01.2024. Eigenes
+Berichtslayout, kein amtliches Originalformular.
+
+Nachforderung bisheriger Behandlungen / Seite 1
+NC-2026-4121 | Ute Lorenz
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Nachforderung bisheriger Behandlungen
+NC-2026-4121 | Ute Lorenz | 58 Jahre | 09.10.2026
+Unterlagenstand
+Der bisherige Therapieverlauf ist nicht belegt. Bitte übermitteln Sie die angekündigten
+Behandlungsunterlagen; diese Nachforderung ist kein Ersatz für die fehlende Anlage.
+Fachliche Rückfragen
+Welche Behandlungen wurden durchgeführt und mit welchem dokumentierten Verlauf?
+Welche Gründe werden für Veränderungen genannt? Die Rückmeldung ist in die
+Fallbesprechung einzubeziehen.
+Weiteres Vorgehen
+Bitte gleichen Sie Unterlagenstand und offene Fragen mit der behandelnden Stelle ab.
+Ergänzende Dokumente sind der bestehenden Anfrage mit Datum und Anlagenbezeichnung
+zuzuordnen.
+Strukturbezug: MD Bayern Arztfragebogen zu Cannabinoiden; 10.01.2024. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 

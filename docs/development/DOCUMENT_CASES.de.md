@@ -150,3 +150,37 @@ es werden keine fremden Originalformulare ohne geprüfte Weiterverbreitungsrecht
 mitgeliefert. Die lokalen PDFs verwenden ein eigenes Brief-/Berichtslayout und
 tragen einen sichtbaren Schulungskennzeichner. Es handelt sich ausdrücklich nicht
 um echte Patientenakten oder Originalanlagen der publizierten Lehrbeispiele.
+
+
+## Berichtsbündel für die Vorführung (10.10.2026)
+
+Alle 22 öffentlichen Referenzakten enthalten jetzt mindestens vier eigenständige
+PDF-Unterlagen (90 insgesamt), zusätzlich Anlagenkopie und lokale Lesefassung.
+Fallnummer NC-2026-41xx, erfundener Name, Alter und Datumsbezug sind pro Akte konsistent.
+Die Vorführung verwendet keine echten Patientenidentitäten. Ein Herkunftshinweis im
+Briefkopf kennzeichnet jede eigenständig herunterladbare Unterlage; Titel und
+Dateiauswahl verwenden normale fachliche Dokumentbezeichnungen.
+
+Die Autoreninhalte liegen in `scripts/clinical-case-bundles.de.json`. Primäre
+Dokumente behalten ihre extrahierbaren Werte; Zusatzberichte erzeugen keine neuen
+NCF1-Beobachtungen. `scripts/reference-input-baseline.json` bindet die Eingabe-Hashes
+aller Referenzakten vor der Erweiterung. Die Tests müssen für jede Akte unveränderte
+Prüfdaten, gemeinsame Identität, Dokumentarten und tatsächliche PDF-/PNG-Hashes
+nachweisen. Die 100 Plattform-Lastfälle bleiben bytegleich.
+
+Beispiele: Pflegeakten enthalten Arztbrief und Tagesprotokoll neben dem Modulbogen;
+Reha enthält Antrag, ärztlichen Befund, Therapieverlauf und Selbstauskunft bzw.
+Nachforderung; Unfallakten enthalten Auftrag, Ereignisschilderung, Erstbericht
+soweit vorhanden und Befundkorrespondenz. Weitere Bündel umfassen Krankenfahrt,
+Onkologie, Überleitung, Cannabinoid-Anfrage und Hörhilfen. Bei fehlendem Erst- oder
+Befundbericht wird kein Ersatzbericht hinzugefügt. Nachforderungen belegen die
+Lücke, nicht die fehlende medizinische Aussage. Ereignis-/Pflegegradkonflikte bleiben
+in beiden Dokumenten erhalten.
+
+Die öffentlichen Vorlagen bestimmen Dokumentarten und Gliederung, nicht die
+Authentizität erfundener Inhalte: DGUV A 2206 (10/2025), F 1000 (07/2018), KBV
+Formular 61, MD-Pflegelehrbeispiele und die bereits verzeichneten Unterlagenchecklisten.
+Erneute Sichtung der DGUV-Originale und KBV-Information am 10.10.2026 bestätigt die
+Dokumenttypen. Keine amtlichen Formulare, Logos, Signaturen oder fremden Patientenakten
+werden kopiert. Keine neue fachliche Regel, Freigabe oder produktive
+Schnittstellenkonformität ist Bestandteil dieser Änderung.

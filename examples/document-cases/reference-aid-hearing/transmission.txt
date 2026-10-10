@@ -1,34 +1,41 @@
-SYNTHETISCHE DEMO - reference-aid-hearing
+Schulungsakte - NC-2026-4122 | Bernd Keller
 Kontrollierter PDF-Text, keine OCR.
 
 Verordnung und Auftragsübersicht / Seite 1
-Synthetisch | reference-aid-hearing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4122 | Bernd Keller
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Verordnung und Auftragsübersicht
-Fiktive Einrichtung / Testperson reference-aid-hearing / Datum 10.10.2026
-Synthetische Testperson H-01, 67 Jahre. Eine Hörversorgung wird angefragt. Die Akte enthält
-erfundene Unterlagen nach öffentlich beschriebenen Dokumentarten. Kein Leistungs- oder
-Eignungsentscheid. Angefragte Versorgung: Hörhilfenversorgung.
-Auftrag: Prüfung der Unterlagen durch die zuständige Fachstelle. Die Verordnung und eine
-Messbefundübersicht sind als fiktive Anlagen benannt. Hersteller, Produkt und Preis werden
-nicht festgelegt.
+NC-2026-4122 | Bernd Keller | 67 Jahre | 08.10.2026
+Bernd Keller, 67 Jahre. Eine Hörversorgung wird angefragt. Die Akte enthält erfundene
+Unterlagen nach öffentlich beschriebenen Dokumentarten. Kein Leistungs- oder
+Eignungsentscheid.
+Anlass und Unterlagenbezug
+Zusammenstellung einer Hörhilfenanfrage. Sind Verordnung, Messbefund und
+Anpassdokumentation vorhanden?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Verordnung beigefügt
 Ja
 Messbefund beigefügt
 Ja
 Anpassbericht beigefügt
 Ja
-Quelle der Dokumentstruktur: md-hilfsmittel. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: MD Bund Unterlagen für Hilfsmittelversorgungen; 12.03.2026 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
 
 Verordnung und Auftragsübersicht / Seite 2
-Synthetisch | reference-aid-hearing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4122 | Bernd Keller
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 prescription_attached=YES
 measurement_attached=YES
@@ -36,25 +43,66 @@ fitting_report_attached=YES
 END-NCF1
 
 Anpassbericht und Messbefundübersicht / Seite 1
-Synthetisch | reference-aid-hearing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4122 | Bernd Keller
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Anpassbericht und Messbefundübersicht
-Fiktive Einrichtung / Testperson reference-aid-hearing / Datum 10.10.2026
-Messbedingungen und subjektive Alltagserfahrungen sind als Dokumentationsabschnitte
-vorgesehen.
-Vergleichsversorgung und Anpassverlauf bedürfen einer fachlichen Bewertung. Der Bericht
-demonstriert die Aktenstruktur; er liefert keine errechnete medizinische Wirksamkeit.
-Angabe
-Dokumentierter Wert
-Quelle der Dokumentstruktur: md-hilfsmittel. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+NC-2026-4122 | Bernd Keller | 67 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Zusammenstellung einer Hörhilfenanfrage. Sind Verordnung, Messbefund und
+Anpassdokumentation vorhanden?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Strukturbezug: MD Bund Unterlagen für Hilfsmittelversorgungen; 12.03.2026 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
 
-Anpassbericht und Messbefundübersicht / Seite 2
-Synthetisch | reference-aid-hearing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
-NCF1
-END-NCF1
+HNO-Arztbrief zur Hörhilfenanfrage / Seite 1
+NC-2026-4122 | Bernd Keller
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+HNO-Praxis Lindenhof
+ HNO-Arztbrief zur Hörhilfenanfrage
+NC-2026-4122 | Bernd Keller | 67 Jahre | 30.09.2026
+Anlass
+Eine Hörhilfenversorgung wird angefragt. Verordnung, Messbefundübersicht und
+Anpassbericht liegen als Anlagen vor. Der Arztbrief fasst den Anlass für die Versorgung und
+die zur Fachprüfung übermittelten Unterlagen zusammen.
+Alltag und Fragestellung
+Im Vordergrund steht die Nachvollziehbarkeit der Hörversorgung im Alltag. Die Unterlagen
+sind hinsichtlich Messbedingungen, Anpassverlauf und Vergleichsversorgung durch die
+Fachstelle abzugleichen. Ein rechnerischer Wirksamkeitsnachweis wird nicht behauptet.
+Unterlagenbezug
+Verordnung, Messbefund und Anpassdokumentation sind bei der Prüfung gemeinsam zu
+berücksichtigen. Produktbezogene Einzelheiten und audiometrische Detailwerte sind in dieser
+Zusammenfassung nicht ausgeführt; bei Bedarf ist die vollständige Messdokumentation
+anzufordern.
+Strukturbezug: MD Bund Unterlagen für Hilfsmittelversorgungen; 12.03.2026 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
+
+Anpassverlauf und Vergleichsdokumentation / Seite 1
+NC-2026-4122 | Bernd Keller
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Hörakustik Lindenhof
+ Anpassverlauf und
+Vergleichsdokumentation
+NC-2026-4122 | Bernd Keller | 67 Jahre | 07.10.2026
+Dokumentationsanlass
+Die Verordnung und Messbefundübersicht bilden die Grundlage für die
+Aktenzusammenstellung. Die Anpassunterlage hält die zu prüfenden Abschnitte
+Messbedingungen, Alltagsrückmeldung und Vergleichsversorgung getrennt fest.
+Mess- und Vergleichsunterlagen
+Die Messbefundübersicht ist der Akte zugeordnet. Für die fachliche Bewertung sind die
+dokumentierten Messbedingungen und der Vergleich mit der bisherigen Versorgung
+heranzuziehen. Nicht in der Zusammenfassung enthaltene Einzelwerte sind aus der
+Messdokumentation beizuziehen.
+Abgleich der Anlagen
+Die Angaben beziehen sich auf dieselbe Hörhilfenanfrage. Die Testperson beschreibt
+Schwierigkeiten beim Verstehen von Gesprächen in wechselnder Umgebung. Die
+dokumentierte Alltagsrückmeldung ist mit Messbefund und Anpassverlauf abzugleichen.
+Strukturbezug: MD Bund Unterlagen für Hilfsmittelversorgungen; 12.03.2026 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
 

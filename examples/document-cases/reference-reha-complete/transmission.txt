@@ -1,59 +1,132 @@
-SYNTHETISCHE DEMO - reference-reha-complete
+Schulungsakte - NC-2026-4109 | Claudia Becker
 Kontrollierter PDF-Text, keine OCR.
 
-Rehabilitation - Auftragsangaben / Seite 1
-Synthetisch | reference-reha-complete | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
- Rehabilitation - Auftragsangaben
-Fiktive Einrichtung / Testperson reference-reha-complete / Datum 10.10.2026
-Synthetische Testperson R-01, 56 Jahre, nach orthopädischer Behandlung: Die dokumentierte
-Gehstrecke beträgt 200 Meter. Als Ziel ist selbständige Alltagsmobilität genannt. Ein
-Befundbericht liegt bei. Die Demo zeigt die Unterlagen; sie entscheidet nicht über Indikation
-oder Bewilligung. Fiktive erwachsene Testperson mit eingeschränkter Gehstrecke nach
-orthopädischer Behandlung. Zielangabe: selbständige Alltagsmobilität. Dies sind erfundene
-Fallangaben, keine ärztliche Empfehlung.
+Rehabilitationsantrag und Verordnungsangaben / Seite 1
+NC-2026-4109 | Claudia Becker
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Rehabilitationsantrag und
+ Verordnungsangaben
+NC-2026-4109 | Claudia Becker | 56 Jahre | 08.10.2026
+Claudia Becker, 56 Jahre. nach orthopädischer Behandlung: Die dokumentierte Gehstrecke
+beträgt 200 Meter. Als Ziel ist selbständige Alltagsmobilität genannt. Ein Befundbericht liegt
+bei.
+Anlass und Funktionsbezug
+Nach orthopädischer Behandlung wird Unterstützung zur Wiedergewinnung selbständiger
+Alltagsmobilität beantragt. Die angegebene Gehstrecke beträgt 200 Meter. Längere Wege
+und Treppen schränken die Teilhabe im Alltag ein. Die Angaben beschreiben die aktuelle
+Alltagssituation.
+Ziele und Kontextfaktoren
+Claudia Becker möchte Einkäufe im Nahbereich und Wege zu Terminen wieder eigenständig
+bewältigen. Angehörige helfen derzeit bei längeren Wegen. Als Ziel ist selbständige
+Alltagsmobilität angegeben. Die Zuordnung zum zuständigen Träger und die fachliche
+Rehabilitationsentscheidung werden in dieser Akte nicht vorweggenommen.
+Anlagenstand
+Der ärztliche Befundbericht sowie Therapieverlauf und Selbstauskunft liegen vor. Die
+Aktenübersicht dient der Unterlagensichtung; aus dem bloßen Vorhandensein folgt keine
+Bewilligung.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Rehabilitationsziel dokumentiert
 Ja
 Funktionseinschränkungen beschrieben
 Ja
-Quelle der Dokumentstruktur: kbv-reha. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 
-Rehabilitation - Auftragsangaben / Seite 2
-Synthetisch | reference-reha-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Rehabilitationsantrag und Verordnungsangaben / Seite 2
+NC-2026-4109 | Claudia Becker
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 reha_goal=YES
 functional_limitation=YES
 END-NCF1
 
-Ärztlicher Befundbericht / Seite 1
-Synthetisch | reference-reha-complete | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
- Ärztlicher Befundbericht
-Fiktive Einrichtung / Testperson reference-reha-complete / Datum 10.10.2026
-Fiktiver Verlauf: Belastbarkeit eingeschränkt, Gehstrecke 200 Meter laut Testangabe. Befund
-und Ziel sind für die Unterlagensichtung dokumentiert. Keine Bewertung einer
-Rehabilitationsindikation.
+Ärztlicher Befundbericht zur Alltagsmobilität / Seite 1
+NC-2026-4109 | Claudia Becker
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Orthopädische Praxis Lindenhof
+ Ärztlicher Befundbericht zur
+ Alltagsmobilität
+NC-2026-4109 | Claudia Becker | 56 Jahre | 30.09.2026
+Anamnese und Verlauf
+Nach der im Antrag beschriebenen orthopädischen Behandlung berichtet Claudia Becker über
+eine weiterhin eingeschränkte Belastbarkeit. Wege im Nahbereich werden bewältigt, bei
+längeren Strecken werden Pausen eingelegt. Die bisherige Versorgung und der Verlauf sind
+für die Aktenbesprechung zusammengefasst.
+Funktionsbezogene Angaben
+Dokumentierte Gehstrecke 200 Meter mit anschließender Pause. Längere Wege und Treppen
+werden als erschwert beschrieben. Kurze Wege im Wohnbereich sind möglich. Einkäufe und
+selbständige Wege zu Terminen sind als Teilhabeziele benannt.
+Fragestellung
+Für die weitere Planung sind die dokumentierten Funktionsangaben mit Therapieverlauf und
+persönlichen Zielen abzugleichen. Angaben zu einer konkreten Maßnahme und Prognose sind
+im fachlichen Prüfverfahren zu ergänzen.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Befundbericht beigefügt
 Ja
-Quelle der Dokumentstruktur: kbv-reha. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 
-Ärztlicher Befundbericht / Seite 2
-Synthetisch | reference-reha-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Ärztlicher Befundbericht zur Alltagsmobilität / Seite 2
+NC-2026-4109 | Claudia Becker
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 findings_attached=YES
 END-NCF1
+
+Therapie- und Belastungsverlauf / Seite 1
+NC-2026-4109 | Claudia Becker
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Therapiezentrum Lindenhof
+ Therapie- und Belastungsverlauf
+NC-2026-4109 | Claudia Becker | 56 Jahre | 06.10.2026
+Verlauf der Alltagserprobung
+Beobachtungszeitraum 21.09.2026 bis 06.10.2026. Im Vordergrund stehen Wege in der
+Wohnung und im Nahbereich. Die im Antrag genannten 200 Meter werden als übernommene
+Fallangabe geführt; eine unabhängige standardisierte Gehstreckenmessung wird nicht
+behauptet.
+Aktivitäten und Teilhabe
+Beim Planen längerer Wege werden Pausen und Unterstützung berücksichtigt. Als
+alltagsbezogenes Ziel werden eigenständige Einkäufe und Wege zu Terminen benannt.
+Claudia Becker schildert Unsicherheit bei Treppen. Der Bericht beschreibt den Verlauf und
+enthält keine neue ärztliche Verordnung.
+Rückmeldung zur weiteren Planung
+Die Testperson möchte selbständige Einkäufe und Wege zu Terminen wieder aufnehmen. Die
+Belastbarkeit bei längeren Wegen bleibt eingeschränkt. Für die Besprechung werden
+Therapieverlauf und Selbstauskunft zusammengeführt; die ärztliche Anlage ist gesondert zu
+berücksichtigen.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
+
+Selbstauskunft zu Alltag und Rehabilitationsziel / Seite 1
+NC-2026-4109 | Claudia Becker
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Selbstauskunft zu Alltag und
+ Rehabilitationsziel
+NC-2026-4109 | Claudia Becker | 56 Jahre | 09.10.2026
+Alltagssituation
+Claudia Becker beschreibt Schwierigkeiten bei längeren Wegen, Einkäufen und Treppen.
+Angehörige übernehmen derzeit einen Teil der Wege. Kurze Wege in der Wohnung sind
+möglich; daraus wird kein standardisierter Funktionswert abgeleitet.
+Persönliches Ziel
+Als Ziel wird genannt, Einkäufe im Nahbereich und Termine wieder selbständig zu erreichen.
+Die Angaben sind eine persönliche Zielbeschreibung und keine ärztliche Prognose. Bei der
+fachlichen Prüfung sind sie mit den übrigen Unterlagen abzugleichen.
+Strukturbezug: KBV Medizinische Rehabilitation; Recherche 10.10.2026. Eigenes
+Berichtslayout, kein amtliches Originalformular.
 

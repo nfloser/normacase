@@ -23,7 +23,7 @@ test('case file opens PDF, scan and text with source links and keeps cases isola
 
 test('reference documents expose conflicts, German provenance and actual engine outcome on mobile',async({page})=>{
  await page.goto('/#reference-cases');const references=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await references.getByRole('button',{name:'Krankenfahrt: widersprüchliche Nachweise',exact:true}).click();
+ await references.getByRole('button',{name:'NC-2026-4103 · Sabine Winter · Krankenfahrt: widersprüchliche Nachweise',exact:true}).click();
  await expect(references.getByText(/Widersprüchliche Angaben: Pflegegrad/)).toBeVisible();
  await expect(references.getByRole('heading',{name:'Prüfergebnis: Manuelle Prüfung erforderlich',exact:true})).toBeVisible();
  await expect(references.locator('.document-observations').getByText('Ambulante Behandlung',{exact:true})).toBeVisible();
@@ -34,20 +34,20 @@ test('reference documents expose conflicts, German provenance and actual engine 
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
  await references.screenshot({path:'test-results/document-cases-mobile.png'});
  await references.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
- await references.getByRole('button',{name:'Pflege-Score: Modulsumme fehlt',exact:true}).click();
+ await references.getByRole('button',{name:'NC-2026-4106 · Karl Neumann · Pflege-Score: Modulsumme fehlt',exact:true}).click();
  await expect(references.getByText(/Fehlende Angabe: Modul 4/)).toBeVisible();
 });
 
 test('source-backed case families include clinical files without inventing decisions',async({page})=>{
  await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await cases.getByRole('button',{name:'Arbeitsunfall: Handgelenkverletzung',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4115 · Stefan Kranz · Arbeitsunfall: Handgelenkverletzung',exact:true}).click();
  await expect(cases.getByText(/Für diesen Dokumenttyp ist keine fachlich geprüfte Regel/)).toBeVisible();
  await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
  await expect(cases.locator('.pdf-page-image')).toBeVisible();
- await expect(cases.locator('.case-file-list')).toContainText('D-Arzt-Erstbericht');
+ await expect(cases.locator('.case-file-list')).toContainText('Durchgangsarztbericht');
  await cases.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
- await cases.getByRole('button',{name:'Pflege: Demenz und Unterstützung im Alltag',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4113 · Helga Brandt · Pflege: Demenz und Unterstützung im Alltag',exact:true}).click();
  await expect(cases.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
 });
 
@@ -57,7 +57,7 @@ test('clipboard result summary includes only recorded outcome and provenance',as
  });
  await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4101 · Marlene Berg · Krankenfahrt: ambulante Behandlung',exact:true}).click();
  const file=cases.getByRole('region',{name:'Dokumentakte'});
  await file.getByRole('button',{name:'Ergebnistext kopieren'}).click();
  const summary=await page.evaluate(()=>window.__normacaseCopied);
@@ -68,6 +68,28 @@ test('clipboard result summary includes only recorded outcome and provenance',as
  await file.getByRole('button',{name:'Aktenzeichen kopieren'}).click();
  expect(await page.evaluate(()=>window.__normacaseCopied)).toBe('reference-transport-complete');
  await cases.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
- await cases.getByRole('button',{name:'Arbeitsunfall: Handgelenkverletzung',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4115 · Stefan Kranz · Arbeitsunfall: Handgelenkverletzung',exact:true}).click();
  await expect(cases.getByRole('button',{name:'Ergebnistext kopieren'})).toBeDisabled();
+});
+
+test('reference rehabilitation file contains coherent reports and keeps missing medical evidence absent',async({page})=>{
+ await page.goto('/#reference-cases');
+ const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
+ await cases.getByRole('button',{name:'NC-2026-4109 · Claudia Becker · Rehabilitation - Alltagsmobilität',exact:true}).click();
+ await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
+ const file=cases.getByRole('region',{name:'Dokumentakte'});
+ const selector=file.getByLabel('Dokument auswählen');
+ await expect(selector.locator('option')).toHaveCount(6);
+ await selector.selectOption({label:'Ärztlicher Befundbericht zur Alltagsmobilität'});
+ await expect(file.locator('.pdf-page-image')).toHaveAttribute('src',/reference-reha-complete\/documents\/document-2\/pages\/1$/);
+ await selector.selectOption({label:'Lesefassung der Aktenunterlagen'});
+ await expect(file.locator('.document-text')).toContainText('Claudia Becker');
+ await expect(file.locator('.document-text')).toContainText('NC-2026-4109');
+ await expect(file.locator('.document-text')).toContainText('200 Meter');
+ await expect(file.locator('.document-text')).toContainText('Therapie- und Belastungsverlauf');
+ await cases.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4111 · Martin Engel · Rehabilitation - ärztliche Unterlagen ausstehend',exact:true}).click();
+ await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
+ await expect(selector.locator('option').filter({hasText:'Ärztlicher Befundbericht zur Alltagsmobilität'})).toHaveCount(0);
+ await expect(selector.locator('option').filter({hasText:'Anforderung ärztlicher Unterlagen'})).toHaveCount(1);
 });

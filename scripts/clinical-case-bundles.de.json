@@ -1,0 +1,2421 @@
+{
+  "reference-transport-complete": {
+    "person": "Marlene Berg",
+    "age": 78,
+    "caseNumber": "NC-2026-4101",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "date": "07.10.2026",
+        "issuer": "Augenärztliche Praxis Lindenhof",
+        "sections": [
+          {
+            "heading": "Behandlungsanlass",
+            "text": "Eine ambulante augenärztliche Behandlung ist vorgesehen. Die Akte betrifft die Beförderung mit Taxi oder Mietwagen, nicht einen Krankentransportwagen. Der Termin und die Verordnungsangaben werden zur Prüfung des eng begrenzten Referenzpfads zusammengestellt."
+          },
+          {
+            "heading": "Abgleich mit der Verordnung",
+            "text": "Die medizinische Notwendigkeit ist in der Verordnung ausdrücklich bestätigt. Der Terminnachweis dokumentiert nur den ambulanten Behandlungsanlass; er ist kein zusätzlicher Leistungsentscheid."
+          },
+          {
+            "heading": "Unterlagenbezug",
+            "text": "Der Pflegegrad wird ausschließlich anhand der hierzu beigefügten Dokumente betrachtet. Dieser Terminbeleg ersetzt weder einen Pflegekassenbescheid noch Angaben zu alternativen Anspruchswegen."
+          }
+        ]
+      },
+      {
+        "title": "Antrag auf Krankenfahrt und Anlagenverzeichnis",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Anliegen",
+            "text": "Beantragt wird eine Krankenfahrt zur ambulanten Behandlung mit Taxi oder Mietwagen. Die Verordnung und der Pflegekassenbescheid mit Pflegegrad 4 sind beigefügt."
+          },
+          {
+            "heading": "Bearbeitungsstand",
+            "text": "Die Prüfung betrifft ausschließlich die dokumentierte Genehmigungsfiktion im vorhandenen Wissenspaket. Aus einem unvollständigen oder nicht erfüllten Referenzpfad wird keine allgemeine Leistungsablehnung abgeleitet. Angaben zu anderen Anspruchswegen werden nicht erfunden."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Krankenbeförderung - Angaben zur Verordnung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Ist die Genehmigungsfiktion nach KT-RL § 8 Abs. 3 im dokumentierten Referenzpfad erfüllt?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Pflegekassenbescheid",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Die beigefügte Bescheidanlage dokumentiert den Pflegegrad für den Nachweisabgleich. Maßgeblich für diesen Aktenbestand ist der unten aufgeführte Wert. Abweichende Angaben in einer anderen Unterlage werden gesondert zur Klärung vorgelegt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Ist die Genehmigungsfiktion nach KT-RL § 8 Abs. 3 im dokumentierten Referenzpfad erfüllt?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Antrag auf Krankenfahrt und Anlagenverzeichnis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Ist die Genehmigungsfiktion nach KT-RL § 8 Abs. 3 im dokumentierten Referenzpfad erfüllt?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Marlene Berg, 78 Jahre. Für eine ambulante augenärztliche Behandlung wurde eine Krankenfahrt verordnet. Die medizinische Notwendigkeit ist ausdrücklich bestätigt. Der beigefügte Pflegekassenbescheid weist Pflegegrad 4 aus.",
+    "title": "NC-2026-4101 · Marlene Berg · Krankenfahrt: ambulante Behandlung"
+  },
+  "reference-transport-missing": {
+    "person": "Heinz Sommer",
+    "age": 78,
+    "caseNumber": "NC-2026-4102",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "date": "07.10.2026",
+        "issuer": "Augenärztliche Praxis Lindenhof",
+        "sections": [
+          {
+            "heading": "Behandlungsanlass",
+            "text": "Eine ambulante augenärztliche Behandlung ist vorgesehen. Die Akte betrifft die Beförderung mit Taxi oder Mietwagen, nicht einen Krankentransportwagen. Der Termin und die Verordnungsangaben werden zur Prüfung des eng begrenzten Referenzpfads zusammengestellt."
+          },
+          {
+            "heading": "Abgleich mit der Verordnung",
+            "text": "Die ausdrückliche Bestätigung der medizinischen Notwendigkeit fehlt in der Verordnung. Dieser Terminnachweis ergänzt die Angabe nicht stillschweigend."
+          },
+          {
+            "heading": "Unterlagenbezug",
+            "text": "Der Pflegegrad wird ausschließlich anhand der hierzu beigefügten Dokumente betrachtet. Dieser Terminbeleg ersetzt weder einen Pflegekassenbescheid noch Angaben zu alternativen Anspruchswegen."
+          }
+        ]
+      },
+      {
+        "title": "Rückfrage zur Verordnung",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Anliegen",
+            "text": "Bitte bestätigen Sie die medizinische Notwendigkeit ausdrücklich mit einer nachvollziehbaren Angabe. Bis zum Eingang bleibt das Feld unbekannt."
+          },
+          {
+            "heading": "Bearbeitungsstand",
+            "text": "Die Prüfung betrifft ausschließlich die dokumentierte Genehmigungsfiktion im vorhandenen Wissenspaket. Aus einem unvollständigen oder nicht erfüllten Referenzpfad wird keine allgemeine Leistungsablehnung abgeleitet. Angaben zu anderen Anspruchswegen werden nicht erfunden."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Krankenbeförderung - Angaben zur Verordnung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Kann der Referenzpfad ohne ausdrückliche Bestätigung der medizinischen Notwendigkeit abschließend geprüft werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Pflegekassenbescheid",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Die beigefügte Bescheidanlage dokumentiert den Pflegegrad für den Nachweisabgleich. Maßgeblich für diesen Aktenbestand ist der unten aufgeführte Wert. Abweichende Angaben in einer anderen Unterlage werden gesondert zur Klärung vorgelegt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Kann der Referenzpfad ohne ausdrückliche Bestätigung der medizinischen Notwendigkeit abschließend geprüft werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Rückfrage zur Verordnung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung. Kann der Referenzpfad ohne ausdrückliche Bestätigung der medizinischen Notwendigkeit abschließend geprüft werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Heinz Sommer, 78 Jahre. Die Verordnung nennt eine ambulante Behandlung und Pflegegrad 4. Die ausdrückliche Angabe zur medizinischen Notwendigkeit fehlt. Der Pflegekassenbescheid ist beigefügt.",
+    "title": "NC-2026-4102 · Heinz Sommer · Krankenfahrt: Pflichtangabe fehlt"
+  },
+  "reference-transport-conflicting": {
+    "person": "Sabine Winter",
+    "age": 78,
+    "caseNumber": "NC-2026-4103",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "date": "07.10.2026",
+        "issuer": "Augenärztliche Praxis Lindenhof",
+        "sections": [
+          {
+            "heading": "Behandlungsanlass",
+            "text": "Eine ambulante augenärztliche Behandlung ist vorgesehen. Die Akte betrifft die Beförderung mit Taxi oder Mietwagen, nicht einen Krankentransportwagen. Der Termin und die Verordnungsangaben werden zur Prüfung des eng begrenzten Referenzpfads zusammengestellt."
+          },
+          {
+            "heading": "Abgleich mit der Verordnung",
+            "text": "Die medizinische Notwendigkeit ist in der Verordnung ausdrücklich bestätigt. Der Terminnachweis dokumentiert nur den ambulanten Behandlungsanlass; er ist kein zusätzlicher Leistungsentscheid."
+          },
+          {
+            "heading": "Unterlagenbezug",
+            "text": "Der Pflegegrad wird ausschließlich anhand der hierzu beigefügten Dokumente betrachtet. Dieser Terminbeleg ersetzt weder einen Pflegekassenbescheid noch Angaben zu alternativen Anspruchswegen."
+          }
+        ]
+      },
+      {
+        "title": "Nachweisabgleich Pflegegrad",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Anliegen",
+            "text": "In der Verordnung ist Pflegegrad 4 angegeben, im Bescheid Pflegegrad 3. Bitte klären Sie die Abweichung. Keine der Anlagen wird automatisch bevorzugt."
+          },
+          {
+            "heading": "Bearbeitungsstand",
+            "text": "Die Prüfung betrifft ausschließlich die dokumentierte Genehmigungsfiktion im vorhandenen Wissenspaket. Aus einem unvollständigen oder nicht erfüllten Referenzpfad wird keine allgemeine Leistungsablehnung abgeleitet. Angaben zu anderen Anspruchswegen werden nicht erfunden."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Krankenbeförderung - Angaben zur Verordnung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit abweichenden Pflegegradangaben. Welche Angaben verhindern eine eindeutige Prüfung der Genehmigungsfiktion nach KT-RL § 8 Abs. 3?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Pflegekassenbescheid",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Die beigefügte Bescheidanlage dokumentiert den Pflegegrad für den Nachweisabgleich. Maßgeblich für diesen Aktenbestand ist der unten aufgeführte Wert. Abweichende Angaben in einer anderen Unterlage werden gesondert zur Klärung vorgelegt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit abweichenden Pflegegradangaben. Welche Angaben verhindern eine eindeutige Prüfung der Genehmigungsfiktion nach KT-RL § 8 Abs. 3?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Nachweisabgleich Pflegegrad",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt mit abweichenden Pflegegradangaben. Welche Angaben verhindern eine eindeutige Prüfung der Genehmigungsfiktion nach KT-RL § 8 Abs. 3?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Sabine Winter, 78 Jahre. Für eine ambulante Behandlung wurde eine medizinisch notwendige Krankenfahrt verordnet. In der Verordnung steht Pflegegrad 4, im beigefügten Bescheid Pflegegrad 3. Die Software darf keinen dieser Werte stillschweigend bevorzugen.",
+    "title": "NC-2026-4103 · Sabine Winter · Krankenfahrt: widersprüchliche Nachweise"
+  },
+  "reference-transport-negative": {
+    "person": "Walter König",
+    "age": 78,
+    "caseNumber": "NC-2026-4104",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "date": "07.10.2026",
+        "issuer": "Augenärztliche Praxis Lindenhof",
+        "sections": [
+          {
+            "heading": "Behandlungsanlass",
+            "text": "Eine ambulante augenärztliche Behandlung ist vorgesehen. Die Akte betrifft die Beförderung mit Taxi oder Mietwagen, nicht einen Krankentransportwagen. Der Termin und die Verordnungsangaben werden zur Prüfung des eng begrenzten Referenzpfads zusammengestellt."
+          },
+          {
+            "heading": "Abgleich mit der Verordnung",
+            "text": "Die Verordnung enthält ausdrücklich Nein zur medizinischen Notwendigkeit. Die Bestätigung eines Termins ändert diese Angabe nicht."
+          },
+          {
+            "heading": "Unterlagenbezug",
+            "text": "Der Pflegegrad wird ausschließlich anhand der hierzu beigefügten Dokumente betrachtet. Dieser Terminbeleg ersetzt weder einen Pflegekassenbescheid noch Angaben zu alternativen Anspruchswegen."
+          }
+        ]
+      },
+      {
+        "title": "Antrag auf Krankenfahrt und Anlagenverzeichnis",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Anliegen",
+            "text": "Beantragt wird eine Krankenfahrt zur ambulanten Behandlung mit Taxi oder Mietwagen. Die Verordnung und der Pflegekassenbescheid mit Pflegegrad 2 sind beigefügt."
+          },
+          {
+            "heading": "Bearbeitungsstand",
+            "text": "Die Prüfung betrifft ausschließlich die dokumentierte Genehmigungsfiktion im vorhandenen Wissenspaket. Aus einem unvollständigen oder nicht erfüllten Referenzpfad wird keine allgemeine Leistungsablehnung abgeleitet. Angaben zu anderen Anspruchswegen werden nicht erfunden."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Krankenbeförderung - Angaben zur Verordnung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt: dokumentierter Referenzpfad nicht erfüllt. Sind die Voraussetzungen dieses engen Referenzpfads erfüllt, ohne daraus eine allgemeine Leistungsablehnung abzuleiten?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Pflegekassenbescheid",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Die beigefügte Bescheidanlage dokumentiert den Pflegegrad für den Nachweisabgleich. Maßgeblich für diesen Aktenbestand ist der unten aufgeführte Wert. Abweichende Angaben in einer anderen Unterlage werden gesondert zur Klärung vorgelegt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Behandlungsbestätigung und Terminnachweis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt: dokumentierter Referenzpfad nicht erfüllt. Sind die Voraussetzungen dieses engen Referenzpfads erfüllt, ohne daraus eine allgemeine Leistungsablehnung abzuleiten?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Antrag auf Krankenfahrt und Anlagenverzeichnis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Krankenfahrt: dokumentierter Referenzpfad nicht erfüllt. Sind die Voraussetzungen dieses engen Referenzpfads erfüllt, ohne daraus eine allgemeine Leistungsablehnung abzuleiten?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Walter König, 78 Jahre. Die Akte nennt eine ambulante Behandlung und Pflegegrad 2. Die ausdrückliche medizinische Notwendigkeit ist mit Nein dokumentiert. Die hier geprüfte Genehmigungsfiktion ist damit nicht erfüllt; andere Anspruchswege werden nicht bewertet.",
+    "title": "NC-2026-4104 · Walter König · Krankenfahrt: abweichende Verordnungsangaben"
+  },
+  "reference-care-complete": {
+    "person": "Erika Stein",
+    "age": 72,
+    "caseNumber": "NC-2026-4105",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Hausärztlicher Arztbrief",
+        "date": "30.09.2026",
+        "issuer": "Praxis am Lindenplatz",
+        "sections": [
+          {
+            "heading": "Anlass und Vorbefunde",
+            "text": "Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden Verlaufsnotizen und die Schilderung der Angehörigen."
+          },
+          {
+            "heading": "Alltagsbezogener Verlauf",
+            "text": "Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt. Die Angehörigen beschreiben einen wiederkehrenden Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte Erhebung im Modulbogen."
+          },
+          {
+            "heading": "Versorgung und offene Angaben",
+            "text": "Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll und Modulbogen gemeinsam vorgelegt."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "date": "07.10.2026",
+        "issuer": "Ambulanter Dienst Lindenhof",
+        "sections": [
+          {
+            "heading": "Beobachtungszeitraum",
+            "text": "01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments."
+          },
+          {
+            "heading": "Tagesbezogene Einträge",
+            "text": "01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends: Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die Fallbesprechung zusammengestellt. Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt."
+          },
+          {
+            "heading": "Abgleich mit dem Modulbogen",
+            "text": "Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Die Erzählangaben werden dem Bogen als zusätzliche Lesedokumentation beigefügt."
+          }
+        ]
+      },
+      {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "date": "10.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Auftrag und Fragestellung",
+            "text": "Nachrechnung eines Pflege-Scores aus festgestellten Modulsummen. Welche gewichteten Score-Schwellen werden anhand der bereits fachlich festgestellten Modulsummen erreicht? Die Prüfung bleibt auf den dokumentierten Umfang beschränkt. Erzählangaben aus ergänzenden Berichten werden nicht automatisch in neue fachliche Kriterien umgewandelt."
+          },
+          {
+            "heading": "Stand der Bearbeitung",
+            "text": "Die Unterlagen wurden am 10.10.2026 für die Fallbesprechung zusammengestellt. Die Dokumente sind der Akte zugeordnet. Ihre Aufnahme in das Anlagenverzeichnis bedeutet keine fachliche Bestätigung jedes enthaltenen Sachverhalts."
+          },
+          {
+            "heading": "Nächster Schritt",
+            "text": "Unterlagen und Fundstellen sind mit dem dokumentierten Auftrag abzugleichen. Offene Angaben und widersprüchliche Nachweise bleiben erkennbar. Eine fachliche Entscheidung außerhalb des vorhandenen Referenzpfads wird nicht vorweggenommen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Pflege - dokumentierte Modulsummen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Hausärztlicher Arztbrief",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Nachrechnung eines Pflege-Scores aus festgestellten Modulsummen. Welche gewichteten Score-Schwellen werden anhand der bereits fachlich festgestellten Modulsummen erreicht?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Nachrechnung eines Pflege-Scores aus festgestellten Modulsummen. Welche gewichteten Score-Schwellen werden anhand der bereits fachlich festgestellten Modulsummen erreicht?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Nachrechnung eines Pflege-Scores aus festgestellten Modulsummen. Welche gewichteten Score-Schwellen werden anhand der bereits fachlich festgestellten Modulsummen erreicht?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Erika Stein, 72 Jahre. mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Die fachliche Erhebung hat die Modulsummen 2, 4, 1, 8, 2 und 3 dokumentiert. NormaCase rechnet diese Angaben nach; es bewertet weder die Diagnose noch einzelne Fähigkeiten und vergibt keinen Pflegegrad.",
+    "title": "NC-2026-4105 · Erika Stein · Pflege-Score: Modulsummenabgleich"
+  },
+  "reference-care-missing": {
+    "person": "Karl Neumann",
+    "age": 72,
+    "caseNumber": "NC-2026-4106",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Hausärztlicher Arztbrief",
+        "date": "30.09.2026",
+        "issuer": "Praxis am Lindenplatz",
+        "sections": [
+          {
+            "heading": "Anlass und Vorbefunde",
+            "text": "Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden Verlaufsnotizen und die Schilderung der Angehörigen."
+          },
+          {
+            "heading": "Alltagsbezogener Verlauf",
+            "text": "Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt. Die Angehörigen beschreiben einen wiederkehrenden Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte Erhebung im Modulbogen."
+          },
+          {
+            "heading": "Versorgung und offene Angaben",
+            "text": "Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll und Modulbogen gemeinsam vorgelegt."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "date": "07.10.2026",
+        "issuer": "Ambulanter Dienst Lindenhof",
+        "sections": [
+          {
+            "heading": "Beobachtungszeitraum",
+            "text": "01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments."
+          },
+          {
+            "heading": "Tagesbezogene Einträge",
+            "text": "01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends: Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die Fallbesprechung zusammengestellt. Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt."
+          },
+          {
+            "heading": "Abgleich mit dem Modulbogen",
+            "text": "Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Die Selbstversorgung ist dort nicht als Summe angegeben; eine Ergänzung durch den Pflegebericht erfolgt nicht."
+          }
+        ]
+      },
+      {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "date": "10.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Auftrag und Fragestellung",
+            "text": "Pflege-Score: unvollständige Dokumentation der Selbstversorgung. Welche Angabe muss vor einer vollständigen Gewichtung ergänzt werden? Die Prüfung bleibt auf den dokumentierten Umfang beschränkt. Erzählangaben aus ergänzenden Berichten werden nicht automatisch in neue fachliche Kriterien umgewandelt."
+          },
+          {
+            "heading": "Stand der Bearbeitung",
+            "text": "Die Unterlagen wurden am 10.10.2026 für die Fallbesprechung zusammengestellt. Fehlende Angabe: Modul 4: Selbstversorgung."
+          },
+          {
+            "heading": "Nächster Schritt",
+            "text": "Unterlagen und Fundstellen sind mit dem dokumentierten Auftrag abzugleichen. Offene Angaben und widersprüchliche Nachweise bleiben erkennbar. Eine fachliche Entscheidung außerhalb des vorhandenen Referenzpfads wird nicht vorweggenommen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Pflege - dokumentierte Modulsummen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Hausärztlicher Arztbrief",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: unvollständige Dokumentation der Selbstversorgung. Welche Angabe muss vor einer vollständigen Gewichtung ergänzt werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: unvollständige Dokumentation der Selbstversorgung. Welche Angabe muss vor einer vollständigen Gewichtung ergänzt werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: unvollständige Dokumentation der Selbstversorgung. Welche Angabe muss vor einer vollständigen Gewichtung ergänzt werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Karl Neumann, 72 Jahre. mit Unterstützungsbedarf im Alltag nach einem Schlaganfall. Für fünf Module liegen fachlich festgestellte Summen vor. Die Summe für Modul 4, Selbstversorgung, fehlt. Sie wird weder aus der Diagnose abgeleitet noch durch Null ersetzt.",
+    "title": "NC-2026-4106 · Karl Neumann · Pflege-Score: Modulsumme fehlt"
+  },
+  "reference-care-out-of-range": {
+    "person": "Ruth Wagner",
+    "age": 72,
+    "caseNumber": "NC-2026-4107",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Hausärztlicher Arztbrief",
+        "date": "30.09.2026",
+        "issuer": "Praxis am Lindenplatz",
+        "sections": [
+          {
+            "heading": "Anlass und Vorbefunde",
+            "text": "Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden Verlaufsnotizen und die Schilderung der Angehörigen."
+          },
+          {
+            "heading": "Alltagsbezogener Verlauf",
+            "text": "Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt. Die Angehörigen beschreiben einen wiederkehrenden Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte Erhebung im Modulbogen."
+          },
+          {
+            "heading": "Versorgung und offene Angaben",
+            "text": "Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll und Modulbogen gemeinsam vorgelegt."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "date": "07.10.2026",
+        "issuer": "Ambulanter Dienst Lindenhof",
+        "sections": [
+          {
+            "heading": "Beobachtungszeitraum",
+            "text": "01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments."
+          },
+          {
+            "heading": "Tagesbezogene Einträge",
+            "text": "01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends: Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die Fallbesprechung zusammengestellt. Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt."
+          },
+          {
+            "heading": "Abgleich mit dem Modulbogen",
+            "text": "Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Der übermittelte Mobilitätswert ist auffällig; eine Berichtigung ist vor weiterer Verwendung bei der übermittelnden Stelle anzufragen."
+          }
+        ]
+      },
+      {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "date": "10.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Auftrag und Fragestellung",
+            "text": "Pflege-Score: auffälliger übermittelter Modulwert. Welche übermittelte Modulsumme liegt außerhalb des im Wissensstand definierten Bereichs? Die Prüfung bleibt auf den dokumentierten Umfang beschränkt. Erzählangaben aus ergänzenden Berichten werden nicht automatisch in neue fachliche Kriterien umgewandelt."
+          },
+          {
+            "heading": "Stand der Bearbeitung",
+            "text": "Die Unterlagen wurden am 10.10.2026 für die Fallbesprechung zusammengestellt. Die Dokumente sind der Akte zugeordnet. Ihre Aufnahme in das Anlagenverzeichnis bedeutet keine fachliche Bestätigung jedes enthaltenen Sachverhalts."
+          },
+          {
+            "heading": "Nächster Schritt",
+            "text": "Unterlagen und Fundstellen sind mit dem dokumentierten Auftrag abzugleichen. Offene Angaben und widersprüchliche Nachweise bleiben erkennbar. Eine fachliche Entscheidung außerhalb des vorhandenen Referenzpfads wird nicht vorweggenommen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Pflege - dokumentierte Modulsummen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Hausärztlicher Arztbrief",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: auffälliger übermittelter Modulwert. Welche übermittelte Modulsumme liegt außerhalb des im Wissensstand definierten Bereichs?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: auffälliger übermittelter Modulwert. Welche übermittelte Modulsumme liegt außerhalb des im Wissensstand definierten Bereichs?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: auffälliger übermittelter Modulwert. Welche übermittelte Modulsumme liegt außerhalb des im Wissensstand definierten Bereichs?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Ruth Wagner, 72 Jahre. Der übermittelte Bogen nennt für Modul 1, Mobilität, die Summe 16. Diese Angabe wird gegen den zulässigen Bereich geprüft und muss geklärt werden. Die übrigen Modulsummen bleiben erhalten; eine fachliche Neubeurteilung wird nicht vorgetäuscht.",
+    "title": "NC-2026-4107 · Ruth Wagner · Pflege-Score: Wert außerhalb des Bereichs"
+  },
+  "reference-care-conflicting": {
+    "person": "Peter Hoffmann",
+    "age": 72,
+    "caseNumber": "NC-2026-4108",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Hausärztlicher Arztbrief",
+        "date": "30.09.2026",
+        "issuer": "Praxis am Lindenplatz",
+        "sections": [
+          {
+            "heading": "Anlass und Vorbefunde",
+            "text": "Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden Verlaufsnotizen und die Schilderung der Angehörigen."
+          },
+          {
+            "heading": "Alltagsbezogener Verlauf",
+            "text": "Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt. Die Angehörigen beschreiben einen wiederkehrenden Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte Erhebung im Modulbogen."
+          },
+          {
+            "heading": "Versorgung und offene Angaben",
+            "text": "Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll und Modulbogen gemeinsam vorgelegt."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "date": "07.10.2026",
+        "issuer": "Ambulanter Dienst Lindenhof",
+        "sections": [
+          {
+            "heading": "Beobachtungszeitraum",
+            "text": "01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments."
+          },
+          {
+            "heading": "Tagesbezogene Einträge",
+            "text": "01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends: Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die Fallbesprechung zusammengestellt. Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt."
+          },
+          {
+            "heading": "Abgleich mit dem Modulbogen",
+            "text": "Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Zwei Anlagen enthalten unterschiedliche Summen zur Selbstversorgung; der Bericht löst diesen Widerspruch nicht auf."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Pflege - dokumentierte Modulsummen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Abweichender Modulnachweis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Hausärztlicher Arztbrief",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: widersprüchliche Angaben zur Selbstversorgung. Kann der gewichtete Score bei zwei verschiedenen Summen für dasselbe Modul vollständig bestimmt werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflege-Score: widersprüchliche Angaben zur Selbstversorgung. Kann der gewichtete Score bei zwei verschiedenen Summen für dasselbe Modul vollständig bestimmt werden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Peter Hoffmann, 72 Jahre. Der erste Modulbogen nennt für Selbstversorgung die Summe 8. Eine zweite Anlage nennt 3. Ohne Klärung bleibt diese Modulsumme unbekannt. Keine Quelle wird automatisch als maßgeblich ausgewählt.",
+    "title": "NC-2026-4108 · Peter Hoffmann · Pflege-Score: widersprüchliche Modulsummen"
+  },
+  "reference-reha-complete": {
+    "person": "Claudia Becker",
+    "age": 56,
+    "caseNumber": "NC-2026-4109",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Therapie- und Belastungsverlauf",
+        "date": "06.10.2026",
+        "issuer": "Therapiezentrum Lindenhof",
+        "sections": [
+          {
+            "heading": "Verlauf der Alltagserprobung",
+            "text": "Beobachtungszeitraum 21.09.2026 bis 06.10.2026. Im Vordergrund stehen Wege in der Wohnung und im Nahbereich. Die im Antrag genannten 200 Meter werden als übernommene Fallangabe geführt; eine unabhängige standardisierte Gehstreckenmessung wird nicht behauptet."
+          },
+          {
+            "heading": "Aktivitäten und Teilhabe",
+            "text": "Beim Planen längerer Wege werden Pausen und Unterstützung berücksichtigt. Als alltagsbezogenes Ziel werden eigenständige Einkäufe und Wege zu Terminen benannt. Claudia Becker schildert Unsicherheit bei Treppen. Der Bericht beschreibt den Verlauf und enthält keine neue ärztliche Verordnung."
+          },
+          {
+            "heading": "Rückmeldung zur weiteren Planung",
+            "text": "Die Testperson möchte selbständige Einkäufe und Wege zu Terminen wieder aufnehmen. Die Belastbarkeit bei längeren Wegen bleibt eingeschränkt. Für die Besprechung werden Therapieverlauf und Selbstauskunft zusammengeführt; die ärztliche Anlage ist gesondert zu berücksichtigen."
+          }
+        ]
+      },
+      {
+        "title": "Selbstauskunft zu Alltag und Rehabilitationsziel",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Alltagssituation",
+            "text": "Claudia Becker beschreibt Schwierigkeiten bei längeren Wegen, Einkäufen und Treppen. Angehörige übernehmen derzeit einen Teil der Wege. Kurze Wege in der Wohnung sind möglich; daraus wird kein standardisierter Funktionswert abgeleitet."
+          },
+          {
+            "heading": "Persönliches Ziel",
+            "text": "Als Ziel wird genannt, Einkäufe im Nahbereich und Termine wieder selbständig zu erreichen. Die Angaben sind eine persönliche Zielbeschreibung und keine ärztliche Prognose. Bei der fachlichen Prüfung sind sie mit den übrigen Unterlagen abzugleichen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Rehabilitationsantrag und Verordnungsangaben",
+        "sections": [
+          {
+            "heading": "Anlass und Funktionsbezug",
+            "text": "Nach orthopädischer Behandlung wird Unterstützung zur Wiedergewinnung selbständiger Alltagsmobilität beantragt. Die angegebene Gehstrecke beträgt 200 Meter. Längere Wege und Treppen schränken die Teilhabe im Alltag ein. Die Angaben beschreiben die aktuelle Alltagssituation."
+          },
+          {
+            "heading": "Ziele und Kontextfaktoren",
+            "text": "Claudia Becker möchte Einkäufe im Nahbereich und Wege zu Terminen wieder eigenständig bewältigen. Angehörige helfen derzeit bei längeren Wegen. Als Ziel ist selbständige Alltagsmobilität angegeben. Die Zuordnung zum zuständigen Träger und die fachliche Rehabilitationsentscheidung werden in dieser Akte nicht vorweggenommen."
+          },
+          {
+            "heading": "Anlagenstand",
+            "text": "Der ärztliche Befundbericht sowie Therapieverlauf und Selbstauskunft liegen vor. Die Aktenübersicht dient der Unterlagensichtung; aus dem bloßen Vorhandensein folgt keine Bewilligung."
+          }
+        ]
+      },
+      "2": {
+        "title": "Ärztlicher Befundbericht zur Alltagsmobilität",
+        "issuer": "Orthopädische Praxis Lindenhof",
+        "date": "30.09.2026",
+        "sections": [
+          {
+            "heading": "Anamnese und Verlauf",
+            "text": "Nach der im Antrag beschriebenen orthopädischen Behandlung berichtet Claudia Becker über eine weiterhin eingeschränkte Belastbarkeit. Wege im Nahbereich werden bewältigt, bei längeren Strecken werden Pausen eingelegt. Die bisherige Versorgung und der Verlauf sind für die Aktenbesprechung zusammengefasst."
+          },
+          {
+            "heading": "Funktionsbezogene Angaben",
+            "text": "Dokumentierte Gehstrecke 200 Meter mit anschließender Pause. Längere Wege und Treppen werden als erschwert beschrieben. Kurze Wege im Wohnbereich sind möglich. Einkäufe und selbständige Wege zu Terminen sind als Teilhabeziele benannt."
+          },
+          {
+            "heading": "Fragestellung",
+            "text": "Für die weitere Planung sind die dokumentierten Funktionsangaben mit Therapieverlauf und persönlichen Zielen abzugleichen. Angaben zu einer konkreten Maßnahme und Prognose sind im fachlichen Prüfverfahren zu ergänzen."
+          }
+        ]
+      },
+      "3": {
+        "title": "Therapie- und Belastungsverlauf",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagensichtung zu einem Antrag auf medizinische Rehabilitation. Sind Rehabilitationsziel, Funktionseinschränkungen und ein Befundbericht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Selbstauskunft zu Alltag und Rehabilitationsziel",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagensichtung zu einem Antrag auf medizinische Rehabilitation. Sind Rehabilitationsziel, Funktionseinschränkungen und ein Befundbericht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Claudia Becker, 56 Jahre. nach orthopädischer Behandlung: Die dokumentierte Gehstrecke beträgt 200 Meter. Als Ziel ist selbständige Alltagsmobilität genannt. Ein Befundbericht liegt bei. ",
+    "title": "NC-2026-4109 · Claudia Becker · Rehabilitation - Alltagsmobilität"
+  },
+  "reference-oncology-complete": {
+    "person": "Thomas Falk",
+    "age": 63,
+    "caseNumber": "NC-2026-4110",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Diagnosebericht und Befundzusammenstellung",
+        "date": "30.09.2026",
+        "issuer": "Hämatologische Ambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass",
+            "text": "Die Anfrage betrifft eine Lymphomerkrankung. Für die Fallbesprechung werden Diagnosebericht, bisheriger Therapieverlauf und interdisziplinäre Beurteilung zusammengestellt. Die fachliche Fragestellung betrifft die weiteren Behandlungsmöglichkeiten bei dem dokumentierten Krankheitsverlauf."
+          },
+          {
+            "heading": "Diagnoseunterlagen",
+            "text": "Ein Diagnosebericht zur Lymphomerkrankung liegt vor. Die Aktenübersicht verweist auf die histologische Diagnosesicherung; der genaue Subtyp und ergänzende molekulare Befunde sind in der vorliegenden Zusammenfassung nicht angegeben. Für die Fachprüfung ist der vollständige Originalbefund beizuziehen."
+          },
+          {
+            "heading": "Weiterer Prüfauftrag",
+            "text": "Bitte prüfen Sie den Diagnosebericht zusammen mit den Vorbehandlungen und dem Ergebnis der interdisziplinären Fallbesprechung. Noch ausstehende Detailbefunde sollen vor einer abschließenden Stellungnahme angefordert werden."
+          }
+        ]
+      },
+      {
+        "title": "Therapieverlauf und Unterlagenanforderung",
+        "date": "09.10.2026",
+        "issuer": "Hämatologische Ambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Bisheriger Verlauf",
+            "text": "Ein mehrstufiger Behandlungsverlauf ist dokumentiert. Die vorliegende Zusammenfassung nennt die Abschnitte Erstbehandlung, Verlaufskontrolle und erneute Behandlungsplanung. Genaue Behandlungsprotokolle und Ansprechbefunde sind für den fachlichen Abgleich aus der Behandlungsakte beizuziehen."
+          },
+          {
+            "heading": "Board-Unterlage",
+            "text": "Ein Protokoll der interdisziplinären Fallbesprechung ist beigefügt. Es dokumentiert die Zusammenstellung der Vorbefunde; daraus wird keine durch NormaCase getroffene Therapieentscheidung abgeleitet."
+          },
+          {
+            "heading": "Offene Detailfragen",
+            "text": "Für die Fallbesprechung sind Diagnosebelege, Behandlungsprotokolle, Verlaufskontrollen und die Empfehlung des Boards gemeinsam zu betrachten. Bitte kennzeichnen Sie ergänzte Anlagen mit Datum und Bezug zur vorliegenden Anfrage."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Onkologie - Zusammenstellung der Unterlagen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung von Unterlagen zur Anfrage einer CAR-T-Therapie. Sind Diagnosebericht, Therapieverlauf und Board-Protokoll in der Akte enthalten?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Board-Protokoll",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Interdisziplinäre Fallbesprechung am 07.10.2026. Diagnosebericht und bisheriger Therapieverlauf wurden als Beratungsunterlagen benannt. Die Vollständigkeit der Befunde und der weitere Behandlungsauftrag sind fachlich abzugleichen; das Protokoll wird der Anfrage beigefügt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Diagnosebericht und Befundzusammenstellung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung von Unterlagen zur Anfrage einer CAR-T-Therapie. Sind Diagnosebericht, Therapieverlauf und Board-Protokoll in der Akte enthalten?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Therapieverlauf und Unterlagenanforderung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung von Unterlagen zur Anfrage einer CAR-T-Therapie. Sind Diagnosebericht, Therapieverlauf und Board-Protokoll in der Akte enthalten?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Thomas Falk, 63 Jahre. mit dokumentierter Lymphomerkrankung: Ein Diagnosebericht, der bisherige Therapieverlauf und ein interdisziplinäres Board-Protokoll sind benannt. ",
+    "title": "NC-2026-4110 · Thomas Falk · Onkologie: Unterlagensichtung"
+  },
+  "reference-reha-missing": {
+    "person": "Martin Engel",
+    "age": 56,
+    "caseNumber": "NC-2026-4111",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Therapie- und Belastungsverlauf",
+        "date": "06.10.2026",
+        "issuer": "Therapiezentrum Lindenhof",
+        "sections": [
+          {
+            "heading": "Verlauf der Alltagserprobung",
+            "text": "Beobachtungszeitraum 21.09.2026 bis 06.10.2026. Im Vordergrund stehen Wege in der Wohnung und im Nahbereich. Die im Antrag genannten 200 Meter werden als übernommene Fallangabe geführt; eine unabhängige standardisierte Gehstreckenmessung wird nicht behauptet."
+          },
+          {
+            "heading": "Aktivitäten und Teilhabe",
+            "text": "Beim Planen längerer Wege werden Pausen und Unterstützung berücksichtigt. Als alltagsbezogenes Ziel werden eigenständige Einkäufe und Wege zu Terminen benannt. Martin Engel schildert Unsicherheit bei Treppen. Der Bericht beschreibt den Verlauf und enthält keine neue ärztliche Verordnung."
+          },
+          {
+            "heading": "Rückmeldung zur weiteren Planung",
+            "text": "Die Testperson möchte selbständige Einkäufe und Wege zu Terminen wieder aufnehmen. Die Belastbarkeit bei längeren Wegen bleibt eingeschränkt. Für die Besprechung werden Therapieverlauf und Selbstauskunft zusammengeführt; die ärztliche Anlage ist gesondert zu berücksichtigen."
+          }
+        ]
+      },
+      {
+        "title": "Anforderung ärztlicher Unterlagen",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Offener Punkt",
+            "text": "Bitte reichen Sie den angekündigten ärztlichen Befundbericht nach. Vorhanden sind Verordnungsangaben und Therapieverlauf; die fehlende Anlage wird nicht als vorhanden markiert."
+          },
+          {
+            "heading": "Weiterer Bearbeitungsschritt",
+            "text": "Die Rückmeldung ist offen. Die Anforderung dokumentiert ausschließlich die Unterlagenlücke; sie ist weder eine Ablehnung noch ein Ersatz für den fehlenden Befundbericht."
+          }
+        ]
+      },
+      {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "date": "10.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Auftrag und Fragestellung",
+            "text": "Rehabilitationsantrag mit fehlendem Befundbericht. Welche Anlage fehlt für die vorgesehene Unterlagensichtung? Die Prüfung bleibt auf den dokumentierten Umfang beschränkt. Erzählangaben aus ergänzenden Berichten werden nicht automatisch in neue fachliche Kriterien umgewandelt."
+          },
+          {
+            "heading": "Stand der Bearbeitung",
+            "text": "Die Unterlagen wurden am 10.10.2026 für die Fallbesprechung zusammengestellt. Fehlende Angabe: Befundbericht beigefügt."
+          },
+          {
+            "heading": "Nächster Schritt",
+            "text": "Unterlagen und Fundstellen sind mit dem dokumentierten Auftrag abzugleichen. Offene Angaben und widersprüchliche Nachweise bleiben erkennbar. Eine fachliche Entscheidung außerhalb des vorhandenen Referenzpfads wird nicht vorweggenommen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Rehabilitationsantrag und Verordnungsangaben",
+        "sections": [
+          {
+            "heading": "Anlass und Funktionsbezug",
+            "text": "Nach orthopädischer Behandlung wird Unterstützung zur Wiedergewinnung selbständiger Alltagsmobilität beantragt. Die angegebene Gehstrecke beträgt 200 Meter. Längere Wege und Treppen schränken die Teilhabe im Alltag ein. Die Angaben beschreiben die aktuelle Alltagssituation."
+          },
+          {
+            "heading": "Ziele und Kontextfaktoren",
+            "text": "Martin Engel möchte Einkäufe im Nahbereich und Wege zu Terminen wieder eigenständig bewältigen. Angehörige helfen derzeit bei längeren Wegen. Als Ziel ist selbständige Alltagsmobilität angegeben. Die Zuordnung zum zuständigen Träger und die fachliche Rehabilitationsentscheidung werden in dieser Akte nicht vorweggenommen."
+          },
+          {
+            "heading": "Anlagenstand",
+            "text": "Der ärztliche Befundbericht ist angekündigt, aber nicht eingegangen. Ein Therapiebericht ersetzt die fehlende ärztliche Anlage nicht."
+          }
+        ]
+      },
+      "2": {
+        "title": "Therapie- und Belastungsverlauf",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Rehabilitationsantrag mit fehlendem Befundbericht. Welche Anlage fehlt für die vorgesehene Unterlagensichtung?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Anforderung ärztlicher Unterlagen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Rehabilitationsantrag mit fehlendem Befundbericht. Welche Anlage fehlt für die vorgesehene Unterlagensichtung?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Rehabilitationsantrag mit fehlendem Befundbericht. Welche Anlage fehlt für die vorgesehene Unterlagensichtung?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Martin Engel, 56 Jahre. nach orthopädischer Behandlung: Einschränkungen der Gehstrecke und das Ziel selbständiger Alltagsmobilität sind beschrieben. Der angekündigte ärztliche Befundbericht fehlt. Eine Rehabilitationsindikation wird daraus nicht abgeleitet.",
+    "title": "NC-2026-4111 · Martin Engel · Rehabilitation - ärztliche Unterlagen ausstehend"
+  },
+  "reference-oncology-missing": {
+    "person": "Andrea Schuster",
+    "age": 63,
+    "caseNumber": "NC-2026-4112",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Diagnosebericht und Befundzusammenstellung",
+        "date": "30.09.2026",
+        "issuer": "Hämatologische Ambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass",
+            "text": "Die Anfrage betrifft eine Lymphomerkrankung. Für die Fallbesprechung werden Diagnosebericht, bisheriger Therapieverlauf und interdisziplinäre Beurteilung zusammengestellt. Die fachliche Fragestellung betrifft die weiteren Behandlungsmöglichkeiten bei dem dokumentierten Krankheitsverlauf."
+          },
+          {
+            "heading": "Diagnoseunterlagen",
+            "text": "Ein Diagnosebericht zur Lymphomerkrankung liegt vor. Die Aktenübersicht verweist auf die histologische Diagnosesicherung; der genaue Subtyp und ergänzende molekulare Befunde sind in der vorliegenden Zusammenfassung nicht angegeben. Für die Fachprüfung ist der vollständige Originalbefund beizuziehen."
+          },
+          {
+            "heading": "Weiterer Prüfauftrag",
+            "text": "Bitte prüfen Sie den Diagnosebericht zusammen mit den Vorbehandlungen und dem Ergebnis der interdisziplinären Fallbesprechung. Noch ausstehende Detailbefunde sollen vor einer abschließenden Stellungnahme angefordert werden."
+          }
+        ]
+      },
+      {
+        "title": "Therapieverlauf und Unterlagenanforderung",
+        "date": "09.10.2026",
+        "issuer": "Hämatologische Ambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Bisheriger Verlauf",
+            "text": "Ein mehrstufiger Behandlungsverlauf ist dokumentiert. Die vorliegende Zusammenfassung nennt die Abschnitte Erstbehandlung, Verlaufskontrolle und erneute Behandlungsplanung. Genaue Behandlungsprotokolle und Ansprechbefunde sind für den fachlichen Abgleich aus der Behandlungsakte beizuziehen."
+          },
+          {
+            "heading": "Board-Unterlage",
+            "text": "Das angekündigte Board-Protokoll fehlt. Bitte übermitteln Sie das Protokoll; weder der Diagnosebericht noch diese Verlaufszusammenstellung werden als Ersatz markiert."
+          },
+          {
+            "heading": "Offene Detailfragen",
+            "text": "Für die Fallbesprechung sind Diagnosebelege, Behandlungsprotokolle, Verlaufskontrollen und die Empfehlung des Boards gemeinsam zu betrachten. Bitte kennzeichnen Sie ergänzte Anlagen mit Datum und Bezug zur vorliegenden Anfrage."
+          }
+        ]
+      },
+      {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "date": "10.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Auftrag und Fragestellung",
+            "text": "Onkologische Anfrage mit fehlendem Board-Protokoll. Welche Anlage ist bei der dokumentierten onkologischen Anfrage noch nicht vorhanden? Die Prüfung bleibt auf den dokumentierten Umfang beschränkt. Erzählangaben aus ergänzenden Berichten werden nicht automatisch in neue fachliche Kriterien umgewandelt."
+          },
+          {
+            "heading": "Stand der Bearbeitung",
+            "text": "Die Unterlagen wurden am 10.10.2026 für die Fallbesprechung zusammengestellt. Fehlende Angabe: Board-Protokoll beigefügt."
+          },
+          {
+            "heading": "Nächster Schritt",
+            "text": "Unterlagen und Fundstellen sind mit dem dokumentierten Auftrag abzugleichen. Offene Angaben und widersprüchliche Nachweise bleiben erkennbar. Eine fachliche Entscheidung außerhalb des vorhandenen Referenzpfads wird nicht vorweggenommen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Onkologie - Zusammenstellung der Unterlagen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Onkologische Anfrage mit fehlendem Board-Protokoll. Welche Anlage ist bei der dokumentierten onkologischen Anfrage noch nicht vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Diagnosebericht und Befundzusammenstellung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Onkologische Anfrage mit fehlendem Board-Protokoll. Welche Anlage ist bei der dokumentierten onkologischen Anfrage noch nicht vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Therapieverlauf und Unterlagenanforderung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Onkologische Anfrage mit fehlendem Board-Protokoll. Welche Anlage ist bei der dokumentierten onkologischen Anfrage noch nicht vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Prüfauftrag und Aktenvermerk",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Onkologische Anfrage mit fehlendem Board-Protokoll. Welche Anlage ist bei der dokumentierten onkologischen Anfrage noch nicht vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Andrea Schuster, 63 Jahre. mit dokumentierter Lymphomerkrankung: Diagnose und bisheriger Therapieverlauf liegen vor. Das Board-Protokoll fehlt. ",
+    "title": "NC-2026-4112 · Andrea Schuster · Onkologie: Board-Protokoll fehlt"
+  },
+  "reference-md-mueller": {
+    "person": "Helga Brandt",
+    "age": 72,
+    "caseNumber": "NC-2026-4113",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Hausärztlicher Arztbrief",
+        "date": "30.09.2026",
+        "issuer": "Praxis am Lindenplatz",
+        "sections": [
+          {
+            "heading": "Anlass und Vorbefunde",
+            "text": "Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden Verlaufsnotizen und die Schilderung der Angehörigen."
+          },
+          {
+            "heading": "Alltagsbezogener Verlauf",
+            "text": "Erinnerungen an Tagesablauf und Körperpflege sind erforderlich. Helga Brandt geht in der Wohnung ohne personelle Hilfe; die motorischen Fähigkeiten werden im vorliegenden Bericht nicht als eingeschränkt beschrieben. Die Angehörigen beschreiben einen wiederkehrenden Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte Erhebung im Modulbogen."
+          },
+          {
+            "heading": "Versorgung und offene Angaben",
+            "text": "Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll und Modulbogen gemeinsam vorgelegt."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "date": "07.10.2026",
+        "issuer": "Ambulanter Dienst Lindenhof",
+        "sections": [
+          {
+            "heading": "Beobachtungszeitraum",
+            "text": "01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments."
+          },
+          {
+            "heading": "Tagesbezogene Einträge",
+            "text": "01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends: Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die Fallbesprechung zusammengestellt. Erinnerungen an Tagesablauf und Körperpflege sind erforderlich. Helga Brandt geht in der Wohnung ohne personelle Hilfe; die motorischen Fähigkeiten werden im vorliegenden Bericht nicht als eingeschränkt beschrieben."
+          },
+          {
+            "heading": "Abgleich mit dem Modulbogen",
+            "text": "Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Die Erzählangaben werden dem Bogen als zusätzliche Lesedokumentation beigefügt."
+          }
+        ]
+      },
+      {
+        "title": "Antrag und Anlagenverzeichnis",
+        "date": "08.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Auftrag",
+            "text": "Beantragt ist die Sichtung des häuslichen Unterstützungsbedarfs. Vorliegend werden die dokumentierten Modulsummen für die Nachrechnung zusammengestellt. Die Angehörigen berichten über die Versorgung im Alltag und nehmen an der Fallbesprechung teil."
+          },
+          {
+            "heading": "Anlagen und Bearbeitungsstand",
+            "text": "Vorhanden sind Modulbogen, hausärztliche Zusammenfassung, ergänzender Verlauf und Pflegeprotokoll. Die Unterlagen betreffen dieselbe Person und denselben Erhebungszeitraum. Die Erzählangaben und die tabellarischen Summen werden als getrennte Dokumentationsbestandteile geführt."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Modulbogen – MD-Lehrbeispiel",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Pflegebericht – häusliche Unterstützung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Betreuungszeitraum 01.10.2026 bis 07.10.2026. Morgens werden Körperpflege und Ankleiden begleitet, Mahlzeiten werden bereitgestellt. Bei ungewohnter Tagesstruktur sind Erinnerungen und Begleitung erforderlich. Die Beobachtungen ergänzen den Modulbogen."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Hausärztlicher Arztbrief",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel. Wie werden die veröffentlichten Modulsummen gewichtet und welche Unterlagen belegen den Alltag?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel. Wie werden die veröffentlichten Modulsummen gewichtet und welche Unterlagen belegen den Alltag?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "5": {
+        "title": "Antrag und Anlagenverzeichnis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel. Wie werden die veröffentlichten Modulsummen gewichtet und welche Unterlagen belegen den Alltag?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Helga Brandt, 72 Jahre. Angelehnt an das veröffentlichte Lehrbeispiel Ingrid Müller: Unterstützung bei Körperpflege, Medikamenten und Tagesstruktur. Dokumente und Einrichtungen sind neu erfunden; die Modulsummen entsprechen der veröffentlichten Lehrtabelle.",
+    "title": "NC-2026-4113 · Helga Brandt · Pflege: Demenz und Unterstützung im Alltag"
+  },
+  "reference-md-kraemer": {
+    "person": "Rolf Lindner",
+    "age": 75,
+    "caseNumber": "NC-2026-4114",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Hausärztlicher Arztbrief",
+        "date": "30.09.2026",
+        "issuer": "Praxis am Lindenplatz",
+        "sections": [
+          {
+            "heading": "Anlass und Vorbefunde",
+            "text": "Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden Verlaufsnotizen und die Schilderung der Angehörigen."
+          },
+          {
+            "heading": "Alltagsbezogener Verlauf",
+            "text": "Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt. Die Angehörigen beschreiben einen wiederkehrenden Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte Erhebung im Modulbogen."
+          },
+          {
+            "heading": "Versorgung und offene Angaben",
+            "text": "Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll und Modulbogen gemeinsam vorgelegt."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "date": "07.10.2026",
+        "issuer": "Ambulanter Dienst Lindenhof",
+        "sections": [
+          {
+            "heading": "Beobachtungszeitraum",
+            "text": "01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments."
+          },
+          {
+            "heading": "Tagesbezogene Einträge",
+            "text": "01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends: Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die Fallbesprechung zusammengestellt. Nach einem Schlaganfall bestehen Einschränkungen bei längeren Wegen und feinmotorischen Alltagstätigkeiten. Beim Ankleiden und bei der Vorbereitung der Tagesmedikation wird Unterstützung benötigt."
+          },
+          {
+            "heading": "Abgleich mit dem Modulbogen",
+            "text": "Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Die Erzählangaben werden dem Bogen als zusätzliche Lesedokumentation beigefügt."
+          }
+        ]
+      },
+      {
+        "title": "Antrag und Anlagenverzeichnis",
+        "date": "08.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Auftrag",
+            "text": "Beantragt ist die Sichtung des häuslichen Unterstützungsbedarfs. Vorliegend werden die dokumentierten Modulsummen für die Nachrechnung zusammengestellt. Die Angehörigen berichten über die Versorgung im Alltag und nehmen an der Fallbesprechung teil."
+          },
+          {
+            "heading": "Anlagen und Bearbeitungsstand",
+            "text": "Vorhanden sind Modulbogen, hausärztliche Zusammenfassung, ergänzender Verlauf und Pflegeprotokoll. Die Unterlagen betreffen dieselbe Person und denselben Erhebungszeitraum. Die Erzählangaben und die tabellarischen Summen werden als getrennte Dokumentationsbestandteile geführt."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Modulbogen – MD-Lehrbeispiel",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Entlassungsbericht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Übergang aus der Rehabilitation in die häusliche Versorgung. Unterstützung beim Ankleiden und Vorbereiten der Tagesmedikation ist dokumentiert. Im Alltag wird ein Gehstock genutzt; Treppen werden mit Begleitung bewältigt. Angehörige unterstützen die weitere Versorgung."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Hausärztlicher Arztbrief",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel. Lässt sich die publizierte Gewichtung anhand dokumentierter Modulsummen nachvollziehen?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Pflegeprotokoll und Angehörigenbericht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel. Lässt sich die publizierte Gewichtung anhand dokumentierter Modulsummen nachvollziehen?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "5": {
+        "title": "Antrag und Anlagenverzeichnis",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Pflegebegutachtung nach veröffentlichtem MD-Lehrbeispiel. Lässt sich die publizierte Gewichtung anhand dokumentierter Modulsummen nachvollziehen?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Rolf Lindner, 75 Jahre. Angelehnt an Otto Krämer: Nach Schlaganfall bestehen Einschränkungen beim Gehen und bei Handbewegungen. Angehörige unterstützen die Selbstversorgung. Die neuen Berichte sind synthetisch.",
+    "title": "NC-2026-4114 · Rolf Lindner · Pflege: Alltag nach Schlaganfall"
+  },
+  "reference-accident-complete": {
+    "person": "Stefan Kranz",
+    "age": 42,
+    "caseNumber": "NC-2026-4115",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Arbeitgeberanzeige und Ereignisschilderung",
+        "date": "29.09.2026",
+        "issuer": "Werkbetrieb Lindenhof",
+        "sections": [
+          {
+            "heading": "Arbeitsplatz und Ereignis",
+            "text": "Am 28.09.2026 wurde während des Materialtransports ein Stolpern mit Sturz auf die rechte Hand gemeldet. Arbeitsaufgabe war das Bewegen einer Materialkiste. Die Anzeige gibt die betriebliche Schilderung wieder; eine unabhängige Beobachtung durch die berichtende Stelle wird nicht behauptet."
+          },
+          {
+            "heading": "Beschwerden und zeitlicher Bezug",
+            "text": "Nach der Meldung wurden Beschwerden am rechten Handgelenk angegeben. Stefan Kranz stellte sich am Ereignistag zur Untersuchung vor. Angaben zu Vorschäden und der vollständige radiologische Befund sind in der Zusammenstellung nicht gesichert."
+          },
+          {
+            "heading": "Abgleich",
+            "text": "Die Anzeige ist ein eigener Nachweis der Ereignisschilderung und kein medizinischer Kausalitätsbeweis. Die fachliche Beurteilung erfolgt erst nach Abgleich mit den medizinischen Unterlagen."
+          }
+        ]
+      },
+      {
+        "title": "Stellungnahme zum Verlauf und offene Befundanforderung",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass",
+            "text": "Für die Zusammenhangsfrage werden Ereignisschilderung, Erstvorstellung und weiterer Verlauf zusammengeführt. Beschwerden bei manuellem Greifen werden weiterhin als Fallangabe geführt; die Akte enthält keine gesicherte Prognose."
+          },
+          {
+            "heading": "Klärungsbedarf",
+            "text": "Der eigenständige radiologische Befund und Angaben zu möglichen Vorschäden werden angefordert. Die Anforderung dokumentiert eine offene Befundfrage, keine Anerkennungs- oder Ablehnungsentscheidung."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Gutachtenauftrag zur Zusammenhangsfrage",
+        "sections": [
+          {
+            "heading": "Auftrag und Ereignisangabe",
+            "text": "Ereignisdatum 28.09.2026, Tätigkeit Materialtransport. In der ersten Schilderung wird ein Stolpern beim Bewegen einer Materialkiste mit Sturz auf die rechte Hand angegeben. Die Zusammenhangsfrage betrifft die dokumentierten Handgelenkbeschwerden, die zeitnahen Befunde und mögliche abweichende Angaben."
+          },
+          {
+            "heading": "Fragestellungen",
+            "text": "Welche Beschwerden und Erstbefunde sind dokumentiert? Stimmen Ereignisbeschreibung und zeitlicher Verlauf überein? Welche Unterlagen sind noch anzufordern? Ein unfallbedingter Zusammenhang, die Anerkennung oder eine MdE werden durch diese Zusammenstellung nicht festgestellt."
+          },
+          {
+            "heading": "Anlagenstand",
+            "text": "Der Erstbericht und die Arbeitgeberanzeige liegen vor. Die Zusammenstellung wird der fachlich zuständigen Stelle zur Beurteilung vorgelegt."
+          }
+        ]
+      },
+      "2": {
+        "title": "Durchgangsarztbericht - Erstvorstellung",
+        "date": "28.09.2026",
+        "issuer": "Unfallambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Vorstellung und Eigenangabe",
+            "text": "Vorstellung am 28.09.2026 wegen Schmerzen im rechten Handgelenk. Stefan Kranz schildert ein Stolpern mit Sturz auf die rechte Hand beim Materialtransport. Zeitpunkt und Tätigkeit stimmen mit der übermittelten Arbeitgeberanzeige überein."
+          },
+          {
+            "heading": "Befunddokumentation",
+            "text": "Beschwerden am rechten Handgelenk bei Greifen und Belastung. Untersuchung und Bildgebung sind als durchgeführte Maßnahmen benannt. Der eigenständige radiologische Befund ist nicht beigefügt und wurde gesondert angefordert. Angaben zu Vorschäden sind noch abzugleichen."
+          },
+          {
+            "heading": "Arbeitsbezug und offene Befunde",
+            "text": "Die Tätigkeit umfasst Materialtransport und manuelles Greifen. Für die Zusammenhangsfrage sind Erstvorstellung und späterer Verlauf zusammenzuführen. Die Befundanforderung und die Ereignisschilderung sind als getrennte Unterlagen in der Akte geführt."
+          }
+        ]
+      },
+      "3": {
+        "title": "Arbeitgeberanzeige und Ereignisschilderung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Stellungnahme zum Verlauf und offene Befundanforderung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Stefan Kranz, 42 Jahre. Materialtransport. Der fiktive Vorgang betrifft Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf.",
+    "title": "NC-2026-4115 · Stefan Kranz · Arbeitsunfall: Handgelenkverletzung"
+  },
+  "reference-accident-missing": {
+    "person": "Michael Dorn",
+    "age": 42,
+    "caseNumber": "NC-2026-4116",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Arbeitgeberanzeige und Ereignisschilderung",
+        "date": "29.09.2026",
+        "issuer": "Werkbetrieb Lindenhof",
+        "sections": [
+          {
+            "heading": "Arbeitsplatz und Ereignis",
+            "text": "Am 28.09.2026 wurde während des Materialtransports ein Stolpern mit Sturz auf die rechte Hand gemeldet. Arbeitsaufgabe war das Bewegen einer Materialkiste. Die Anzeige gibt die betriebliche Schilderung wieder; eine unabhängige Beobachtung durch die berichtende Stelle wird nicht behauptet."
+          },
+          {
+            "heading": "Beschwerden und zeitlicher Bezug",
+            "text": "Nach der Meldung wurden Beschwerden am rechten Handgelenk angegeben. Michael Dorn stellte sich am Ereignistag zur Untersuchung vor. Angaben zu Vorschäden und der vollständige radiologische Befund sind in der Zusammenstellung nicht gesichert."
+          },
+          {
+            "heading": "Abgleich",
+            "text": "Die Anzeige ist ein eigener Nachweis der Ereignisschilderung und kein medizinischer Kausalitätsbeweis. Die fachliche Beurteilung erfolgt erst nach Abgleich mit den medizinischen Unterlagen."
+          }
+        ]
+      },
+      {
+        "title": "Nachforderung des Erstberichts",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass",
+            "text": "Der D-Arzt-Erstbericht vom 28.09.2026 wurde angekündigt, ist aber nicht eingegangen. Bitte übermitteln Sie ihn einschließlich der dokumentierten Untersuchungsbefunde."
+          },
+          {
+            "heading": "Klärungsbedarf",
+            "text": "Die fehlende Anlage darf weder durch die Arbeitgeberanzeige noch durch einen späteren Verlauf ersetzt werden. Die Unterlagensichtung bleibt offen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Gutachtenauftrag zur Zusammenhangsfrage",
+        "sections": [
+          {
+            "heading": "Auftrag und Ereignisangabe",
+            "text": "Ereignisdatum 28.09.2026, Tätigkeit Materialtransport. In der ersten Schilderung wird ein Stolpern beim Bewegen einer Materialkiste mit Sturz auf die rechte Hand angegeben. Die Zusammenhangsfrage betrifft die dokumentierten Handgelenkbeschwerden, die zeitnahen Befunde und mögliche abweichende Angaben."
+          },
+          {
+            "heading": "Fragestellungen",
+            "text": "Welche Beschwerden und Erstbefunde sind dokumentiert? Stimmen Ereignisbeschreibung und zeitlicher Verlauf überein? Welche Unterlagen sind noch anzufordern? Ein unfallbedingter Zusammenhang, die Anerkennung oder eine MdE werden durch diese Zusammenstellung nicht festgestellt."
+          },
+          {
+            "heading": "Anlagenstand",
+            "text": "Der angekündigte D-Arzt-Erstbericht liegt noch nicht vor. Die Arbeitgeberanzeige und die spätere Stellungnahme ersetzen diesen Erstbefund nicht."
+          }
+        ]
+      },
+      "2": {
+        "title": "Anlagenübersicht – ausstehender Erstbefund",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Arbeitgeberanzeige und Ereignisschilderung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Nachforderung des Erstberichts",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Michael Dorn, 42 Jahre. Materialtransport. Der fiktive Vorgang betrifft Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf.",
+    "title": "NC-2026-4116 · Michael Dorn · Arbeitsunfall: Erstbefund fehlt"
+  },
+  "reference-accident-conflicting": {
+    "person": "Jens Weber",
+    "age": 42,
+    "caseNumber": "NC-2026-4117",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Arbeitgeberanzeige und Ereignisschilderung",
+        "date": "29.09.2026",
+        "issuer": "Werkbetrieb Lindenhof",
+        "sections": [
+          {
+            "heading": "Arbeitsplatz und Ereignis",
+            "text": "Am 28.09.2026 wurde während des Materialtransports ein Stolpern mit Sturz auf die rechte Hand gemeldet. Arbeitsaufgabe war das Bewegen einer Materialkiste. Die Anzeige gibt die betriebliche Schilderung wieder; eine unabhängige Beobachtung durch die berichtende Stelle wird nicht behauptet."
+          },
+          {
+            "heading": "Beschwerden und zeitlicher Bezug",
+            "text": "Nach der Meldung wurden Beschwerden am rechten Handgelenk angegeben. Jens Weber stellte sich am Ereignistag zur Untersuchung vor. Angaben zu Vorschäden und der vollständige radiologische Befund sind in der Zusammenstellung nicht gesichert."
+          },
+          {
+            "heading": "Abgleich",
+            "text": "Die Anzeige ist ein eigener Nachweis der Ereignisschilderung und kein medizinischer Kausalitätsbeweis. Sie widerspricht der Ereignisangabe im Erstbericht. Beide Fassungen bleiben in der Akte erhalten."
+          }
+        ]
+      },
+      {
+        "title": "Stellungnahme zum Verlauf und offene Befundanforderung",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass",
+            "text": "Für die Zusammenhangsfrage werden Ereignisschilderung, Erstvorstellung und weiterer Verlauf zusammengeführt. Beschwerden bei manuellem Greifen werden weiterhin als Fallangabe geführt; die Akte enthält keine gesicherte Prognose."
+          },
+          {
+            "heading": "Klärungsbedarf",
+            "text": "Der eigenständige radiologische Befund und Angaben zu möglichen Vorschäden werden angefordert. Zusätzlich ist die Abweichung zwischen verneintem Ereignis in der Erstvorstellung und gemeldetem Sturz in der Arbeitgeberanzeige zu klären."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Gutachtenauftrag zur Zusammenhangsfrage",
+        "sections": [
+          {
+            "heading": "Auftrag und Ereignisangabe",
+            "text": "Ereignisdatum 28.09.2026, Tätigkeit Materialtransport. In der ersten Schilderung wird ein Stolpern beim Bewegen einer Materialkiste mit Sturz auf die rechte Hand angegeben. Die Zusammenhangsfrage betrifft die dokumentierten Handgelenkbeschwerden, die zeitnahen Befunde und mögliche abweichende Angaben."
+          },
+          {
+            "heading": "Fragestellungen",
+            "text": "Welche Beschwerden und Erstbefunde sind dokumentiert? Stimmen Ereignisbeschreibung und zeitlicher Verlauf überein? Welche Unterlagen sind noch anzufordern? Ein unfallbedingter Zusammenhang, die Anerkennung oder eine MdE werden durch diese Zusammenstellung nicht festgestellt."
+          },
+          {
+            "heading": "Anlagenstand",
+            "text": "Der Erstbericht und die Arbeitgeberanzeige liegen vor. Die Angaben zum konkreten Ereignis weichen voneinander ab und müssen fachlich geklärt werden."
+          }
+        ]
+      },
+      "2": {
+        "title": "Durchgangsarztbericht - Erstvorstellung",
+        "date": "28.09.2026",
+        "issuer": "Unfallambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Vorstellung und Eigenangabe",
+            "text": "Vorstellung am 28.09.2026 wegen Schmerzen im rechten Handgelenk. Bei der Erstvorstellung wird kein konkretes Sturzereignis angegeben. Diese Schilderung weicht von der späteren Arbeitgeberanzeige ab; eine Auflösung des Widerspruchs liegt nicht vor."
+          },
+          {
+            "heading": "Befunddokumentation",
+            "text": "Beschwerden am rechten Handgelenk bei Greifen und Belastung. Untersuchung und Bildgebung sind als durchgeführte Maßnahmen benannt. Der eigenständige radiologische Befund ist nicht beigefügt und wurde gesondert angefordert. Angaben zu Vorschäden sind noch abzugleichen."
+          },
+          {
+            "heading": "Arbeitsbezug und offene Befunde",
+            "text": "Die Tätigkeit umfasst Materialtransport und manuelles Greifen. Für die Zusammenhangsfrage sind Erstvorstellung und späterer Verlauf zusammenzuführen. Die Befundanforderung und die Ereignisschilderung sind als getrennte Unterlagen in der Akte geführt."
+          }
+        ]
+      },
+      "3": {
+        "title": "Arbeitgeberanzeige und Ereignisschilderung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Stellungnahme zum Verlauf und offene Befundanforderung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung zur Zusammenhangsbegutachtung nach Arbeitsereignis. Welche Erstbefunde fehlen oder widersprechen dem dokumentierten Unfallhergang?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Jens Weber, 42 Jahre. Materialtransport. Der fiktive Vorgang betrifft Beschwerden am Handgelenk. Der Fall zeigt nur Dokumentation und Klärungsbedarf.",
+    "title": "NC-2026-4117 · Jens Weber · Arbeitsunfall: Unfallhergang widersprüchlich"
+  },
+  "reference-transfer-complete": {
+    "person": "Hanna Frank",
+    "age": 72,
+    "caseNumber": "NC-2026-4118",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Entlassungsbrief und Versorgungszusammenfassung",
+        "date": "06.10.2026",
+        "issuer": "Klinik Lindenhof",
+        "sections": [
+          {
+            "heading": "Übergang in die Versorgung",
+            "text": "Nach stationärer Behandlung ist eine Überleitung in Kurzzeitpflege vorgesehen. Die Entlasskoordination hat den Unterstützungsbedarf mit der aufnehmenden Einrichtung abgestimmt. Der Bericht fasst die versorgungsbezogenen Angaben für den Übergang zusammen."
+          },
+          {
+            "heading": "Alltagsbezogener Unterstützungsbedarf",
+            "text": "Unterstützung ist bei Transfers, Körperpflege und Tagesstruktur dokumentiert. Die Familie ist in die Abstimmung des Übergangs einbezogen. Die aufnehmende Einrichtung soll die vorhandenen Ressourcen und den benötigten Hilfebedarf bei Aufnahme überprüfen."
+          },
+          {
+            "heading": "Begleitunterlagen",
+            "text": "Eine Medikationsübersicht ist als Begleitunterlage in der Akte geführt. Präparate und Dosierungen sind im Schulungsbestand nicht festgelegt; die Anlage darf nicht als Behandlungsvorgabe verwendet werden."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeübergabe und Aufnahmeabstimmung",
+        "date": "08.10.2026",
+        "issuer": "Pflegezentrum Nord",
+        "sections": [
+          {
+            "heading": "Aufnahmevorbereitung",
+            "text": "Die Kurzzeitpflege übernimmt die im Überleitungsbericht beschriebenen Unterstützungsaufgaben. Die Entlasskoordination und die aufnehmende Einrichtung gleichen Unterlagenstand und Ansprechpartnerfunktion ab. Die Übergabe wird fallbezogen dokumentiert."
+          },
+          {
+            "heading": "Übergabecheck",
+            "text": "Benötigt werden nachvollziehbare Angaben zu Transfers, Selbstversorgung und Tagesstruktur. Der vorhandene Medikationsübersichtseintrag enthält bewusst keine ausgefüllte Verordnung."
+          },
+          {
+            "heading": "Rückmeldung bei Aufnahme",
+            "text": "Bitte bestätigen Sie den Eingang der Begleitunterlagen und dokumentieren Sie noch fehlende Angaben. Abweichungen zwischen Überleitungsbericht und Aufnahmebeobachtung sollen an die Entlasskoordination zurückgemeldet werden."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Überleitungsbericht – Kurzzeitpflege",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Medikationsübersicht – Begleitunterlage",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Die aktuelle Medikationsübersicht ist als Begleitunterlage zur Überleitung geführt. Die Behandlungsdetails sind in dieser Schulungsakte nicht ausgefüllt. Für eine tatsächliche Versorgung wäre die ärztlich bestätigte vollständige Übersicht erforderlich."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Entlassungsbrief und Versorgungszusammenfassung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Pflegeübergabe und Aufnahmeabstimmung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Hanna Frank, 72 Jahre. Nach stationärer Behandlung soll eine Kurzzeitpflege die Alltagsversorgung übernehmen. Angelehnt an die öffentliche KBV-Fallfamilie; Ereignisse und Anlagen sind erfunden.",
+    "title": "NC-2026-4118 · Hanna Frank · Überleitung: Krankenhaus → Kurzzeitpflege"
+  },
+  "reference-transfer-missing": {
+    "person": "Gerhard Weiss",
+    "age": 72,
+    "caseNumber": "NC-2026-4119",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Entlassungsbrief und Versorgungszusammenfassung",
+        "date": "06.10.2026",
+        "issuer": "Klinik Lindenhof",
+        "sections": [
+          {
+            "heading": "Übergang in die Versorgung",
+            "text": "Nach stationärer Behandlung ist eine Überleitung in Kurzzeitpflege vorgesehen. Die Entlasskoordination hat den Unterstützungsbedarf mit der aufnehmenden Einrichtung abgestimmt. Der Bericht fasst die versorgungsbezogenen Angaben für den Übergang zusammen."
+          },
+          {
+            "heading": "Alltagsbezogener Unterstützungsbedarf",
+            "text": "Unterstützung ist bei Transfers, Körperpflege und Tagesstruktur dokumentiert. Die Familie ist in die Abstimmung des Übergangs einbezogen. Die aufnehmende Einrichtung soll die vorhandenen Ressourcen und den benötigten Hilfebedarf bei Aufnahme überprüfen."
+          },
+          {
+            "heading": "Begleitunterlagen",
+            "text": "Eine aktuelle Medikationsübersicht ist angekündigt, aber noch nicht vorhanden. Der Entlassungsbrief ersetzt diese Anlage nicht."
+          }
+        ]
+      },
+      {
+        "title": "Pflegeübergabe und Aufnahmeabstimmung",
+        "date": "08.10.2026",
+        "issuer": "Pflegezentrum Nord",
+        "sections": [
+          {
+            "heading": "Aufnahmevorbereitung",
+            "text": "Die Kurzzeitpflege übernimmt die im Überleitungsbericht beschriebenen Unterstützungsaufgaben. Die Entlasskoordination und die aufnehmende Einrichtung gleichen Unterlagenstand und Ansprechpartnerfunktion ab. Die Übergabe wird fallbezogen dokumentiert."
+          },
+          {
+            "heading": "Übergabecheck",
+            "text": "Benötigt werden nachvollziehbare Angaben zu Transfers, Selbstversorgung und Tagesstruktur. Die Medikationsübersicht bleibt als ausstehend geführt."
+          },
+          {
+            "heading": "Rückmeldung bei Aufnahme",
+            "text": "Bitte bestätigen Sie den Eingang der Begleitunterlagen und dokumentieren Sie noch fehlende Angaben. Abweichungen zwischen Überleitungsbericht und Aufnahmebeobachtung sollen an die Entlasskoordination zurückgemeldet werden."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Überleitungsbericht – Kurzzeitpflege",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Anlagenanforderung – Medikationsübersicht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Bitte übermitteln Sie die angekündigte aktuelle Medikationsübersicht vor der Überleitung. Die Anlage ist noch nicht eingegangen. Für die Aufnahmeabstimmung liegen derzeit der Überleitungsbericht und die Angaben zum Unterstützungsbedarf vor."
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Entlassungsbrief und Versorgungszusammenfassung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Pflegeübergabe und Aufnahmeabstimmung",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht, Unterstützungsbedarf und Medikationsübersicht dokumentiert?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Gerhard Weiss, 72 Jahre. Nach stationärer Behandlung soll eine Kurzzeitpflege die Alltagsversorgung übernehmen. Angelehnt an die öffentliche KBV-Fallfamilie; Ereignisse und Anlagen sind erfunden.",
+    "title": "NC-2026-4119 · Gerhard Weiss · Überleitung: Medikationsübersicht fehlt"
+  },
+  "reference-cannabis-complete": {
+    "person": "Petra Albrecht",
+    "age": 58,
+    "caseNumber": "NC-2026-4120",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Ärztlicher Bericht zur Schmerz- und Alltagssituation",
+        "date": "30.09.2026",
+        "issuer": "Schmerzambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass und Ziel",
+            "text": "Chronische Schmerzsymptomatik mit eingeschränkter Alltagsbelastbarkeit. Das im Antrag benannte Ziel ist eine Verbesserung der Belastbarkeit bei alltäglichen Tätigkeiten. Die bisherigen Behandlungen und der Verlauf sollen für die fachliche Stellungnahme zusammengeführt werden."
+          },
+          {
+            "heading": "Bisherige Versorgung",
+            "text": "Vorbehandlungen und Gründe für Behandlungswechsel werden anhand der beigefügten Unterlagen geprüft. Der Arztfragebogen führt die Abschnitte Anamnese, bisherige Therapie, Alternativen und Therapieziel getrennt. Nicht ausgefüllte Detailangaben sind bei der behandelnden Stelle anzufragen."
+          },
+          {
+            "heading": "Fragestellung an die behandelnde Stelle",
+            "text": "Bitte ergänzen Sie den zeitlichen Verlauf der bisherigen Maßnahmen und die dokumentierten Gründe für Änderungen. Das im Antrag genannte Ziel soll mit konkreten Alltagsbeobachtungen erläutert werden."
+          }
+        ]
+      },
+      {
+        "title": "Verlaufsanlage und Übersicht der Vorbehandlungen",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Unterlagenstand",
+            "text": "Die Vorbehandlungen sind als Begleitunterlage dokumentiert. Für den fachlichen Abgleich werden die Behandlungseinträge und Verlaufsbeobachtungen zusammengeführt. Die vorliegende Übersicht ersetzt nicht die vollständigen Behandlungsunterlagen."
+          },
+          {
+            "heading": "Fachliche Rückfragen",
+            "text": "Welche Behandlungen wurden durchgeführt und mit welchem dokumentierten Verlauf? Welche Gründe werden für Veränderungen genannt? Die Rückmeldung ist in die Fallbesprechung einzubeziehen."
+          },
+          {
+            "heading": "Weiteres Vorgehen",
+            "text": "Bitte gleichen Sie Unterlagenstand und offene Fragen mit der behandelnden Stelle ab. Ergänzende Dokumente sind der bestehenden Anfrage mit Datum und Anlagenbezeichnung zuzuordnen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Arztfragebogen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Therapieverlauf",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Ärztlicher Bericht zur Schmerz- und Alltagssituation",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Verlaufsanlage und Übersicht der Vorbehandlungen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Petra Albrecht, 58 Jahre. mit chronischer Schmerzsymptomatik. Die Anfrage dient ausschließlich der Dokumentensichtung; Wirksamkeit, Anspruch und Verordnungsbefugnis werden nicht bewertet.",
+    "title": "NC-2026-4120 · Petra Albrecht · Arzneimittel: Therapieverlauf dokumentiert"
+  },
+  "reference-cannabis-missing": {
+    "person": "Ute Lorenz",
+    "age": 58,
+    "caseNumber": "NC-2026-4121",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "Ärztlicher Bericht zur Schmerz- und Alltagssituation",
+        "date": "30.09.2026",
+        "issuer": "Schmerzambulanz Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass und Ziel",
+            "text": "Chronische Schmerzsymptomatik mit eingeschränkter Alltagsbelastbarkeit. Das im Antrag benannte Ziel ist eine Verbesserung der Belastbarkeit bei alltäglichen Tätigkeiten. Die bisherigen Behandlungen und der Verlauf sollen für die fachliche Stellungnahme zusammengeführt werden."
+          },
+          {
+            "heading": "Bisherige Versorgung",
+            "text": "Vorbehandlungen und Gründe für Behandlungswechsel werden anhand der beigefügten Unterlagen geprüft. Der Arztfragebogen führt die Abschnitte Anamnese, bisherige Therapie, Alternativen und Therapieziel getrennt. Nicht ausgefüllte Detailangaben sind bei der behandelnden Stelle anzufragen."
+          },
+          {
+            "heading": "Fragestellung an die behandelnde Stelle",
+            "text": "Bitte ergänzen Sie den zeitlichen Verlauf der bisherigen Maßnahmen und die dokumentierten Gründe für Änderungen. Das im Antrag genannte Ziel soll mit konkreten Alltagsbeobachtungen erläutert werden."
+          }
+        ]
+      },
+      {
+        "title": "Nachforderung bisheriger Behandlungen",
+        "date": "09.10.2026",
+        "issuer": "Fallkoordination Lindenhof",
+        "sections": [
+          {
+            "heading": "Unterlagenstand",
+            "text": "Der bisherige Therapieverlauf ist nicht belegt. Bitte übermitteln Sie die angekündigten Behandlungsunterlagen; diese Nachforderung ist kein Ersatz für die fehlende Anlage."
+          },
+          {
+            "heading": "Fachliche Rückfragen",
+            "text": "Welche Behandlungen wurden durchgeführt und mit welchem dokumentierten Verlauf? Welche Gründe werden für Veränderungen genannt? Die Rückmeldung ist in die Fallbesprechung einzubeziehen."
+          },
+          {
+            "heading": "Weiteres Vorgehen",
+            "text": "Bitte gleichen Sie Unterlagenstand und offene Fragen mit der behandelnden Stelle ab. Ergänzende Dokumente sind der bestehenden Anfrage mit Datum und Anlagenbezeichnung zuzuordnen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Arztfragebogen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Anlagenübersicht – Therapieverlauf ausstehend",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "Ärztlicher Bericht zur Schmerz- und Alltagssituation",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Nachforderung bisheriger Behandlungen",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Unterlagen zu einer Anfrage auf Cannabinoidversorgung. Sind bisherige Behandlungen und ein dokumentiertes Therapieziel vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Ute Lorenz, 58 Jahre. mit chronischer Schmerzsymptomatik. Die Anfrage dient ausschließlich der Dokumentensichtung; Wirksamkeit, Anspruch und Verordnungsbefugnis werden nicht bewertet.",
+    "title": "NC-2026-4121 · Ute Lorenz · Arzneimittel: Vorbehandlungen fehlen"
+  },
+  "reference-aid-hearing": {
+    "person": "Bernd Keller",
+    "age": 67,
+    "caseNumber": "NC-2026-4122",
+    "primaryDate": "08.10.2026",
+    "primaryIssuer": "Fallkoordination Lindenhof",
+    "documents": [
+      {
+        "title": "HNO-Arztbrief zur Hörhilfenanfrage",
+        "date": "30.09.2026",
+        "issuer": "HNO-Praxis Lindenhof",
+        "sections": [
+          {
+            "heading": "Anlass",
+            "text": "Eine Hörhilfenversorgung wird angefragt. Verordnung, Messbefundübersicht und Anpassbericht liegen als Anlagen vor. Der Arztbrief fasst den Anlass für die Versorgung und die zur Fachprüfung übermittelten Unterlagen zusammen."
+          },
+          {
+            "heading": "Alltag und Fragestellung",
+            "text": "Im Vordergrund steht die Nachvollziehbarkeit der Hörversorgung im Alltag. Die Unterlagen sind hinsichtlich Messbedingungen, Anpassverlauf und Vergleichsversorgung durch die Fachstelle abzugleichen. Ein rechnerischer Wirksamkeitsnachweis wird nicht behauptet."
+          },
+          {
+            "heading": "Unterlagenbezug",
+            "text": "Verordnung, Messbefund und Anpassdokumentation sind bei der Prüfung gemeinsam zu berücksichtigen. Produktbezogene Einzelheiten und audiometrische Detailwerte sind in dieser Zusammenfassung nicht ausgeführt; bei Bedarf ist die vollständige Messdokumentation anzufordern."
+          }
+        ]
+      },
+      {
+        "title": "Anpassverlauf und Vergleichsdokumentation",
+        "date": "07.10.2026",
+        "issuer": "Hörakustik Lindenhof",
+        "sections": [
+          {
+            "heading": "Dokumentationsanlass",
+            "text": "Die Verordnung und Messbefundübersicht bilden die Grundlage für die Aktenzusammenstellung. Die Anpassunterlage hält die zu prüfenden Abschnitte Messbedingungen, Alltagsrückmeldung und Vergleichsversorgung getrennt fest."
+          },
+          {
+            "heading": "Mess- und Vergleichsunterlagen",
+            "text": "Die Messbefundübersicht ist der Akte zugeordnet. Für die fachliche Bewertung sind die dokumentierten Messbedingungen und der Vergleich mit der bisherigen Versorgung heranzuziehen. Nicht in der Zusammenfassung enthaltene Einzelwerte sind aus der Messdokumentation beizuziehen."
+          },
+          {
+            "heading": "Abgleich der Anlagen",
+            "text": "Die Angaben beziehen sich auf dieselbe Hörhilfenanfrage. Die Testperson beschreibt Schwierigkeiten beim Verstehen von Gesprächen in wechselnder Umgebung. Die dokumentierte Alltagsrückmeldung ist mit Messbefund und Anpassverlauf abzugleichen."
+          }
+        ]
+      }
+    ],
+    "overrides": {
+      "1": {
+        "title": "Verordnung und Auftragsübersicht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung einer Hörhilfenanfrage. Sind Verordnung, Messbefund und Anpassdokumentation vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "2": {
+        "title": "Anpassbericht und Messbefundübersicht",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung einer Hörhilfenanfrage. Sind Verordnung, Messbefund und Anpassdokumentation vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "3": {
+        "title": "HNO-Arztbrief zur Hörhilfenanfrage",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung einer Hörhilfenanfrage. Sind Verordnung, Messbefund und Anpassdokumentation vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      },
+      "4": {
+        "title": "Anpassverlauf und Vergleichsdokumentation",
+        "sections": [
+          {
+            "heading": "Anlass und Unterlagenbezug",
+            "text": "Zusammenstellung einer Hörhilfenanfrage. Sind Verordnung, Messbefund und Anpassdokumentation vorhanden?"
+          },
+          {
+            "heading": "Dokumentationsstand",
+            "text": "Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende Unterlagen sind dort ausdrücklich als offen gekennzeichnet."
+          }
+        ]
+      }
+    },
+    "background": "Bernd Keller, 67 Jahre. Eine Hörversorgung wird angefragt. Die Akte enthält erfundene Unterlagen nach öffentlich beschriebenen Dokumentarten. Kein Leistungs- oder Eignungsentscheid.",
+    "title": "NC-2026-4122 · Bernd Keller · Hilfsmittel: Hörversorgung mit Vergleichsunterlagen"
+  }
+}

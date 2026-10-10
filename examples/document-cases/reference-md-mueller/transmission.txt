@@ -1,19 +1,28 @@
-SYNTHETISCHE DEMO - reference-md-mueller
+Schulungsakte - NC-2026-4113 | Helga Brandt
 Kontrollierter PDF-Text, keine OCR.
 
 Modulbogen – MD-Lehrbeispiel / Seite 1
-Synthetisch | reference-md-mueller | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4113 | Helga Brandt
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Modulbogen – MD-Lehrbeispiel
-Fiktive Einrichtung / Testperson reference-md-mueller / Datum 10.10.2026
-Synthetische Testperson L-01, 72 Jahre. Angelehnt an das veröffentlichte Lehrbeispiel Ingrid
-Müller: Unterstützung bei Körperpflege, Medikamenten und Tagesstruktur. Dokumente und
+NC-2026-4113 | Helga Brandt | 72 Jahre | 08.10.2026
+Helga Brandt, 72 Jahre. Angelehnt an das veröffentlichte Lehrbeispiel Ingrid Müller:
+Unterstützung bei Körperpflege, Medikamenten und Tagesstruktur. Dokumente und
 Einrichtungen sind neu erfunden; die Modulsummen entsprechen der veröffentlichten
-Lehrtabelle. Die Tabelle übernimmt die publizierten Einzelpunktsummen. Vergleichswert im
-Lehrbeispiel: 48,75 gewichtete Punkte. Der historische Pflegegrad wird nicht als aktuelle
-Softwareentscheidung ausgegeben.
+Lehrtabelle.
+Anlass und Unterlagenbezug
+Der Bogen führt die fachlich dokumentierten Einzelpunktsummen der sechs Module auf. Die
+Erhebung und die mathematische Gewichtung sind als getrennte Schritte zu betrachten. Der
+Bogen wird mit Arztbrief und Pflegeprotokoll zusammengeführt.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Modul 1: Mobilität
 0
 Modul 2: Kognition und Kommunikation
@@ -26,15 +35,16 @@ Modul 5: Krankheit und Therapie
 2
 Modul 6: Alltagsleben und Kontakte
 6
-Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
 
 Modulbogen – MD-Lehrbeispiel / Seite 2
-Synthetisch | reference-md-mueller | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4113 | Helga Brandt
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 module_1_sum=0
 module_2_sum=11
@@ -45,26 +55,92 @@ module_6_sum=6
 END-NCF1
 
 Pflegebericht – häusliche Unterstützung / Seite 1
-Synthetisch | reference-md-mueller | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4113 | Helga Brandt
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Pflegebericht – häusliche Unterstützung
-Fiktive Einrichtung / Testperson reference-md-mueller / Datum 10.10.2026
-Betreuungszeitraum 01.10.–07.10.2026.
-Die fiktive Pflegeperson unterstützt morgens die Körperpflege und das Anziehen. Mahlzeiten
-werden bereitgestellt. Bei ungewohnter Tagesstruktur sind Erinnerungen und Begleitung
-erforderlich.
-Dieser Bericht ergänzt das Lehrbeispiel synthetisch; er ist keine Originalanlage des MD.
-Angabe
-Dokumentierter Wert
-Quelle der Dokumentstruktur: md-teaching-care. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+NC-2026-4113 | Helga Brandt | 72 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Betreuungszeitraum 01.10.2026 bis 07.10.2026. Morgens werden Körperpflege und Ankleiden
+begleitet, Mahlzeiten werden bereitgestellt. Bei ungewohnter Tagesstruktur sind
+Erinnerungen und Begleitung erforderlich. Die Beobachtungen ergänzen den Modulbogen.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
 
-Pflegebericht – häusliche Unterstützung / Seite 2
-Synthetisch | reference-md-mueller | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
-NCF1
-END-NCF1
+Hausärztlicher Arztbrief / Seite 1
+NC-2026-4113 | Helga Brandt
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Praxis am Lindenplatz
+ Hausärztlicher Arztbrief
+NC-2026-4113 | Helga Brandt | 72 Jahre | 30.09.2026
+Anlass und Vorbefunde
+Die Fallkoordination bittet um eine Zusammenfassung des bisherigen Verlaufs zur
+Vorbereitung der Pflegebegutachtung. Grundlage dieses Berichts sind die vorliegenden
+Verlaufsnotizen und die Schilderung der Angehörigen.
+Alltagsbezogener Verlauf
+Erinnerungen an Tagesablauf und Körperpflege sind erforderlich. Helga Brandt geht in der
+Wohnung ohne personelle Hilfe; die motorischen Fähigkeiten werden im vorliegenden Bericht
+nicht als eingeschränkt beschrieben. Die Angehörigen beschreiben einen wiederkehrenden
+Unterstützungsbedarf im häuslichen Umfeld. Die Beobachtungen ergänzen die strukturierte
+Erhebung im Modulbogen.
+Versorgung und offene Angaben
+Die Familie übernimmt die Vorbereitung der Mahlzeiten und die Abstimmung der Termine. Die
+Tagesmedikation wird vorbereitet; Angaben zu Präparaten sind in der gesonderten
+Medikationsunterlage zu führen. Für die Fallbesprechung werden Arztbrief, Pflegeprotokoll
+und Modulbogen gemeinsam vorgelegt.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
+
+Pflegeprotokoll und Angehörigenbericht / Seite 1
+NC-2026-4113 | Helga Brandt
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Ambulanter Dienst Lindenhof
+ Pflegeprotokoll und Angehörigenbericht
+NC-2026-4113 | Helga Brandt | 72 Jahre | 07.10.2026
+Beobachtungszeitraum
+01.10.2026 bis 07.10.2026. Die Einträge betreffen Körperpflege, Mahlzeiten, Tagesstruktur
+und Begleitung. Die Beobachtungen wurden an verschiedenen Tagen zusammengetragen; sie
+sind keine automatisch berechneten Einzelpunkte des Begutachtungsinstruments.
+Tagesbezogene Einträge
+01.10., morgens: Kleidung bereitgelegt und Körperpflege begleitet. 03.10., mittags: Mahlzeit
+vorbereitet, Rückmeldung der Angehörigen zum Tagesablauf aufgenommen. 05.10., abends:
+Unterstützungsbedarf beim Tagesabschluss dokumentiert. 07.10.: Aktenunterlagen für die
+Fallbesprechung zusammengestellt. Erinnerungen an Tagesablauf und Körperpflege sind
+erforderlich. Helga Brandt geht in der Wohnung ohne personelle Hilfe; die motorischen
+Fähigkeiten werden im vorliegenden Bericht nicht als eingeschränkt beschrieben.
+Abgleich mit dem Modulbogen
+Für die Nachrechnung gelten ausschließlich die im Modulbogen dokumentierten Summen. Die
+Erzählangaben werden dem Bogen als zusätzliche Lesedokumentation beigefügt.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
+
+Antrag und Anlagenverzeichnis / Seite 1
+NC-2026-4113 | Helga Brandt
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Antrag und Anlagenverzeichnis
+NC-2026-4113 | Helga Brandt | 72 Jahre | 08.10.2026
+Auftrag
+Beantragt ist die Sichtung des häuslichen Unterstützungsbedarfs. Vorliegend werden die
+dokumentierten Modulsummen für die Nachrechnung zusammengestellt. Die Angehörigen
+berichten über die Versorgung im Alltag und nehmen an der Fallbesprechung teil.
+Anlagen und Bearbeitungsstand
+Vorhanden sind Modulbogen, hausärztliche Zusammenfassung, ergänzender Verlauf und
+Pflegeprotokoll. Die Unterlagen betreffen dieselbe Person und denselben Erhebungszeitraum.
+Die Erzählangaben und die tabellarischen Summen werden als getrennte
+Dokumentationsbestandteile geführt.
+Strukturbezug: MD Bund – Die Selbstständigkeit als Maß der Pflegebedürftigkeit,
+Lehrbeispiele; Broschüre 2019, Tabellen S. 19 und 21. Eigenes Berichtslayout, kein amtliches
+Originalformular.
 

@@ -1,57 +1,105 @@
-SYNTHETISCHE DEMO - reference-transfer-missing
+Schulungsakte - NC-2026-4119 | Gerhard Weiss
 Kontrollierter PDF-Text, keine OCR.
 
 Überleitungsbericht – Kurzzeitpflege / Seite 1
-Synthetisch | reference-transfer-missing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
+NC-2026-4119 | Gerhard Weiss
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Überleitungsbericht – Kurzzeitpflege
-Fiktive Einrichtung / Testperson reference-transfer-missing / Datum 10.10.2026
-Synthetische Testperson T-missing, 72 Jahre. Nach stationärer Behandlung soll eine
-Kurzzeitpflege die Alltagsversorgung übernehmen. Angelehnt an die öffentliche
-KBV-Fallfamilie; Ereignisse und Anlagen sind erfunden. Aufnehmende Einrichtung: Fiktives
-Pflegezentrum Nord.
-Übergabe: Unterstützung bei Transfers, Körperpflege und Tagesstruktur ist im Bericht
-vorgesehen. Ansprechpartner ist die fiktive Entlasskoordination.
-Die Akte demonstriert eine sektorenübergreifende Informationsübergabe, keine
-FHIR-Konformitätsprüfung.
+NC-2026-4119 | Gerhard Weiss | 72 Jahre | 08.10.2026
+Gerhard Weiss, 72 Jahre. Nach stationärer Behandlung soll eine Kurzzeitpflege die
+Alltagsversorgung übernehmen. Angelehnt an die öffentliche KBV-Fallfamilie; Ereignisse und
+Anlagen sind erfunden.
+Anlass und Unterlagenbezug
+Überleitung aus stationärer Behandlung in die Kurzzeitpflege. Sind Übergabebericht,
+Unterstützungsbedarf und Medikationsübersicht dokumentiert?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Überleitungsbericht beigefügt
 Ja
 Medikationsübersicht beigefügt
 Nicht angegeben
-Quelle der Dokumentstruktur: kbv-transfer. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
 
 Überleitungsbericht – Kurzzeitpflege / Seite 2
-Synthetisch | reference-transfer-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4119 | Gerhard Weiss
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 transfer_report_attached=YES
 medication_overview_attached=UNKNOWN
 END-NCF1
 
 Anlagenanforderung – Medikationsübersicht / Seite 1
-Synthetisch | reference-transfer-missing | Seite 1
-Synthetischer Schulungsfall | Keine echte Patientenakte
- Anlagenanforderung – Medikationsübersicht
-Fiktive Einrichtung / Testperson reference-transfer-missing / Datum 10.10.2026
-Eine aktuelle, ärztlich bestätigte Medikationsübersicht ist angekündigt, aber noch nicht
-vorhanden. Rückfrage an die entlassende Einrichtung ist erforderlich.
-Angabe
-Dokumentierter Wert
-Quelle der Dokumentstruktur: kbv-transfer. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+NC-2026-4119 | Gerhard Weiss
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Anlagenanforderung –
+Medikationsübersicht
+NC-2026-4119 | Gerhard Weiss | 72 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Bitte übermitteln Sie die angekündigte aktuelle Medikationsübersicht vor der Überleitung. Die
+Anlage ist noch nicht eingegangen. Für die Aufnahmeabstimmung liegen derzeit der
+Überleitungsbericht und die Angaben zum Unterstützungsbedarf vor.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
 
-Anlagenanforderung – Medikationsübersicht / Seite 2
-Synthetisch | reference-transfer-missing | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
-NCF1
-END-NCF1
+Entlassungsbrief und Versorgungszusammenfassung / Seite 1
+NC-2026-4119 | Gerhard Weiss
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Klinik Lindenhof
+ Entlassungsbrief und
+Versorgungszusammenfassung
+NC-2026-4119 | Gerhard Weiss | 72 Jahre | 06.10.2026
+Übergang in die Versorgung
+Nach stationärer Behandlung ist eine Überleitung in Kurzzeitpflege vorgesehen. Die
+Entlasskoordination hat den Unterstützungsbedarf mit der aufnehmenden Einrichtung
+abgestimmt. Der Bericht fasst die versorgungsbezogenen Angaben für den Übergang
+zusammen.
+Alltagsbezogener Unterstützungsbedarf
+Unterstützung ist bei Transfers, Körperpflege und Tagesstruktur dokumentiert. Die Familie ist
+in die Abstimmung des Übergangs einbezogen. Die aufnehmende Einrichtung soll die
+vorhandenen Ressourcen und den benötigten Hilfebedarf bei Aufnahme überprüfen.
+Begleitunterlagen
+Eine aktuelle Medikationsübersicht ist angekündigt, aber noch nicht vorhanden. Der
+Entlassungsbrief ersetzt diese Anlage nicht.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
+
+Pflegeübergabe und Aufnahmeabstimmung / Seite 1
+NC-2026-4119 | Gerhard Weiss
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Pflegezentrum Nord
+ Pflegeübergabe und Aufnahmeabstimmung
+NC-2026-4119 | Gerhard Weiss | 72 Jahre | 08.10.2026
+Aufnahmevorbereitung
+Die Kurzzeitpflege übernimmt die im Überleitungsbericht beschriebenen
+Unterstützungsaufgaben. Die Entlasskoordination und die aufnehmende Einrichtung gleichen
+Unterlagenstand und Ansprechpartnerfunktion ab. Die Übergabe wird fallbezogen
+dokumentiert.
+Übergabecheck
+Benötigt werden nachvollziehbare Angaben zu Transfers, Selbstversorgung und
+Tagesstruktur. Die Medikationsübersicht bleibt als ausstehend geführt.
+Rückmeldung bei Aufnahme
+Bitte bestätigen Sie den Eingang der Begleitunterlagen und dokumentieren Sie noch fehlende
+Angaben. Abweichungen zwischen Überleitungsbericht und Aufnahmebeobachtung sollen an
+die Entlasskoordination zurückgemeldet werden.
+Strukturbezug: KBV PIO Überleitungsbogen – öffentliche fiktive Fallbeispiele; Phase I, Version
+1.0.0; Recherche 10.10.2026. Eigenes Berichtslayout, kein amtliches Originalformular.
 

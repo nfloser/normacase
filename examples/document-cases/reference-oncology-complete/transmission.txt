@@ -1,60 +1,124 @@
-SYNTHETISCHE DEMO - reference-oncology-complete
+Schulungsakte - NC-2026-4110 | Thomas Falk
 Kontrollierter PDF-Text, keine OCR.
 
 Onkologie - Zusammenstellung der Unterlagen / Seite 1
-Synthetisch | reference-oncology-complete | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
+NC-2026-4110 | Thomas Falk
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
  Onkologie - Zusammenstellung der
  Unterlagen
-Fiktive Einrichtung / Testperson reference-oncology-complete / Datum 10.10.2026
-Synthetische Testperson O-01, 63 Jahre, mit dokumentierter Lymphomerkrankung: Ein
-Diagnosebericht, der bisherige Therapieverlauf und ein interdisziplinäres Board-Protokoll sind
-benannt. Die Demo dient der Unterlagensichtung auf Grundlage der öffentlichen Checkliste.
-Eine Therapie- oder Kostenentscheidung findet nicht statt. Fiktive Testperson mit
-dokumentierter Lymphomerkrankung. Histologischer Bericht und mehrstufiger
-Therapieverlauf sind in der Aktenübersicht benannt. Präparat und Nutzen-Risiko-Bewertung
-werden hier nicht festgelegt.
+NC-2026-4110 | Thomas Falk | 63 Jahre | 08.10.2026
+Thomas Falk, 63 Jahre. mit dokumentierter Lymphomerkrankung: Ein Diagnosebericht, der
+bisherige Therapieverlauf und ein interdisziplinäres Board-Protokoll sind benannt.
+Anlass und Unterlagenbezug
+Zusammenstellung von Unterlagen zur Anfrage einer CAR-T-Therapie. Sind Diagnosebericht,
+Therapieverlauf und Board-Protokoll in der Akte enthalten?
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Diagnose durch Bericht dokumentiert
 Ja
 Therapieverlauf dokumentiert
 Ja
-Quelle der Dokumentstruktur: md-car-t. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: Arztfragebogen zur Therapie mit CAR-T-Zellen; 31.10.2023 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
 
 Onkologie - Zusammenstellung der Unterlagen / Seite 2
-Synthetisch | reference-oncology-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+NC-2026-4110 | Thomas Falk
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 diagnosis_documented=YES
 history_documented=YES
 END-NCF1
 
-Board-Protokoll - synthetische Anlage / Seite 1
-Synthetisch | reference-oncology-complete | Seite 1
-SYNTHETISCHE DEMO - KEINE ECHTE PATIENTENAKTE
- Board-Protokoll - synthetische Anlage
-Fiktive Einrichtung / Testperson reference-oncology-complete / Datum 10.10.2026
-Fiktive interdisziplinäre Fallbesprechung. Vorbefunde und bisheriger Verlauf sollen fachlich
-geprüft werden. Kein verbindlicher Therapieentscheid und keine Empfehlung eines Präparats.
+Board-Protokoll / Seite 1
+NC-2026-4110 | Thomas Falk
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Fallkoordination Lindenhof
+ Board-Protokoll
+NC-2026-4110 | Thomas Falk | 63 Jahre | 08.10.2026
+Anlass und Unterlagenbezug
+Interdisziplinäre Fallbesprechung am 07.10.2026. Diagnosebericht und bisheriger
+Therapieverlauf wurden als Beratungsunterlagen benannt. Die Vollständigkeit der Befunde
+und der weitere Behandlungsauftrag sind fachlich abzugleichen; das Protokoll wird der
+Anfrage beigefügt.
+Dokumentationsstand
+Die unten aufgeführten Angaben werden aus diesem Dokument übernommen. Ergänzende
+Berichte und Korrespondenz sind im Anlagenverzeichnis derselben Akte geführt. Ausstehende
+Unterlagen sind dort ausdrücklich als offen gekennzeichnet.
+Dokumentierte Angaben
 Angabe
-Dokumentierter Wert
+Wert
 Board-Protokoll beigefügt
 Ja
-Quelle der Dokumentstruktur: md-car-t. Eigenes Layout; keine Kopie eines amtlichen
-Formulars. Alle Angaben sind erfunden.
-Keine echte Unterschrift, keine medizinische Empfehlung.
+Strukturbezug: Arztfragebogen zur Therapie mit CAR-T-Zellen; 31.10.2023 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
 
-Board-Protokoll - synthetische Anlage / Seite 2
-Synthetisch | reference-oncology-complete | Seite 2
-Strukturierte Demo-Übermittlung
-Dieser kontrollierte Textabschnitt dient ausschließlich dem Testadapter. Er ist kein
-MD-Austauschformat und keine freie Dokumenterkennung.
+Board-Protokoll / Seite 2
+NC-2026-4110 | Thomas Falk
+Seite 2
+Technische Übermittlungsanlage
+Kontrollierter Textadapter zur reproduzierbaren Testextraktion. Kein fachliches
+Dokumentenverständnis und kein institutionelles Austauschformat.
 NCF1
 board_attached=YES
 END-NCF1
+
+Diagnosebericht und Befundzusammenstellung / Seite 1
+NC-2026-4110 | Thomas Falk
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Hämatologische Ambulanz Lindenhof
+ Diagnosebericht und
+Befundzusammenstellung
+NC-2026-4110 | Thomas Falk | 63 Jahre | 30.09.2026
+Anlass
+Die Anfrage betrifft eine Lymphomerkrankung. Für die Fallbesprechung werden
+Diagnosebericht, bisheriger Therapieverlauf und interdisziplinäre Beurteilung
+zusammengestellt. Die fachliche Fragestellung betrifft die weiteren
+Behandlungsmöglichkeiten bei dem dokumentierten Krankheitsverlauf.
+Diagnoseunterlagen
+Ein Diagnosebericht zur Lymphomerkrankung liegt vor. Die Aktenübersicht verweist auf die
+histologische Diagnosesicherung; der genaue Subtyp und ergänzende molekulare Befunde
+sind in der vorliegenden Zusammenfassung nicht angegeben. Für die Fachprüfung ist der
+vollständige Originalbefund beizuziehen.
+Weiterer Prüfauftrag
+Bitte prüfen Sie den Diagnosebericht zusammen mit den Vorbehandlungen und dem Ergebnis
+der interdisziplinären Fallbesprechung. Noch ausstehende Detailbefunde sollen vor einer
+abschließenden Stellungnahme angefordert werden.
+Strukturbezug: Arztfragebogen zur Therapie mit CAR-T-Zellen; 31.10.2023 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
+
+Therapieverlauf und Unterlagenanforderung / Seite 1
+NC-2026-4110 | Thomas Falk
+Seite 1
+Schulungsakte - Identität und Berichte synthetisch
+Hämatologische Ambulanz Lindenhof
+ Therapieverlauf und
+Unterlagenanforderung
+NC-2026-4110 | Thomas Falk | 63 Jahre | 09.10.2026
+Bisheriger Verlauf
+Ein mehrstufiger Behandlungsverlauf ist dokumentiert. Die vorliegende Zusammenfassung
+nennt die Abschnitte Erstbehandlung, Verlaufskontrolle und erneute Behandlungsplanung.
+Genaue Behandlungsprotokolle und Ansprechbefunde sind für den fachlichen Abgleich aus
+der Behandlungsakte beizuziehen.
+Board-Unterlage
+Ein Protokoll der interdisziplinären Fallbesprechung ist beigefügt. Es dokumentiert die
+Zusammenstellung der Vorbefunde; daraus wird keine durch NormaCase getroffene
+Therapieentscheidung abgeleitet.
+Offene Detailfragen
+Für die Fallbesprechung sind Diagnosebelege, Behandlungsprotokolle, Verlaufskontrollen und
+die Empfehlung des Boards gemeinsam zu betrachten. Bitte kennzeichnen Sie ergänzte
+Anlagen mit Datum und Bezug zur vorliegenden Anfrage.
+Strukturbezug: Arztfragebogen zur Therapie mit CAR-T-Zellen; 31.10.2023 (Titel im PDF).
+Eigenes Berichtslayout, kein amtliches Originalformular.
 

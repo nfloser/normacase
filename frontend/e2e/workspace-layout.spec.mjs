@@ -4,11 +4,11 @@ test('case overview opens a result-first detail with explicit documents and a re
  await page.setViewportSize({width:1280,height:720});
  await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await expect(cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true})).toBeVisible();
- await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
+ await expect(cases.getByRole('button',{name:'NC-2026-4101 · Marlene Berg · Krankenfahrt: ambulante Behandlung',exact:true})).toBeVisible();
+ await cases.getByRole('button',{name:'NC-2026-4101 · Marlene Berg · Krankenfahrt: ambulante Behandlung',exact:true}).click();
  await expect(cases.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
  await expect(cases.locator('iframe')).toHaveCount(0);
- await expect(cases.getByRole('button',{name:'Pflege-Score: vollständig',exact:true})).toHaveCount(0);
+ await expect(cases.getByRole('button',{name:'NC-2026-4105 · Erika Stein · Pflege-Score: Modulsummenabgleich',exact:true})).toHaveCount(0);
  await page.screenshot({path:'test-results/case-result-laptop.png'});
  await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
  await expect(cases.locator('.pdf-page-image')).toBeVisible();
@@ -25,7 +25,7 @@ test('case overview opens a result-first detail with explicit documents and a re
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBeTruthy();
  await page.screenshot({path:'test-results/case-documents-laptop.png'});
  await cases.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
- await expect(cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true})).toBeFocused();
+ await expect(cases.getByRole('button',{name:'NC-2026-4101 · Marlene Berg · Krankenfahrt: ambulante Behandlung',exact:true})).toBeFocused();
  await expect(cases.locator('iframe')).toHaveCount(0);
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
@@ -52,20 +52,20 @@ test('document service failure retains the independent recorded assessment',asyn
 test('concrete transport context is retained and unrelated missing evidence is not a clarification',async({page})=>{
  await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4101 · Marlene Berg · Krankenfahrt: ambulante Behandlung',exact:true}).click();
  await expect(cases.getByText('Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung',{exact:true})).toBeVisible();
  await expect(cases.getByText('Was muss geklärt werden?',{exact:true})).toHaveCount(0);
  await cases.getByText('Fallhintergrund ansehen',{exact:true}).click();
- await expect(cases.getByText(/Synthetische Testperson K-01, 78 Jahre/)).toBeVisible();
+ await expect(cases.getByText(/Marlene Berg, 78 Jahre/)).toBeVisible();
  await cases.getByRole('button',{name:'Dokumente',exact:true}).click();
  const content=await (await page.request.get('/api/document-cases/reference-transport-complete/documents/transmission')).text();
- expect(content).toContain('Synthetische Testperson K-01, 78 Jahre');
+ expect(content).toContain('Marlene Berg, 78 Jahre');
 });
 
 test('care reference exposes its knowledge-defined score outputs directly',async({page})=>{
  await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
- await cases.getByRole('button',{name:'Pflege-Score: vollständig',exact:true}).click();
+ await cases.getByRole('button',{name:'NC-2026-4105 · Erika Stein · Pflege-Score: Modulsummenabgleich',exact:true}).click();
  const outputs=cases.locator('.case-domain-results');
  await expect(outputs.getByText('Score-Schwelle 12,5',{exact:true})).toBeVisible();
  await expect(outputs.locator('dd').first()).toContainText('Erreicht');
