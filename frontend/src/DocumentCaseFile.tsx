@@ -14,20 +14,20 @@ type Assessment={assessment:{outcome:string;ruleTrace?:RuleTrace;domainOutputs?:
 const outcomes:Record<string,string>={SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 const values:Record<string,string>={YES:text.yes,NO:text.no,UNKNOWN:text.unknown,NOT_APPLICABLE:text.notApplicable};
 
-export function DocumentCaseFile({caseId,presentation,showAssessment=false,analysis}:{caseId:string;analysis?:ReactNode;presentation?:Pack['presentation'];showAssessment?:boolean}) {
-  const [view,setView]=useState<'result'|'documents'>('result');
+export function DocumentCaseFile({caseId,presentation,showAssessment=false,analysis,initialView='result'}:{caseId:string;initialView?:'result'|'documents';analysis?:ReactNode;presentation?:Pack['presentation'];showAssessment?:boolean}) {
+  const [view,setView]=useState<'result'|'documents'>(initialView);
   const [file,setFile]=useState<File|null>(null);
   const [selected,setSelected]=useState('');
   const [error,setError]=useState('');
   const [plain,setPlain]=useState('');const [sourcePage,setSourcePage]=useState(1);const [zoom,setZoom]=useState(false);const [previewFailed,setPreviewFailed]=useState(false);
   useEffect(()=>{
-    const controller=new AbortController();setView('result');setFile(null);setSelected('');setError('');setPlain('');setSourcePage(1);setZoom(false);
+    const controller=new AbortController();setView(initialView);setFile(null);setSelected('');setError('');setPlain('');setSourcePage(1);setZoom(false);
     fetch('/api/document-cases/'+encodeURIComponent(caseId),{signal:controller.signal})
       .then(response=>{if(!response.ok)throw new Error();return response.json();})
       .then((data:File)=>{if(!controller.signal.aborted){setFile(data);setSelected(data.documents[0]?.id??'');}})
       .catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});
     return()=>controller.abort();
-  },[caseId]);
+  },[caseId,initialView]);
   const document=file?.documents.find(item=>item.id===selected);
   const url='/api/document-cases/'+encodeURIComponent(caseId)+'/documents/'+encodeURIComponent(selected);
   useEffect(()=>{

@@ -21,6 +21,7 @@ internal static class DocumentCaseEndpoints
         if(catalog.FormatVersion!=1 || catalog.Cases.Length>200)
             throw new InvalidOperationException("Invalid synthetic document catalog.");
         var sources=catalog.Sources.ToDictionary(x=>x.Id,StringComparer.Ordinal);
+        var workspaceCases=new List<DemoWorkspaceEndpoints.Case>();
         var cases=new Dictionary<string,object>(StringComparer.Ordinal);
         var pageContent=new Dictionary<(string,string,int),byte[]>();
         var content=new Dictionary<(string,string),(byte[] Bytes,Document Metadata)>();
@@ -110,10 +111,18 @@ internal static class DocumentCaseEndpoints
                 if(entry.PackPath=="demo-g"&&originalAssessment(entry.CaseId)!=assessmentJson)
                     throw new InvalidOperationException("Document fixture differs from original pitch case.");
             }
+            var queueId=entry.PackPath is null?"documents":entry.ExpectedOutcome switch
+            {
+                "SUPPORTED" or "NOT_SUPPORTED"=>"approval", "INCOMPLETE"=>"clarification", "HUMAN_REVIEW"=>"review", _=>"technical"
+            };
+            if(entry.CaseId.StartsWith("demo-",StringComparison.Ordinal)&&entry.PackPath is null)queueId="technical";
+            workspaceCases.Add(new(entry.CaseId,entry.Title,queueId,assessmentJson is not null&&entry.Findings.Length==0
+                &&entry.ExpectedOutcome is "SUPPORTED" or "NOT_SUPPORTED",assessmentJson));
             cases.Add(entry.CaseId,new {entry.CaseId,entry.Title,entry.Scope,entry.Context,validationLevel=validation,
                 entry.Documents,entry.Observations,entry.Findings,entry.FieldLabels,entry.EvidenceLabels,entry.OutputLabels,source=sources[entry.SourceId],
                 assessmentJson,inputJson});
         }
+        DemoWorkspaceEndpoints.Map(app,workspaceCases.ToArray());
         app.MapGet("/api/document-cases",()=>Results.Json(new {sources=catalog.Sources,
             cases=catalog.Cases.Where(x=>x.CaseId.StartsWith("reference-",StringComparison.Ordinal))
                 .Select(x=>new{x.CaseId,x.Title,x.Scope,x.Context})}));

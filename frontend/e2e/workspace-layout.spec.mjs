@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 test('case overview opens a result-first detail with explicit documents and a return path',async({page})=>{
  await page.setViewportSize({width:1280,height:720});
- await page.goto('/');
+ await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
  await expect(cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true})).toBeVisible();
  await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
@@ -36,13 +36,13 @@ test('workspace routes and keyboard navigation expose only the current view',asy
  await expect(page.getByLabel('Prüfbereich',{exact:true})).toBeVisible();
  const nav=page.getByRole('navigation',{name:'Arbeitsbereiche'});
  await nav.getByRole('link',{name:'Arbeitslisten',exact:true}).focus();await page.keyboard.press('Enter');
- await expect(page.getByRole('region',{name:'Fallwarteschlangen'})).toBeVisible();
+ await expect(page.getByRole('region',{name:'Fallverwaltung'})).toBeVisible();
  await expect(page.getByLabel('Prüfbereich',{exact:true})).toBeHidden();
 });
 
 test('document service failure retains the independent recorded assessment',async({page})=>{
  await page.route('**/api/document-cases/demo-g-supported',route=>route.fulfill({status:503,body:''}));
- await page.goto('/#work-queues');
+ await page.goto('/#volume-cases');
  const queues=page.getByRole('region',{name:'Fallwarteschlangen'});
  await queues.getByRole('button',{name:'Fall öffnen: demo-g-supported',exact:true}).click();
  await expect(queues.getByRole('alert')).toBeVisible();
@@ -50,7 +50,7 @@ test('document service failure retains the independent recorded assessment',asyn
 });
 
 test('concrete transport context is retained and unrelated missing evidence is not a clarification',async({page})=>{
- await page.goto('/');
+ await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
  await cases.getByRole('button',{name:'Krankenfahrt: vollständig',exact:true}).click();
  await expect(cases.getByText('Krankenfahrt mit Taxi oder Mietwagen zur ambulanten Behandlung',{exact:true})).toBeVisible();
@@ -63,7 +63,7 @@ test('concrete transport context is retained and unrelated missing evidence is n
 });
 
 test('care reference exposes its knowledge-defined score outputs directly',async({page})=>{
- await page.goto('/');
+ await page.goto('/#reference-cases');
  const cases=page.getByRole('region',{name:'Dokumentfälle nach öffentlichen Grundlagen'});
  await cases.getByRole('button',{name:'Pflege-Score: vollständig',exact:true}).click();
  const outputs=cases.locator('.case-domain-results');

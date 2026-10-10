@@ -5,6 +5,7 @@ import de from './de.json';
 import { exampleValues, normalizeCatalog, requestJson, type Pack } from './model';
 import './style.css';
 import { ReferenceDocumentCases } from './DocumentCaseFile';
+import {CaseExplorer} from './CaseExplorer';
 import { CaseWorkQueues } from './CaseWorkQueues';
 import { ReviewedCaseWorkQueues } from './ReviewedCaseWorkQueues';
 import { WorkflowWorkbench } from './WorkflowWorkbench';
@@ -15,8 +16,8 @@ type Result = {platformVersion:string; assessment:{outcome:string; assessmentDat
 const outcomes: Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 
 function App() {
-  const views=['work-queues','reference-cases','workbench','review','workflow'];
-  const readView=()=>views.includes(window.location.hash.slice(1))?window.location.hash.slice(1):'reference-cases';
+  const views=['work-queues','reference-cases','workbench','review','workflow','volume-cases'];
+  const readView=()=>views.includes(window.location.hash.slice(1))?window.location.hash.slice(1):'work-queues';
   const [view,setView]=useState(readView);
   useEffect(()=>{const changed=()=>setView(readView());window.addEventListener('hashchange',changed);return()=>window.removeEventListener('hashchange',changed);},[]);
   const [packs,setPacks]=useState<Pack[]>([]);
@@ -106,9 +107,9 @@ function App() {
   const title=pack?.presentation?.title??selected;
   return <><a className="skip-link" href="#main-content">{de.documents.skip}</a><header className="top"><a className="brand" href="/"><span className="brandmark">N</span>{de.app}<span className="brand-divider">/</span><span className="sub">{de.subtitle}</span></a><span className="local"><span/>{de.local}</span></header>
     <main id="main-content" tabIndex={-1} className="application-workspace"><h1 className="visually-hidden">{de.app}</h1><nav className="workspace-navigation" aria-label={de.workspace.navigation}>
-      {[["work-queues",de.documents.queues],["reference-cases",de.documents.references],["workbench",de.documents.workbench],["review",de.workspace.review],["workflow",de.workspace.workflow]].map(([id,label])=><a key={id} href={'#'+id} aria-current={view===id?'page':undefined}>{label}</a>)}
+      {[["work-queues",de.documents.queues],["volume-cases",de.documents.volume],["reference-cases",de.documents.references],["workbench",de.documents.workbench],["review",de.workspace.review],["workflow",de.workspace.workflow]].map(([id,label])=><a key={id} href={'#'+id} aria-current={view===id?'page':undefined}>{label}</a>)}
     </nav><div className="workspace-status"><span>{de.notice}</span><span>{de.workspace.help}</span></div>
-    <div className="workspace-view" hidden={view!=='work-queues'}><CaseWorkQueues packs={packs}/></div>
+    <div className="workspace-view" hidden={view!=='work-queues'}><CaseExplorer/></div><div className="workspace-view" hidden={view!=='volume-cases'}><CaseWorkQueues packs={packs}/></div>
     <div className="workspace-view" hidden={view!=='reference-cases'}><ReferenceDocumentCases/></div>
     <div className="workspace-view tool-view" hidden={view!=='workbench'}><div id="workbench" className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
       <form onSubmit={evaluate}>

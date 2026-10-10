@@ -34,4 +34,7 @@
   <data name="unknown_knowledge_change" xml:space="preserve"><value>Die Wissensänderung ist nicht verfügbar.</value></data>
   <data name="knowledge_change_conflict" xml:space="preserve"><value>Der Wissensstand wurde geändert oder die Aktion ist nicht zulässig. Bitte neu laden.</value></data>
   <data name="knowledge_evidence_required" xml:space="preserve"><value>Quellen-, Auswirkungs- und Testnachweise müssen vor dem Vorschlag unveränderlich gespeichert sein.</value></data>
+  <data name="workspace_conflict" xml:space="preserve"><value>Der Arbeitsplatz wurde geändert. Aktualisiere die Ansicht und prüfe die Auswahl erneut.</value></data>
+  <data name="workspace_ineligible" xml:space="preserve"><value>Mindestens ein ausgewählter Fall ist für diese Demoaktion nicht zulässig. Es wurde kein Fall geändert.</value></data>
+  <data name="workspace_limit" xml:space="preserve"><value>Die Grenze dieser lokalen Demonstrationssitzung ist erreicht. Starte die Demo neu.</value></data>
 </root>
