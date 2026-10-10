@@ -338,3 +338,6 @@ body { overflow:hidden; }
 .case-explorer .explorer-table td .case-identifier{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .case-explorer .explorer-table td button.secondary{padding:1px 4px;line-height:20px}
 .case-explorer .explorer-table td input[type=checkbox]{width:16px;height:16px;vertical-align:middle}
+
+.case-explorer .explorer-table td button{min-height:0;height:22px;max-height:22px;padding-top:0;padding-bottom:0}
+.case-explorer .explorer-table td input[type=checkbox]{min-height:0;height:16px}
