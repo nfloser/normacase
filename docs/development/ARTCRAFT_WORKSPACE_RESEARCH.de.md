@@ -40,3 +40,18 @@ endet beim Neustart des Hosts. Produktive persönliche Ablage benötigt actor-ge
 autorisierte Persistenz. Ein Desktop-Wrapper ersetzt diese Anforderungen nicht.
 Der Umstieg erfordert dadurch keine Neuerstellung der UI, ist aber noch keine
 fertige oder geprüfte Desktop-Auslieferung.
+
+
+## Eingebaute Bedienmuster aus der Artcraft-Quellenprüfung
+
+Im Quellstand von `storytold/artcraft` wurden `GalleryItemMenuItems.tsx`,
+`FolderColorRow.tsx` und `folderUtils.ts` direkt geprüft. Für NormaCase gilt
+analog: Rechtsklick und Ellipsis verwenden dieselbe Aktionslogik; Desktop öffnet
+Untermenüs durch Hover oder Fokus, Touch-Geräte benutzen ein explizit
+anklickbares Inline-Untermenü. Die Farbwahl enthält feste Farbfelder,
+„Markierung entfernen“ und einen nativen Picker für eigene Hexfarben.
+Die eigene Ablage übernimmt die kompakte Zeilenstruktur der Systemarbeitslisten;
+Unterordner-Aktionen erscheinen am Desktop bei Hover/Fokus und bleiben auf
+Touch-Geräten sichtbar. Die Komponenten sind eigenständig geschrieben, keine
+übernommene Artcraft-Implementierung. Fachstatusfarben und persönliche Farben
+bleiben getrennt.

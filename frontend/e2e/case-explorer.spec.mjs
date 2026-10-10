@@ -93,6 +93,7 @@ test('personal folders can contain nested folders without changing case decision
  const dialog=page.getByRole('dialog');
  await dialog.getByLabel('Ordnername').fill('Arbeitsmappe');
  await dialog.getByRole('button',{name:'Ordner speichern'}).click();
+ await explorer.locator('.custom-folder').filter({hasText:'Arbeitsmappe'}).hover();
  await explorer.getByRole('button',{name:'Unterordner in Arbeitsmappe anlegen'}).click();
  await dialog.getByLabel('Ordnername').fill('Heute prüfen');
  await dialog.getByRole('button',{name:'Ordner speichern'}).click();
@@ -122,4 +123,23 @@ test('selected case displays documents below the list and F4 toggles the resizab
  await expect(row).toBeVisible();
  await row.dblclick();
  await expect(explorer.locator('.opened-case')).toBeVisible();
+});
+
+test('coarse-pointer submenu expands inline and applies a personal folder color',async({browser})=>{
+ const context=await browser.newContext({hasTouch:true,isMobile:true,viewport:{width:900,height:850}});
+ try{
+  const page=await context.newPage();await page.goto('/#work-queues');
+  const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+  await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+  const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+  await row.getByRole('button',{name:'Fallaktionen',exact:true}).click();
+  const submenu=page.getByRole('menuitem',{name:/Markieren/});
+  await expect(submenu).toHaveAttribute('aria-expanded','false');
+  await submenu.click();
+  await expect(submenu).toHaveAttribute('aria-expanded','true');
+  const group=page.getByRole('group',{name:'Farbmarkierung'});
+  await expect(group.getByLabel('Eigene Markierungsfarbe')).toBeVisible();
+  await group.getByRole('button',{name:'Grün',exact:true}).click();
+  await expect(row.locator('.personal-mark-chip')).toBeVisible();
+ }finally{await context.close();}
 });
