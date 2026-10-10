@@ -48,7 +48,7 @@ test('keyboard menu returns focus and removes only the folder assignment',async(
  await row.getByRole('checkbox').check();await explorer.getByRole('button',{name:'Auswahl verschieben',exact:true}).click();
  await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Tastaturablage'});
  await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
- await row.press('Shift+F10');await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
+ await row.click({button:'right'});await expect(page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true})).toBeVisible();await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
  await expect(row).toContainText('Ohne eigenen Ordner');
 });
 
