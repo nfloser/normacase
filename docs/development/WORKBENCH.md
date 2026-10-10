@@ -258,3 +258,6 @@ und lässt sich mit Pfeil auf/ab in Fünf-Prozent-Schritten steuern. F4 blendet
 den Detailbereich ein oder aus. Auf schmalen Fenstern stehen die Bereiche
 untereinander mit eigenem Scrollen. Diese Größen werden in der Demo derzeit
 noch nicht als persönliche Einstellungen gespeichert.
+
+
+Nur nicht-sensitive Bildschirmpräferenzen werden im Browser unter dem versionierten Schlüssel `normacase.ui.layout.v1` gespeichert: Zustand des Detailbereichs, seine prozentuale Höhe (25–70 %) und die Zeilenfärbung. Die Daten enthalten ausdrücklich keine Fallkennungen, Diagnosen, Akten, Ordner, Lesezeichen oder Notizen. Beschädigte Einträge und deaktivierter Browser-Speicher werden ohne Datenverlust durch Standardwerte ersetzt. Eine fachliche oder persönliche Datensicherung ist das nicht; dauerhafte Ablage benötigt einen autorisierten Backend-Dienst.
