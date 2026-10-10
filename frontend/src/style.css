@@ -372,7 +372,7 @@ body { overflow:hidden; }
 .workspace-extras-list{position:absolute;left:0;top:100%;z-index:40;min-width:180px;background:#fff;padding:5px;border:1px solid #7b97ab;box-shadow:0 4px 15px #123c6333;display:grid;gap:3px}
 .workspace-extras-list a{display:block;white-space:nowrap;color:#123c63}
 .workspace-extras-list a:hover{background:#eaf3f9}
-.application-workspace .workspace-status{font-size:11px;padding:1px 7px;min-height:20px}
+.application-workspace .workspace-status{font-size:12px;padding:1px 7px;min-height:20px}
 .application-workspace .explorer-header{padding:5px 12px;min-height:54px}
 .application-workspace .explorer-header h2{font-size:16px}
 .application-workspace .explorer-search{display:flex;flex-direction:row;gap:8px;align-items:center}
