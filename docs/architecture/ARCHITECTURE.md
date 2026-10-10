@@ -100,8 +100,8 @@ reviewed slices.
 
 ## Shared workbench presentation
 
-The browser workbench uses viewport-bound queue/document/analysis panels and explicit
-workspace routes. This same React presentation layer can be hosted in a future native
+The browser workbench uses a viewport-bound case overview, result-first case
+detail and explicit document view, with fixed workspace routes. This same React presentation layer can be hosted in a future native
 window; it does not depend on a desktop-specific bridge. Navigation stores only fixed
 view identifiers in URL fragments and no case data in browser storage. Native hosting
 and institution-specific adapters remain separate deployment/integration decisions.
