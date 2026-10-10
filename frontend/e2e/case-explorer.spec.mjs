@@ -85,3 +85,16 @@ test('row selection and hover color command work without opening the file',async
  await explorer.getByRole('button',{name:'Markieren',exact:true}).click();
  await expect(page.getByRole('dialog')).toBeVisible();
 });
+
+test('personal folders can contain nested folders without changing case decisions',async({page})=>{
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
+ const dialog=page.getByRole('dialog');
+ await dialog.getByLabel('Ordnername').fill('Arbeitsmappe');
+ await dialog.getByRole('button',{name:'Ordner speichern'}).click();
+ await explorer.getByRole('button',{name:'Unterordner in Arbeitsmappe anlegen'}).click();
+ await dialog.getByLabel('Ordnername').fill('Heute prüfen');
+ await dialog.getByRole('button',{name:'Ordner speichern'}).click();
+ await expect(explorer.getByRole('button',{name:'Heute prüfen',exact:false})).toBeVisible();
+});
