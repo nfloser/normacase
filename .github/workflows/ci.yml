@@ -162,6 +162,18 @@ jobs:
       - run: dotnet build src/NormaCase.Api --configuration Release
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
+      - name: Capture previous workplace at acceptance viewports
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch --no-tags origin "$BASE_COMMIT"
+          git worktree add --detach /tmp/normacase-workspace-before "$BASE_COMMIT"
+          npm ci --prefix /tmp/normacase-workspace-before/frontend
+          npm run build --prefix /tmp/normacase-workspace-before/frontend
+          dotnet build /tmp/normacase-workspace-before/src/NormaCase.Api --configuration Release
+          cd frontend
+          node scripts/capture-workspace.mjs /tmp/normacase-workspace-before
       - run: npm run test:e2e
         working-directory: frontend
       - run: npm run test:e2e:review

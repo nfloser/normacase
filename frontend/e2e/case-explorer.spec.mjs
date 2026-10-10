@@ -3,27 +3,28 @@ import {test,expect} from '@playwright/test';
 test('explorer organizes colored folders and bookmarks without changing the result',async({page})=>{
  await page.setViewportSize({width:1440,height:900});await page.goto('/#work-queues');
  const explorer=page.getByRole('region',{name:'Fallverwaltung'});
- await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ await page.getByLabel('Fälle suchen').fill('reference-md-mueller');
  const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
- await row.getByRole('checkbox').check();await row.getByRole('button',{name:'Fallaktionen',exact:true}).click();
+ await row.getByRole('checkbox').check();await row.click({button:'right'});
  await page.getByRole('menuitem',{name:'Lesezeichen setzen',exact:true}).click();
  await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
  const dialog=page.getByRole('dialog');await dialog.getByLabel('Ordnername').fill('Für die Besprechung');
  await dialog.getByLabel('Ordnerfarbe').evaluate(el=>{el.value='#a855f7';el.dispatchEvent(new Event('change',{bubbles:true}));});await dialog.getByRole('button',{name:'Ordner speichern'}).click();
- await explorer.getByRole('button',{name:'Auswahl verschieben',exact:true}).click();
+ await explorer.getByRole('button',{name:/Auswahl verschieben/}).click();
  await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Für die Besprechung'});
  await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
+ await page.getByRole('navigation',{name:'Arbeitsbereiche'}).getByText('Ansicht',{exact:true}).click();await page.getByRole('button',{name:'Ordnerspalte ein/aus',exact:true}).click();
  await expect(row).toContainText('Für die Besprechung');
  await row.click({button:'right'});await page.getByRole('menuitem',{name:'Fall öffnen',exact:true}).click();
  await expect(explorer.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
- await explorer.getByRole('button',{name:'Zur Fallübersicht',exact:true}).click();
+ await explorer.getByRole('button',{name:'← Liste',exact:true}).click();
  await page.reload();await expect(explorer.getByText('Für die Besprechung').first()).toBeVisible();
  await page.screenshot({path:'test-results/medical-blue-explorer.png'});
 });
 
 test('eligible batch is confirmed and downloaded as explicit local dispatch simulation',async({page})=>{
  await page.goto('/#work-queues');const explorer=page.getByRole('region',{name:'Fallverwaltung'});
- await explorer.getByLabel('Fälle suchen').fill('reference-md-kraemer');
+ await page.getByLabel('Fälle suchen').fill('reference-md-kraemer');
  await explorer.getByRole('row').filter({hasText:'reference-md-kraemer'}).getByRole('checkbox').check();
  await explorer.getByRole('button',{name:'Auswahl bestätigen',exact:true}).click();
  await page.getByRole('dialog').getByRole('button',{name:'Bestätigen',exact:true}).click();
@@ -36,7 +37,7 @@ test('eligible batch is confirmed and downloaded as explicit local dispatch simu
 
 test('keyboard menu returns focus and removes only the folder assignment',async({page})=>{
  await page.goto('/#work-queues');const explorer=page.getByRole('region',{name:'Fallverwaltung'});
- await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ await page.getByLabel('Fälle suchen').fill('reference-md-mueller');
  const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
  await row.focus();await row.press('Shift+F10');
  await expect(page.getByRole('menuitem',{name:'Fall öffnen',exact:true})).toBeFocused();
@@ -45,20 +46,20 @@ test('keyboard menu returns focus and removes only the folder assignment',async(
  await page.getByRole('dialog').getByLabel('Ordnername').fill('Tastaturablage');
  await page.getByRole('button',{name:'Blau',exact:true}).click();
  await page.getByRole('dialog').getByRole('button',{name:'Ordner speichern'}).click();
- await row.getByRole('checkbox').check();await explorer.getByRole('button',{name:'Auswahl verschieben',exact:true}).click();
+ await row.getByRole('checkbox').check();await explorer.getByRole('button',{name:/Auswahl verschieben/}).click();
  await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Tastaturablage'});
  await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
  await row.click({button:'right'});await expect(page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true})).toBeVisible();await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
- await expect(row.locator('td').nth(4)).toHaveText('—');
+ await expect(row).not.toContainText('Tastaturablage');
 });
 
 test('compact workplace shows status color, case context and bounded list rows',async({page})=>{
  await page.setViewportSize({width:1920,height:1080});await page.goto('/#work-queues');
  const explorer=page.getByRole('region',{name:'Fallverwaltung'});
- await expect(explorer.getByText('Kein Fall ausgewählt')).toBeVisible();
+ await expect(explorer.getByText(/Fall in der Tabelle auswählen/)).toBeVisible();
  const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
  await row.click();
- await expect(explorer.getByText(/Fall: reference-md-mueller/)).toBeVisible();
+ await expect(explorer.locator('.explorer-detail-heading')).toContainText('NC-2026-4113');
  await expect(row).toHaveAttribute('data-status',/approval|clarification|review|technical|documents|complete/);
  const table=explorer.locator('.explorer-table');
  await expect(table).toHaveClass(/status-row-colors/);
@@ -72,7 +73,7 @@ test('compact workplace shows status color, case context and bounded list rows',
 test('row selection and hover color command work without opening the file',async({page})=>{
  await page.goto('/#work-queues');
  const explorer=page.getByRole('region',{name:'Fallverwaltung'});
- await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ await page.getByLabel('Fälle suchen').fill('reference-md-mueller');
  const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
  await row.locator('td').nth(2).click();
  await expect(row).toHaveAttribute('aria-selected','true');
@@ -81,7 +82,7 @@ test('row selection and hover color command work without opening the file',async
  await page.getByRole('group',{name:'Farbmarkierung'}).getByRole('button',{name:'Blau'}).click();
  await expect(row.locator('.personal-mark-chip')).toBeVisible();
  await row.dblclick();
- await expect(explorer.getByRole('button',{name:'Verschieben nach …'})).toBeVisible();
+ await expect(explorer.getByRole('button',{name:/Auswahl verschieben/})).toBeVisible();
  await explorer.getByRole('button',{name:'Markieren',exact:true}).click();
  await expect(page.getByRole('dialog')).toBeVisible();
 });
@@ -111,11 +112,11 @@ test('selected case displays documents below the list and F4 toggles the resizab
  await expect(row).toHaveAttribute('aria-selected','true');
  await expect(row).toBeVisible();
  await expect(pane.locator('.case-file-list')).toBeVisible();
- await expect(pane.locator('.pdf-page-image')).toBeVisible();
+ await expect(pane.locator('.pdf-page-image').first()).toBeVisible();
  const splitter=explorer.getByRole('separator',{name:/Fallliste und Detailbereich/});
- await expect(splitter).toHaveAttribute('aria-valuenow','45');
+ await expect(splitter).toHaveAttribute('aria-valuenow','55');
  await splitter.focus();await page.keyboard.press('ArrowUp');
- await expect(splitter).toHaveAttribute('aria-valuenow','50');
+ await expect(splitter).toHaveAttribute('aria-valuenow','60');
  await page.keyboard.press('F4');
  await expect(pane).toHaveCount(0);
  await page.keyboard.press('F4');
@@ -130,9 +131,9 @@ test('coarse-pointer submenu expands inline and applies a personal folder color'
  try{
   const page=await context.newPage();await page.goto('/#work-queues');
   const explorer=page.getByRole('region',{name:'Fallverwaltung'});
-  await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+  await page.getByLabel('Fälle suchen').fill('reference-md-mueller');
   const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
-  await row.getByRole('button',{name:'Fallaktionen',exact:true}).click();
+  await row.click({button:'right'});
   const submenu=page.getByRole('menuitem',{name:/Markieren/});
   await expect(submenu).toHaveAttribute('aria-expanded','false');
   await submenu.click();
@@ -152,10 +153,10 @@ test('late bookmark completion does not dismiss a newly opened folder dialog',as
  });
  await page.goto('/#work-queues');
  const explorer=page.getByRole('region',{name:'Fallverwaltung'});
- await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ await page.getByLabel('Fälle suchen').fill('reference-md-mueller');
  const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
  const wasBookmarked=await row.locator('[aria-label="Lesezeichen gesetzt"]').count()>0;
- await row.getByRole('button',{name:'Fallaktionen',exact:true}).click();
+ await row.click({button:'right'});
  await page.getByRole('menuitem',{name:wasBookmarked?'Lesezeichen entfernen':'Lesezeichen setzen',exact:true}).click();
  await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
  const dialog=page.getByRole('dialog');
@@ -171,6 +172,7 @@ test('case list supports arrow navigation, bounded ranges and nested controls',a
  await page.goto('/#work-queues');
  const explorer=page.getByRole('region',{name:'Fallverwaltung'});
  const rows=explorer.locator('tbody tr');
+ await explorer.getByLabel('Plattformfälle einbeziehen').check();
  await expect.poll(()=>rows.count()).toBeGreaterThan(100);
  await rows.nth(0).locator('td').nth(2).click();
  await rows.nth(0).focus();

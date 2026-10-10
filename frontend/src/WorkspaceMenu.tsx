@@ -1,0 +1,12 @@
+import de from './de.json';
+const ui=de.clinicalWorkspace;
+export function workspaceAction(action:string){window.dispatchEvent(new CustomEvent('normacase-workspace-action',{detail:action}));}
+export function WorkspaceMenu({view}:{view:string}){
+ const menus=[
+  [ui.file,[['open',ui.open],['copy-id',ui.copyId],['copy-result',ui.copyResult]]],
+  [ui.edit,[['select-all',ui.selectAll],['clear',ui.clear],['color',ui.mark]]],
+  [ui.view,[['detail',ui.detail],['orientation',ui.orientation],['navigation',ui.navigation],['density',ui.density],['columns',ui.columns],['reset',ui.reset],['refresh',ui.refresh]]],
+  [ui.cases,[['folder',ui.newFolder],['move',ui.move],['bookmark',ui.bookmark],['confirm',ui.confirm],['dispatch',ui.dispatch]]],
+ ] as const;
+ return <nav className="workspace-navigation" aria-label={de.workspace.navigation}><a className="brand" href="#work-queues"><span className="brandmark">N</span>{de.app}</a><a href="#work-queues" aria-current={view==='work-queues'?'page':undefined}>{de.documents.queues}</a>{menus.map(([label,actions])=><details key={label} className="workspace-extras"><summary>{label}</summary><div className="workspace-extras-list">{actions.map(([action,name])=><button key={action} disabled={view!=='work-queues'} onClick={event=>{workspaceAction(action);event.currentTarget.closest('details')?.removeAttribute('open');}}>{name}</button>)}</div></details>)}<details className="workspace-extras"><summary>{ui.extras}</summary><div className="workspace-extras-list">{[["reference-cases",de.documents.references],["volume-cases",de.documents.volume],["workbench",de.documents.workbench],["review",de.workspace.review],["workflow",de.workspace.workflow]].map(([id,label])=><a key={id} href={'#'+id} onClick={event=>event.currentTarget.closest('details')?.removeAttribute('open')} aria-current={view===id?'page':undefined}>{label}</a>)}</div></details><details className="workspace-extras"><summary>{ui.help}</summary><div className="workspace-extras-list workspace-help"><strong>{ui.shortcuts}</strong><p>{ui.shortcutText}</p><p>{de.notice}</p></div></details><div id="workspace-search-slot"/></nav>;
+}

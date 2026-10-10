@@ -6,6 +6,7 @@ import { exampleValues, normalizeCatalog, requestJson, type Pack } from './model
 import './style.css';
 import { ReferenceDocumentCases } from './DocumentCaseFile';
 import {CaseExplorer} from './CaseExplorer';
+import {WorkspaceMenu} from './WorkspaceMenu';
 import { CaseWorkQueues } from './CaseWorkQueues';
 import { ReviewedCaseWorkQueues } from './ReviewedCaseWorkQueues';
 import { WorkflowWorkbench } from './WorkflowWorkbench';
@@ -105,12 +106,7 @@ function App() {
   }
   const status=result?.assessment.outcome??'';
   const title=pack?.presentation?.title??selected;
-  return <><a className="skip-link" href="#main-content">{de.documents.skip}</a><header className="top"><a className="brand" href="/"><span className="brandmark">N</span>{de.app}<span className="brand-divider">/</span><span className="sub">{de.subtitle}</span></a><span className="local"><span/>{de.local}</span></header>
-    <main id="main-content" tabIndex={-1} className="application-workspace"><h1 className="visually-hidden">{de.app}</h1><nav className="workspace-navigation" aria-label={de.workspace.navigation}>
-      <a href="#work-queues" aria-current={view==='work-queues'?'page':undefined}>{de.documents.queues}</a>
-      <details className="workspace-extras"><summary>Extras ▾</summary><div className="workspace-extras-list">{[["reference-cases",de.documents.references],["volume-cases",de.documents.volume],["workbench",de.documents.workbench],["review",de.workspace.review],["workflow",de.workspace.workflow]].map(([id,label])=><a key={id} href={'#'+id} aria-current={view===id?'page':undefined}>{label}</a>)}</div></details>
-    </nav><div className="workspace-status"><span>{de.notice}</span><span>{de.workspace.help}</span></div>
-    <div className="workspace-view" hidden={view!=='work-queues'}><CaseExplorer/></div><div className="workspace-view" hidden={view!=='volume-cases'}><CaseWorkQueues packs={packs}/></div>
+  return <><a className="skip-link" href="#main-content">{de.documents.skip}</a><main id="main-content" tabIndex={-1} className="application-workspace"><h1 className="visually-hidden">{de.app}</h1><WorkspaceMenu view={view}/><div className="workspace-view" hidden={view!=='work-queues'}><CaseExplorer/></div><div className="workspace-view" hidden={view!=='volume-cases'}><CaseWorkQueues packs={packs}/></div>
     <div className="workspace-view" hidden={view!=='reference-cases'}><ReferenceDocumentCases/></div>
     <div className="workspace-view tool-view" hidden={view!=='workbench'}><div id="workbench" className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
       <form onSubmit={evaluate}>
