@@ -241,3 +241,20 @@ Die vorhandenen Akten sind ausschließlich synthetische, teilweise quellengebund
 
 
 Eigene Ablageordner können bis zu vier Ebenen tief Unterordner enthalten. Die Demo-API speichert die Elternbeziehung separat und legt keine Duplikate von Fallakten an. Beim Löschen eines Elternordners werden unmittelbare Unterordner auf dessen Ebene hochgezogen; Fallakten bleiben erhalten. Die Demo-Speicherung endet weiterhin beim Neustart.
+
+
+## Fallliste mit geteiltem Dokumentbereich
+
+Ein einfacher Klick auf eine Fallzeile selektiert sie und lädt unten innerhalb derselben
+Fallverwaltung die synthetische Dokumentakte, ohne die Fallliste zu verlassen.
+Die Status- und Ordneraktionen bleiben direkt über dem unteren Bereich erreichbar.
+Ein Doppelklick/Enter öffnet weiterhin die Vollansicht. Der vorhandene
+`DocumentCaseFile`-Leser wird in beiden Ansichten wiederverwendet; weder
+Bewertungslogik noch Dokument-IDs werden im Frontend dupliziert.
+
+Standardmäßig teilen sich Liste und Detailbereich den verfügbaren Platz ungefähr
+55:45. Der horizontale Trenner ist mit Maus/Pointer verschiebbar (25–70 %)
+und lässt sich mit Pfeil auf/ab in Fünf-Prozent-Schritten steuern. F4 blendet
+den Detailbereich ein oder aus. Auf schmalen Fenstern stehen die Bereiche
+untereinander mit eigenem Scrollen. Diese Größen werden in der Demo derzeit
+noch nicht als persönliche Einstellungen gespeichert.
