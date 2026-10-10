@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
 test('a real synthetic case evaluates, exposes source and clears stale output',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-c');
  await page.getByLabel('Beispiel auswählen').selectOption('supported');
  await page.getByRole('button',{name:'Beispiel laden'}).click();
@@ -17,7 +17,7 @@ test('a real synthetic case evaluates, exposes source and clears stale output',a
 });
 
 test('missing evidence requires human review and export retains the original JSON',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-c');
  await page.getByLabel('Beispiel auswählen').selectOption('review');
  await page.getByRole('button',{name:'Beispiel laden'}).click();
@@ -35,7 +35,7 @@ test('missing evidence requires human review and export retains the original JSO
 
 test('incomplete inputs remain unknown and the page fits a narrow viewport',async({page})=>{
  await page.setViewportSize({width:390,height:844});
- await page.goto('/');
+ await page.goto('/#workbench');
  await page.getByLabel('Beispiel auswählen').selectOption('incomplete');
  await page.getByRole('button',{name:'Beispiel laden'}).click();
  await expect(page.getByLabel('Prüfdatum')).toHaveValue('2026-10-02');
@@ -46,7 +46,7 @@ test('incomplete inputs remain unknown and the page fits a narrow viewport',asyn
 });
 
 test('the browser preserves decimal precision all the way into the trace',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-b');
  await page.getByLabel('Prüfdatum').fill('2026-10-02');
  await page.getByRole('combobox',{name:'Synthetischer Wert – Eingabestatus'}).selectOption('VALUE');
@@ -65,7 +65,7 @@ test('the browser preserves decimal precision all the way into the trace',async(
 });
 
 test('independent outputs keep UNKNOWN and the external pending state distinct',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-e');
  await page.getByLabel('Beispiel auswählen').selectOption('mixed');
  await page.getByRole('button',{name:'Beispiel laden'}).click();
@@ -77,7 +77,7 @@ test('independent outputs keep UNKNOWN and the external pending state distinct',
 });
 
 test('snapshot download and uploaded replay retain exact original JSON',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  await page.getByRole('combobox',{name:'Prüfbereich'}).selectOption('synthetic.demo-b');
  await page.getByLabel('Prüfdatum',{exact:true}).fill('2026-10-02');
  await page.getByRole('combobox',{name:'Synthetischer Wert – Eingabestatus'}).selectOption('VALUE');
@@ -107,7 +107,7 @@ test('snapshot download and uploaded replay retain exact original JSON',async({p
 });
 
 test('input changes abort an uploaded snapshot and cannot restore stale confirmation',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  await expect(page.getByRole('combobox',{name:'Prüfbereich'})).toHaveValue('synthetic.demo-a');
  const input=await readFile('../examples/cases/demo-a-supported.json','utf8');
  const response=await page.request.post('/api/snapshots/synthetic.demo-a',{headers:{'Content-Type':'application/json'},data:input});
@@ -135,7 +135,7 @@ test('input changes abort an uploaded snapshot and cannot restore stale confirma
 });
 
 test('oversized snapshot files are rejected before sending a request',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  let sent=0;
  page.on('request',request=>{if(request.url().endsWith('/api/snapshots/replay'))sent++;});
  await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'large.json',mimeType:'application/json',buffer:Buffer.alloc(1024*1024+1,32)});
@@ -144,7 +144,7 @@ test('oversized snapshot files are rejected before sending a request',async({pag
 });
 
 test('invalid UTF-8 snapshot files are rejected before sending a request',async({page})=>{
- await page.goto('/');
+ await page.goto('/#workbench');
  let sent=0;
  page.on('request',request=>{if(request.url().endsWith('/api/snapshots/replay'))sent++;});
  await page.getByLabel('Prüfsnapshot auswählen').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from([0xff,0xfe,0xff])});

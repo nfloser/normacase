@@ -74,3 +74,76 @@ main p { line-height:1.65; }
 dl { grid-template-columns:minmax(0,115px) minmax(0,1fr); }
 dt, .field, button, .section-head { overflow-wrap:anywhere; }
 @media(max-width:760px) { .field span { flex-wrap:wrap; } .reviewed-work-queues dl { grid-template-columns:1fr; } }
+
+/* Shared application workspace: browser now, optional desktop host later. */
+[hidden] { display:none!important; }
+html, body, #root { height:100%; }
+body { overflow:hidden; }
+.top { height:64px; padding:0 20px; }
+.application-workspace { max-width:none; margin:0; padding:12px 16px 16px; height:calc(100dvh - 64px); display:grid; grid-template-rows:auto auto minmax(0,1fr); gap:10px; }
+.workspace-navigation { margin:0; gap:8px; }
+.workspace-navigation a { text-decoration:none; padding:8px 14px; }
+.workspace-navigation a[aria-current=page] { background:#184e43; color:#fff; }
+.workspace-status { display:flex; justify-content:space-between; gap:16px; color:#42594f; font-size:.875rem; }
+.workspace-view { min-width:0; min-height:0; }
+.workspace-view > .work-queues, .workspace-view > .reference-document-cases { height:100%; margin:0; padding:0; overflow:hidden; }
+.case-workspace-grid { display:grid; grid-template-columns:280px minmax(0,1fr); height:100%; min-height:0; }
+.case-list-panel { padding:18px; overflow:auto; min-height:0; border-right:1px solid #71857a; background:#f8faf8; }
+.case-list-panel h2 { font-size:1.15rem; margin:0 0 12px; }
+.case-list-panel .queue-grid, .case-list-panel .reference-list { grid-template-columns:1fr; gap:12px; }
+.case-list-panel ul { list-style:none; padding:0; }
+.case-list-panel button { width:100%; text-align:left; }
+.case-list-panel h3 { margin:12px 0 8px; }
+.case-list-panel .workload-summary { margin:0 0 12px; padding:10px; }
+.case-list-panel .workload-counts { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.case-list-panel .workload-counts span { font-size:.8rem; }
+.case-detail-panel { min-width:0; min-height:0; overflow:hidden; }
+.work-queues .case-detail-panel article { margin:0; padding:0; border:0; height:100%; display:flex; flex-direction:column; }
+.case-detail-panel article > h3 { margin:0; padding:12px 18px; border-bottom:1px solid #dce5df; font-size:1rem; flex:0 0 auto; }
+.case-empty { padding:32px; color:#42594f; }
+.case-detail-panel .document-case-file { border:0; margin:0; padding:0; min-height:0; height:100%; flex:1; }
+.case-file-grid { display:grid; grid-template-columns:minmax(0,1fr) 320px; height:100%; min-height:0; }
+.document-main-panel { min-width:0; min-height:0; padding:16px; display:flex; flex-direction:column; overflow:auto; }
+.document-main-panel > h4 { margin:0 0 8px; }
+.document-main-panel > p { margin:0 0 8px; font-size:.875rem; }
+.document-main-panel .review-notice { padding:8px; }
+.document-layout { display:flex; flex-direction:column; gap:8px; min-height:0; flex:1; }
+.document-list { display:flex; flex-wrap:wrap; gap:8px; flex:0 0 auto; }
+.document-list li { margin:0; flex:1 1 140px; }
+.document-list button { padding:8px; font-size:.875rem; }
+.document-list span { font-size:.8rem; }
+.document-viewer { width:100%; flex:1; min-height:260px; display:flex; flex-direction:column; }
+.document-viewer h5 { margin:0 0 8px; }
+.document-actions { margin:0 0 8px; }
+.document-actions a { padding:6px 10px; font-size:.875rem; }
+.document-viewer iframe { flex:1; min-height:240px; height:100%; }
+.document-text, .scan-preview { min-height:0; flex:1; max-height:none; margin:0; }
+.case-analysis-panel { min-width:0; min-height:0; overflow:auto; padding:16px; border-left:1px solid #71857a; }
+.case-analysis-panel > h4 { margin:0 0 12px; }
+.case-analysis-panel dl { grid-template-columns:minmax(0,1fr); gap:4px; }
+.case-analysis-panel dd { margin-bottom:8px; }
+.case-analysis-panel details { margin:14px 0; }
+.case-analysis-panel button { white-space:normal; }
+.tool-view { overflow:auto; overscroll-behavior:contain; }
+.tool-view .workspace { grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); }
+.tool-view .card { margin-top:0; }
+.tool-view .snapshot-tools { margin-top:16px; }
+@media(max-width:1200px) and (min-width:901px) { .case-workspace-grid { grid-template-columns:240px minmax(0,1fr); } .case-file-grid { grid-template-columns:minmax(0,1fr) 280px; } }
+@media(max-width:900px) {
+ body { overflow:auto; }
+ .application-workspace { height:auto; min-height:calc(100dvh - 64px); display:block; padding:12px; }
+ .workspace-navigation { margin-bottom:10px; }
+ .workspace-status { flex-direction:column; gap:4px; margin-bottom:12px; }
+ .case-workspace-grid, .case-file-grid { grid-template-columns:1fr; height:auto; }
+ .case-detail-panel, .workspace-view > .work-queues, .workspace-view > .reference-document-cases { overflow:visible; height:auto; }
+ .case-list-panel { max-height:36vh; border-right:0; border-bottom:1px solid #71857a; }
+ .case-analysis-panel { border-left:0; border-top:1px solid #71857a; }
+ .document-viewer iframe { height:480px; flex:auto; }
+ .scan-preview, .document-text { max-height:480px; }
+ .tool-view .workspace { grid-template-columns:1fr; }
+}
+.visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+.workflow-pack { max-width:540px; }
+.document-choice { width:100%; margin:0; flex:0 0 auto; }
+.document-choice select { width:100%; }
+.document-main-panel .document-viewer { min-height:0; }

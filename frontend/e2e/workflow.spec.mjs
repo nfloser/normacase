@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
 async function openWorkflow(page) {
-  await page.goto('/');
-  await page.getByRole('combobox', { name: 'Prüfbereich' }).selectOption('synthetic.demo-f');
+  await page.goto('/#workflow');
+  await page.getByRole('combobox', { name: 'Prüfbereich für Vorgänge' }).selectOption('synthetic.demo-f');
   await page.getByRole('button', { name: 'Synthetische Vorgangsangaben laden' }).click();
 }
 

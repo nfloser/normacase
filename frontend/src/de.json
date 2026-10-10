@@ -425,6 +425,21 @@
     "zoomIn": "Scan vergrößern",
     "zoomOut": "Scan verkleinern",
     "noRule": "Für diesen Dokumenttyp ist keine fachlich geprüfte Regel hinterlegt. Die Unterlagen können gesichtet werden; eine Entscheidung wird nicht erzeugt.",
-    "documentOnly": "Synthetische Unterlagen zur Sichtung"
+    "documentOnly": "Synthetische Unterlagen zur Sichtung",
+    "select": "Dokument auswählen"
+  },
+  "workspace": {
+    "navigation": "Arbeitsbereiche",
+    "review": "Review",
+    "workflow": "Vorgänge",
+    "empty": "Wähle links einen Fall aus. Hier erscheinen die zugehörigen Dokumente und das Prüfergebnis.",
+    "list": "Fälle auswählen",
+    "analysis": "Ergebnis und Fundstellen",
+    "details": "Fallinformationen",
+    "help": "Arbeitsliste → Fall auswählen → Dokumente und Prüfergebnis ansehen.",
+    "summary": "Arbeitslast",
+    "tools": "Weitere Werkzeuge",
+    "replay": "Snapshot prüfen",
+    "workflowPack": "Prüfbereich für Vorgänge"
   }
 }

@@ -15,6 +15,10 @@ type Result = {platformVersion:string; assessment:{outcome:string; assessmentDat
 const outcomes: Record<string,string> = {SUPPORTED:de.supported,NOT_SUPPORTED:de.notSupported,INCOMPLETE:de.incomplete,HUMAN_REVIEW:de.review,NOT_APPLICABLE:de.na};
 
 function App() {
+  const views=['work-queues','reference-cases','workbench','review','workflow'];
+  const readView=()=>views.includes(window.location.hash.slice(1))?window.location.hash.slice(1):'work-queues';
+  const [view,setView]=useState(readView);
+  useEffect(()=>{const changed=()=>setView(readView());window.addEventListener('hashchange',changed);return()=>window.removeEventListener('hashchange',changed);},[]);
   const [packs,setPacks]=useState<Pack[]>([]);
   const [selected,setSelected]=useState('');
   const [date,setDate]=useState('');
@@ -101,8 +105,12 @@ function App() {
   const status=result?.assessment.outcome??'';
   const title=pack?.presentation?.title??selected;
   return <><a className="skip-link" href="#main-content">{de.documents.skip}</a><header className="top"><a className="brand" href="/"><span className="brandmark">N</span>{de.app}<span className="brand-divider">/</span><span className="sub">{de.subtitle}</span></a><span className="local"><span/>{de.local}</span></header>
-    <main id="main-content"><nav className="workspace-navigation" aria-label={de.app}><a href="#work-queues">{de.documents.queues}</a><a href="#reference-cases">{de.documents.references}</a><a href="#workbench">{de.documents.workbench}</a></nav><p>{de.documents.orientation}</p><div className="intro"><p className="eyebrow">{de.kicker}</p><h1>{de.hero}</h1><p>{de.intro}</p><div className="notice">{de.notice}</div></div>
-    <CaseWorkQueues packs={packs}/><ReferenceDocumentCases/><div id="workbench" className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
+    <main id="main-content" tabIndex={-1} className="application-workspace"><h1 className="visually-hidden">{de.app}</h1><nav className="workspace-navigation" aria-label={de.workspace.navigation}>
+      {[["work-queues",de.documents.queues],["reference-cases",de.documents.references],["workbench",de.documents.workbench],["review",de.workspace.review],["workflow",de.workspace.workflow]].map(([id,label])=><a key={id} href={'#'+id} aria-current={view===id?'page':undefined}>{label}</a>)}
+    </nav><div className="workspace-status"><span>{de.notice}</span><span>{de.workspace.help}</span></div>
+    <div className="workspace-view" hidden={view!=='work-queues'}><CaseWorkQueues packs={packs}/></div>
+    <div className="workspace-view" hidden={view!=='reference-cases'}><ReferenceDocumentCases/></div>
+    <div className="workspace-view tool-view" hidden={view!=='workbench'}><div id="workbench" className="workspace"><section className="card inputs"><div className="section-head"><span className="step">01</span><div><h2>{de.pack}</h2><p>{pack?.presentation?.description??de.loading}</p></div></div>
       <form onSubmit={evaluate}>
         <label className="field">{de.pack}<select aria-label={de.pack} value={selected} onChange={event=>changePack(event.target.value)}>{packs.map(item=><option key={item.packId} value={item.packId}>{item.presentation?.title??item.packId}</option>)}</select></label>
         <div className="example"><label className="field">{de.example}<select value={example} onChange={event=>{clear();setExample(event.target.value);}}><option value="">{de.emptyExample}</option>{pack?.presentation?.examples.map(item=><option key={item.file} value={item.file}>{item.label}</option>)}</select></label><button type="button" className="secondary" onClick={loadExample} disabled={!example||busy}>{de.loadExample}</button></div>
@@ -137,7 +145,7 @@ function App() {
         <DecisionTrace rule={result.assessment.ruleTrace} outputs={result.assessment.domainOutputs} presentation={pack?.presentation}/><details><summary>{de.trace}</summary><pre>{raw}</pre></details><button className="secondary export" onClick={download}>{de.export}</button><button className="secondary export" onClick={()=>saveFile(snapshot,'normacase-snapshot.json')} disabled={!snapshot}>{de.snapshotExport}</button>
       </>}
     </section></div>
-    <ReviewedCaseWorkQueues packs={packs}/><section className="card snapshot-tools" aria-live="polite">
+    <section className="card snapshot-tools" aria-live="polite">
       <h2>{de.snapshotHeading}</h2><p>{de.snapshotHelp}</p>
       <div className="field"><span>{de.snapshotSelect}</span>
         <input ref={snapshotFile} aria-label={de.snapshotSelect} type="file" hidden accept=".json,application/json" onChange={verifySnapshot} disabled={busy}/>
@@ -153,6 +161,6 @@ function App() {
         <details><summary>{de.replayTrace}</summary><pre>{replayRaw}</pre></details>
         <button className="secondary export" onClick={()=>saveFile(replayRaw,'normacase-replayed-assessment.json')}>{de.replayExport}</button>
       </>}
-    </section>{pack && <WorkflowWorkbench key={pack.packId} pack={pack} />}<footer>{de.foot}</footer></main></>;
+    </section></div><div className="workspace-view tool-view" hidden={view!=='review'}><ReviewedCaseWorkQueues packs={packs}/></div><div className="workspace-view tool-view" hidden={view!=='workflow'}><label className="field workflow-pack">{de.workspace.workflowPack}<select value={selected} onChange={event=>changePack(event.target.value)}>{packs.map(item=><option key={item.packId} value={item.packId}>{item.presentation?.title??item.packId}</option>)}</select></label>{pack && <WorkflowWorkbench key={pack.packId} pack={pack} />}</div></main></>;
 }
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

@@ -222,3 +222,8 @@ mit Vorschau, Download und Fundstellen. Zwölf zusätzliche Referenzakten zeigen
 Krankenfahrt, Pflege-Score, Rehabilitation und Onkologie; die letzten beiden bleiben
 Unterlagensichtung ohne fachliche Entscheidung. Details und Grenzen:
 [Dokumentakten](docs/development/DOCUMENT_CASES.de.md).
+
+Die Browser-Demo nutzt denselben kompakten Arbeitsplatz, der für ein späteres
+Desktop-Fenster vorgesehen ist: Fallliste links, Dokumente mittig, Ergebnis und
+Fundstellen rechts. Weitere Werkzeuge sind über feste Arbeitsbereiche erreichbar.
+Ein nativer Desktop-Host ist damit noch nicht enthalten.
