@@ -540,6 +540,9 @@ h2,h3,h4,h5{font-size:14px;font-weight:600}strong{font-weight:600}main p{line-he
  --nc-shadow:0 4px 12px rgba(0,0,0,.45);
 }
 .theme-control{display:flex;align-items:center;flex-shrink:0;margin-left:8px}
+.application-workspace{width:100%;min-width:0}
+.application-workspace .workspace-navigation{min-width:0;max-width:100%}
+html[data-theme=dark] .empty-symbol{background:var(--nc-light);color:var(--nc-primary)}
 .theme-control select{width:85px;height:24px;min-height:24px;font-size:var(--nc-small);background:var(--nc-surface);color:var(--nc-text)}
 html[data-theme=dark] :is(.card,.opened-case,.case-result-view,.explorer-table-scroll,.document-case-file,.case-context-menu,.context-submenu-panel,.explorer-dialog,.workspace-extras-list,.workspace-help,.case-analysis-panel,.document-text,.workflow-tools,.reviewed-work-queues){background:var(--nc-surface);color:var(--nc-text);border-color:var(--nc-line)}
 html[data-theme=dark] :is(input,select,textarea){background:var(--nc-background);color:var(--nc-text);border-color:var(--nc-button-border);accent-color:var(--nc-action)}
