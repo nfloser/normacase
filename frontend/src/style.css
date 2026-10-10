@@ -379,3 +379,42 @@ body { overflow:hidden; }
 .application-workspace .explorer-search input{width:250px;height:30px;min-height:30px}
 .application-workspace .explorer-toolbar{padding:4px 8px;gap:4px;min-height:35px}
 .application-workspace .explorer-toolbar button{font-size:.8rem;min-height:28px}
+
+/* Bounded, resizable case-file split view. The same document reader is shared by
+   the full-file route and the inline pane; no second case state or rule logic. */
+.case-explorer .explorer-content{height:100%;min-height:0}
+.case-explorer .explorer-table-scroll{flex:1 1 0;min-height:110px}
+.case-explorer .explorer-pane-splitter{flex:0 0 9px;touch-action:none;cursor:row-resize;user-select:none;background:#d5e4f0;border-top:1px solid #7698b0;border-bottom:1px solid #7698b0;display:flex;align-items:center;justify-content:center;color:#123c63;line-height:8px;font-size:14px}
+.case-explorer .explorer-pane-splitter:focus-visible{outline:3px solid #155b91;outline-offset:-2px}
+.case-explorer .explorer-detail-pane{flex-grow:0;flex-shrink:0;min-height:180px;min-width:0;overflow:hidden;display:flex;flex-direction:column;background:#fff}
+.case-explorer .explorer-detail-heading{flex:0 0 auto;min-height:34px;display:flex;align-items:center;gap:10px;padding:3px 9px;background:#eaf3f9;border-bottom:1px solid #aec3d4}
+.case-explorer .explorer-detail-heading strong{font-size:13px;color:#123c63;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:32%}
+.case-explorer .explorer-detail-actions{display:flex;gap:5px;margin-left:auto;align-items:center}
+.case-explorer .explorer-detail-actions button{font-size:.8rem;min-height:26px;padding:3px 8px;white-space:nowrap}
+.case-explorer .explorer-detail-pane .document-case-file{flex:1 1 0;min-height:0;margin:0;padding:0;border:0;display:flex;flex-direction:column;overflow:hidden}
+.case-explorer .explorer-detail-pane .case-view-navigation{flex:0 0 auto;padding:4px 8px}
+.case-explorer .explorer-detail-pane .case-view-navigation button{min-height:26px;padding:3px 7px}
+.case-explorer .explorer-detail-pane .case-documents-view{min-height:0;grid-template-columns:minmax(205px,26%) minmax(0,1fr)}
+.case-explorer .explorer-detail-pane .document-case-summary{padding:7px 10px;gap:5px}
+.case-explorer .explorer-detail-pane .document-reader{padding:6px 10px;gap:5px}
+.case-explorer .explorer-detail-pane .document-choice{margin:0}
+.case-explorer .explorer-detail-pane .document-toolbar{gap:6px}
+.case-explorer .explorer-detail-pane .page-stage{padding:6px}
+.case-explorer .explorer-detail-pane .reader-help{display:none}
+.case-explorer .explorer-detail-pane .case-result-view{min-height:0;overflow:auto;padding:9px 14px}
+.case-explorer .explorer-detail-empty{font-size:14px;color:#425a70;padding:18px;margin:0}
+@media(max-width:900px){
+ .case-explorer .explorer-content{height:auto;min-height:550px}
+ .case-explorer .explorer-detail-pane{height:460px;flex-basis:460px!important}
+ .case-explorer .explorer-detail-pane .case-documents-view{display:flex;flex-direction:column;overflow:auto}
+ .case-explorer .explorer-detail-pane .document-case-summary{max-height:170px;overflow:auto}
+ .case-explorer .explorer-detail-pane .document-reader{height:300px;min-height:260px}
+ .case-explorer .explorer-detail-heading{flex-wrap:wrap}
+ .case-explorer .explorer-detail-heading strong{max-width:100%}
+ .case-explorer .explorer-detail-actions{flex-wrap:wrap;margin-left:0}
+}
+
+/* Toolbars must remain above the sticky case-table heading in split layout. */
+.case-explorer .explorer-toolbar{flex:0 0 auto;position:relative;z-index:4;background:#fff}
+.case-explorer .compact-workplace-toolbar{flex:0 0 auto;position:relative;z-index:4}
+.case-explorer .explorer-table-scroll{position:relative;z-index:0;flex:1 1 0;min-height:110px}

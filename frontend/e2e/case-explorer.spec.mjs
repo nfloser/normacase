@@ -98,3 +98,28 @@ test('personal folders can contain nested folders without changing case decision
  await dialog.getByRole('button',{name:'Ordner speichern'}).click();
  await expect(explorer.locator('.custom-folder > .tree-filter').filter({hasText:'Heute prüfen'})).toBeVisible();
 });
+
+test('selected case displays documents below the list and F4 toggles the resizable pane',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ const pane=explorer.getByRole('region',{name:'Fallakte und Dokumente'});
+ await expect(pane.getByText(/Fall in der Tabelle auswählen/)).toBeVisible();
+ await row.locator('td').nth(2).click();
+ await expect(row).toHaveAttribute('aria-selected','true');
+ await expect(row).toBeVisible();
+ await expect(pane.locator('.case-file-list')).toBeVisible();
+ await expect(pane.locator('.pdf-page-image')).toBeVisible();
+ const splitter=explorer.getByRole('separator',{name:/Fallliste und Detailbereich/});
+ await expect(splitter).toHaveAttribute('aria-valuenow','45');
+ await splitter.focus();await page.keyboard.press('ArrowUp');
+ await expect(splitter).toHaveAttribute('aria-valuenow','50');
+ await page.keyboard.press('F4');
+ await expect(pane).toHaveCount(0);
+ await page.keyboard.press('F4');
+ await expect(pane).toBeVisible();
+ await expect(row).toBeVisible();
+ await row.dblclick();
+ await expect(explorer.locator('.opened-case')).toBeVisible();
+});
