@@ -14,11 +14,17 @@ test('explorer organizes colored folders and bookmarks without changing the resu
  await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Für die Besprechung'});
  await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
  await page.getByRole('navigation',{name:'Arbeitsbereiche'}).getByText('Ansicht',{exact:true}).click();await page.getByRole('button',{name:'Ordnerspalte ein/aus',exact:true}).click();
+ await expect(row).toHaveCount(0);
+ await explorer.locator('.custom-folder .tree-filter').filter({hasText:'Für die Besprechung'}).click();
  await expect(row).toContainText('Für die Besprechung');
  await row.click({button:'right'});await page.getByRole('menuitem',{name:'Fall öffnen',exact:true}).click();
  await expect(explorer.getByRole('heading',{name:'Prüfergebnis: Voraussetzungen erfüllt',exact:true})).toBeVisible();
  await explorer.getByRole('button',{name:'← Liste',exact:true}).click();
  await page.reload();await expect(explorer.getByText('Für die Besprechung').first()).toBeVisible();
+ await explorer.locator('.custom-folder .tree-filter').filter({hasText:'Für die Besprechung'}).click();
+ await row.click({button:'right'});await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
+ await explorer.locator('.tree-filter').filter({hasText:'Alle Fälle'}).click();
+ await expect(row).toHaveCount(1);
  await page.screenshot({path:'test-results/medical-blue-explorer.png'});
 });
 
@@ -49,7 +55,11 @@ test('keyboard menu returns focus and removes only the folder assignment',async(
  await row.getByRole('checkbox').check();await explorer.getByRole('button',{name:/Auswahl verschieben/}).click();
  await page.getByRole('dialog').getByLabel('Zielordner').selectOption({label:'Tastaturablage'});
  await page.getByRole('dialog').getByRole('button',{name:'Verschieben',exact:true}).click();
+ await explorer.locator('.custom-folder .tree-filter').filter({hasText:'Tastaturablage'}).click();
  await row.click({button:'right'});await expect(page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true})).toBeVisible();await page.getByRole('menuitem',{name:'Aus Ordner entfernen',exact:true}).click();
+ await expect(row).toHaveCount(0);
+ await explorer.locator('.tree-filter').filter({hasText:'Alle Fälle'}).click();
+ await expect(row).toHaveCount(1);
  await expect(row).not.toContainText('Tastaturablage');
 });
 

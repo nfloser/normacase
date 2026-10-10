@@ -505,7 +505,7 @@
     "completionUnknown": "Der Abschluss ist unbekannt. Aktualisiere die Ansicht, bevor du die Aktion erneut ausführst.",
     "noCases": "Keine Fälle für diese Auswahl.",
     "localNotice": "Lokale Demonstration · Ablage bleibt bis zum Neustart erhalten · Versand wird simuliert",
-    "organizationHelp": "Farben, Lesezeichen und eigene Ordner ändern keine fachlichen Prüfergebnisse. Doppelklick oder Enter öffnet den Fall; Rechtsklick zeigt die Aktionen.",
+    "organizationHelp": "„Alle Fälle“ zeigt Vorgänge ohne eigenen Ordner. Verschobene Fälle finden Sie in ihrer Ablage. Farben, Lesezeichen und eigene Ordner ändern keine fachlichen Prüfergebnisse. Doppelklick oder Enter öffnet den Fall; Rechtsklick zeigt die Aktionen.",
     "folderName": "Ordnername",
     "folderColor": "Ordnerfarbe",
     "markColor": "Markierungsfarbe",
