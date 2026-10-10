@@ -67,7 +67,9 @@ test('personal colored folder expands into case result and document nodes',async
  const folder=explorer.locator('.personal-folder-tree').filter({has:page.locator('summary', {hasText:'Meine Prüffälle'})});
  await folder.locator(':scope > summary').click();
  await expect(folder.getByText('reference-md-mueller')).toBeVisible();
- await folder.getByText('reference-md-mueller').click();
- await folder.getByRole('button',{name:'Dokumente',exact:true}).click();
+ const caseNode=folder.locator('li > details').filter({has:page.locator('summary',{hasText:'reference-md-mueller'})}).first();
+ await caseNode.locator(':scope > summary').click();
+ await expect(caseNode.getByRole('button',{name:'Dokumente',exact:true})).toBeVisible();
+ await caseNode.getByRole('button',{name:'Dokumente',exact:true}).click();
  await expect(explorer.getByRole('button',{name:'Zur Fallübersicht',exact:true})).toBeVisible();
 });
