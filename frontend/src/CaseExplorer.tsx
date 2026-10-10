@@ -2,6 +2,7 @@ import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import de from './de.json';
 import {browserWorkspaceHost,type WorkspaceHost} from './workspaceHost';
 import {DocumentCaseFile} from './DocumentCaseFile';
+import {readWorkspaceLayout,saveWorkspaceLayout} from './workspacePreferences';
 const t=de.explorer;
 type Folder={id:string;label:string;color:string;parentId:string|null};
 type Organization={folderId:string|null;color:string|null;bookmark:boolean;note:string;confirmed:boolean;dispatched:boolean};
@@ -17,9 +18,10 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  const [query,setQuery]=useState(''),[filter,setFilter]=useState('all'),[selection,setSelection]=useState<string[]>([]),[opened,setOpened]=useState('');
  const [openedView,setOpenedView]=useState<'result'|'documents'>('result');
  const [activeCase,setActiveCase]=useState('');
- const [rowColors,setRowColors]=useState(true);
- const [detailOpen,setDetailOpen]=useState(true);
- const [detailPercent,setDetailPercent]=useState(45);
+ const [initialLayout]=useState(readWorkspaceLayout);
+ const [rowColors,setRowColors]=useState(initialLayout.rowColors);
+ const [detailOpen,setDetailOpen]=useState(initialLayout.detailOpen);
+ const [detailPercent,setDetailPercent]=useState(initialLayout.detailPercent);
  const resizing=useRef(false),explorerContentRef=useRef<HTMLDivElement|null>(null);
  const [moreActions,setMoreActions]=useState(false);
  const [coarsePointer]=useState(()=>typeof window!=='undefined'&&window.matchMedia?.('(pointer: coarse)').matches===true);
@@ -32,6 +34,7 @@ export function CaseExplorer({host=browserWorkspaceHost}:{host?:WorkspaceHost}={
  useEffect(()=>{const controller=new AbortController();refresh(controller.signal).catch(()=>{if(!controller.signal.aborted)setError(de.networkError);});return()=>{controller.abort();pending.current?.abort();};},[]);
  useEffect(()=>{if(!menu)return;menuRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();const close=(event:PointerEvent)=>{if(!menuRef.current?.contains(event.target as Node))setMenu(null);};document.addEventListener('pointerdown',close);return()=>document.removeEventListener('pointerdown',close);},[menu]);
  useEffect(()=>{if(dialog&&!dialogRef.current?.open)dialogRef.current?.showModal();},[dialog]);
+ useEffect(()=>{saveWorkspaceLayout({detailOpen,detailPercent,rowColors});},[detailOpen,detailPercent,rowColors]);
  useEffect(()=>{
   const handle=(event:KeyboardEvent)=>{
    if(event.key==='F4'&&!event.altKey&&!event.ctrlKey&&!event.metaKey){
