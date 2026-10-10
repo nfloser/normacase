@@ -68,3 +68,20 @@ test('compact workplace shows status color, case context and bounded list rows',
  await expect(table).toHaveClass(/status-row-colors/);
  await expect(explorer.locator('.explorer-table tbody tr').first()).toHaveCSS('height','28px');
 });
+
+test('row selection and hover color command work without opening the file',async({page})=>{
+ await page.goto('/#work-queues');
+ const explorer=page.getByRole('region',{name:'Fallverwaltung'});
+ await explorer.getByLabel('Fälle suchen').fill('reference-md-mueller');
+ const row=explorer.getByRole('row').filter({hasText:'reference-md-mueller'});
+ await row.locator('td').nth(2).click();
+ await expect(row).toHaveAttribute('aria-selected','true');
+ await row.click({button:'right'});
+ await page.getByRole('menuitem',{name:/Markieren/}).hover();
+ await page.getByRole('group',{name:'Farbmarkierung'}).getByRole('button',{name:'Blau'}).click();
+ await expect(row.locator('.personal-mark-chip')).toBeVisible();
+ await row.dblclick();
+ await expect(explorer.getByRole('button',{name:'Verschieben nach …'})).toBeVisible();
+ await explorer.getByRole('button',{name:'Markieren',exact:true}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+});
