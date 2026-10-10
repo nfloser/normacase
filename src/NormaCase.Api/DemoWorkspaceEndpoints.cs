@@ -7,11 +7,11 @@ namespace NormaCase.Api;
 internal static partial class DemoWorkspaceEndpoints
 {
     internal sealed record Case(string CaseId,string Title,string QueueId,bool CanConfirm,string? AssessmentJson);
-    private sealed record Folder(string Id,string Label,string Color);
+    private sealed record Folder(string Id,string Label,string Color,string? ParentId=null);
     private sealed record Mark(string? FolderId=null,string? Color=null,bool Bookmark=false,string Note="",bool Confirmed=false,bool Dispatched=false);
     private sealed record Audit(int Sequence,string Action,string[] CaseIds,string? FolderId);
     internal sealed record Command(string Action,int ExpectedRevision,string[] CaseIds,string OperationId,
-        string? FolderId=null,string? Label=null,string? Color=null,bool? Value=null,string? Note=null);
+        string? FolderId=null,string? Label=null,string? Color=null,bool? Value=null,string? Note=null,string? ParentId=null);
     [GeneratedRegex("^#[0-9a-fA-F]{6}$",RegexOptions.CultureInvariant)]
     private static partial Regex ColorPattern();
     internal static void Map(WebApplication app,Case[] source)
@@ -44,16 +44,27 @@ internal static partial class DemoWorkspaceEndpoints
                     case "CREATE_FOLDER":
                         if(folders.Count>=50||string.IsNullOrWhiteSpace(command.Label)||command.Label.Trim().Length>80
                             ||command.Color is null||!ColorPattern().IsMatch(command.Color)
-                            ||folders.Values.Any(f=>f.Label.Equals(command.Label.Trim(),StringComparison.OrdinalIgnoreCase)))return DemoHost.Error("invalid_input",400);
-                        folderId="folder-"+(revision+1);folders.Add(folderId,new(folderId,command.Label.Trim(),command.Color));break;
+                            ||folders.Values.Any(f=>f.ParentId==command.ParentId&&f.Label.Equals(command.Label.Trim(),StringComparison.OrdinalIgnoreCase))
+                            ||(command.ParentId is not null&&!folders.ContainsKey(command.ParentId)))
+                            return DemoHost.Error("invalid_input",400);
+                        var depth=0;var ancestor=command.ParentId;
+                        while(ancestor is not null)
+                        {
+                            if(++depth>4)return DemoHost.Error("invalid_input",400);
+                            ancestor=folders[ancestor].ParentId;
+                        }
+                        folderId="folder-"+(revision+1);folders.Add(folderId,new(folderId,command.Label.Trim(),command.Color,command.ParentId));break;
                     case "UPDATE_FOLDER":
                         if(folderId is null||!folders.ContainsKey(folderId)||string.IsNullOrWhiteSpace(command.Label)||command.Label.Trim().Length>80
                             ||command.Color is null||!ColorPattern().IsMatch(command.Color)
-                            ||folders.Values.Any(f=>f.Id!=folderId&&f.Label.Equals(command.Label.Trim(),StringComparison.OrdinalIgnoreCase)))return DemoHost.Error("invalid_input",400);
-                        folders[folderId]=new(folderId,command.Label.Trim(),command.Color);break;
+                            ||folders.Values.Any(f=>f.Id!=folderId&&f.ParentId==folders[folderId].ParentId&&f.Label.Equals(command.Label.Trim(),StringComparison.OrdinalIgnoreCase)))return DemoHost.Error("invalid_input",400);
+                        folders[folderId]=folders[folderId] with{Label=command.Label.Trim(),Color=command.Color};break;
                     case "DELETE_FOLDER":
                         if(folderId is null||!folders.ContainsKey(folderId))return DemoHost.Error("invalid_input",400);
-                        folders.Remove(folderId);foreach(var id in marks.Keys.ToArray())if(marks[id].FolderId==folderId)marks[id]=marks[id] with{FolderId=null};break;
+                        var removedParent=folders[folderId].ParentId;
+                        folders.Remove(folderId);
+                        foreach(var child in folders.Values.Where(f=>f.ParentId==folderId).ToArray())folders[child.Id]=child with{ParentId=removedParent};
+                        foreach(var id in marks.Keys.ToArray())if(marks[id].FolderId==folderId)marks[id]=marks[id] with{FolderId=null};break;
                     case "QUEUE_COLOR":
                         if(folderId is null||!source.Any(c=>c.QueueId==folderId)||command.Color is null||!ColorPattern().IsMatch(command.Color))return DemoHost.Error("invalid_input",400);
                         queueColors[folderId]=command.Color;break;
