@@ -445,7 +445,7 @@
       "threat": "Datenabfluss durch Diagnose",
       "boundary": "API / DB / Logging / CI",
       "owner": "NORMACASE",
-      "status": "OPEN",
+      "status": "SYNTHETIC_TEST_COVERAGE",
       "evidence": [
         {
           "path": "tests/NormaCase.Api.Tests/ApiIntegrationTests.cs",
@@ -454,9 +454,17 @@
         {
           "path": "tests/NormaCase.Persistence.PostgreSql.Tests/PostgresAssessmentRecordStoreTests.cs",
           "anchor": "Connection_failure_does_not_echo_credentials"
+        },
+        {
+          "path": "tests/NormaCase.Api.Tests/LogMinimizationTests.cs",
+          "anchor": "Authentication_body_document_and_URL_canaries_are_absent_from_logs_and_errors"
+        },
+        {
+          "path": "docs/security/LOG_MINIMIZATION.de.md",
+          "anchor": ""
         }
       ],
-      "remaining": "Fehlerantworten sind getestet; Capture-Tests für tatsächliche Logs und alle Fehlerpfade ergänzen.",
+      "remaining": "Host-Capturetests und feste Diagnosegrenze vorhanden; Betreiber-Sink, Prozess-/Proxy-/OS-/APM-Logs und deren Zugriff/Aufbewahrung bleiben im Zielbetrieb zu prüfen.",
       "follow_up": "https://github.com/nfloser/normacase/issues/302"
     },
     {

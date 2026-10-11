@@ -100,6 +100,13 @@ Medical or identity data could leak through logs and CI.
 
 Baseline: log technical identifiers and error codes rather than case contents; synthetic data only in engineering systems.
 
+The synthetic host now applies a configuration-independent category filter and
+emits only a fixed completion event with numeric HTTP status. Capture tests cover
+request/body/token/document canaries, a failed database readiness connection and
+exception/failed-delegate diagnostics. Default providers remain disabled. This does
+not cover operator proxy, OS, APM or database-side logs; see
+[log minimization](LOG_MINIMIZATION.de.md).
+
 ### Operational probe disclosure and dependency masking
 Health endpoints could disclose infrastructure details, claim readiness from a stale
 startup result or accidentally turn a domain check into a production-validity claim.

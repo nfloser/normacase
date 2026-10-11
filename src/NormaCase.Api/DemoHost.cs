@@ -29,7 +29,7 @@ public static class DemoHost
             options.ListenLocalhost(5080);
             options.Limits.MaxRequestBodySize = MaximumBodyBytes;
         });
-        builder.Logging.ClearProviders();
+        SafeDiagnostics.Configure(builder.Logging);
         builder.Services.AddSingleton(services => SyntheticReviewCredential.Load(
             services.GetRequiredService<IConfiguration>()));
         builder.Services.AddSingleton(services =>
@@ -110,6 +110,8 @@ public static class DemoHost
             intakePack = SyntheticIntakeKnowledge.LoadAsync(app.Configuration, source, intakePack).GetAwaiter().GetResult();
         }
 
+        var diagnostics = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(SafeDiagnostics.Category);
+        app.Use((context, next) => SafeDiagnostics.RecordAsync(context, next, diagnostics));
         app.UseExceptionHandler(handler => handler.Run(async context =>
         {
             var denied = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error
