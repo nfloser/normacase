@@ -13,6 +13,12 @@ Header, IP, Akteur, Fall-ID, Body, Verbindung, Exception oder frei eingegebenen 
 Auch bei einem abgebrochenen/fehlgeschlagenen Delegate wird nur ein technischer
 500-Status ausgegeben; dies ist keine Aussage über einen bereits erfolgten Commit.
 Die Diagnose ist keine fachliche Audit-Historie und darf diese nicht ersetzen.
+Fehler eines ergänzten lokalen Diagnose-Sinks werden abgefangen, ohne Exceptiontexte
+auszugeben oder das ursprüngliche Request-Ergebnis zu ersetzen. Diese technische
+Best-effort-Ausgabe ist ausdrücklich kein Nachweis eines dauerhaft gespeicherten
+Audit-Ereignisses; Fehler der fachlichen Audit-Transaktion bleiben davon unberührt.
+`DiagnosticSinkIsolationTests` reproduziert erfolgreiche und fehlgeschlagene
+Delegates mit einem absichtlich defekten Sink und prüft das unveränderte Ergebnis.
 
 `LogMinimizationTests` installiert einen Capture-Provider mit positiven
 Ereignis-Assertions, damit eine leere Ausgabe nicht als Sicherheitsbeweis gilt:
