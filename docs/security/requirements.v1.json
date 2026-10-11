@@ -1,0 +1,679 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-11",
+  "scope": "SYNTHETIC_DEVELOPMENT_ONLY",
+  "sources": [
+    {
+      "id": "GDPR",
+      "title": "Verordnung (EU) 2016/679",
+      "version": "Konsolidierter Text 2016-05-04; Abruf 2026-10-11",
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679",
+      "kind": "LEGAL",
+      "review": "RETRIEVED_TEXT"
+    },
+    {
+      "id": "SGB-V-276",
+      "title": "SGB V §276",
+      "version": "Online-Fassung abgerufen 2026-10-11",
+      "url": "https://www.gesetze-im-internet.de/sgb_5/__276.html",
+      "kind": "LEGAL",
+      "review": "RETRIEVED_TEXT"
+    },
+    {
+      "id": "SGB-X-67B",
+      "title": "SGB X §67b",
+      "version": "Online-Fassung abgerufen 2026-10-11",
+      "url": "https://www.gesetze-im-internet.de/sgb_10/__67b.html",
+      "kind": "LEGAL",
+      "review": "RETRIEVED_TEXT"
+    },
+    {
+      "id": "SGB-X-80",
+      "title": "SGB X §80",
+      "version": "Online-Fassung abgerufen 2026-10-11",
+      "url": "https://www.gesetze-im-internet.de/sgb_10/__80.html",
+      "kind": "LEGAL",
+      "review": "RETRIEVED_TEXT"
+    },
+    {
+      "id": "SGB-X-84",
+      "title": "SGB X §84",
+      "version": "Online-Fassung abgerufen 2026-10-11",
+      "url": "https://www.gesetze-im-internet.de/sgb_10/__84.html",
+      "kind": "LEGAL",
+      "review": "RETRIEVED_TEXT"
+    },
+    {
+      "id": "DSK-KI",
+      "title": "DSK Orientierungshilfe Künstliche Intelligenz und Datenschutz",
+      "version": "Version 1.0, 2024-05-06; Abruf 2026-10-11",
+      "url": "https://www.datenschutzkonferenz-online.de/media/oh/20240506_DSK_Orientierungshilfe_KI_und_Datenschutz.pdf",
+      "kind": "GUIDANCE",
+      "review": "RETRIEVED_TEXT"
+    },
+    {
+      "id": "BSI-2023",
+      "title": "BSI IT-Grundschutz-Kompendium",
+      "version": "Edition 2023; Metadaten am 2026-10-11 geprüft, Detailabruf blockiert",
+      "url": "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Grundschutz/IT-GS-Kompendium/XML_Kompendium_2023.html",
+      "kind": "STANDARD",
+      "review": "METADATA_ONLY"
+    },
+    {
+      "id": "ASVS",
+      "title": "OWASP Application Security Verification Standard",
+      "version": "5.0.0, Mai 2025; Projektseite abgerufen 2026-10-11",
+      "url": "https://github.com/OWASP/ASVS/tree/v5.0.0",
+      "kind": "STANDARD",
+      "review": "METADATA_ONLY"
+    },
+    {
+      "id": "PROJECT",
+      "title": "NormaCase engineering security rules",
+      "version": "AGENTS.md blob 6180d2af4e69c7a4907fdb15be7e08afd4b04d08",
+      "url": "https://github.com/nfloser/normacase/blob/main/AGENTS.md",
+      "kind": "PROJECT_POLICY",
+      "review": "REPOSITORY_POLICY"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "SEC-01",
+      "requirement": "Rechtsgrundlage und Zweck für Gesundheitsdaten vor Verarbeitung prüfen.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 6 und 9"
+        }
+      ],
+      "threat": "Unzulässige Verarbeitung",
+      "boundary": "Betreiber / Intake",
+      "owner": "OPERATOR",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "SECURITY.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Zweck, Verantwortlicher, Rechtsgrundlage und Art.-9-Ausnahme durch zuständige Stellen dokumentieren.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-02",
+      "requirement": "Sozialdatenschutz und MD-Auftrag konkret abgrenzen.",
+      "sources": [
+        {
+          "id": "SGB-V-276",
+          "section": "§276"
+        },
+        {
+          "id": "SGB-X-67B",
+          "section": "§67b"
+        },
+        {
+          "id": "SGB-X-80",
+          "section": "§80"
+        }
+      ],
+      "threat": "Unbefugte Nutzung oder Übermittlung",
+      "boundary": "Institution / Adapter / Empfänger",
+      "owner": "OPERATOR",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "docs/project/TARGET_OPERATING_MODEL.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Juristische Prüfung von Aufgabenbefugnis, Datenarten, Empfängern und Auftragsverarbeitung; §276 ist keine pauschale Befugnis für NormaCase.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-03",
+      "requirement": "Datenschutz durch Gestaltung und datensparsame Voreinstellungen.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 25"
+        },
+        {
+          "id": "PROJECT",
+          "section": "Security and privacy"
+        }
+      ],
+      "threat": "Unnötige Datenkopien",
+      "boundary": "Browser / API",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Api.Tests/SyntheticAuthenticationTests.cs",
+          "anchor": "Default_preview_has_no_authenticated_identity_endpoint"
+        }
+      ],
+      "remaining": "Produktive Datenfluss- und Zweckminimierung einschließlich Browser, Dokumenten und Exporten prüfen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-04",
+      "requirement": "Risikoangemessene technische und organisatorische Maßnahmen dokumentieren.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 32"
+        }
+      ],
+      "threat": "Nicht beherrschte Betriebsrisiken",
+      "boundary": "Gesamter Informationsverbund",
+      "owner": "OPERATOR",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "docs/security/THREAT_MODEL.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Schutzbedarf, TOM, Verantwortlichkeiten und Wirksamkeitsprüfung im Zielbetrieb freigeben.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-05",
+      "requirement": "DSFA-Erforderlichkeit und verbleibende Risiken vor Einsatz prüfen.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 35 und 36"
+        }
+      ],
+      "threat": "Unbewertete Risiken für Betroffene",
+      "boundary": "Betreiber / Datenschutz",
+      "owner": "OPERATOR",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "docs/security/THREAT_MODEL.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "DSFA-Screening und gegebenenfalls DSFA / weitere Maßnahmen durch Betreiber; keine automatische rechtliche Bewertung.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-06",
+      "requirement": "Identität serverseitig verifizieren und synthetische Zugangsdaten abgrenzen.",
+      "sources": [
+        {
+          "id": "BSI-2023",
+          "section": "ORP.4; Detailmapping offen"
+        },
+        {
+          "id": "ASVS",
+          "section": "Authentifizierung; Einzelanforderungen offen"
+        }
+      ],
+      "threat": "Identitätsvortäuschung",
+      "boundary": "Identitätsanbieter / API",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Api.Tests/SyntheticAuthenticationTests.cs",
+          "anchor": "Verified_identity_is_server_owned_and_credentials_are_not_returned"
+        }
+      ],
+      "remaining": "Institutionellen IdP, Token-/Sessionablauf, MFA-Anforderungen und Provisionierung prüfen; lokale Bearer-Identität ist nicht produktiv.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-07",
+      "requirement": "Jede Fallaktion mit aktuellen fallbezogenen Rechten prüfen.",
+      "sources": [
+        {
+          "id": "BSI-2023",
+          "section": "ORP.4; Detailmapping offen"
+        },
+        {
+          "id": "ASVS",
+          "section": "Autorisierung; Einzelanforderungen offen"
+        }
+      ],
+      "threat": "Zugriff auf fremde Fälle",
+      "boundary": "API / Application / Store",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Application.Tests/CaseReviewServiceTests.cs",
+          "anchor": "Scoped_grants_allow_only_the_bound_actor_case_policy_and_action"
+        }
+      ],
+      "remaining": "Institutionelle Rollen-/Mandantenabbildung und alle produktiven Lese-, Dokument- und Exportpfade nachweisen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-08",
+      "requirement": "Sperrung und Rechteentzug vor geschütztem Commit erneut prüfen.",
+      "sources": [
+        {
+          "id": "BSI-2023",
+          "section": "ORP.4; Detailmapping offen"
+        }
+      ],
+      "threat": "Veraltete Rechte im laufenden Request",
+      "boundary": "Authentifizierung / Transaktion",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Persistence.PostgreSql.Tests/PostgresReviewedEntitlementChangeStoreTests.cs",
+          "anchor": "Account_suspension_serializes_with_operation_and_rechecks_after_authentication"
+        }
+      ],
+      "remaining": "IdP-Entzug, produktive Sessionpolitik und Fristen im Zielsystem testen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-09",
+      "requirement": "Vier-Augen-Prüfung und separate Wissensfreigabe erhalten.",
+      "sources": [
+        {
+          "id": "PROJECT",
+          "section": "Knowledge governance"
+        },
+        {
+          "id": "BSI-2023",
+          "section": "ORP.4; Detailmapping offen"
+        }
+      ],
+      "threat": "Unkontrollierte Berechtigungs- oder Regeländerung",
+      "boundary": "Administration / Knowledge",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Persistence.PostgreSql.Tests/PostgresReviewedEntitlementChangeStoreTests.cs",
+          "anchor": "Rejection_self_approval_stale_revision_and_competing_decisions_fail_closed"
+        }
+      ],
+      "remaining": "Fachliche Freigaberollen und Notfallberechtigungen institutionell festlegen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-10",
+      "requirement": "Historische Assessments und Audit gegen Änderungen schützen.",
+      "sources": [
+        {
+          "id": "PROJECT",
+          "section": "Historical assessments are immutable"
+        },
+        {
+          "id": "GDPR",
+          "section": "Art. 32; Integrität"
+        }
+      ],
+      "threat": "Historische Manipulation",
+      "boundary": "Application / PostgreSQL",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Persistence.PostgreSql.Tests/PostgresAssessmentRecordStoreTests.cs",
+          "anchor": "Database_rejects_direct_update_and_delete"
+        }
+      ],
+      "remaining": "Privilegierten DB-Zugriff, Auditaufbewahrung und gegebenenfalls signierte Nachweise separat absichern; Hash ist keine Signatur.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-11",
+      "requirement": "Datenbank-Runtime mit minimalen Rechten betreiben.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 32"
+        },
+        {
+          "id": "BSI-2023",
+          "section": "ORP.4; Detailmapping offen"
+        }
+      ],
+      "threat": "DDL-/Löschzugriff durch kompromittierten Host",
+      "boundary": "API / Datenbank",
+      "owner": "SHARED",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "path": "docs/architecture/POSTGRESQL_LEAST_PRIVILEGE.md",
+          "anchor": ""
+        },
+        {
+          "path": "scripts/smoke_synthetic_roundtrip.py",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Getrennte Rollen sind synthetisch vorhanden; exakten Negativtest und Zielbetriebsrollen im Register nachziehen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-12",
+      "requirement": "Transportverschlüsselung und Schlüsselzuständigkeit prüfen.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 32 Abs. 1; risikobezogen"
+        },
+        {
+          "id": "ASVS",
+          "section": "Kryptografie und sichere Kommunikation; Einzelanforderungen offen"
+        }
+      ],
+      "threat": "Mitlesen oder falscher Zielserver",
+      "boundary": "IdP / API / DB / Outbound",
+      "owner": "SHARED",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "docs/security/THREAT_MODEL.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "TLS-Vertrauen, DB-Verbindung, Zertifikatsrotation und erlaubte lokale Ausnahmen im Zielbetrieb testen; Loopback ist kein TLS-Nachweis.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-13",
+      "requirement": "Speicher, Exporte und Backups risikogerecht verschlüsseln.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 32 Abs. 1; risikobezogen"
+        }
+      ],
+      "threat": "Datendiebstahl aus Datenträgern oder Sicherungen",
+      "boundary": "Datenbank / Dateien / Backup",
+      "owner": "OPERATOR",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "docs/development/OPERATIONAL_INSTALLATION.de.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Datenträger-/Backupverschlüsselung, getrennte Schlüsselverwahrung, Rotation und Wiederherstellung belegen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-14",
+      "requirement": "Aufbewahrung, Einschränkung und Löschung pro Datenspeicher definieren.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 5 Abs. 1 Buchst. e, Art. 17 und 18"
+        },
+        {
+          "id": "SGB-X-84",
+          "section": "§84"
+        }
+      ],
+      "threat": "Unbegrenzte Speicherung oder unzulässige Löschung",
+      "boundary": "Datenbank / Dokumente / Audit / Exporte / Backup",
+      "owner": "SHARED",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "path": "docs/architecture/ASSESSMENT_RECORDS.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Append-only ersetzt kein Löschkonzept; Fristen, Legal Holds, Backupablauf und Restore-Nachbereinigung fehlen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/303"
+    },
+    {
+      "id": "SEC-15",
+      "requirement": "Keine sensiblen Inhalte oder Geheimnisse in Logs und Fehlern.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 25 und 32"
+        },
+        {
+          "id": "ASVS",
+          "section": "Logging und Datenschutz; Einzelanforderungen offen"
+        }
+      ],
+      "threat": "Datenabfluss durch Diagnose",
+      "boundary": "API / DB / Logging / CI",
+      "owner": "NORMACASE",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Api.Tests/ApiIntegrationTests.cs",
+          "anchor": "Invalid_json_has_a_German_error_without_echoing_input"
+        },
+        {
+          "path": "tests/NormaCase.Persistence.PostgreSql.Tests/PostgresAssessmentRecordStoreTests.cs",
+          "anchor": "Connection_failure_does_not_echo_credentials"
+        }
+      ],
+      "remaining": "Fehlerantworten sind getestet; Capture-Tests für tatsächliche Logs und alle Fehlerpfade ergänzen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/302"
+    },
+    {
+      "id": "SEC-16",
+      "requirement": "Sicherung und physische Wiederherstellung regelmäßig prüfen.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 32 Abs. 1 Buchst. b bis d"
+        }
+      ],
+      "threat": "Datenverlust oder unbrauchbare Sicherung",
+      "boundary": "Datenbank / Dateien / Installation",
+      "owner": "SHARED",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "anchor": "Restore old and updated snapshots into separate fresh databases"
+        }
+      ],
+      "remaining": "Synthetische CI-Probe vorhanden; produktive RPO/RTO, verschlüsselte Backups und Recovery-Verantwortliche festlegen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-17",
+      "requirement": "Updates und Lieferkette kontrollieren.",
+      "sources": [
+        {
+          "id": "BSI-2023",
+          "section": "CON.8; Detailmapping offen"
+        },
+        {
+          "id": "PROJECT",
+          "section": "Development workflow"
+        }
+      ],
+      "threat": "Kompromittiertes Update",
+      "boundary": "CI / Pakete / native Installation",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "scripts/test_installation.py",
+          "anchor": "def test_"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Produktive Signaturen, SBOM, Schwachstellenprozess, Paketfreigabe und Widerruf noch gesondert nachweisen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-18",
+      "requirement": "Web- und Intake-Grenzen begrenzen und sichere Ausgabe erhalten.",
+      "sources": [
+        {
+          "id": "BSI-2023",
+          "section": "APP.3.1; Detailmapping offen"
+        },
+        {
+          "id": "ASVS",
+          "section": "Validierung und Webschutz; Einzelanforderungen offen"
+        }
+      ],
+      "threat": "Injection, XSS, CSRF oder übergroße Eingaben",
+      "boundary": "Browser / API / JSON / XML",
+      "owner": "NORMACASE",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Api.Tests/ApiIntegrationTests.cs",
+          "anchor": "Oversized_json_is_rejected"
+        },
+        {
+          "path": "tests/NormaCase.Api.Tests/ApiIntegrationTests.cs",
+          "anchor": "Non_local_hosts_and_origins_are_rejected"
+        }
+      ],
+      "remaining": "ASVS-Einzelanforderungen und neue institutionelle Upload-/Netzwerkpfade prüfen; Loopbacktests gelten nicht automatisch für Reverse Proxy.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-19",
+      "requirement": "Dokumente nur über explizite Fall-/Dokumentgrenzen ausliefern.",
+      "sources": [
+        {
+          "id": "ASVS",
+          "section": "Dateibehandlung und Autorisierung; Einzelanforderungen offen"
+        },
+        {
+          "id": "PROJECT",
+          "section": "No real patient data"
+        }
+      ],
+      "threat": "Pfadzugriff oder fremde Dokumente",
+      "boundary": "Dokumentablage / API / Viewer",
+      "owner": "SHARED",
+      "status": "SYNTHETIC_TEST_COVERAGE",
+      "evidence": [
+        {
+          "path": "tests/NormaCase.Api.Tests/DocumentCaseTests.cs",
+          "anchor": "Unknown_and_cross_case_documents_fail_and_preview_is_same_origin_only"
+        }
+      ],
+      "remaining": "Aktueller Dokumentkanal ist öffentliche synthetische Allowlist; produktive fallbezogene Dokumentrechte fehlen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-20",
+      "requirement": "Outbound an freigegebene Empfänger mit exakter Reviewbindung.",
+      "sources": [
+        {
+          "id": "SGB-X-67B",
+          "section": "§67b; Anwendbarkeit prüfen"
+        },
+        {
+          "id": "GDPR",
+          "section": "Art. 32"
+        }
+      ],
+      "threat": "Falscher Empfänger oder Ergebnisersetzung",
+      "boundary": "Review / Outbound / Empfängersystem",
+      "owner": "SHARED",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "path": "docs/architecture/OUTBOUND_RESULTS.md",
+          "anchor": ""
+        },
+        {
+          "path": "tests/NormaCase.Application.Tests/OutboundDeliveryTests.cs",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Konkrete Empfängerbefugnisse, Authentifizierung und Transportvertrag prüfen; synthetische Inbox/Datei ist kein MD-Connector.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-21",
+      "requirement": "Optionalen Assistenten von Entscheidung und Produktionsdaten trennen.",
+      "sources": [
+        {
+          "id": "DSK-KI",
+          "section": "Kapitel 1 bis 3"
+        },
+        {
+          "id": "PROJECT",
+          "section": "No AI decision core"
+        }
+      ],
+      "threat": "Datenabfluss oder ungeprüfte Modellschlussfolgerung",
+      "boundary": "Dokumentenhilfe / Inferenz / Review",
+      "owner": "NORMACASE",
+      "status": "OPEN",
+      "evidence": [
+        {
+          "path": "AGENTS.md",
+          "anchor": "Future AI/document-extraction capabilities are optional upstream adapters"
+        }
+      ],
+      "remaining": "Experiment #299 ist separat und noch nicht main; kein produktiver Modellzugriff, kein Cloudrouting; Modell-/Lizenz-/Sandboxprüfung bleibt offen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/298"
+    },
+    {
+      "id": "SEC-22",
+      "requirement": "Vorfälle, Schulung und organisatorische Zuständigkeiten festlegen.",
+      "sources": [
+        {
+          "id": "GDPR",
+          "section": "Art. 32 bis 34"
+        },
+        {
+          "id": "DSK-KI",
+          "section": "Kapitel 2"
+        }
+      ],
+      "threat": "Unbehandelter Vorfall oder unberechtigter Mitarbeiterzugriff",
+      "boundary": "Betreiber / Support / Administration",
+      "owner": "OPERATOR",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "SECURITY.md",
+          "anchor": "Reporting a vulnerability"
+        }
+      ],
+      "remaining": "Melde- und Reaktionsprozess, Zugriffskontrollen, Vertraulichkeit und Schulung institutionell freigeben.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    },
+    {
+      "id": "SEC-23",
+      "requirement": "Produktive Freigabe an alle technischen und organisatorischen Nachweise binden.",
+      "sources": [
+        {
+          "id": "PROJECT",
+          "section": "Never claim production or domain readiness"
+        },
+        {
+          "id": "GDPR",
+          "section": "Art. 32 und 35"
+        }
+      ],
+      "threat": "Synthetische Demo wird als freigegeben missverstanden",
+      "boundary": "Release / Betreiberabnahme",
+      "owner": "SHARED",
+      "status": "INSTITUTION_REVIEW",
+      "evidence": [
+        {
+          "path": "docs/project/EXTERNAL_DATA_FREE_READINESS.md",
+          "anchor": ""
+        }
+      ],
+      "remaining": "Keine echten Patientendaten ohne freigegebene Identität, Speicher, Transport, Datenschutz, Fachpolitik, Integration und Betreiber-Signoff. Klassifikation des konkreten Produkts juristisch/fachlich prüfen.",
+      "follow_up": "https://github.com/nfloser/normacase/issues/301"
+    }
+  ]
+}
