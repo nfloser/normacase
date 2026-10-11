@@ -424,9 +424,17 @@
         {
           "path": "docs/architecture/ASSESSMENT_RECORDS.md",
           "anchor": ""
+        },
+        {
+          "path": "tests/NormaCase.Application.Tests/RetentionPlanningTests.cs",
+          "anchor": "Unknown_hold_expiry_or_inventory_never_becomes_eligible"
+        },
+        {
+          "path": "docs/security/RETENTION_AND_DELETION.de.md",
+          "anchor": ""
         }
       ],
-      "remaining": "Append-only ersetzt kein Löschkonzept; Fristen, Legal Holds, Backupablauf und Restore-Nachbereinigung fehlen.",
+      "remaining": "Versionierter Vertrag und getestete Nur-Lese-Planung vorhanden. Produktive Fristen, Legal Holds, Zugriffseinschränkung, atomare Aggregate-Löschung, Datei-/Empfängerkopien und Backup-/Restore-Nachbereinigung benötigen institutionelle Policy und separat geprüfte Ausführung; keine Löschfunktion implementiert.",
       "follow_up": "https://github.com/nfloser/normacase/issues/303"
     },
     {

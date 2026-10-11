@@ -155,6 +155,17 @@ still require normal review and CI before merge.
 
 ## Current boundary and remaining work
 
+### Retention planning mistaken for erasure approval
+
+A complete-looking inventory or expired date could be mistaken for legal authority
+to delete immutable history. The read-only Application retention planner has explicit
+policy identity, caller-supplied UTC time and bounded detached metadata. Missing
+expiry, unknown hold or incomplete inventory requires review; active holds retain
+the artifact. Even an entirely expired inventory never authorizes deletion. No
+normal database rights or host mutation endpoints change. Restore requires fresh
+inventory/policy/hold review; a historical plan is not an approval token. See
+[retention and deletion](RETENTION_AND_DELETION.de.md).
+
 The local synthetic product path now includes authenticated review, PostgreSQL
 persistence, bounded JSON/XML intake, reviewed outbound delivery, restart replay and
 backup/restore rehearsal. These controls are development acceptance evidence for the
