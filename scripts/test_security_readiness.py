@@ -38,6 +38,13 @@ class SecurityReadinessTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             check_register(self.register, ROOT)
 
+    def test_additional_control_cannot_echo_arbitrary_text_as_an_id(self):
+        additional = copy.deepcopy(self.register["requirements"][0])
+        additional["id"] = "sensitive-canary"
+        self.register["requirements"].append(additional)
+        with self.assertRaises(ValueError):
+            readiness_report(self.register)
+
     def test_unknown_status_and_approval_fields_are_rejected(self):
         for change in ({"status": "PRODUCTION_APPROVED"}, {"approved": True}, {"owner": "nobody"}):
             with self.subTest(change=change):

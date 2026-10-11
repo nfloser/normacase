@@ -501,7 +501,7 @@
       "evidence": [
         {
           "path": "scripts/test_installation.py",
-          "anchor": "def test_"
+          "anchor": "test_wrong_commit_tampering_and_live_service_never_replace_active_pointer"
         },
         {
           "path": ".github/workflows/codeql.yml",

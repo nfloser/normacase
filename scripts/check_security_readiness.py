@@ -4,6 +4,7 @@ from collections import Counter
 from datetime import date
 import json
 from pathlib import Path, PurePosixPath
+import re
 import sys
 from urllib.parse import urlsplit
 
@@ -69,6 +70,8 @@ def check_register(register, root=ROOT):
     root = root.resolve()
     for requirement in register["requirements"]:
         _object(requirement, ("id", "requirement", "sources", "threat", "boundary", "owner", "status", "evidence", "remaining", "follow_up"))
+        if not re.fullmatch(r"SEC-[0-9]{2,3}", requirement["id"]):
+            raise ValueError("Invalid control identity")
         for field in ("requirement", "threat", "boundary", "remaining", "follow_up"):
             _text(requirement[field])
         if requirement["status"] not in STATUSES or requirement["owner"] not in {"NORMACASE", "OPERATOR", "SHARED"}:
