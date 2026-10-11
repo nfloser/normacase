@@ -100,6 +100,8 @@ Vor einem Pilot mit echten Daten müssen die zuständigen Personen separat abneh
    Knowledge- und Konfigurationsversion sowie schriftlicher Betreiberfreigabe.
 
 Keine Freigabe aus dieser Inventur ableiten. #302 behandelt Log-Capture-Nachweise;
-#303 behandelt Aufbewahrung/Löschung. #301 bleibt für Detailmapping, zusätzliche
+#303 behandelt [Aufbewahrung/Löschung](RETENTION_AND_DELETION.de.md), mit einem
+ausführbaren Nur-Lese-Planer und ausdrücklich getrenntem Vertrag für spätere physische
+Löschung. #301 bleibt für Detailmapping, zusätzliche
 institutionelle Anforderungen und Folgeslices offen. Historische Assessments werden
 nicht durch pauschales Entfernen der Append-only-Garantien löschbar gemacht.
