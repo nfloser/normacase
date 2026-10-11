@@ -33,7 +33,16 @@ internal static class SafeDiagnostics
             // Never pass HttpContext, URL, body, actor, exception, scope or request
             // identifiers to a logger. Clinical audit remains a separate boundary.
             if (status < 100 || status > 599) status = StatusCodes.Status500InternalServerError;
-            logger.LogInformation(Completed, "NC_HTTP_COMPLETED {StatusCode}", status);
+            try
+            {
+                logger.LogInformation(Completed, "NC_HTTP_COMPLETED {StatusCode}", status);
+            }
+            catch (Exception)
+            {
+                // Technical diagnostics are best effort. A failing operator sink
+                // must not replace the request result or its original exception.
+                // Durable clinical audit has its own transactional failure policy.
+            }
         }
     }
 }
