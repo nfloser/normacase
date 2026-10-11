@@ -32,13 +32,21 @@ class LocalAssistTests(unittest.TestCase):
             '{"hints":[{"kind":"document_mentioned","value":"Diagnose","quote":"Arztbrief vom 02.10.2026 liegt vor."}]}',
             '{"hints":[{"kind":"approve","value":"Arztbrief","quote":"Arztbrief vom 02.10.2026 liegt vor."}]}',
             '{"hints":[{"kind":"document_mentioned","value":"Arztbrief","quote":"Arztbrief vom 02.10.2026 liegt vor.","outcome":"SUPPORTED"}]}',
-            '{"hints":[],"automaticApproval":true}', '{"hints":"bad"}', '{"hints":[null]}',
+            '{"hints":[],"automaticApproval":true}', '{"hints":[],"hints":[]}',
+            '{"hints":[{"kind":[],"value":"x","quote":"Arztbrief vom 02.10.2026 liegt vor."}]}',
+            '{"hints":"bad"}', '{"hints":[null]}',
             '\u0060\u0060\u0060json\n{"hints":[]}\n\u0060\u0060\u0060',
             json.dumps({"hints": [{"kind": "date_mentioned", "value": "02.10.2026",
                                    "quote": "Arztbrief vom 02.10.2026 liegt vor."}]*9}),
         ]:
             with self.subTest(reply=reply[:75]), self.assertRaises(assist.AssistantRejected):
                 assist.validate_hints(TEXT, reply)
+
+    def test_surrogate_unicode_is_handled_without_tracebacks(self):
+        with self.assertRaises(assist.AssistantRejected):
+            assist.validate_hints(TEXT, "\ud800")
+        with self.assertRaises(assist.AssistantRejected):
+            assist.build_request("\ud800")
 
     def test_document_and_response_are_bounded(self):
         for text in ["", "a" * 17_000]:
