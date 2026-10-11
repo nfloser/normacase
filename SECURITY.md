@@ -34,6 +34,12 @@ Use synthetic data only.
 
 See `docs/security/THREAT_MODEL.md` for the evolving threat model.
 
+The versioned product-wide [security acceptance inventory](docs/security/SECURITY_ACCEPTANCE.de.md)
+separates synthetic test coverage, technical gaps and operator/institution review.
+Run `python scripts/check_security_readiness.py validate` to verify its references.
+The separate `readiness` command reports a blocked productive deployment; neither
+successful inventory validation nor synthetic CI authorizes real patient data.
+
 ## Static source analysis
 
 Pull requests and changes to `main` that touch source/tooling paths run CodeQL over

@@ -14,6 +14,11 @@ Start with the [German demo acceptance guide](docs/development/DEMO_ABNAHME.de.m
 
 Only synthetic data belongs in the repository.
 
+The [security acceptance inventory](docs/security/SECURITY_ACCEPTANCE.de.md) records
+synthetic security test coverage separately from technical gaps and institutional
+approval. Its offline readiness check explicitly reports that real patient-data
+operation remains blocked; green development CI is not a productive clearance.
+
 ## Core principles
 
 - Platform first; domain knowledge stays external and versioned.

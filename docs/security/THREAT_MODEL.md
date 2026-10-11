@@ -2,6 +2,11 @@
 
 Status: maintained synthetic integration baseline. Refine again for each concrete institutional interface, productive identity model and deployment boundary.
 
+The [product-wide security acceptance inventory](SECURITY_ACCEPTANCE.de.md) maps
+this baseline to versioned sources, responsibilities, retained test references and
+explicit gaps. Its offline readiness report always blocks productive approval;
+it is an evidence-planning check, not a runtime authorization mechanism.
+
 ## Assets
 
 - structured case and evidence data,
