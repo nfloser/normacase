@@ -435,3 +435,13 @@ jobs:
           python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$CANDIDATE_COMMIT"
           export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$CANDIDATE_COMMIT/api/NormaCase.Api"
           python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-restored/state.json
+
+  local-assistant:
+    name: Local synthetic assistant security contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Validate model-free hint adapter
+        run: python scripts/test_local_document_assist.py
