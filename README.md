@@ -2,13 +2,13 @@
 
 NormaCase is a deterministic, auditable decision-support platform for rule-based medical and social-medical assessment workflows.
 
-The platform separates executable application code from versioned domain knowledge. It is designed to make rule evaluation reproducible, uncertainty explicit, source traceability inspectable and human review first-class.
+Application code and versioned domain knowledge are kept separate. Rule evaluations are reproducible, unknown information is recorded explicitly, and reviewers can trace decisions to their sources.
 
 ## Project status
 
-NormaCase has an executable synthetic end-to-end demonstration: normalized JSON/XML intake, deterministic assessment, persisted work queues, human review, outbound delivery and restart/backup restoration. Windows, Linux and macOS (Apple Silicon/Intel) self-contained previews and browser/database integration are verified in CI. This is **not** a production assessment system or domain-approved knowledge base.
+The synthetic end-to-end demo covers normalized JSON/XML intake, deterministic assessment, persistent work queues, human review, outbound delivery and recovery after a restart or backup restoration. CI verifies self-contained Windows, Linux and macOS (Apple Silicon/Intel) previews, along with browser and database integration. **NormaCase is not approved for production assessments, and its knowledge base is not domain-approved.**
 
-The institution-independent platform scope also includes live case/action permissions and audited administration, durable reviewed Knowledge activation, immutable corrections and targeted clarification, policy-gated batch review and authorized paginated queues. Integrated API, German workbench, PostgreSQL and native update/recovery acceptance are recorded in the [readiness inventory](docs/project/EXTERNAL_DATA_FREE_READINESS.md).
+The institution-independent platform also includes live case/action permissions, audited administration, reviewed Knowledge activation, immutable corrections, targeted clarification, policy-controlled batch review and paginated queues with authorization checks. Integrated API, German workbench, PostgreSQL and native update/recovery acceptance are recorded in the [readiness inventory](docs/project/EXTERNAL_DATA_FREE_READINESS.md).
 
 Start with the [German demo acceptance guide](docs/development/DEMO_ABNAHME.de.md) for downloads, the pitch and the persistent integration test. For reproducible persistent installation, exact version activation and backup/update/recovery, follow the [German operational installation guide](docs/development/OPERATIONAL_INSTALLATION.de.md), also included as `BETRIEB.de.md` in native bundles. Actual institutional integration, binding domain policy and productive deployment approval remain external prerequisites.
 
