@@ -1,6 +1,6 @@
 # NormaCase master specification
 
-This document captures the durable product intent that bootstraps the repository. Detailed operational rules live in the root `AGENTS.md`; architecture decisions are recorded as ADRs.
+This specification records NormaCase's product requirements and boundaries. The root `AGENTS.md` defines development and operating rules, while ADRs record architecture decisions.
 
 ## Vision
 
@@ -46,7 +46,7 @@ Production intake should normally be adapter-driven and continuous. Manual file 
 
 External systems remain outside the platform core. Future adapters may connect to institution-specific systems or standardized exchange formats, including MDconnect, MEDIKOS or SPV-MD interfaces where suitable access and authoritative interface specifications are available. NormaCase must not invent undocumented APIs or couple the Domain/RuleEngine to a specific vendor contract.
 
-The primary product interface should therefore evolve toward work queues and exception-focused review: operators see cases grouped by processing state, can inspect the complete Decision Trace and evidence, approve eligible cases individually or in batches where organizational policy permits, and explicitly correct/override through append-only audited human review.
+The planned primary interface uses work queues and focused review for exceptions. Operators can group cases by processing state, inspect the Decision Trace and evidence, approve eligible cases individually or in batches where policy allows, and record corrections or overrides in an append-only audit trail.
 
 Future AI-assisted transcription, document extraction or drafting may be introduced behind optional adapter/application boundaries. AI output is treated as proposed or derived input with explicit provenance and validation; it does not replace the deterministic decision core.
 
