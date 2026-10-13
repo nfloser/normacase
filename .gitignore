@@ -41,3 +41,7 @@ src/NormaCase.Api/wwwroot/
 # Self-contained preview archives
 artifacts/
 **/__pycache__/
+
+# Optional local model weights are operator assets, never Git artifacts
+/models/
+*.gguf

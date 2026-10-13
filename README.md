@@ -109,6 +109,10 @@ The current core can:
 - evaluate a narrowly scoped, source-pinned MD Bund adult weighted-score PUBLIC_REFERENCE pack without assigning a Pflegegrad or implying domain approval,
 - evaluate a narrowly scoped, source-pinned G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack without treating it as domain approval.
 
+## Optional local document assistant (synthetic proof of concept)
+
+The [NormaCase Assist experiment](docs/development/LOCAL_ASSISTANT.de.md) is disabled by default and exercises only an included synthetic text fixture. It can call a separately installed, local lightweight model to propose source-anchored hints requiring human review. It does **not** modify case facts or decisions, read real patient files, integrate PDF/OCR or require model downloads during build/CI. See the [security and privacy acceptance matrix](docs/security/DOCUMENT_ASSISTANCE_SECURITY.de.md).
+
 ## Local verification
 
 Requires the .NET 10 SDK.
