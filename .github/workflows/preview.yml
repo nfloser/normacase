@@ -58,7 +58,7 @@ jobs:
         run: ${{ matrix.python }} scripts/build_preview.py --rid ${{ matrix.rid }} --commit ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Exercise extracted preview without shared runtime lookup
         run: ${{ matrix.python }} scripts/check_preview.py --archive artifacts/normacase-synthetic-preview-${{ matrix.rid }}.zip --rid ${{ matrix.rid }} --commit ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: synthetic-preview-${{ matrix.rid }}
           path: artifacts/*
