@@ -171,6 +171,14 @@ jobs:
       - run: npm run build
         working-directory: frontend
       - run: dotnet build src/NormaCase.Api --configuration Release
+      - name: Build Angular pilot for the local review host
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+        working-directory: angular-pilot
+      - name: Install pilot beside the existing workbench in the disposable build output
+        run: |
+          npm run stage:local --prefix angular-pilot
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
       - name: Capture previous workplace at acceptance viewports
