@@ -400,6 +400,43 @@ public sealed class SyntheticReviewHostTests
             Assert.Equal(new[] { "demo-g-batch-not-supported", "demo-g-batch-supported", "demo-g-incomplete",
                 "demo-g-not-supported", "demo-g-review", "demo-g-supported" }, seen);
             using var queues = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues"));
+            // The Java reader and the existing endpoint share one synthetic wire-shape example.
+            using var contract = JsonDocument.Parse(await File.ReadAllTextAsync(
+                Path.Combine(AppContext.BaseDirectory, "Contracts", "synthetic-review-queue-page.json")));
+            var example = contract.RootElement;
+            Assert.Equal(example.GetProperty("configurationId").GetString(), queues.RootElement.GetProperty("configurationId").GetString());
+            Assert.Equal(example.GetProperty("configurationVersion").ValueKind, queues.RootElement.GetProperty("configurationVersion").ValueKind);
+            var sampleQueue = example.GetProperty("queues")[0];
+            var sampleItem = sampleQueue.GetProperty("items")[0];
+            var actualQueues = queues.RootElement.GetProperty("queues").EnumerateArray().ToArray();
+            Assert.All(actualQueues, queue => Assert.Equal(sampleQueue.GetProperty("queueId").ValueKind, queue.GetProperty("queueId").ValueKind));
+            var actualItems = actualQueues.SelectMany(queue => queue.GetProperty("items").EnumerateArray()).ToArray();
+            Assert.NotEmpty(actualItems);
+            foreach (var item in actualItems)
+            foreach (var property in sampleItem.EnumerateObject())
+            {
+                var actualKind = item.GetProperty(property.Name).ValueKind;
+                if (property.Value.ValueKind is JsonValueKind.True or JsonValueKind.False)
+                    Assert.True(actualKind is JsonValueKind.True or JsonValueKind.False);
+                else
+                    Assert.Equal(property.Value.ValueKind, actualKind);
+            }
+            // Characterize the wire shape used by the next read-only client.
+            // Additional properties remain forward-compatible; revisions stay strings.
+            var root = queues.RootElement;
+            Assert.Equal(JsonValueKind.String, root.GetProperty("configurationId").ValueKind);
+            Assert.Equal(JsonValueKind.Number, root.GetProperty("configurationVersion").ValueKind);
+            Assert.Equal(JsonValueKind.Null, root.GetProperty("nextPageCursor").ValueKind);
+            foreach (var queue in root.GetProperty("queues").EnumerateArray())
+            {
+                Assert.Equal(JsonValueKind.String, queue.GetProperty("queueId").ValueKind);
+                foreach (var item in queue.GetProperty("items").EnumerateArray())
+                {
+                    foreach (var name in new[] { "caseId", "caseRevision", "processRevision", "stateId", "assessmentId", "auditRevision" })
+                        Assert.Equal(JsonValueKind.String, item.GetProperty(name).ValueKind);
+                    Assert.Contains(item.GetProperty("batchAllowed").ValueKind, new[] { JsonValueKind.True, JsonValueKind.False });
+                }
+            }
             Assert.Equal(new[] { 4, 1, 1, 0 },
                 queues.RootElement.GetProperty("queues").EnumerateArray()
                     .Select(item => item.GetProperty("items").GetArrayLength()).ToArray());

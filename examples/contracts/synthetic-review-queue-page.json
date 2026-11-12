@@ -1,0 +1,21 @@
+{
+  "configurationId": "synthetic-reviewed-queues",
+  "configurationVersion": 1,
+  "nextPageCursor": null,
+  "queues": [
+    {
+      "queueId": "review",
+      "items": [
+        {
+          "caseId": "demo-g-review",
+          "caseRevision": "1",
+          "processRevision": "1",
+          "stateId": "manual-review",
+          "assessmentId": "assessment-demo-g-review",
+          "auditRevision": "1",
+          "batchAllowed": false
+        }
+      ]
+    }
+  ]
+}

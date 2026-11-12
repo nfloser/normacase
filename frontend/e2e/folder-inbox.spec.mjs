@@ -3,7 +3,8 @@ test('moving a case removes it from All cases and clearing its folder returns it
  await page.goto('/#work-queues');const explorer=page.getByRole('region',{name:'Fallverwaltung'});
  await page.getByLabel('Fälle suchen').fill('reference-care-out-of-range');
  const row=explorer.locator('.explorer-table tbody tr');await expect(row).toHaveCount(1);
- const result=await row.locator('td').nth(6).innerText();
+ const result='Manuelle Prüfung erforderlich';
+ await expect(row.locator('td').nth(6)).toHaveText(result);
  await row.locator('td').nth(2).click();
  await explorer.getByRole('button',{name:'Neuer Ordner',exact:true}).click();
  const dialog=page.getByRole('dialog');await dialog.getByLabel('Ordnername').fill('Abgelegte Vorgänge');
