@@ -400,6 +400,22 @@ public sealed class SyntheticReviewHostTests
             Assert.Equal(new[] { "demo-g-batch-not-supported", "demo-g-batch-supported", "demo-g-incomplete",
                 "demo-g-not-supported", "demo-g-review", "demo-g-supported" }, seen);
             using var queues = JsonDocument.Parse(await client.GetStringAsync("/api/review/work-queues"));
+            // Characterize the wire shape used by the next read-only client.
+            // Additional properties remain forward-compatible; revisions stay strings.
+            var root = queues.RootElement;
+            Assert.Equal(JsonValueKind.String, root.GetProperty("configurationId").ValueKind);
+            Assert.Equal(JsonValueKind.Number, root.GetProperty("configurationVersion").ValueKind);
+            Assert.Equal(JsonValueKind.Null, root.GetProperty("nextPageCursor").ValueKind);
+            foreach (var queue in root.GetProperty("queues").EnumerateArray())
+            {
+                Assert.Equal(JsonValueKind.String, queue.GetProperty("queueId").ValueKind);
+                foreach (var item in queue.GetProperty("items").EnumerateArray())
+                {
+                    foreach (var name in new[] { "caseId", "caseRevision", "processRevision", "stateId", "assessmentId", "auditRevision" })
+                        Assert.Equal(JsonValueKind.String, item.GetProperty(name).ValueKind);
+                    Assert.Contains(item.GetProperty("batchAllowed").ValueKind, new[] { JsonValueKind.True, JsonValueKind.False });
+                }
+            }
             Assert.Equal(new[] { 4, 1, 1, 0 },
                 queues.RootElement.GetProperty("queues").EnumerateArray()
                     .Select(item => item.GetProperty("items").GetArrayLength()).ToArray());
