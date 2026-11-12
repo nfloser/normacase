@@ -59,6 +59,12 @@ class LoopbackReviewQueueClientTest {
         assertNull(client.read(credential, null).nextPageCursor());
         assertNull(query.get());
     }
+    @Test void retainsTheOriginalValidatedJsonIncludingUnknownFields() throws Exception {
+        String original = Files.readString(Path.of("..", "examples", "contracts", "synthetic-review-queue-page.json"))
+            .replace("\"configurationId\"", "\"futureField\": {\"unknown\": true}, \"configurationId\"");
+        body = original.getBytes(StandardCharsets.UTF_8);
+        assertEquals(original, client.readValidatedJson(credential, null));
+    }
     @Test void encodesCursorAndRejectsBadInputsBeforeAnyRequest() throws Exception {
         client.read(credential, "case&other=x");
         assertEquals("afterCaseId=case%26other%3Dx", query.get());
@@ -70,13 +76,14 @@ class LoopbackReviewQueueClientTest {
         assertFalse(error.getMessage().contains(credential));
     }
     @Test void mapsAuthorizationAndDoesNotFollowRedirects() {
-        for (int code : new int[] {401, 403, 302, 500}) {
+        for (int code : new int[] {400, 401, 403, 302, 500}) {
             status = code;
             var error = assertThrows(LoopbackReviewQueueClient.QueueReadException.class, () -> client.read(credential, null));
-            assertEquals(code == 401 ? LoopbackReviewQueueClient.Failure.UNAUTHORIZED
+            assertEquals(code == 400 ? LoopbackReviewQueueClient.Failure.INVALID_REQUEST
+                : code == 401 ? LoopbackReviewQueueClient.Failure.UNAUTHORIZED
                 : code == 403 ? LoopbackReviewQueueClient.Failure.FORBIDDEN : LoopbackReviewQueueClient.Failure.UPSTREAM_FAILURE, error.failure());
         }
-        assertEquals(4, requests.get());
+        assertEquals(5, requests.get());
     }
     @Test void failsClosedForInvalidOrOversizedResponses() {
         body = "{broken".getBytes(StandardCharsets.UTF_8);
