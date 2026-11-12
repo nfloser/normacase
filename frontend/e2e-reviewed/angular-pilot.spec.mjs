@@ -31,3 +31,18 @@ test('Angular queue pilot rejects an invalid credential', async ({ page }) => {
   await expect(page.getByRole('alert')).toContainText('ungültig oder abgelaufen');
   await expect(page.getByLabel('Zugangsschlüssel')).toHaveValue('');
 });
+
+test('Angular queue pilot supports keyboard login on a narrow screen', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/angular-pilot/index.html');
+  await page.keyboard.press('Tab');
+  await expect(page.getByLabel('Zugangsschlüssel')).toBeFocused();
+  await page.keyboard.type(credential);
+  await page.keyboard.press('Enter');
+  await expect(page.getByText('demo-g-review', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Abmelden' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.getByLabel('Zugangsschlüssel')).toBeVisible();
+});

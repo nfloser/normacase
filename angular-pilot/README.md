@@ -11,7 +11,7 @@ Requires Node 24 and npm. From this directory run `npm ci`, `npm test --
 `dist/angular-pilot/browser`; no CDN, remote fonts or runtime dependency is used.
 Dependencies must first be provisioned for offline builds.
 
-## Host integration (not yet end-to-end verified)
+## Local host integration
 
 The protected API does not allow cross-origin requests. Build the API in Release
 mode (`dotnet build src/NormaCase.Api --configuration Release` from the repository
@@ -23,7 +23,7 @@ opt-in synthetic review and PostgreSQL mode according to
 [the synthetic review host guide](../docs/security/SYNTHETIC_REVIEW_HOST.md).
 The server requires its own setup and access control; the client does not grant
 permissions. The repository CI exercises this staging path and browser flow;
-check the PR CI result before relying on it. There is no one-command startup yet.
+check the CI result for the exact revision before relying on it. There is no one-command startup yet.
 
 The form holds the synthetic credential in memory only. It requests same-origin
 `/api/review/work-queues`, does not use cookies, and shows one page at a time.
