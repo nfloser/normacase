@@ -529,11 +529,14 @@ jobs:
         with:
           dotnet-version: 10.0.x
       - run: dotnet build src/NormaCase.Api --configuration Release
+      - run: mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -DskipTests package
       - name: Run Java against the local synthetic host
         run: |
           dotnet src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll > /tmp/normacase-java-host.log 2>&1 &
           host_pid=$!
-          trap 'kill "$host_pid" 2>/dev/null || true' EXIT
+          SERVER_ADDRESS=0.0.0.0 SERVER_PORT=5082 java -jar java-contract/target/review-queue-contract-0.1.0-SNAPSHOT.jar > /tmp/normacase-spring-host.log 2>&1 &
+          spring_pid=$!
+          trap 'kill "$host_pid" "$spring_pid" 2>/dev/null || true' EXIT
           python -c 'import time,urllib.request,sys
           for attempt in range(60):
               try:
@@ -541,4 +544,16 @@ jobs:
               except Exception:
                   time.sleep(1)
           sys.exit("Synthetic host did not start")'
+          python -c 'import time,urllib.request,urllib.error,sys
+          for attempt in range(60):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:5081/api/review/work-queues", timeout=1).close()
+              except urllib.error.HTTPError as e:
+                  if e.code == 401: sys.exit(0)
+              except Exception: pass
+              time.sleep(1)
+          sys.exit("Synthetic Spring host did not start")'
+          python -c 'import sys
+          listeners=[line.split()[1] for line in open("/proc/net/tcp").read().splitlines()[1:] if line.split()[3] == "0A" and line.split()[1].endswith(":13D9")]
+          assert listeners == ["0100007F:13D9"], "Spring pilot is not bound exclusively to IPv4 loopback"'
           mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -Dtest=RealSyntheticReviewHostTest test

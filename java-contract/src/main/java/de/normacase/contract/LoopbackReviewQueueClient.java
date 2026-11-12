@@ -44,6 +44,11 @@ public final class LoopbackReviewQueueClient {
     }
 
     public ReviewQueuePage read(String credential, String cursor) throws QueueReadException {
+        return parser.parse(readValidatedJson(credential, cursor));
+    }
+
+    /** Return the validated original JSON to preserve future fields and exact revisions. */
+    public String readValidatedJson(String credential, String cursor) throws QueueReadException {
         if (!validCredential(credential) || (cursor != null && (cursor.isEmpty() || cursor.length() > 256)))
             throw new QueueReadException(Failure.INVALID_REQUEST);
         String query = cursor == null ? "" : "?afterCaseId=" + URLEncoder.encode(cursor, StandardCharsets.UTF_8);
@@ -53,6 +58,7 @@ public final class LoopbackReviewQueueClient {
         var pending = client.sendAsync(request, ignored -> new LimitedBody());
         try {
             var response = pending.get(5, TimeUnit.SECONDS);
+            if (response.statusCode() == 400) throw new QueueReadException(Failure.INVALID_REQUEST);
             if (response.statusCode() == 401) throw new QueueReadException(Failure.UNAUTHORIZED);
             if (response.statusCode() == 403) throw new QueueReadException(Failure.FORBIDDEN);
             if (response.statusCode() != 200) throw new QueueReadException(Failure.UPSTREAM_FAILURE);
@@ -60,7 +66,7 @@ public final class LoopbackReviewQueueClient {
             if (!media.equalsIgnoreCase("application/json")) throw new QueueReadException(Failure.INVALID_RESPONSE);
             String text = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                 .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(response.body())).toString();
-            try { return parser.parse(text); }
+            try { parser.parse(text); return text; }
             catch (IllegalArgumentException ex) { throw new QueueReadException(Failure.INVALID_RESPONSE); }
         } catch (InterruptedException ex) {
             pending.cancel(true);
