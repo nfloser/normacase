@@ -38,4 +38,22 @@ describe('Arbeitslisten', () => {
     TestBed.inject(HttpTestingController).expectOne('/api/review/work-queues').flush({queues: 'invalid'});
     fixture.detectChanges(); expect(element.textContent).toContain('Antwort der Arbeitsliste ist ungültig');
   });
+  it('handles unknown queue IDs without assigning them a known meaning', async () => {
+    const fixture = TestBed.createComponent(App); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    const input = element.querySelector('input')!; input.value = 'test'; input.dispatchEvent(new Event('input')); await fixture.whenStable();
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/review/work-queues').flush({ queues: [{queueId: '__proto__', items: []}], nextPageCursor: null });
+    fixture.detectChanges(); expect(element.textContent).toContain('Unbekannte Arbeitsliste'); http.verify();
+  });
+  it('clears the pending request when the view is destroyed', async () => {
+    const fixture = TestBed.createComponent(App); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    const input = element.querySelector('input')!; input.value = 'test'; input.dispatchEvent(new Event('input')); await fixture.whenStable();
+    element.querySelector('form')!.dispatchEvent(new Event('submit'));
+    const http = TestBed.inject(HttpTestingController);
+    const request = http.expectOne('/api/review/work-queues');
+    fixture.destroy(); expect(request.cancelled).toBe(true); http.verify();
+  });
 });

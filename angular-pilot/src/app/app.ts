@@ -2,6 +2,7 @@ import { Component, OnDestroy, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { de } from './de';
 
 interface QueueItem { caseId: string; }
 interface Queue { queueId: string; items: QueueItem[]; }
@@ -9,6 +10,7 @@ interface QueuePage { queues: Queue[]; nextPageCursor: string | null; }
 
 @Component({ selector: 'app-root', imports: [FormsModule], templateUrl: './app.html' })
 export class App implements OnDestroy {
+  protected readonly text = de;
   protected keyInput = '';
   private key = '';
   private pending?: Subscription;
@@ -23,7 +25,7 @@ export class App implements OnDestroy {
   protected login(): void {
     const key = this.keyInput;
     this.logout();
-    if (!key.trim()) { this.error.set('Bitte einen Zugangsschlüssel eingeben.'); return; }
+    if (!key.trim()) { this.error.set(de.credentialRequired); return; }
     this.key = key;
     this.load(null);
   }
@@ -42,7 +44,7 @@ export class App implements OnDestroy {
       next: page => {
         if (!page || !Array.isArray(page.queues) || !(page.nextPageCursor === null || typeof page.nextPageCursor === 'string') ||
           !page.queues.every(q => q != null && typeof q.queueId === 'string' && Array.isArray(q.items) && q.items.every(i => i != null && typeof i.caseId === 'string'))) {
-          this.active.set(false); this.key = ''; this.error.set('Die Antwort der Arbeitsliste ist ungültig.'); this.busy.set(false); return;
+          this.active.set(false); this.key = ''; this.error.set(de.invalidResponse); this.busy.set(false); return;
         }
         this.queues.set(page.queues); this.cursor.set(page.nextPageCursor); this.active.set(true); this.busy.set(false);
       },
@@ -50,15 +52,14 @@ export class App implements OnDestroy {
         this.busy.set(false);
         if (err instanceof HttpErrorResponse && (err.status === 401 || err.status === 403)) {
           this.key = ''; this.active.set(false);
-          this.error.set(err.status === 401 ? 'Die Anmeldung ist ungültig oder abgelaufen.' : 'Für diese Arbeitsliste fehlt die Berechtigung.');
-        } else { this.error.set('Die Arbeitsliste konnte nicht geladen werden. Bitte erneut anmelden.'); this.key = ''; this.active.set(false); }
+          this.error.set(err.status === 401 ? de.expired : de.forbidden);
+        } else { this.error.set(de.networkError); this.key = ''; this.active.set(false); }
       },
     });
   }
 
   protected label(id: string): string {
-    const labels: Record<string, string> = { approval: 'Freigabe erforderlich', clarification: 'Klärung erforderlich', review: 'Prüfung erforderlich', completed: 'Abgeschlossen' };
-    return labels[id] ?? 'Unbekannte Arbeitsliste';
+    return Object.hasOwn(de.queueLabels, id) ? de.queueLabels[id] : de.unknownQueue;
   }
 
   protected logout(): void {

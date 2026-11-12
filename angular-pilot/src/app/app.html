@@ -1,22 +1,22 @@
-<header><div class="brand">N</div><div><strong>NormaCase</strong><span>Arbeitslisten</span></div></header>
+<header><div class="brand">N</div><div><strong>{{ text.app }}</strong><span>{{ text.queuesTitle }}</span></div></header>
 <main>
-  <div class="heading"><div><p class="eyebrow">FALLVERWALTUNG</p><h1>Arbeitslisten</h1><p>Fälle zur Prüfung und Bearbeitung im Überblick.</p></div>
-    @if (active()) { <button type="button" class="secondary" (click)="logout()">Abmelden</button> }
+  <div class="heading"><div><p class="eyebrow">{{ text.section }}</p><h1>{{ text.queuesTitle }}</h1><p>{{ text.description }}</p></div>
+    @if (active()) { <button type="button" class="secondary" (click)="logout()">{{ text.logout }}</button> }
   </div>
   @if (error()) { <p class="notice error" role="alert">{{ error() }}</p> }
   @if (!active() && !busy()) {
-    <section class="login"><h2>Anmelden</h2><p>Gib den lokalen Zugangsschlüssel für die Fallprüfung ein.</p>
-      <form (ngSubmit)="login()"><label for="credential">Zugangsschlüssel</label><input id="credential" name="credential" type="password" autocomplete="off" [(ngModel)]="keyInput"><button type="submit">Arbeitslisten öffnen</button></form>
+    <section class="login"><h2>{{ text.login }}</h2><p>{{ text.loginHelp }}</p>
+      <form (ngSubmit)="login()"><label for="credential">{{ text.credential }}</label><input id="credential" name="credential" type="password" autocomplete="off" [(ngModel)]="keyInput"><button type="submit">{{ text.open }}</button></form>
     </section>
   }
-  @if (busy()) { <p class="notice" role="status">Arbeitslisten werden geladen …</p> }
+  @if (busy()) { <p class="notice" role="status">{{ text.loading }}</p> }
   @if (active() && !busy()) {
     <div class="queue-grid">@for (queue of queues(); track queue.queueId) {
       <section class="queue"><h2>{{ label(queue.queueId) }} <span>{{ queue.items.length }}</span></h2>
-      @if (queue.items.length === 0) { <p>Keine Fälle auf dieser Seite.</p> }
-      @else { <ul>@for (item of queue.items; track item.caseId) { <li><span>Fall</span><strong>{{ item.caseId }}</strong></li> }</ul> }
+      @if (queue.items.length === 0) { <p>{{ text.empty }}</p> }
+      @else { <ul>@for (item of queue.items; track item.caseId) { <li><span>{{ text.case }}</span><strong>{{ item.caseId }}</strong></li> }</ul> }
       </section>
     }</div>
-    @if (cursor(); as next) { <button type="button" (click)="load(next)">Weitere Fälle</button> }
+    @if (cursor(); as next) { <button type="button" (click)="load(next)">{{ text.more }}</button> }
   }
 </main>
