@@ -171,6 +171,14 @@ jobs:
       - run: npm run build
         working-directory: frontend
       - run: dotnet build src/NormaCase.Api --configuration Release
+      - name: Build Angular pilot for the local review host
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+        working-directory: angular-pilot
+      - name: Install pilot beside the existing workbench in the disposable build output
+        run: |
+          npm run stage:local --prefix angular-pilot
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
       - name: Capture previous workplace at acceptance viewports
@@ -446,6 +454,24 @@ jobs:
           python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$CANDIDATE_COMMIT"
           export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$CANDIDATE_COMMIT/api/NormaCase.Api"
           python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-restored/state.json
+
+  angular-pilot:
+    name: Angular synthetic queue pilot
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: angular-pilot
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: angular-pilot/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm test -- --watch=false
+      - run: npm run build
 
   java-contract:
     name: Java synthetic review queue contract

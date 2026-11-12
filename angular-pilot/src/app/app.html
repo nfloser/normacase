@@ -1,0 +1,22 @@
+<header><div class="brand">N</div><div><strong>{{ text.app }}</strong><span>{{ text.queuesTitle }}</span></div></header>
+<main>
+  <div class="heading"><div><p class="eyebrow">{{ text.section }}</p><h1>{{ text.queuesTitle }}</h1><p>{{ text.description }}</p></div>
+    @if (active()) { <button type="button" class="secondary" #logoutButton (click)="logoutFromUi()">{{ text.logout }}</button> }
+  </div>
+  @if (error()) { <p class="notice error" role="alert">{{ error() }}</p> }
+  @if (!active() && !busy()) {
+    <section class="login"><h2>{{ text.login }}</h2><p>{{ text.loginHelp }}</p>
+      <form (ngSubmit)="login()"><label for="credential">{{ text.credential }}</label><input #credentialField id="credential" name="credential" type="password" autocomplete="off" [(ngModel)]="keyInput"><button type="submit">{{ text.open }}</button></form>
+    </section>
+  }
+  @if (busy()) { <p class="notice" role="status">{{ text.loading }}</p> }
+  @if (active() && !busy()) {
+    <div class="queue-grid">@for (queue of queues(); track queue.queueId) {
+      <section class="queue"><h2>{{ label(queue.queueId) }} <span>{{ queue.items.length }}</span></h2>
+      @if (queue.items.length === 0) { <p>{{ text.empty }}</p> }
+      @else { <ul>@for (item of queue.items; track item.caseId) { <li><span>{{ text.case }}</span><strong>{{ item.caseId }}</strong></li> }</ul> }
+      </section>
+    }</div>
+    @if (cursor(); as next) { <button type="button" (click)="load(next)">{{ text.more }}</button> }
+  }
+</main>
