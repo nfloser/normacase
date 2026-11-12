@@ -1,4 +1,4 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { afterNextRender, Component, ElementRef, inject, Injector, OnDestroy, signal, viewChild } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -11,6 +11,9 @@ interface QueuePage { queues: Queue[]; nextPageCursor: string | null; }
 @Component({ selector: 'app-root', imports: [FormsModule], templateUrl: './app.html' })
 export class App implements OnDestroy {
   protected readonly text = de;
+  private readonly injector = inject(Injector);
+  private readonly logoutButton = viewChild<ElementRef<HTMLButtonElement>>('logoutButton');
+  private readonly credentialField = viewChild<ElementRef<HTMLInputElement>>('credentialField');
   protected keyInput = '';
   private key = '';
   private pending?: Subscription;
@@ -46,7 +49,9 @@ export class App implements OnDestroy {
           !page.queues.every(q => q != null && typeof q.queueId === 'string' && Array.isArray(q.items) && q.items.every(i => i != null && typeof i.caseId === 'string'))) {
           this.active.set(false); this.key = ''; this.error.set(de.invalidResponse); this.busy.set(false); return;
         }
+        const firstLogin = !this.active();
         this.queues.set(page.queues); this.cursor.set(page.nextPageCursor); this.active.set(true); this.busy.set(false);
+        if (firstLogin) afterNextRender(() => this.logoutButton()?.nativeElement.focus(), { injector: this.injector });
       },
       error: (err: unknown) => {
         this.busy.set(false);
@@ -60,6 +65,11 @@ export class App implements OnDestroy {
 
   protected label(id: string): string {
     return Object.hasOwn(de.queueLabels, id) ? de.queueLabels[id] : de.unknownQueue;
+  }
+
+  protected logoutFromUi(): void {
+    this.logout();
+    afterNextRender(() => this.credentialField()?.nativeElement.focus(), { injector: this.injector });
   }
 
   protected logout(): void {

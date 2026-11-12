@@ -41,8 +41,7 @@ test('Angular queue pilot supports keyboard login on a narrow screen', async ({ 
   await page.keyboard.press('Enter');
   await expect(page.getByText('demo-g-review', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Abmelden' })).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page.getByLabel('Zugangsschlüssel')).toBeVisible();
+  await expect(page.getByLabel('Zugangsschlüssel')).toBeFocused();
 });

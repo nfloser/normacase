@@ -1,12 +1,12 @@
 <header><div class="brand">N</div><div><strong>{{ text.app }}</strong><span>{{ text.queuesTitle }}</span></div></header>
 <main>
   <div class="heading"><div><p class="eyebrow">{{ text.section }}</p><h1>{{ text.queuesTitle }}</h1><p>{{ text.description }}</p></div>
-    @if (active()) { <button type="button" class="secondary" (click)="logout()">{{ text.logout }}</button> }
+    @if (active()) { <button type="button" class="secondary" #logoutButton (click)="logoutFromUi()">{{ text.logout }}</button> }
   </div>
   @if (error()) { <p class="notice error" role="alert">{{ error() }}</p> }
   @if (!active() && !busy()) {
     <section class="login"><h2>{{ text.login }}</h2><p>{{ text.loginHelp }}</p>
-      <form (ngSubmit)="login()"><label for="credential">{{ text.credential }}</label><input id="credential" name="credential" type="password" autocomplete="off" [(ngModel)]="keyInput"><button type="submit">{{ text.open }}</button></form>
+      <form (ngSubmit)="login()"><label for="credential">{{ text.credential }}</label><input #credentialField id="credential" name="credential" type="password" autocomplete="off" [(ngModel)]="keyInput"><button type="submit">{{ text.open }}</button></form>
     </section>
   }
   @if (busy()) { <p class="notice" role="status">{{ text.loading }}</p> }
