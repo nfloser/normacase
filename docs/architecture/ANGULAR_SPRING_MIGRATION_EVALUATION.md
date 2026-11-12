@@ -1,13 +1,13 @@
 # Angular / Spring Boot migration evaluation
 
-Status: **proposed, not approved for implementation**
+Status: **staged migration requested; implementation and parity gates remain open**
 Tracking: [#325](https://github.com/nfloser/normacase/issues/325)
 
 ## Why consider this
 
 The existing NormaCase product is an independently useful and tested, synthetic-only platform. Its current UI uses React + TypeScript; its API and deterministic core use ASP.NET Core and .NET. The proposed Angular, RxJS, Java and Spring Boot stack enables transferable application-development experience without itself justifying a wholesale rewrite.
 
-This is a technical evaluation, not a mandate to change implementation languages. The architecture remains platform-first; the repository's acceptance and security gates take precedence over training goals.
+The requested direction is Angular for the workbench and Java/Spring Boot for the API, introduced incrementally. The architecture remains platform-first; the repository's acceptance and security gates take precedence over training goals.
 
 ## Current versus target capabilities
 
@@ -25,7 +25,7 @@ This is a technical evaluation, not a mandate to change implementation languages
 2. **Staged presentation/API migration:** Only if the pilot demonstrates contract parity, operating simplicity and maintained Windows/Linux/macOS support, migrate workbench routes and application responsibilities as independently reviewed vertical slices. Do not run two authoritative write paths.
 3. **Java rule-core rewrite:** Defer. Only consider after an explicit total-cost decision and cross-language golden-fixture/immutable-replay proof. Rule, assessment and Knowledge Release semantics must remain unchanged.
 
-Option 1 is a proposal for implementation, not an accepted ADR. Do not retire the supported .NET/React path before explicit evidence supports doing so.
+Option 1 is the first implementation step, not an accepted ADR or proof of migration readiness. Do not retire the supported .NET/React path before explicit evidence supports doing so.
 
 ## Candidate pilot boundary
 
@@ -52,10 +52,10 @@ A pilot must not fabricate a production MDconnect interface; all case content mu
 
 ## Sequencing
 
-1. Review this evaluation and decide whether to run the thin pilot in a separate issue.
+1. Run the thin pilot under a separate issue and verify the existing read contract.
 2. Inspect current API read-contract, frontend route, authorization and fixture tests. Identify the one route and exact serialized response.
 3. Implement contract-first Angular client + one view, keeping the current workbench supported.
-4. Add Spring Boot adapter **only** if the existing service boundary requires it or a specific testable backend capability warrants it.
+4. Introduce Spring Boot through a bounded, tested application/API capability with an explicit contract and security boundary; do not introduce a redundant production proxy merely to claim migration progress.
 5. Evaluate against regression, security, offline and cross-platform criteria before any broader migration proposal.
 
 ## Architectural implications
