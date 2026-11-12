@@ -3,6 +3,8 @@ import { createHash, randomBytes } from 'node:crypto';
 
 const credential = process.env.NORMACASE_REVIEW_E2E_CREDENTIAL ?? randomBytes(32).toString('base64');
 const otherCredential = process.env.NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL ?? randomBytes(32).toString('base64');
+const angularCredential = process.env.NORMACASE_ANGULAR_E2E_CREDENTIAL ?? randomBytes(32).toString('base64');
+process.env.NORMACASE_ANGULAR_E2E_CREDENTIAL = angularCredential;
 const administratorCredential = process.env.NORMACASE_REVIEW_E2E_ADMINISTRATOR_CREDENTIAL ?? randomBytes(32).toString('base64');
 const entitlementApproverCredential = process.env.NORMACASE_REVIEW_E2E_ENTITLEMENT_APPROVER_CREDENTIAL ?? randomBytes(32).toString('base64');
 process.env.NORMACASE_REVIEW_E2E_CREDENTIAL = credential;
@@ -50,6 +52,9 @@ export default defineConfig({
       SyntheticReview__Users__corrector__Actions__4: 'EXPORT',
       SyntheticReview__Users__corrector__Actions__5: 'CLARIFY',
       SyntheticReview__Users__corrector__CaseIds__0: correctionCaseId,
+      SyntheticReview__Users__angular__Credential: angularCredential,
+      SyntheticReview__Users__angular__Actions__0: 'READ',
+      SyntheticReview__Users__angular__CaseIds__0: 'demo-g-review',
       SyntheticReview__Users__bob__Credential: otherCredential,
       SyntheticReview__Users__bob__Actions__0: 'READ',
       SyntheticReview__Users__bob__CaseIds__0: 'demo-g-review',

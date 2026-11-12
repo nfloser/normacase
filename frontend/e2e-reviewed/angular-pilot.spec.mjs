@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const credential = process.env.NORMACASE_REVIEW_E2E_OTHER_CREDENTIAL;
+const credential = process.env.NORMACASE_ANGULAR_E2E_CREDENTIAL;
 
 test('Angular queue pilot uses the authenticated scoped local host and clears its session', async ({ page }) => {
   const cspViolations = [];
