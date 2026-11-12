@@ -489,6 +489,23 @@ jobs:
           cache: maven
           cache-dependency-path: java-contract/pom.xml
       - run: mvn --batch-mode --no-transfer-progress verify
+      - name: Verify forwarded-header regression test
+        run: |
+          source=src/main/java/de/normacase/http/LocalBoundaryFilter.java
+          cp "$source" /tmp/normacase-boundary-original.java
+          trap 'cp /tmp/normacase-boundary-original.java "$source"' EXIT
+          python -c 'from pathlib import Path
+          p=Path("src/main/java/de/normacase/http/LocalBoundaryFilter.java"); text=p.read_text()
+          assert text.count("|| forwarded)") == 1
+          p.write_text(text.replace("|| forwarded)", ")"))'
+          if mvn --batch-mode --no-transfer-progress -Dtest=LocalBoundaryFilterTest test > /tmp/normacase-mutation.log 2>&1; then
+            echo "Forwarded-header mutation was not caught" >&2; exit 1
+          fi
+          python -c 'import xml.etree.ElementTree as ET
+          root=ET.parse("target/surefire-reports/TEST-de.normacase.http.LocalBoundaryFilterTest.xml").getroot()
+          case=next(c for c in root.findall("testcase") if c.get("name") == "permitsOnlyTheLocalReadPath")
+          failure=case.find("failure")
+          assert failure is not None and "expected: <403> but was: <200>" in failure.get("message", ""), "Mutation did not fail for the intended reason"'
 
   java-loopback-integration:
     name: Java client with synthetic .NET review host
