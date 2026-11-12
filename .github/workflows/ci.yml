@@ -553,7 +553,16 @@ jobs:
               except Exception: pass
               time.sleep(1)
           sys.exit("Synthetic Spring host did not start")'
-          python -c 'import sys
-          listeners=[line.split()[1] for line in open("/proc/net/tcp").read().splitlines()[1:] if line.split()[3] == "0A" and line.split()[1].endswith(":13D9")]
-          assert listeners == ["0100007F:13D9"], "Spring pilot is not bound exclusively to IPv4 loopback"'
+          python -c 'import ipaddress
+          listeners=[]
+          for file, version in (("/proc/net/tcp",4),("/proc/net/tcp6",6)):
+              for line in open(file).read().splitlines()[1:]:
+                  fields=line.split(); address,port=fields[1].split(":")
+                  if fields[3] != "0A" or port != "13D9": continue
+                  raw=bytes.fromhex(address)
+                  raw=raw[::-1] if version == 4 else b"".join(raw[i:i+4][::-1] for i in range(0,16,4))
+                  ip=ipaddress.ip_address(raw)
+                  if version == 6 and ip.ipv4_mapped: ip=ip.ipv4_mapped
+                  listeners.append(ip)
+          assert listeners and all(ip.is_loopback for ip in listeners), "Spring pilot is not bound exclusively to loopback"'
           mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -Dtest=RealSyntheticReviewHostTest test
