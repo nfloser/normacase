@@ -20,6 +20,23 @@ class RealSyntheticReviewHostTest {
             () -> client.read(Base64.getEncoder().encodeToString(new byte[32]), null));
         assertEquals(LoopbackReviewQueueClient.Failure.UNAUTHORIZED, denied.failure());
     }
+    @Test void existingDetailContractPreservesScopedReadAndHidesUnavailableCases() throws Exception {
+        String key = System.getenv("NORMACASE_JAVA_TEST_CREDENTIAL");
+        assertNotNull(key);
+        var http = java.net.http.HttpClient.newHttpClient();
+        String path = "http://127.0.0.1:5080/api/review/work-cases/";
+        var permitted = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "demo-g-review"))
+            .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, permitted.statusCode());
+        assertEquals(permitted.body(), new ReviewCaseDetailParser().validate(permitted.body(), "demo-g-review"));
+        var inaccessible = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "demo-g-supported"))
+            .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+        var missing = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "not-a-case"))
+            .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(404, inaccessible.statusCode());
+        assertEquals(inaccessible.statusCode(), missing.statusCode());
+        assertEquals(inaccessible.body(), missing.body());
+    }
     @Test void springEndpointDelegatesAuthorizationAndRejectsCrossOrigin() throws Exception {
         var http = java.net.http.HttpClient.newHttpClient();
         var endpoint = java.net.URI.create("http://127.0.0.1:5081/api/review/work-queues");

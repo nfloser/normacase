@@ -58,3 +58,13 @@ not cacheable. Use only synthetic data: local processes remain in the
 trust boundary, there is no productive identity, rate limiting, TLS termination,
 or institutional authorization. Do not expose it to a network or treat it as
 approved for health data. CI exercises both servers with synthetic PostgreSQL.
+
+## Case detail contract preparation
+
+`ReviewCaseDetailParser` validates the existing synthetic case-detail response
+against the requested case ID and checks the required wire types. It returns the
+original JSON unchanged: embedded assessment JSON, exact revision strings and
+unknown additional fields are not reserialized. CI checks the parser against
+the actual .NET host and confirms that inaccessible and unknown cases have the
+same response. This is contract preparation only; Spring does not yet expose a
+case-detail route and the Angular pilot cannot open cases.
