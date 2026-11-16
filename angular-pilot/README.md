@@ -28,6 +28,8 @@ check the CI result for the exact revision before relying on it. There is no one
 The form holds the synthetic credential in memory only. It requests same-origin
 `/api/review/work-queues`, does not use cookies, and shows one page at a time.
 No review, case mutation, or domain decision is implemented. Error handling,
-keyboard use and visual layout require full browser and accessibility testing.
+keyboard use and visual layout still require broader accessibility testing. The light/dark
+appearance switch is held in memory for the current page and does not store preferences.
+The counts describe only the currently displayed page, not total queue sizes.
 The styles follow the existing medical-blue direction; Meta Astryx is a React
 reference, not an Angular dependency.

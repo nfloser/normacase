@@ -36,6 +36,11 @@ test('Angular queue pilot supports keyboard login on a narrow screen', async ({ 
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/angular-pilot/index.html');
   await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Dunkelmodus aktivieren' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.app-shell')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('button', { name: 'Hellmodus aktivieren' })).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Tab');
   await expect(page.getByLabel('Zugangsschlüssel')).toBeFocused();
   await page.keyboard.type(credential);
   await page.keyboard.press('Enter');
