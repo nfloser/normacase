@@ -33,7 +33,10 @@ class QueueEndpointTest {
         var valid = request(); valid.addHeader("Authorization", "Bearer " + KEY); valid.addParameter("pageSize", "1");
         assertEquals(200, endpoint.queue(valid).getStatusCode().value());
         assertEquals(Integer.valueOf(1), observed.get());
-        for (String size : List.of("0", "101", "-1", "+1", "1.0", "", "9999")) {
+        var leadingZeros = request(); leadingZeros.addHeader("Authorization", "Bearer " + KEY); leadingZeros.addParameter("pageSize", "0001");
+        assertEquals(200, endpoint.queue(leadingZeros).getStatusCode().value());
+        assertEquals(Integer.valueOf(1), observed.get());
+        for (String size : List.of("0", "101", "-1", "+1", "1.0", "", "9999", "99999999999999999999999999999999")) {
             var invalid = request(); invalid.addHeader("Authorization", "Bearer " + KEY); invalid.addParameter("pageSize", size);
             assertEquals(400, endpoint.queue(invalid).getStatusCode().value());
         }
