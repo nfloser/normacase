@@ -1,5 +1,5 @@
 <div class="app-shell" [attr.data-theme]="dark() ? 'dark' : 'light'">
-<header><div class="brand">N</div><div><strong>{{ text.app }}</strong><span>{{ text.queuesTitle }}</span></div><button type="button" class="theme-toggle" [attr.aria-label]="dark() ? text.lightTheme : text.darkTheme" [attr.aria-pressed]="dark()" (click)="toggleTheme()">{{ dark() ? text.lightTheme : text.darkTheme }}</button></header>
+<header><div class="brand">N</div><div><strong>{{ text.app }}</strong><span>{{ text.queuesTitle }}</span></div><button type="button" class="theme-toggle" [attr.aria-pressed]="dark()" (click)="toggleTheme()">{{ text.darkTheme }}</button></header>
 <main>
   <div class="heading"><div><p class="eyebrow">{{ text.section }}</p><h1>{{ text.queuesTitle }}</h1><p>{{ text.description }}</p></div>
     @if (active()) { <button type="button" class="secondary" #logoutButton (click)="logoutFromUi()">{{ text.logout }}</button> }
