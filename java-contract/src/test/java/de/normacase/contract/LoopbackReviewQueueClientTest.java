@@ -59,6 +59,15 @@ class LoopbackReviewQueueClientTest {
         assertNull(client.read(credential, null).nextPageCursor());
         assertNull(query.get());
     }
+    @Test void forwardsBoundedPageSizeAlongsideTheCursor() throws Exception {
+        client.readValidatedJson(credential, "demo-g-review", 1);
+        assertEquals("afterCaseId=demo-g-review&pageSize=1", query.get());
+        var tooSmall = assertThrows(LoopbackReviewQueueClient.QueueReadException.class, () -> client.readValidatedJson(credential, null, 0));
+        var tooLarge = assertThrows(LoopbackReviewQueueClient.QueueReadException.class, () -> client.readValidatedJson(credential, null, 101));
+        assertEquals(LoopbackReviewQueueClient.Failure.INVALID_REQUEST, tooSmall.failure());
+        assertEquals(LoopbackReviewQueueClient.Failure.INVALID_REQUEST, tooLarge.failure());
+        assertEquals(1, requests.get());
+    }
     @Test void retainsTheOriginalValidatedJsonIncludingUnknownFields() throws Exception {
         String original = Files.readString(Path.of("..", "examples", "contracts", "synthetic-review-queue-page.json"))
             .replace("\"configurationId\"", "\"futureField\": {\"unknown\": true}, \"configurationId\"");

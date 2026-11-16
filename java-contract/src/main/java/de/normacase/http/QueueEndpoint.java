@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public final class QueueEndpoint {
-    @FunctionalInterface interface QueueSource { String read(String credential, String cursor) throws LoopbackReviewQueueClient.QueueReadException; }
+    @FunctionalInterface interface QueueSource { String read(String credential, String cursor, Integer pageSize) throws LoopbackReviewQueueClient.QueueReadException; }
     private final QueueSource source;
     public QueueEndpoint() { this(new LoopbackReviewQueueClient(5080)::readValidatedJson); }
     QueueEndpoint(QueueSource source) { this.source = source; }
@@ -22,11 +22,15 @@ public final class QueueEndpoint {
         if (headers.size() != 1 || !headers.getFirst().startsWith("Bearer ") || !validCredential(headers.getFirst().substring(7)))
             return unauthorized();
         var parameters = request.getParameterMap();
-        if (parameters.size() > 1 || (parameters.size() == 1 && !parameters.containsKey("afterCaseId"))) return error(400);
+        if (parameters.keySet().stream().anyMatch(name -> !name.equals("afterCaseId") && !name.equals("pageSize"))) return error(400);
         String[] values = parameters.get("afterCaseId");
         if (values != null && (values.length != 1 || values[0].isEmpty() || values[0].length() > 256)) return error(400);
+        String[] sizes = parameters.get("pageSize");
+        if (sizes != null && (sizes.length != 1 || !sizes[0].matches("[0-9]{1,3}"))) return error(400);
+        Integer size = sizes == null ? null : Integer.valueOf(sizes[0]);
+        if (size != null && (size < 1 || size > 100)) return error(400);
         try {
-            String json = source.read(headers.getFirst().substring(7), values == null ? null : values[0]);
+            String json = source.read(headers.getFirst().substring(7), values == null ? null : values[0], size);
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(json);
         } catch (LoopbackReviewQueueClient.QueueReadException ex) {
             return switch (ex.failure()) {

@@ -49,9 +49,15 @@ public final class LoopbackReviewQueueClient {
 
     /** Return the validated original JSON to preserve future fields and exact revisions. */
     public String readValidatedJson(String credential, String cursor) throws QueueReadException {
-        if (!validCredential(credential) || (cursor != null && (cursor.isEmpty() || cursor.length() > 256)))
+        return readValidatedJson(credential, cursor, null);
+    }
+
+    public String readValidatedJson(String credential, String cursor, Integer pageSize) throws QueueReadException {
+        if (!validCredential(credential) || (cursor != null && (cursor.isEmpty() || cursor.length() > 256))
+            || (pageSize != null && (pageSize < 1 || pageSize > 100)))
             throw new QueueReadException(Failure.INVALID_REQUEST);
         String query = cursor == null ? "" : "?afterCaseId=" + URLEncoder.encode(cursor, StandardCharsets.UTF_8);
+        if (pageSize != null) query += (query.isEmpty() ? "?" : "&") + "pageSize=" + pageSize;
         var request = HttpRequest.newBuilder(URI.create(endpoint + query)).GET().timeout(Duration.ofSeconds(5))
             .header("Authorization", "Bearer " + credential).header("Accept", "application/json")
             .header("Cache-Control", "no-store").build();
