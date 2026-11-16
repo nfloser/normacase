@@ -489,6 +489,23 @@ jobs:
           cache: maven
           cache-dependency-path: java-contract/pom.xml
       - run: mvn --batch-mode --no-transfer-progress verify
+      - name: Verify forwarded-header regression test
+        run: |
+          source=src/main/java/de/normacase/http/LocalBoundaryFilter.java
+          cp "$source" /tmp/normacase-boundary-original.java
+          trap 'cp /tmp/normacase-boundary-original.java "$source"' EXIT
+          python -c 'from pathlib import Path
+          p=Path("src/main/java/de/normacase/http/LocalBoundaryFilter.java"); text=p.read_text()
+          assert text.count("|| forwarded)") == 1
+          p.write_text(text.replace("|| forwarded)", ")"))'
+          if mvn --batch-mode --no-transfer-progress -Dtest=LocalBoundaryFilterTest test > /tmp/normacase-mutation.log 2>&1; then
+            echo "Forwarded-header mutation was not caught" >&2; exit 1
+          fi
+          python -c 'import xml.etree.ElementTree as ET
+          root=ET.parse("target/surefire-reports/TEST-de.normacase.http.LocalBoundaryFilterTest.xml").getroot()
+          case=next(c for c in root.findall("testcase") if c.get("name") == "permitsOnlyTheLocalReadPath")
+          failure=case.find("failure")
+          assert failure is not None and "expected: <403> but was: <200>" in failure.get("message", ""), "Mutation did not fail for the intended reason"'
 
   java-loopback-integration:
     name: Java client with synthetic .NET review host
@@ -529,11 +546,14 @@ jobs:
         with:
           dotnet-version: 10.0.x
       - run: dotnet build src/NormaCase.Api --configuration Release
+      - run: mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -DskipTests package
       - name: Run Java against the local synthetic host
         run: |
           dotnet src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll > /tmp/normacase-java-host.log 2>&1 &
           host_pid=$!
-          trap 'kill "$host_pid" 2>/dev/null || true' EXIT
+          SERVER_ADDRESS=0.0.0.0 SERVER_PORT=5082 java -jar java-contract/target/review-queue-contract-0.1.0-SNAPSHOT.jar > /tmp/normacase-spring-host.log 2>&1 &
+          spring_pid=$!
+          trap 'kill "$host_pid" "$spring_pid" 2>/dev/null || true' EXIT
           python -c 'import time,urllib.request,sys
           for attempt in range(60):
               try:
@@ -541,4 +561,25 @@ jobs:
               except Exception:
                   time.sleep(1)
           sys.exit("Synthetic host did not start")'
+          python -c 'import time,urllib.request,urllib.error,sys
+          for attempt in range(60):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:5081/api/review/work-queues", timeout=1).close()
+              except urllib.error.HTTPError as e:
+                  if e.code == 401: sys.exit(0)
+              except Exception: pass
+              time.sleep(1)
+          sys.exit("Synthetic Spring host did not start")'
+          python -c 'import ipaddress
+          listeners=[]
+          for file, version in (("/proc/net/tcp",4),("/proc/net/tcp6",6)):
+              for line in open(file).read().splitlines()[1:]:
+                  fields=line.split(); address,port=fields[1].split(":")
+                  if fields[3] != "0A" or port != "13D9": continue
+                  raw=bytes.fromhex(address)
+                  raw=raw[::-1] if version == 4 else b"".join(raw[i:i+4][::-1] for i in range(0,16,4))
+                  ip=ipaddress.ip_address(raw)
+                  if version == 6 and ip.ipv4_mapped: ip=ip.ipv4_mapped
+                  listeners.append(ip)
+          assert listeners and all(ip.is_loopback for ip in listeners), "Spring pilot is not bound exclusively to loopback"'
           mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -Dtest=RealSyntheticReviewHostTest test
