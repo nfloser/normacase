@@ -36,7 +36,8 @@ the Angular pilot, run `npm ci --ignore-scripts` and `npm run build` from
 directory and start
 `java -jar target/review-queue-contract-0.1.0-SNAPSHOT.jar`. The adapter binds
 only `127.0.0.1:5081`; it exposes `GET /api/review/work-queues` and forwards a
-caller-supplied bearer credential and optional `afterCaseId` to the .NET host on
+caller-supplied bearer credential and optional `afterCaseId` and `pageSize`
+(1–100) to the .NET host on
 `127.0.0.1:5080`. Authentication and live read-scope checks remain there for
 every request. Credentials are not saved or deliberately logged. Do not put
 credentials in URLs, command-line arguments or committed configuration.

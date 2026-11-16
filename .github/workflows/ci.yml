@@ -542,6 +542,11 @@ jobs:
     env:
       NORMACASE_JAVA_INTEGRATION: 'true'
       NORMACASE_JAVA_TEST_CREDENTIAL: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=
+      NORMACASE_JAVA_PAGED_CREDENTIAL: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      SyntheticReview__Users__paged__Credential: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      SyntheticReview__Users__paged__Actions__0: READ
+      SyntheticReview__Users__paged__CaseIds__0: demo-g-review
+      SyntheticReview__Users__paged__CaseIds__1: demo-g-supported
       SyntheticReview__Enabled: 'true'
       SyntheticReview__PersistenceEnabled: 'true'
       SyntheticReview__Users__reader__Credential: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=
