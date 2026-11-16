@@ -41,4 +41,27 @@ class RealSyntheticReviewHostTest {
         var doubled = http.send(java.net.http.HttpRequest.newBuilder(endpoint).header("Authorization", "Bearer " + key).header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(401, doubled.statusCode());
     }
+    @Test void springEndpointPaginatesWithoutChangingCaseScope() throws Exception {
+        String key = System.getenv("NORMACASE_JAVA_PAGED_CREDENTIAL");
+        assertNotNull(key);
+        var http = java.net.http.HttpClient.newHttpClient();
+        String path = "http://127.0.0.1:5081/api/review/work-queues";
+        var firstResponse = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "?pageSize=1"))
+            .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, firstResponse.statusCode());
+        var first = new ReviewQueueParser().parse(firstResponse.body());
+        assertEquals(java.util.List.of("demo-g-review"), first.queues().stream().flatMap(q -> q.items().stream()).map(ReviewQueuePage.Item::caseId).toList());
+        assertEquals("demo-g-review", first.nextPageCursor());
+        var secondResponse = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "?afterCaseId=demo-g-review&pageSize=1"))
+            .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, secondResponse.statusCode());
+        var second = new ReviewQueueParser().parse(secondResponse.body());
+        assertEquals(java.util.List.of("demo-g-supported"), second.queues().stream().flatMap(q -> q.items().stream()).map(ReviewQueuePage.Item::caseId).toList());
+        assertNull(second.nextPageCursor());
+        for (String query : java.util.List.of("pageSize=0", "pageSize=101", "pageSize=1&pageSize=2")) {
+            var invalid = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "?" + query))
+                .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+            assertEquals(400, invalid.statusCode());
+        }
+    }
 }

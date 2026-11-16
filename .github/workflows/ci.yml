@@ -520,6 +520,22 @@ jobs:
           case=next(c for c in root.findall("testcase") if c.get("name") == "allowsOnlyBundledUiPathsWithoutRelaxingLocalOrWriteBoundaries")
           failure=case.find("failure")
           assert failure is not None and "expected: <404> but was: <200>" in failure.get("message", ""), "Static path mutation failed for the wrong reason"'
+          cp /tmp/normacase-boundary-original.java "$source"
+          endpoint=src/main/java/de/normacase/http/QueueEndpoint.java
+          cp "$endpoint" /tmp/normacase-endpoint-original.java
+          trap 'cp /tmp/normacase-boundary-original.java "$source"; cp /tmp/normacase-endpoint-original.java "$endpoint"' EXIT
+          python -c 'from pathlib import Path
+          p=Path("src/main/java/de/normacase/http/QueueEndpoint.java"); text=p.read_text()
+          assert text.count("size > 100") == 1
+          p.write_text(text.replace("size > 100", "size > 999"))'
+          if mvn --batch-mode --no-transfer-progress -Dtest=QueueEndpointTest test > /tmp/normacase-mutation.log 2>&1; then
+            echo "Page-size boundary mutation was not caught" >&2; exit 1
+          fi
+          python -c 'import xml.etree.ElementTree as ET
+          root=ET.parse("target/surefire-reports/TEST-de.normacase.http.QueueEndpointTest.xml").getroot()
+          case=next(c for c in root.findall("testcase") if c.get("name") == "acceptsValidPageSizeAndRejectsMalformedOrRepeatedPageSizes")
+          failure=case.find("failure")
+          assert failure is not None and "expected: <400> but was: <200>" in failure.get("message", ""), "Page-size mutation failed for the wrong reason"'
 
   java-loopback-integration:
     name: Java client with synthetic .NET review host
@@ -542,6 +558,11 @@ jobs:
     env:
       NORMACASE_JAVA_INTEGRATION: 'true'
       NORMACASE_JAVA_TEST_CREDENTIAL: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=
+      NORMACASE_JAVA_PAGED_CREDENTIAL: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      SyntheticReview__Users__paged__Credential: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      SyntheticReview__Users__paged__Actions__0: READ
+      SyntheticReview__Users__paged__CaseIds__0: demo-g-review
+      SyntheticReview__Users__paged__CaseIds__1: demo-g-supported
       SyntheticReview__Enabled: 'true'
       SyntheticReview__PersistenceEnabled: 'true'
       SyntheticReview__Users__reader__Credential: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=

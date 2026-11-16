@@ -11,7 +11,7 @@ class QueueEndpointTest {
     private static MockHttpServletRequest request() { return new MockHttpServletRequest("GET", "/api/review/work-queues"); }
     @Test void forwardsOnlyTheSingleCredentialAndCursor() {
         var observed = new AtomicReference<List<String>>();
-        var endpoint = new QueueEndpoint((key, cursor) -> { observed.set(List.of(key, cursor)); return "{\"future\":true}"; });
+        var endpoint = new QueueEndpoint((key, cursor, size) -> { observed.set(List.of(key, cursor)); return "{\"future\":true}"; });
         var request = request(); request.addHeader("Authorization", "Bearer " + KEY); request.addParameter("afterCaseId", "demo-g-review");
         var response = endpoint.queue(request);
         assertEquals(200, response.getStatusCode().value());
@@ -19,12 +19,28 @@ class QueueEndpointTest {
         assertEquals(List.of(KEY, "demo-g-review"), observed.get());
     }
     @Test void rejectsMissingDuplicateOrMalformedCredentialsAndQueries() {
-        var endpoint = new QueueEndpoint((key, cursor) -> { fail("Should not forward an invalid request"); return ""; });
+        var endpoint = new QueueEndpoint((key, cursor, size) -> { fail("Should not forward an invalid request"); return ""; });
         assertEquals(401, endpoint.queue(request()).getStatusCode().value());
         var duplicate = request(); duplicate.addHeader("Authorization", "Bearer " + KEY); duplicate.addHeader("Authorization", "Bearer " + KEY);
         assertEquals(401, endpoint.queue(duplicate).getStatusCode().value());
         var malformed = request(); malformed.addHeader("Authorization", "Basic " + KEY); assertEquals(401, endpoint.queue(malformed).getStatusCode().value());
         var multiple = request(); multiple.addHeader("Authorization", "Bearer " + KEY); multiple.addParameter("afterCaseId", "one", "two"); assertEquals(400, endpoint.queue(multiple).getStatusCode().value());
         var unknown = request(); unknown.addHeader("Authorization", "Bearer " + KEY); unknown.addParameter("secret", "value"); assertEquals(400, endpoint.queue(unknown).getStatusCode().value());
+    }
+    @Test void acceptsValidPageSizeAndRejectsMalformedOrRepeatedPageSizes() {
+        var observed = new AtomicReference<Integer>();
+        var endpoint = new QueueEndpoint((key, cursor, size) -> { observed.set(size); return "{}"; });
+        var valid = request(); valid.addHeader("Authorization", "Bearer " + KEY); valid.addParameter("pageSize", "1");
+        assertEquals(200, endpoint.queue(valid).getStatusCode().value());
+        assertEquals(Integer.valueOf(1), observed.get());
+        var leadingZeros = request(); leadingZeros.addHeader("Authorization", "Bearer " + KEY); leadingZeros.addParameter("pageSize", "0001");
+        assertEquals(200, endpoint.queue(leadingZeros).getStatusCode().value());
+        assertEquals(Integer.valueOf(1), observed.get());
+        for (String size : List.of("0", "101", "-1", "+1", "1.0", "", "9999", "99999999999999999999999999999999")) {
+            var invalid = request(); invalid.addHeader("Authorization", "Bearer " + KEY); invalid.addParameter("pageSize", size);
+            assertEquals(400, endpoint.queue(invalid).getStatusCode().value());
+        }
+        var duplicate = request(); duplicate.addHeader("Authorization", "Bearer " + KEY); duplicate.addParameter("pageSize", "1", "2");
+        assertEquals(400, endpoint.queue(duplicate).getStatusCode().value());
     }
 }
