@@ -5,6 +5,20 @@ import { App } from './app';
 
 describe('Arbeitslisten', () => {
   beforeEach(async () => { await TestBed.configureTestingModule({ imports: [App], providers: [provideHttpClient(), provideHttpClientTesting()] }).compileComponents(); });
+  it('switches the appearance and reports its state', async () => {
+    const fixture = TestBed.createComponent(App); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    const toggle = element.querySelector<HTMLButtonElement>('.theme-toggle')!;
+    expect(toggle).toBeTruthy();
+    expect(element.querySelector('.app-shell')!.getAttribute('data-theme')).toBe('light');
+    toggle.click(); fixture.detectChanges();
+    expect(element.querySelector('.app-shell')!.getAttribute('data-theme')).toBe('dark');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(toggle.textContent).toContain('Dunkelmodus');
+    toggle.click(); fixture.detectChanges();
+    expect(element.querySelector('.app-shell')!.getAttribute('data-theme')).toBe('light');
+    expect(toggle.getAttribute('aria-pressed')).toBe('false');
+  });
   it('loads a page with a bearer token and follows the cursor', async () => {
     const fixture = TestBed.createComponent(App); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
     const element: HTMLElement = fixture.nativeElement;

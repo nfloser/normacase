@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/**'
       - 'frontend/**'
+      - 'angular-pilot/**'
       - 'scripts/**'
       - 'Directory.Build.props'
       - 'global.json'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'src/**'
       - 'frontend/**'
+      - 'angular-pilot/**'
       - 'scripts/**'
       - 'Directory.Build.props'
       - 'global.json'

@@ -4,6 +4,7 @@ export const de = {
   description: 'Fälle zur Prüfung und Bearbeitung im Überblick.', logout: 'Abmelden',
   login: 'Anmelden', loginHelp: 'Gib den lokalen Zugangsschlüssel für die Fallprüfung ein.',
   credential: 'Zugangsschlüssel', open: 'Arbeitslisten öffnen', loading: 'Arbeitslisten werden geladen …',
+  darkTheme: 'Dunkelmodus', pageCount: 'Fälle auf dieser Seite',
   empty: 'Keine Fälle auf dieser Seite.', case: 'Fall', more: 'Weitere Fälle',
   credentialRequired: 'Bitte einen Zugangsschlüssel eingeben.',
   invalidResponse: 'Die Antwort der Arbeitsliste ist ungültig.',

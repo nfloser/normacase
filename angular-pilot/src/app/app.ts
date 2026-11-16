@@ -22,6 +22,9 @@ export class App implements OnDestroy {
   protected readonly busy = signal(false);
   protected readonly error = signal('');
   protected readonly active = signal(false);
+  protected readonly dark = signal(false);
+
+  protected toggleTheme(): void { this.dark.update(value => !value); }
 
   constructor(private readonly http: HttpClient) {}
 
