@@ -26,9 +26,13 @@ public final class QueueEndpoint {
         String[] values = parameters.get("afterCaseId");
         if (values != null && (values.length != 1 || values[0].isEmpty() || values[0].length() > 256)) return error(400);
         String[] sizes = parameters.get("pageSize");
-        if (sizes != null && (sizes.length != 1 || !sizes[0].matches("[0-9]{1,3}"))) return error(400);
-        Integer size = sizes == null ? null : Integer.valueOf(sizes[0]);
-        if (size != null && (size < 1 || size > 100)) return error(400);
+        if (sizes != null && (sizes.length != 1 || !sizes[0].matches("[0-9]{1,32}"))) return error(400);
+        Integer size = null;
+        if (sizes != null) {
+            try { size = Integer.valueOf(sizes[0]); }
+            catch (NumberFormatException ex) { return error(400); }
+            if (size < 1 || size > 100) return error(400);
+        }
         try {
             String json = source.read(headers.getFirst().substring(7), values == null ? null : values[0], size);
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(json);
