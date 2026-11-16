@@ -8,8 +8,9 @@ the authoritative assessment. The reader shares the example in
 
 With JDK 21 and Maven 3.6.3 or newer, run `mvn --batch-mode verify` from this
 directory. Dependencies must first be provisioned; after that Maven can be run
-with `--offline`. CI runs the tests on a clean runner. No external service,
-patient data or database is required by the Java tests.
+with `--offline`. The default Java unit suite needs neither external services
+nor a database. CI additionally runs the opt-in integration suite with the
+local synthetic .NET host and PostgreSQL. Real patient data is never used.
 
 The reader checks JSON wire types, preserves revisions as strings, retains
 unknown identifiers verbatim, permits new extra fields, and rejects malformed,
