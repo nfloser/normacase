@@ -27,4 +27,15 @@ class QueueEndpointTest {
         var multiple = request(); multiple.addHeader("Authorization", "Bearer " + KEY); multiple.addParameter("afterCaseId", "one", "two"); assertEquals(400, endpoint.queue(multiple).getStatusCode().value());
         var unknown = request(); unknown.addHeader("Authorization", "Bearer " + KEY); unknown.addParameter("secret", "value"); assertEquals(400, endpoint.queue(unknown).getStatusCode().value());
     }
+    @Test void acceptsValidPageSizeAndRejectsMalformedOrRepeatedPageSizes() {
+        var endpoint = new QueueEndpoint((key, cursor) -> "{}");
+        var valid = request(); valid.addHeader("Authorization", "Bearer " + KEY); valid.addParameter("pageSize", "1");
+        assertEquals(200, endpoint.queue(valid).getStatusCode().value());
+        for (String size : List.of("0", "101", "-1", "+1", "1.0", "", "9999")) {
+            var invalid = request(); invalid.addHeader("Authorization", "Bearer " + KEY); invalid.addParameter("pageSize", size);
+            assertEquals(400, endpoint.queue(invalid).getStatusCode().value());
+        }
+        var duplicate = request(); duplicate.addHeader("Authorization", "Bearer " + KEY); duplicate.addParameter("pageSize", "1", "2");
+        assertEquals(400, endpoint.queue(duplicate).getStatusCode().value());
+    }
 }
