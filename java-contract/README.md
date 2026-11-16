@@ -29,8 +29,10 @@ productive identity system. No patient data or externally accessible binding.
 ## Local synthetic HTTP adapter
 
 First start the separate .NET synthetic review host with PostgreSQL as described
-in [the review host guide](../docs/security/SYNTHETIC_REVIEW_HOST.md). Run
-`mvn --batch-mode package` from this directory, then start
+in [the review host guide](../docs/security/SYNTHETIC_REVIEW_HOST.md). To include
+the Angular pilot, run `npm ci --ignore-scripts` and `npm run build` from
+`angular-pilot/` before packaging. Then run `mvn --batch-mode clean package` from this
+directory and start
 `java -jar target/review-queue-contract-0.1.0-SNAPSHOT.jar`. The adapter binds
 only `127.0.0.1:5081`; it exposes `GET /api/review/work-queues` and forwards a
 caller-supplied bearer credential and optional `afterCaseId` to the .NET host on
@@ -38,11 +40,19 @@ caller-supplied bearer credential and optional `afterCaseId` to the .NET host on
 every request. Credentials are not saved or deliberately logged. Do not put
 credentials in URLs, command-line arguments or committed configuration.
 
+Open `http://127.0.0.1:5081/angular-pilot/index.html` after starting both hosts.
+The Maven build copies only the local production build of the Angular pilot into
+the application. If the UI was not built before packaging, the API still works
+but the UI is unavailable. Build dependencies need to be provisioned first;
+no remote resources are needed at runtime. The existing React/.NET workbench
+remains available through its existing host.
+
 The adapter denies external hosts, foreign browser origins, forwarded headers,
-unsupported routes/methods, duplicate credentials and malformed queries. It
-preserves validated upstream JSON, including unknown future properties. Errors
-are generic German messages and responses are not cacheable. It does not serve
-the Angular pilot yet. Use only synthetic data: local processes remain in the
+unsupported routes/methods, duplicate credentials and malformed queries. Only
+the UI index and named hashed JavaScript/CSS bundles are served; source maps
+and arbitrary files are blocked. It preserves validated upstream JSON, including
+unknown future properties. Errors are generic German messages and responses are
+not cacheable. Use only synthetic data: local processes remain in the
 trust boundary, there is no productive identity, rate limiting, TLS termination,
 or institutional authorization. Do not expose it to a network or treat it as
 approved for health data. CI exercises both servers with synthetic PostgreSQL.

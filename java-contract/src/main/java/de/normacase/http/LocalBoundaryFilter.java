@@ -19,7 +19,13 @@ public final class LocalBoundaryFilter extends OncePerRequestFilter {
         response.setHeader("X-Content-Type-Options", "nosniff");
         response.setHeader("Referrer-Policy", "no-referrer");
         response.setHeader("X-Frame-Options", "DENY");
-        response.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
+        String path = request.getRequestURI();
+        boolean ui = path.equals("/angular-pilot/index.html")
+            || path.matches("/angular-pilot/(main|chunk|polyfills)-[A-Z0-9]{8}\\.js")
+            || path.matches("/angular-pilot/styles-[A-Z0-9]{8}\\.css");
+        response.setHeader("Content-Security-Policy", ui
+            ? "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+            : "default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
         var hosts = Collections.list(request.getHeaders("Host"));
         var origins = Collections.list(request.getHeaders("Origin"));
         boolean forwarded = Collections.list(request.getHeaderNames()).stream().map(name -> name.toLowerCase(Locale.ROOT))
@@ -29,8 +35,9 @@ public final class LocalBoundaryFilter extends OncePerRequestFilter {
             || origins.size() > 1 || (!origins.isEmpty() && !origins.getFirst().equalsIgnoreCase("http://" + hosts.getFirst())) || forwarded) {
             reject(response, 403); return;
         }
-        if (!"/api/review/work-queues".equals(request.getRequestURI())) { reject(response, 404); return; }
+        if (!ui && !"/api/review/work-queues".equals(path)) { reject(response, 404); return; }
         if (!"GET".equals(request.getMethod())) { response.setHeader("Allow", "GET"); reject(response, 405); return; }
+        if (ui && request.getQueryString() != null) { reject(response, 400); return; }
         if (request.getContentLengthLong() != -1 && request.getContentLengthLong() != 0
             || request.getHeader("Transfer-Encoding") != null) { reject(response, 400); return; }
         chain.doFilter(request, response);

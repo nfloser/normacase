@@ -545,8 +545,19 @@ jobs:
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
           dotnet-version: 10.0.x
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: angular-pilot
+      - run: npm run build
+        working-directory: angular-pilot
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
       - run: dotnet build src/NormaCase.Api --configuration Release
-      - run: mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -DskipTests package
+      - run: mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -DskipTests clean package
       - name: Run Java against the local synthetic host
         run: |
           dotnet src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll > /tmp/normacase-java-host.log 2>&1 &
@@ -583,3 +594,4 @@ jobs:
                   listeners.append(ip)
           assert listeners and all(ip.is_loopback for ip in listeners), "Spring pilot is not bound exclusively to loopback"'
           mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -Dtest=RealSyntheticReviewHostTest test
+          (cd frontend && npx playwright test --config playwright.spring.config.mjs)
