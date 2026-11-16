@@ -40,4 +40,15 @@ class LocalBoundaryFilterTest {
         var different = valid(); different.addHeader("Origin", "http://localhost:5081"); assertEquals(403, apply(different));
         var duplicates = valid(); duplicates.addHeader("Origin", "http://127.0.0.1:5081"); duplicates.addHeader("Origin", "http://127.0.0.1:5081"); assertEquals(403, apply(duplicates));
     }
+    @Test void allowsOnlyBundledUiPathsWithoutRelaxingLocalOrWriteBoundaries() throws Exception {
+        var document = valid(); document.setRequestURI("/angular-pilot/index.html"); assertEquals(200, apply(document));
+        var script = valid(); script.setRequestURI("/angular-pilot/main-AB12CD34.js"); assertEquals(200, apply(script));
+        var style = valid(); style.setRequestURI("/angular-pilot/styles-AB12CD34.css"); assertEquals(200, apply(style));
+        var sourceMap = valid(); sourceMap.setRequestURI("/angular-pilot/main-AB12CD34.js.map"); assertEquals(404, apply(sourceMap));
+        var arbitrary = valid(); arbitrary.setRequestURI("/angular-pilot/secrets.json"); assertEquals(404, apply(arbitrary));
+        var nested = valid(); nested.setRequestURI("/angular-pilot/../messages.properties"); assertEquals(404, apply(nested));
+        var crossOrigin = valid(); crossOrigin.setRequestURI("/angular-pilot/index.html"); crossOrigin.addHeader("Origin", "https://evil.example"); assertEquals(403, apply(crossOrigin));
+        var write = valid(); write.setRequestURI("/angular-pilot/index.html"); write.setMethod("POST"); assertEquals(405, apply(write));
+        var query = valid(); query.setRequestURI("/angular-pilot/index.html"); query.setQueryString("secret=value"); assertEquals(400, apply(query));
+    }
 }
