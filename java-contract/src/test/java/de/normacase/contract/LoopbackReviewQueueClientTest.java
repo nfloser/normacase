@@ -22,6 +22,7 @@ class LoopbackReviewQueueClientTest {
     private final AtomicReference<String> query = new AtomicReference<>();
     private final AtomicReference<String> authorization = new AtomicReference<>();
     private final AtomicBoolean stallBody = new AtomicBoolean();
+    private final AtomicReference<String> path = new AtomicReference<>();
     private int status;
     private byte[] body;
     private String contentType;
@@ -46,6 +47,13 @@ class LoopbackReviewQueueClientTest {
                 }
                 output.write(body);
             }
+        });
+        server.createContext("/api/review/work-cases", exchange -> {
+            requests.incrementAndGet(); path.set(exchange.getRequestURI().getRawPath());
+            authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            exchange.getResponseHeaders().set("Content-Type", contentType);
+            exchange.sendResponseHeaders(status, body.length);
+            try (var output = exchange.getResponseBody()) { output.write(body); }
         });
         server.start(); client = new LoopbackReviewQueueClient(server.getAddress().getPort());
     }
@@ -115,6 +123,30 @@ class LoopbackReviewQueueClientTest {
         var error = assertThrows(LoopbackReviewQueueClient.QueueReadException.class, () -> client.read(credential, null));
         assertEquals(LoopbackReviewQueueClient.Failure.UNAVAILABLE, error.failure());
         assertTrue(java.time.Duration.ofNanos(System.nanoTime() - start).toSeconds() < 7);
+    }
+    @Test void readsCaseDetailsWithoutRewritingAndPreservesAuthorization() throws Exception {
+        String json = """
+            {"caseId":"demo-g-review","caseRevision":"90071992547409931234","processRevision":"1",
+             "stateId":"review","assessmentId":"assessment-1","packId":"synthetic",
+             "assessmentJson":"{}","evidence":{"finding":"UNKNOWN"},"allowedActions":[],
+             "auditRevision":"1","audit":[],"future":1.2300}
+            """;
+        body = json.getBytes(StandardCharsets.UTF_8);
+        assertEquals(json, client.readCaseDetail(credential, "demo-g-review"));
+        assertEquals("/api/review/work-cases/demo-g-review", path.get());
+        assertEquals("Bearer " + credential, authorization.get());
+        assertEquals(LoopbackReviewQueueClient.Failure.INVALID_REQUEST,
+            assertThrows(LoopbackReviewQueueClient.QueueReadException.class,
+                () -> client.readCaseDetail(credential, "../work-queues")).failure());
+        assertEquals(1, requests.get());
+        body = json.replace("demo-g-review", "other").getBytes(StandardCharsets.UTF_8);
+        assertEquals(LoopbackReviewQueueClient.Failure.INVALID_RESPONSE,
+            assertThrows(LoopbackReviewQueueClient.QueueReadException.class,
+                () -> client.readCaseDetail(credential, "demo-g-review")).failure());
+        status = 404;
+        assertEquals(LoopbackReviewQueueClient.Failure.NOT_FOUND,
+            assertThrows(LoopbackReviewQueueClient.QueueReadException.class,
+                () -> client.readCaseDetail(credential, "demo-g-review")).failure());
     }
     @Test void reportsUnreachableServerWithoutLeakingInput() {
         int port = server.getAddress().getPort(); server.stop(0); server = null;

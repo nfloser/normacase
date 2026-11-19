@@ -41,7 +41,7 @@ public final class QueueEndpoint {
                 case UNAUTHORIZED -> unauthorized();
                 case FORBIDDEN -> error(403);
                 case INVALID_REQUEST -> error(400);
-                case UPSTREAM_FAILURE, INVALID_RESPONSE, UNAVAILABLE -> error(502);
+                case NOT_FOUND, UPSTREAM_FAILURE, INVALID_RESPONSE, UNAVAILABLE -> error(502);
             };
         }
     }

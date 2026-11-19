@@ -29,6 +29,13 @@ class RealSyntheticReviewHostTest {
             .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
         assertEquals(200, permitted.statusCode());
         assertEquals(permitted.body(), new ReviewCaseDetailParser().validate(permitted.body(), "demo-g-review"));
+        var detailClient = new LoopbackReviewQueueClient(5080);
+        assertEquals(permitted.body(), detailClient.readCaseDetail(key, "demo-g-review"));
+        for (String id : java.util.List.of("demo-g-supported", "not-a-case")) {
+            var denied = assertThrows(LoopbackReviewQueueClient.QueueReadException.class,
+                () -> detailClient.readCaseDetail(key, id));
+            assertEquals(LoopbackReviewQueueClient.Failure.NOT_FOUND, denied.failure());
+        }
         var inaccessible = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "demo-g-supported"))
             .header("Authorization", "Bearer " + key).GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
         var missing = http.send(java.net.http.HttpRequest.newBuilder(java.net.URI.create(path + "not-a-case"))
