@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /** The synthetic adapter is a same-origin, loopback-only, read-only surface. */
 @Component
 public final class LocalBoundaryFilter extends OncePerRequestFilter {
-    private static final Pattern CASE_DETAIL = Pattern.compile("/api/review/work-cases/[A-Za-z0-9_-]{1,128}");
+    private static final Pattern CASE_DETAIL = Pattern.compile("/api/review/work-cases/" + CaseDetailEndpoint.CASE_ID.pattern());
     @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         response.setHeader("Cache-Control", "no-store");

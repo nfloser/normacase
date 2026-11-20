@@ -1,5 +1,5 @@
 <div class="app-shell" [attr.data-theme]="dark() ? 'dark' : 'light'">
-<header><div class="brand">N</div><div><strong>{{ text.app }}</strong><span>{{ text.queuesTitle }}</span></div><button type="button" class="theme-toggle" [attr.aria-pressed]="dark()" (click)="toggleTheme()">{{ text.darkTheme }}</button></header>
+<header><div class="brand" aria-hidden="true">N</div><div><strong>{{ text.app }}</strong><span>{{ openCaseId() ? text.caseDetail : text.queuesTitle }}</span></div><button type="button" class="theme-toggle" [attr.aria-pressed]="dark()" (click)="toggleTheme()">{{ text.darkTheme }}</button></header>
 <main>
   <div class="heading"><div><p class="eyebrow">{{ text.section }}</p><h1>{{ text.queuesTitle }}</h1><p>{{ text.description }}</p></div>
     @if (active()) { <button type="button" class="secondary" #logoutButton (click)="logoutFromUi()">{{ text.logout }}</button> }
@@ -7,18 +7,76 @@
   @if (error()) { <p class="notice error" role="alert">{{ error() }}</p> }
   @if (!active() && !busy()) {
     <section class="login"><h2>{{ text.login }}</h2><p>{{ text.loginHelp }}</p>
-      <form (ngSubmit)="login()"><label for="credential">{{ text.credential }}</label><input #credentialField id="credential" name="credential" type="password" autocomplete="off" [(ngModel)]="keyInput"><button type="submit">{{ text.open }}</button></form>
+      <form (ngSubmit)="login()"><label for="credential">{{ text.credential }}</label><input #credentialField id="credential" name="credential" type="password" autocomplete="off" spellcheck="false" [(ngModel)]="keyInput"><button type="submit">{{ text.open }}</button></form>
     </section>
   }
   @if (busy()) { <p class="notice" role="status">{{ text.loading }}</p> }
-  @if (active() && !busy()) {
+  @if (active() && !busy() && openCaseId() === null) {
     <div class="queue-grid">@for (queue of queues(); track queue.queueId) {
       <section class="queue"><h2>{{ label(queue.queueId) }} <span class="count" [attr.aria-label]="text.pageCount + ': ' + queue.items.length">{{ queue.items.length }}</span></h2>
       @if (queue.items.length === 0) { <p>{{ text.empty }}</p> }
-      @else { <ul>@for (item of queue.items; track item.caseId) { <li><span>{{ text.case }}</span><strong>{{ item.caseId }}</strong></li> }</ul> }
+      @else { <ul>@for (item of queue.items; track item.caseId) {
+        <li><button type="button" class="case-row" [attr.data-case-id]="item.caseId" [attr.aria-label]="text.openCase + ': ' + item.caseId" (click)="openCase(item.caseId)">
+          <span class="case-meta"><span>{{ text.case }}</span><strong>{{ item.caseId }}</strong></span><span class="chevron" aria-hidden="true">›</span>
+        </button></li>
+      }</ul> }
       </section>
     }</div>
     @if (cursor(); as next) { <button type="button" (click)="load(next)">{{ text.more }}</button> }
+  }
+  @if (active() && openCaseId(); as caseId) {
+    <section class="case-detail" aria-labelledby="case-title" (keydown.escape)="closeCase()">
+      <button type="button" class="secondary back" (click)="closeCase()"><span aria-hidden="true">‹</span> {{ text.back }}</button>
+      <h2 id="case-title" tabindex="-1" #caseTitle>{{ text.case }} <span class="case-id">{{ caseId }}</span></h2>
+      @if (caseBusy()) { <p class="notice" role="status">{{ text.loadingCase }}</p> }
+      @if (caseError()) { <p class="notice error" role="alert">{{ caseError() }}</p> }
+      @if (detail(); as d) {
+        <div class="summary">
+          <div class="summary-card outcome" [attr.data-outcome]="outcomeTone(d)"><span>{{ text.outcome }}</span><strong>{{ assessmentText(d) }}</strong></div>
+          <div class="summary-card"><span>{{ text.state }}</span><strong>{{ stateLabel(d.stateId) }}</strong></div>
+        </div>
+        <p class="read-only">{{ text.readOnly }}</p>
+        @if (d.assessment?.missingRequiredFields?.length) {
+          <section class="panel"><h3>{{ text.missingFields }}</h3>
+            <ul class="tags">@for (field of d.assessment!.missingRequiredFields; track field) { <li><code>{{ field }}</code></li> }</ul>
+          </section>
+        }
+        <div class="detail-grid">
+          <section class="panel"><h3>{{ text.evidence }}</h3>
+            @if (d.evidence.length === 0) { <p class="muted">{{ text.noEvidence }}</p> }
+            @else {
+              <table><thead><tr><th scope="col">{{ text.evidenceField }}</th><th scope="col">{{ text.evidenceStatus }}</th></tr></thead>
+                <tbody>@for (entry of d.evidence; track entry[0]) {
+                  <tr><td><code>{{ entry[0] }}</code></td><td><span class="status" [attr.data-status]="entry[1]">{{ evidenceLabel(entry[1]) }}</span></td></tr>
+                }</tbody></table>
+            }
+          </section>
+          <section class="panel"><h3>{{ text.facts }}</h3>
+            <dl class="facts">
+              <dt>{{ text.packId }}</dt><dd><code>{{ d.packId }}</code></dd>
+              @if (d.assessment?.knowledgeRelease; as release) { <dt>{{ text.knowledgeRelease }}</dt><dd><code>{{ release }}</code></dd> }
+              <dt>{{ text.assessmentId }}</dt><dd><code>{{ d.assessmentId }}</code></dd>
+              <dt>{{ text.caseRevision }}</dt><dd><code>{{ d.caseRevision }}</code></dd>
+              <dt>{{ text.processRevision }}</dt><dd><code>{{ d.processRevision }}</code></dd>
+              <dt>{{ text.auditRevision }}</dt><dd><code>{{ d.auditRevision }}</code></dd>
+            </dl>
+          </section>
+        </div>
+        <section class="panel"><h3>{{ text.audit }}</h3>
+          @if (d.audit.length === 0) { <p class="muted">{{ text.noAudit }}</p> }
+          @else {
+            <ol class="timeline">@for (event of d.audit; track event.sequence) {
+              <li><strong>{{ auditLabel(event.kind) }}</strong>
+                <span class="muted"><time [attr.datetime]="event.occurredAtUtc">{{ formatTime(event.occurredAtUtc) }}</time> · {{ text.actor }} <code>{{ event.actorId }}</code></span>
+                @if (event.disposition) { <span>{{ dispositionLabel(event.disposition) }}</span> }
+                @if (event.overrideOutcome) { <span>{{ text.overrideOutcome }}: {{ outcomeLabel(event.overrideOutcome) }}</span> }
+                @if (event.reason) { <span>{{ text.reason }}: {{ event.reason }}</span> }
+              </li>
+            }</ol>
+          }
+        </section>
+      }
+    </section>
   }
 </main>
 </div>
