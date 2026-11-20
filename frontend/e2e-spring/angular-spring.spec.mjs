@@ -3,7 +3,7 @@ import '../e2e-reviewed/angular-pilot.spec.mjs';
 import { test, expect } from '@playwright/test';
 
 test('Spring serves only bounded local UI assets and preserves the origin boundary', async ({ page }) => {
-  const response = await page.goto('/angular-pilot/index.html');
+  const response = await page.goto('/angular-pilot/index.html#review');
   expect(response.status()).toBe(200);
   expect(response.headers()['cache-control']).toBe('no-store');
   expect(response.headers()['content-security-policy']).toContain("connect-src 'self'");
@@ -24,7 +24,7 @@ test('authorized cases paginate through Angular, Spring and the real review host
     url.searchParams.set('pageSize', '1');
     await route.continue({ url: url.toString() });
   });
-  await page.goto('/angular-pilot/index.html');
+  await page.goto('/angular-pilot/index.html#review');
   await page.getByLabel('Zugangsschlüssel').fill(credential);
   await page.getByRole('button', { name: 'Arbeitslisten öffnen' }).click();
   await expect(page.getByText('demo-g-review', { exact: true })).toBeVisible();
@@ -45,7 +45,7 @@ test('an authorized case opens read-only through Angular, Spring and the real re
     window.__cspViolations = [];
     document.addEventListener('securitypolicyviolation', event => window.__cspViolations.push(event.violatedDirective));
   });
-  await page.goto('/angular-pilot/index.html');
+  await page.goto('/angular-pilot/index.html#review');
   await page.getByLabel('Zugangsschlüssel').fill(credential);
   await page.getByRole('button', { name: 'Arbeitslisten öffnen' }).click();
   const detailResponse = page.waitForResponse(response => response.url().endsWith('/api/review/work-cases/demo-g-review'));
@@ -91,7 +91,7 @@ test('the Angular case view shows the shared message when access is missing', as
   // Swap the requested ID to a real case outside this user's scope; the UI must not reveal whether it exists.
   await page.route('**/api/review/work-cases/demo-g-review', route =>
     route.continue({ url: route.request().url().replace('demo-g-review', 'demo-g-supported') }));
-  await page.goto('/angular-pilot/index.html');
+  await page.goto('/angular-pilot/index.html#review');
   await page.getByLabel('Zugangsschlüssel').fill(credential);
   await page.getByRole('button', { name: 'Arbeitslisten öffnen' }).click();
   await page.getByRole('button', { name: 'Fall öffnen: demo-g-review' }).click();

@@ -8,7 +8,7 @@ test('Angular queue pilot uses the authenticated scoped local host and clears it
     window.__cspViolations = [];
     document.addEventListener('securitypolicyviolation', event => window.__cspViolations.push(event.violatedDirective));
   });
-  const documentResponse = await page.goto('/angular-pilot/index.html');
+  const documentResponse = await page.goto('/angular-pilot/index.html#review');
   expect(documentResponse.status()).toBe(200);
   expect(documentResponse.headers()['content-security-policy']).toContain("style-src 'self'");
   await page.getByLabel('Zugangsschlüssel').fill(credential);
@@ -25,7 +25,7 @@ test('Angular queue pilot uses the authenticated scoped local host and clears it
 });
 
 test('Angular queue pilot rejects an invalid credential', async ({ page }) => {
-  await page.goto('/angular-pilot/index.html');
+  await page.goto('/angular-pilot/index.html#review');
   await page.getByLabel('Zugangsschlüssel').fill('invalid');
   await page.getByRole('button', { name: 'Arbeitslisten öffnen' }).click();
   await expect(page.getByRole('alert')).toContainText('ungültig oder abgelaufen');
@@ -34,14 +34,12 @@ test('Angular queue pilot rejects an invalid credential', async ({ page }) => {
 
 test('Angular queue pilot supports keyboard login on a narrow screen', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto('/angular-pilot/index.html');
+  await page.goto('/angular-pilot/index.html#review');
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Dunkelmodus' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('.app-shell')).toHaveAttribute('data-theme', 'dark');
   await expect(page.getByRole('button', { name: 'Dunkelmodus' })).toHaveAttribute('aria-pressed', 'true');
-  await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Demo öffnen' })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.getByLabel('Zugangsschlüssel')).toBeFocused();
   await page.keyboard.type(credential);

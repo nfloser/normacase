@@ -42,18 +42,22 @@ presentation metadata is available to this client. The view offers no
 approval, override or correction controls (issue
 [#344](https://github.com/nfloser/normacase/issues/344)).
 
-## Anonymous synthetic demo
+## Case workbench on the anonymous preview host
 
-Without a review session the pilot can open the read-only synthetic workspace of
-the local preview host (issue [#352](https://github.com/nfloser/normacase/issues/352)).
-Responses are validated as a whole; a case file for a different ID or with
-malformed documents, observations or labels is not shown. Page images and
-documents are loaded from the same origin only, external source links are
-offered only for `https` URLs. The decision trace is read from `assessmentJson`
-with exact decimal text (`JSON.parse` source access); a browser without that
-capability shows the assessment as unreadable instead of rounding. Field and
+Without a review session the Angular app opens the case workbench (issue
+[#356](https://github.com/nfloser/normacase/issues/356)), which replaces the
+card-based demo from #352. It reads `/api/demo-workspace` and
+`/api/document-cases/{caseId}` (four case files at a time) and sends the
+existing local organisation commands; no new server endpoint or decision logic
+is involved. Responses are validated as a whole; a case file for another ID is
+ignored. The authenticated review path is reached with `#review`. Field and
 evidence names come from the case file's presentation labels, never from
 platform code.
+
+The visual design uses the Astryx neutral theme as vendored CSS custom
+properties. Astryx React components are not used in Angular; patterns such as
+segmented controls, menus and dialogs follow its interaction guidance with
+native elements.
 
 [Astryx](https://github.com/meta/astryx) is a React design system. Its patterns,
 accessibility guidance and theme concepts can inform Angular design, but its
