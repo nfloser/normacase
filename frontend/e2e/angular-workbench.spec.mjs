@@ -8,7 +8,7 @@ async function openWorkbench(page) {
   });
   const response = await page.goto('/angular-pilot/index.html');
   expect(response.status()).toBe(200);
-  await expect(page.locator('tr[data-case-id="reference-transport-complete"]')).toBeVisible();
+  await expect(page.locator('tr[data-case-id]').first()).toBeVisible();
 }
 const row = (page, id) => page.locator(`tr[data-case-id="${id}"]`);
 
@@ -44,30 +44,42 @@ test('the Angular workbench lists reference files and opens a case with its docu
   expect(await page.evaluate(() => window.__cspViolations)).toEqual([]);
 });
 
+// The preview host keeps one in-memory workspace for the whole suite: every change made here is
+// either undone (folder) or applied to a case no other scenario uses (confirmation and dispatch).
 test('folders, confirmation and the simulated dispatch use the local workspace', async ({ page }) => {
   await openWorkbench(page);
   await page.getByRole('button', { name: 'Neuer Ordner' }).first().click();
-  await page.getByLabel('Ordnername').fill('Rückfragen');
+  await page.getByLabel('Ordnername').fill('Angular-Rückfragen');
   await page.locator('dialog').getByRole('button', { name: 'Speichern' }).click();
-  await expect(page.locator('.nav-item', { hasText: 'Rückfragen' })).toBeVisible();
+  const folder = page.locator('.nav-folder', { hasText: 'Angular-Rückfragen' });
+  await expect(folder).toBeVisible();
 
   await row(page, 'reference-transport-complete').click({ button: 'right' });
   await page.getByRole('menuitem', { name: /Verschieben nach/ }).click();
-  await page.getByRole('menuitem', { name: 'Rückfragen' }).click();
+  await page.getByRole('menuitem', { name: 'Angular-Rückfragen' }).click();
   await expect(row(page, 'reference-transport-complete')).toHaveCount(0);
-  await page.locator('.nav-item', { hasText: 'Rückfragen' }).click();
+  await folder.locator('.nav-item').click();
   await expect(row(page, 'reference-transport-complete')).toBeVisible();
 
-  await row(page, 'reference-transport-complete').click();
-  await page.locator('.reading-pane').getByRole('button', { name: /Fall bestätigen/ }).click();
+  // Deleting the folder returns its cases to the unfiled list.
+  await folder.hover();
+  await folder.getByRole('button', { name: /Ordner bearbeiten/ }).click();
+  await page.locator('dialog').getByRole('button', { name: 'Ordner löschen' }).click();
+  await page.locator('dialog').getByRole('button', { name: 'Löschen' }).click();
+  await expect(folder).toHaveCount(0);
+  await expect(row(page, 'reference-transport-complete')).toBeVisible();
+
+  await row(page, 'reference-transport-negative').click();
+  const pane = page.locator('.reading-pane');
+  await pane.getByRole('button', { name: /Fall bestätigen/ }).click();
   await page.locator('dialog').getByRole('button', { name: 'Bestätigen' }).click();
-  await expect(page.locator('.reading-pane .chip').first()).toHaveText('Bestätigt');
+  await expect(pane.locator('.case-meta-line .chip').first()).toHaveText('Bestätigt');
   const download = page.waitForEvent('download');
-  await page.locator('.reading-pane').getByRole('button', { name: /Versandpaket erstellen/ }).click();
+  await pane.getByRole('button', { name: /Versandpaket erstellen/ }).click();
   await page.locator('dialog').getByRole('button', { name: 'Versand simulieren' }).click();
   expect((await download).suggestedFilename()).toMatch(/^normacase-versand-demo-\d+\.json$/);
   await page.locator('.nav-item', { hasText: 'Versand simuliert' }).click();
-  await expect(row(page, 'reference-transport-complete')).toBeVisible();
+  await expect(row(page, 'reference-transport-negative')).toBeVisible();
 });
 
 test('the workbench adapts to dark mode and a narrow window', async ({ page }) => {
