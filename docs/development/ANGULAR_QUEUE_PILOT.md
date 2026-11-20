@@ -23,6 +23,25 @@ or case contents in browser storage. Use synthetic data only. The response
 shape is characterized by the PostgreSQL-backed synthetic review integration
 test; it is not a formal versioned public API or an institutional contract.
 
+## Read-only case detail
+
+From a queue, the pilot can open one case through
+`GET /api/review/work-cases/{caseId}` (on the Spring pilot or the .NET host).
+The response is requested as text and checked against the same contract as
+`ReviewCaseDetailParser` in Java: matching `caseId`, string revisions, string
+evidence statuses, string actions and well-formed audit entries. A mismatch is
+shown as an invalid response instead of partial data. `assessmentJson` is read
+only for its display fields (`outcome`, `knowledgeRelease`,
+`missingRequiredFields`); an empty value means no assessment and an unreadable
+value is labelled as such rather than guessed.
+
+Unknown and inaccessible cases share one German message. A 401 ends the
+session; a 403 or network failure keeps the session and shows an error in the
+detail view. Technical field IDs are shown as code until Knowledge Pack
+presentation metadata is available to this client. The view offers no
+approval, override or correction controls (issue
+[#344](https://github.com/nfloser/normacase/issues/344)).
+
 [Astryx](https://github.com/meta/astryx) is a React design system. Its patterns,
 accessibility guidance and theme concepts can inform Angular design, but its
 React components are not Angular dependencies. Review licenses before copying

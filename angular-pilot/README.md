@@ -27,6 +27,12 @@ check the CI result for the exact revision before relying on it. There is no one
 
 The form holds the synthetic credential in memory only. It requests same-origin
 `/api/review/work-queues`, does not use cookies, and shows one page at a time.
+Selecting a case opens a read-only detail view from
+`/api/review/work-cases/{caseId}`: system outcome, workflow state, evidence
+status, missing required fields, version identifiers and the immutable audit
+history. Revisions are shown as the exact strings from the host and the
+assessment is never re-evaluated in the browser. Back, Escape, logout and
+leaving the page cancel a pending request and return focus to the opened case.
 No review, case mutation, or domain decision is implemented. Error handling,
 keyboard use and visual layout still require broader accessibility testing. The light/dark
 appearance switch is held in memory for the current page and does not store preferences.
