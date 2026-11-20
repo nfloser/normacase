@@ -42,6 +42,19 @@ presentation metadata is available to this client. The view offers no
 approval, override or correction controls (issue
 [#344](https://github.com/nfloser/normacase/issues/344)).
 
+## Anonymous synthetic demo
+
+Without a review session the pilot can open the read-only synthetic workspace of
+the local preview host (issue [#352](https://github.com/nfloser/normacase/issues/352)).
+Responses are validated as a whole; a case file for a different ID or with
+malformed documents, observations or labels is not shown. Page images and
+documents are loaded from the same origin only, external source links are
+offered only for `https` URLs. The decision trace is read from `assessmentJson`
+with exact decimal text (`JSON.parse` source access); a browser without that
+capability shows the assessment as unreadable instead of rounding. Field and
+evidence names come from the case file's presentation labels, never from
+platform code.
+
 [Astryx](https://github.com/meta/astryx) is a React design system. Its patterns,
 accessibility guidance and theme concepts can inform Angular design, but its
 React components are not Angular dependencies. Review licenses before copying
