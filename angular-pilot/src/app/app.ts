@@ -1,4 +1,4 @@
-import { afterNextRender, Component, ElementRef, inject, Injector, OnDestroy, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, ElementRef, inject, Injector, OnDestroy, signal, viewChild } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -41,10 +41,14 @@ export class App implements OnDestroy {
   protected readonly detail = signal<CaseDetail | null>(null);
   protected readonly caseBusy = signal(false);
   protected readonly caseError = signal('');
+  /** Parsed once per loaded case, not on every render. */
+  protected readonly reviewTrace = computed<AssessmentView | null>(() => {
+    const detail = this.detail();
+    return detail ? readAssessment(detail.assessmentJson) ?? null : null;
+  });
 
   protected openDemo(): void { this.logout(); this.demoMode.set(true); }
   protected leaveDemo(): void { this.demoMode.set(false); afterNextRender(() => this.demoButton()?.nativeElement.focus(), { injector: this.injector }); }
-  protected trace(detail: CaseDetail): AssessmentView | null { return readAssessment(detail.assessmentJson) ?? null; }
 
   protected toggleTheme(): void { this.dark.update(value => !value); }
 

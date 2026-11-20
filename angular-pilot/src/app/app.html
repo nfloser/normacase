@@ -44,7 +44,7 @@
           <div class="summary-card"><span>{{ text.state }}</span><strong>{{ stateLabel(d.stateId) }}</strong></div>
         </div>
         <p class="read-only">{{ text.readOnly }}</p>
-        @if (trace(d); as a) { <section class="panel"><h3>{{ demoText.reasoning }}</h3><nc-decision-trace [assessment]="a" /></section> }
+        @if (reviewTrace(); as a) { <section class="panel"><h3>{{ demoText.reasoning }}</h3><nc-decision-trace [assessment]="a" /></section> }
         @if (d.assessment?.missingRequiredFields?.length) {
           <section class="panel"><h3>{{ text.missingFields }}</h3>
             <ul class="tags">@for (field of d.assessment!.missingRequiredFields; track field) { <li><code>{{ field }}</code></li> }</ul>
