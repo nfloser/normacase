@@ -116,7 +116,7 @@ public final class LoopbackReviewQueueClient {
     public enum Failure { INVALID_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, UPSTREAM_FAILURE, INVALID_RESPONSE, UNAVAILABLE }
     public static final class QueueReadException extends Exception {
         private final Failure failure;
-        private QueueReadException(Failure failure) { super("Synthetic queue request failed"); this.failure = failure; }
+        public QueueReadException(Failure failure) { super("Synthetic queue request failed"); this.failure = failure; }
         public Failure failure() { return failure; }
     }
 

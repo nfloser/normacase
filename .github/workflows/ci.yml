@@ -509,9 +509,9 @@ jobs:
           cp /tmp/normacase-boundary-original.java "$source"
           python -c 'from pathlib import Path
           p=Path("src/main/java/de/normacase/http/LocalBoundaryFilter.java"); text=p.read_text()
-          original="if (!ui && !\"/api/review/work-queues\".equals(path))"
+          original="if (!ui && !api)"
           assert text.count(original) == 1
-          p.write_text(text.replace(original, "if (false && !ui && !\"/api/review/work-queues\".equals(path))"))'
+          p.write_text(text.replace(original, "if (false && !ui && !api)"))'
           if mvn --batch-mode --no-transfer-progress -Dtest=LocalBoundaryFilterTest test > /tmp/normacase-mutation.log 2>&1; then
             echo "Static path mutation was not caught" >&2; exit 1
           fi
