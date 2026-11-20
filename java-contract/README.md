@@ -68,3 +68,10 @@ unknown additional fields are not reserialized. CI checks the parser against
 the actual .NET host and confirms that inaccessible and unknown cases have the
 same response. This is contract preparation only; Spring does not yet expose a
 case-detail route and the Angular pilot cannot open cases.
+
+The local Java client can also read a synthetic case detail directly from the
+.NET host using the supplied bearer credential. It validates the case ID and
+response contract and retains the original JSON. Missing and inaccessible
+cases share the same `NOT_FOUND` result. This client does not grant access;
+the .NET host remains responsible for authorization on each request. The
+Spring adapter does not yet expose this detail operation to the browser.

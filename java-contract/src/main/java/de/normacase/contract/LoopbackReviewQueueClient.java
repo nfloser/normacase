@@ -31,6 +31,7 @@ public final class LoopbackReviewQueueClient {
     private final URI endpoint;
     private final HttpClient client;
     private final ReviewQueueParser parser = new ReviewQueueParser();
+    private final ReviewCaseDetailParser detailParser = new ReviewCaseDetailParser();
 
     public LoopbackReviewQueueClient(int port) {
         if (port < 1 || port > 65535) throw new IllegalArgumentException("Invalid local port");
@@ -58,7 +59,19 @@ public final class LoopbackReviewQueueClient {
             throw new QueueReadException(Failure.INVALID_REQUEST);
         String query = cursor == null ? "" : "?afterCaseId=" + URLEncoder.encode(cursor, StandardCharsets.UTF_8);
         if (pageSize != null) query += (query.isEmpty() ? "?" : "&") + "pageSize=" + pageSize;
-        var request = HttpRequest.newBuilder(URI.create(endpoint + query)).GET().timeout(Duration.ofSeconds(5))
+        return getValidated(URI.create(endpoint + query), credential, null);
+    }
+
+    /** Read an authorized case from the same synthetic host without reserializing the response. */
+    public String readCaseDetail(String credential, String caseId) throws QueueReadException {
+        if (!validCredential(credential) || caseId == null || !caseId.matches("[A-Za-z0-9_-]{1,128}"))
+            throw new QueueReadException(Failure.INVALID_REQUEST);
+        URI detail = endpoint.resolve("/api/review/work-cases/" + caseId);
+        return getValidated(detail, credential, caseId);
+    }
+
+    private String getValidated(URI uri, String credential, String caseId) throws QueueReadException {
+        var request = HttpRequest.newBuilder(uri).GET().timeout(Duration.ofSeconds(5))
             .header("Authorization", "Bearer " + credential).header("Accept", "application/json")
             .header("Cache-Control", "no-store").build();
         var pending = client.sendAsync(request, ignored -> new LimitedBody());
@@ -67,12 +80,16 @@ public final class LoopbackReviewQueueClient {
             if (response.statusCode() == 400) throw new QueueReadException(Failure.INVALID_REQUEST);
             if (response.statusCode() == 401) throw new QueueReadException(Failure.UNAUTHORIZED);
             if (response.statusCode() == 403) throw new QueueReadException(Failure.FORBIDDEN);
+            if (response.statusCode() == 404 && caseId != null) throw new QueueReadException(Failure.NOT_FOUND);
             if (response.statusCode() != 200) throw new QueueReadException(Failure.UPSTREAM_FAILURE);
             String media = response.headers().firstValue("Content-Type").orElse("").split(";", 2)[0].trim();
             if (!media.equalsIgnoreCase("application/json")) throw new QueueReadException(Failure.INVALID_RESPONSE);
             String text = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                 .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(response.body())).toString();
-            try { parser.parse(text); return text; }
+            try {
+                if (caseId == null) parser.parse(text); else detailParser.validate(text, caseId);
+                return text;
+            }
             catch (IllegalArgumentException ex) { throw new QueueReadException(Failure.INVALID_RESPONSE); }
         } catch (InterruptedException ex) {
             pending.cancel(true);
@@ -96,7 +113,7 @@ public final class LoopbackReviewQueueClient {
         } catch (IllegalArgumentException ex) { return false; }
     }
 
-    public enum Failure { INVALID_REQUEST, UNAUTHORIZED, FORBIDDEN, UPSTREAM_FAILURE, INVALID_RESPONSE, UNAVAILABLE }
+    public enum Failure { INVALID_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, UPSTREAM_FAILURE, INVALID_RESPONSE, UNAVAILABLE }
     public static final class QueueReadException extends Exception {
         private final Failure failure;
         private QueueReadException(Failure failure) { super("Synthetic queue request failed"); this.failure = failure; }
