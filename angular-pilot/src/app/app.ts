@@ -1,10 +1,10 @@
-import { afterNextRender, Component, computed, ElementRef, inject, Injector, OnDestroy, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, effect, ElementRef, inject, Injector, OnDestroy, signal, viewChild } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { de, demo, label } from './de';
+import { de, label, wb } from './de';
 import { CaseDetail, parseCaseDetail } from './case-detail';
-import { DemoWorkspace } from './demo/demo-workspace';
+import { Workbench } from './workbench/workbench';
 import { DecisionTrace } from './shared/decision-trace';
 import { AssessmentView, readAssessment } from './shared/assessment';
 
@@ -14,17 +14,21 @@ interface QueuePage { queues: Queue[]; nextPageCursor: string | null; }
 
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 
-@Component({ selector: 'app-root', imports: [FormsModule, DemoWorkspace, DecisionTrace], templateUrl: './app.html' })
+@Component({ selector: 'app-root', imports: [FormsModule, Workbench, DecisionTrace], templateUrl: './app.html' })
 export class App implements OnDestroy {
   protected readonly text = de;
-  protected readonly demoText = demo;
-  /** Anonymous synthetic preview workspace; never combined with a review session. */
-  protected readonly demoMode = signal(false);
+  protected readonly wbText = wb;
+  /** The case workbench is the default; `#review` opens the authenticated review host path. */
+  protected readonly mode = signal<'workbench' | 'review'>(typeof location !== 'undefined' && location.hash === '#review' ? 'review' : 'workbench');
+  /** Colour scheme for this page only; never stored. */
+  protected readonly theme = signal<'system' | 'light' | 'dark'>('system');
+  private readonly prefersDark = typeof matchMedia === 'function' ? matchMedia('(prefers-color-scheme: dark)') : null;
+  private readonly systemDark = signal(this.prefersDark?.matches ?? false);
+  protected readonly dark = computed(() => this.theme() === 'dark' || (this.theme() === 'system' && this.systemDark()));
   private readonly injector = inject(Injector);
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly logoutButton = viewChild<ElementRef<HTMLButtonElement>>('logoutButton');
   private readonly credentialField = viewChild<ElementRef<HTMLInputElement>>('credentialField');
-  private readonly demoButton = viewChild<ElementRef<HTMLButtonElement>>('demoButton');
   private readonly caseTitle = viewChild<ElementRef<HTMLHeadingElement>>('caseTitle');
   protected keyInput = '';
   private key = '';
@@ -35,7 +39,6 @@ export class App implements OnDestroy {
   protected readonly busy = signal(false);
   protected readonly error = signal('');
   protected readonly active = signal(false);
-  protected readonly dark = signal(false);
   /** The case being shown; the queue page stays in memory so “back” needs no reload. */
   protected readonly openCaseId = signal<string | null>(null);
   protected readonly detail = signal<CaseDetail | null>(null);
@@ -47,16 +50,23 @@ export class App implements OnDestroy {
     return detail ? readAssessment(detail.assessmentJson) ?? null : null;
   });
 
-  protected openDemo(): void { this.logout(); this.demoMode.set(true); }
-  protected leaveDemo(): void { this.demoMode.set(false); afterNextRender(() => this.demoButton()?.nativeElement.focus(), { injector: this.injector }); }
+  protected showReview(): void { this.mode.set('review'); if (typeof history !== 'undefined') history.replaceState(null, '', '#review'); }
+  protected showWorkbench(): void { this.logout(); this.mode.set('workbench'); if (typeof history !== 'undefined') history.replaceState(null, '', location.pathname); }
 
-  protected toggleTheme(): void { this.dark.update(value => !value); }
+  protected toggleTheme(): void { this.theme.set(this.dark() ? 'light' : 'dark'); }
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {
+    this.prefersDark?.addEventListener?.('change', event => this.systemDark.set(event.matches));
+    // Astryx tokens resolve light-dark() from the document colour scheme.
+    effect(() => {
+      const root = typeof document !== 'undefined' ? document.documentElement : null;
+      if (!root) return;
+      if (this.theme() === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', this.theme());
+    });
+  }
 
   protected login(): void {
     const key = this.keyInput;
-    this.demoMode.set(false);
     this.logout();
     if (!key.trim()) { this.error.set(de.credentialRequired); return; }
     this.key = key;

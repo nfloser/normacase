@@ -1,6 +1,6 @@
 # NormaCase lokal ausprobieren
 
-Dieses Testpaket enthält die deutsche Prüfwerkstatt, den neuen Angular-Prüfarbeitsplatz, den Offline-Evaluator und
+Dieses Testpaket enthält die neue Prüfwerkstatt (Angular), die bisherige Prüfwerkstatt als Rückfalloption, den Offline-Evaluator und
 sieben synthetische Wissenspakete. Es benötigt weder Node.js, Python, Docker noch
 eine installierte .NET-Laufzeit. Es verbindet sich nicht mit PostgreSQL.
 Die aktuelle Funktionalität ist eine synthetische Demonstration ohne fachliche
@@ -18,9 +18,10 @@ Verwende ausschließlich synthetische Daten.
    übrigen Programmdateien.
 3. Im entpackten Ordner `Pruefwerkstatt-starten.cmd` doppelklicken. Ein
    Konsolenfenster zeigt den Start; sobald der Dienst bereit ist, öffnet sich
-   der Browser automatisch mit der neuen Oberfläche
-   <http://localhost:5080/angular-pilot/index.html>. Dort *Demo öffnen* wählen.
-   Die bisherige Prüfwerkstatt bleibt unter <http://localhost:5080> erreichbar.
+   der Browser automatisch mit der Prüfwerkstatt
+   <http://localhost:5080/angular-pilot/index.html>. Die bisherige
+   Prüfwerkstatt bleibt als Rückfalloption unter <http://localhost:5080>
+   erreichbar (Link oben rechts).
 4. Das Konsolenfenster geöffnet lassen. Beenden: Strg+C oder Fenster schließen.
 
 Hinweise:

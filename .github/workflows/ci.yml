@@ -374,6 +374,11 @@ jobs:
           git worktree add --detach /tmp/normacase-previous "$PREVIOUS_COMMIT"
           npm ci --prefix /tmp/normacase-previous/frontend
           npm run build --prefix /tmp/normacase-previous/frontend
+          # Packages since #355 also contain the Angular workbench.
+          if [ -f /tmp/normacase-previous/angular-pilot/package.json ]; then
+            npm ci --prefix /tmp/normacase-previous/angular-pilot --no-audit --no-fund
+            npm run build --prefix /tmp/normacase-previous/angular-pilot
+          fi
           python /tmp/normacase-previous/scripts/build_preview.py --rid linux-x64 --commit "$PREVIOUS_COMMIT" --output /tmp/normacase-old-package
       - name: Build candidate native package
         run: |

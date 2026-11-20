@@ -25,6 +25,7 @@
               }
             ],
             "styles": [
+              "src/vendor/astryx/theme-neutral.css",
               "src/styles.css"
             ],
             "deployUrl": "/angular-pilot/",

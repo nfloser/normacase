@@ -1,0 +1,149 @@
+@let it = item();
+@let id = identity();
+@let f = file();
+<header class="case-header">
+  @if (mode() === 'full') { <button type="button" class="button ghost" (click)="back.emit()"><span aria-hidden="true">←</span> {{ text.back }}</button> }
+  <div class="case-heading">
+    <h2 tabindex="-1" class="case-title">@if (id.person) { <span>{{ id.person }}</span> · }{{ id.subject }}</h2>
+    <div class="case-meta-line">
+      <span class="mono">{{ id.number }}</span>
+      <span class="chip" [attr.data-queue]="it.organization.dispatched || it.organization.confirmed ? 'complete' : it.queueId">{{ status() }}</span>
+      @if (it.organization.bookmark) { <span class="chip subtle">★ {{ text.bookmarked }}</span> }
+      @if (folderLabel()) { <span class="chip subtle">{{ folderLabel() }}</span> }
+    </div>
+  </div>
+  <div class="outcome-badge" [attr.data-outcome]="tone()"><small>{{ text.result }}</small><strong>{{ outcomeLabel() }}</strong></div>
+  <div class="case-header-actions">
+    @if (mode() === 'pane') { <button type="button" class="button" (click)="expand.emit()">{{ text.fullView }}</button> }
+    <button type="button" class="button ghost" (click)="copy('number')">{{ text.copyNumber }}</button>
+    <button type="button" class="button ghost" [disabled]="!assessment()" (click)="copy('result')">{{ text.copyResult }}</button>
+    @if (copyNotice()) { <span class="copy-notice" role="status">{{ copyNotice() }}</span> }
+  </div>
+</header>
+
+<section class="next-step" [attr.data-step]="step()" [attr.aria-label]="text.nextStep">
+  <div><strong>{{ text.nextStep }}</strong><p>{{ text.steps[step()] }}</p></div>
+  <div class="next-step-actions">
+    <button type="button" class="button" [class.primary]="step() === 'confirm'" [disabled]="busy() || step() !== 'confirm'" (click)="confirmCase.emit()">✓ {{ text.confirmAction }}</button>
+    <button type="button" class="button" [class.primary]="step() === 'dispatch'" [disabled]="busy() || step() !== 'dispatch'" (click)="dispatchCase.emit()">✉ {{ text.dispatchAction }}</button>
+    @if (step() === 'blocked') { <button type="button" class="button ghost" (click)="select('overview')">{{ text.showOpenPoints }}</button> }
+  </div>
+</section>
+
+<div class="tabs" role="tablist" [attr.aria-label]="text.caseData">
+  @for (t of tabs; track t) {
+    <button type="button" role="tab" class="tab" [attr.data-tab]="t" [attr.id]="'tab-' + t" [attr.aria-selected]="tab() === t" [attr.aria-controls]="'panel-' + t"
+      [attr.tabindex]="tab() === t ? 0 : -1" (click)="select(t)" (keydown)="tabKeys($event)">{{ tabLabel(t) }}</button>
+  }
+</div>
+
+<div class="tab-panel" role="tabpanel" [attr.id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()" [class.flush]="tab() === 'documents'">
+  @if (f === undefined) { <p class="muted" role="status">{{ text.fileLoading }}</p> }
+  @else if (f === null) { <p class="muted">{{ text.fileMissing }}</p> }
+  @else {
+    @switch (tab()) {
+      @case ('overview') {
+        <div class="overview-grid">
+          <div class="stack">
+            <p class="eyebrow">{{ kindLabel() }}</p>
+            @if (f.findings.length) {
+              <section class="callout warning"><h3>{{ text.findings }}</h3><ul>@for (finding of f.findings; track $index) { <li>{{ finding }}</li> }</ul></section>
+            }
+            @if (f.context; as c) {
+              <section class="block"><h3>{{ c.request }}</h3>
+                <p><strong>{{ text.question }}:</strong> {{ c.question }}</p>
+                <details><summary>{{ text.background }}</summary><p>{{ c.background }}</p></details>
+              </section>
+            }
+            <section class="block">
+              @if (assessment(); as a) {
+                <nc-decision-trace [assessment]="a" [fieldLabels]="f.fieldLabels" [evidenceLabels]="f.evidenceLabels" [outputLabels]="f.outputLabels" />
+              } @else if (assessment() === null) { <p class="muted">{{ text.noRule }}</p> }
+            </section>
+          </div>
+          <div class="stack">
+            <section class="block"><h3>{{ text.tabs['evidence'] }}</h3>
+              @if (observationGroups().length) {
+                <ul class="fact-list">@for (group of observationGroups(); track group.doc.id) {
+                  @for (o of group.items; track $index) {
+                    <li><span>{{ fieldLabel(o.field) }}</span><strong>{{ value(o.value) }}</strong>
+                      <button type="button" class="link" (click)="openObservation(o)" [attr.aria-label]="fieldLabel(o.field) + ': ' + group.doc.title + ', ' + text.page + ' ' + o.page">{{ text.page }} {{ o.page }}</button></li>
+                  }
+                }</ul>
+              } @else { <p class="muted">{{ text.noObservations }}</p> }
+            </section>
+            @if (f.evidence.length) {
+              <section class="block"><h3>{{ text.proofs }}</h3>
+                <ul class="fact-list">@for (e of f.evidence; track e[0]) { <li><span>{{ evidenceLabel(e[0]) }}</span><span class="status-pill" [attr.data-status]="e[1]">{{ evidenceStatus(e[1]) }}</span></li> }</ul>
+              </section>
+            }
+            <section class="block"><h3>{{ text.files }}</h3>
+              <ul class="doc-links">@for (doc of f.documents; track doc.id) { <li><button type="button" class="link" (click)="openDocument(doc)">{{ doc.title }}</button></li> }</ul>
+            </section>
+            <section class="block"><h3>{{ text.source }}</h3>
+              <p><strong>{{ text.scope }}:</strong> {{ f.scope }}</p>
+              @if (f.source; as s) {
+                <p class="small">@if (sourceUrl(s.url); as url) { <a [href]="url" target="_blank" rel="noopener noreferrer">{{ s.title }}</a> } @else { {{ s.title }} }
+                  <span class="muted"> · {{ text.sourceVersion }} {{ s.version }}</span></p>
+              }
+            </section>
+          </div>
+        </div>
+      }
+      @case ('documents') {
+        <nc-pdf-reader [caseId]="it.caseId" [documents]="f.documents" [target]="target()" />
+      }
+      @case ('evidence') {
+        <p class="muted small">{{ text.evidenceHelp }}</p>
+        @for (group of observationGroups(); track group.doc.id) {
+          <section class="block"><h3>{{ group.doc.title }}</h3>
+            <table class="data-table"><thead><tr><th scope="col">{{ text.criterion }}</th><th scope="col">{{ text.value }}</th><th scope="col">{{ text.foundIn }}</th></tr></thead>
+              <tbody>@for (o of group.items; track $index) {
+                <tr><td>{{ fieldLabel(o.field) }}</td><td><strong>{{ value(o.value) }}</strong></td>
+                  <td><button type="button" class="link" (click)="openObservation(o)" [attr.aria-label]="group.doc.title + ', ' + text.page + ' ' + o.page">{{ text.page }} {{ o.page }}</button></td></tr>
+              }</tbody></table>
+          </section>
+        } @empty { <p class="muted">{{ text.noObservations }}</p> }
+        @if (f.evidence.length) {
+          <section class="block"><h3>{{ text.proofs }}</h3>
+            <ul class="fact-list">@for (e of f.evidence; track e[0]) { <li><span>{{ evidenceLabel(e[0]) }}</span><span class="status-pill" [attr.data-status]="e[1]">{{ evidenceStatus(e[1]) }}</span></li> }</ul>
+          </section>
+        }
+      }
+      @case ('data') {
+        <dl class="data-grid">
+          <dt>{{ text.number }}</dt><dd class="mono">{{ id.number }}</dd>
+          @if (id.person) { <dt>{{ text.person }}</dt><dd>{{ id.person }}</dd> }
+          <dt>{{ text.subject }}</dt><dd>{{ id.subject }}</dd>
+          <dt>{{ text.queue }}</dt><dd>{{ queueName(it.queueId) }}</dd>
+          <dt>{{ text.status }}</dt><dd>{{ status() }}</dd>
+          <dt>{{ text.personalFolder }}</dt><dd>{{ folderLabel() ?? text.none }}</dd>
+          <dt>{{ text.owner }}</dt><dd>{{ text.unassigned }}</dd>
+          <dt>{{ text.validation }}</dt><dd class="mono">{{ f.validationLevel || text.none }}</dd>
+          @if (assessment(); as a) {
+            <dt>{{ text.release }}</dt><dd class="mono">{{ a.knowledgeRelease ?? text.none }}</dd>
+            <dt>{{ text.assessedOn }}</dt><dd>{{ germanDate(a.assessmentDate) }}</dd>
+            <dt>{{ text.platform }}</dt><dd class="mono">{{ a.platformVersion ?? text.none }}</dd>
+          }
+          <dt>Fall-ID</dt><dd class="mono">{{ it.caseId }}</dd>
+        </dl>
+      }
+      @case ('history') {
+        <div class="overview-grid">
+          <section class="block"><h3>{{ text.note }}</h3>
+            <p class="muted small">{{ text.noteHelp }}</p>
+            <label class="sr-only" for="case-note">{{ text.note }}</label>
+            <textarea id="case-note" rows="5" maxlength="1000" [value]="note()" (input)="note.set($any($event.target).value)"></textarea>
+            <button type="button" class="button primary" [disabled]="busy() || note() === it.organization.note" (click)="saveNote.emit(note())">{{ text.saveNote }}</button>
+          </section>
+          <section class="block"><h3>{{ text.history }}</h3>
+            <p class="muted small">{{ text.historyHelp }}</p>
+            @if (caseAudit().length) {
+              <ol class="timeline">@for (entry of caseAudit(); track entry.sequence) { <li><strong>{{ actionLabel(entry.action) }}</strong><span class="muted small">#{{ entry.sequence }}@if (entry.caseIds.length > 1) { · {{ entry.caseIds.length }} {{ text.cases }} }</span></li> }</ol>
+            } @else { <p class="muted">{{ text.noHistory }}</p> }
+          </section>
+        </div>
+      }
+    }
+  }
+</div>

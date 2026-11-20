@@ -1,0 +1,66 @@
+<nav class="reader-files" [attr.aria-label]="text.files">
+  <h3>{{ text.files }} <span class="count">{{ documents().length }}</span></h3>
+  <ul>
+    @for (doc of documents(); track doc.id) {
+      <li><button type="button" class="file-item" [attr.aria-pressed]="selectedId() === doc.id" (click)="select(doc.id)">
+        <span class="file-icon" [attr.data-kind]="doc.mediaType" aria-hidden="true">{{ icon(doc) }}</span>
+        <span class="file-text"><strong>{{ doc.title }}</strong><small>{{ meta(doc) }}</small></span>
+      </button></li>
+    }
+  </ul>
+</nav>
+
+<section class="reader-main" [attr.aria-label]="text.reader">
+  @if (selected(); as doc) {
+    <div class="reader-toolbar" role="toolbar" [attr.aria-label]="text.reader">
+      @if (doc.mediaType === 'application/pdf') {
+        <button type="button" class="icon-button" [disabled]="page() <= 1" (click)="go(-1)" [attr.aria-label]="text.previousPage" [title]="text.previousPage">‹</button>
+        <label class="page-field"><span class="sr-only">{{ text.pageNumber }}</span>
+          <input inputmode="numeric" [value]="pageInput()" (input)="pageInput.set($any($event.target).value)" (change)="commitPageInput()" (keydown.enter)="commitPageInput()" [attr.aria-label]="text.pageNumber" maxlength="3">
+        </label>
+        <span class="muted">/ {{ pageCount() }}</span>
+        <button type="button" class="icon-button" [disabled]="page() >= pageCount()" (click)="go(1)" [attr.aria-label]="text.nextPage" [title]="text.nextPage">›</button>
+        <span class="divider" aria-hidden="true"></span>
+      }
+      @if (doc.mediaType !== 'text/plain') {
+        <button type="button" class="icon-button" [disabled]="!canZoom(-1)" (click)="stepZoom(-1)" [attr.aria-label]="text.zoomOut" [title]="text.zoomOut">−</button>
+        <label><span class="sr-only">{{ text.zoom }}</span>
+          <select [value]="zoomValue()" (change)="setZoom($any($event.target).value)" [attr.aria-label]="text.zoom">
+            <option value="width">{{ text.fitWidth }}</option>
+            <option value="page">{{ text.fitPage }}</option>
+            @for (step of zoomOptions(); track step) { <option [value]="step">{{ step }} %</option> }
+          </select>
+        </label>
+        <button type="button" class="icon-button" [disabled]="!canZoom(1)" (click)="stepZoom(1)" [attr.aria-label]="text.zoomIn" [title]="text.zoomIn">+</button>
+        <button type="button" class="icon-button" (click)="rotate()" [attr.aria-label]="text.rotate" [title]="text.rotate">⟳</button>
+      }
+      <span class="spacer"></span>
+      @if (highlight(); as h) { <span class="jump-chip" role="status">{{ text.jumpedTo }}: {{ h.label }} · {{ text.page }} {{ h.page }}</span> }
+      <a class="toolbar-link" [href]="url(doc)" target="_blank" rel="noopener noreferrer">{{ text.newTab }}</a>
+      <a class="toolbar-link" [href]="url(doc) + '?download=true'">{{ text.download }}</a>
+    </div>
+
+    <div #stage class="reader-stage" tabindex="0" (keydown)="keys($event)" [attr.aria-label]="doc.title + ' – ' + text.readerHint">
+      @if (doc.mediaType === 'text/plain') {
+        @if (textState() === 'loading') { <p class="muted">{{ text.textLoading }}</p> }
+        @else if (textState() === 'error') { <p class="error-text" role="alert">{{ text.textFailed }}</p> }
+        @else { <pre class="reader-text">{{ documentText() }}</pre> }
+      } @else if (pages().length === 0) {
+        <p class="muted">{{ text.noPreview }}</p>
+      } @else {
+        @for (p of pages(); track p.page) {
+          @let b = box(p.page);
+          <figure class="sheet" [attr.data-page]="p.page" [class.highlighted]="highlight()?.page === p.page" [style.width.px]="b.width" [style.height.px]="b.height">
+            @if (failed()[p.page]) { <p class="error-text">{{ text.previewFailed }}</p> }
+            @else {
+              <img [src]="p.url" [alt]="doc.title + ', ' + text.page + ' ' + p.page" [style.width.px]="b.imageWidth" [style.height.px]="b.imageHeight"
+                [style.transform]="'translate(-50%, -50%) rotate(' + rotation() + 'deg)'" loading="lazy" decoding="async"
+                (load)="loaded(p.page, $event)" (error)="broken(p.page)">
+            }
+            <figcaption>{{ text.page }} {{ p.page }}</figcaption>
+          </figure>
+        }
+      }
+    </div>
+  }
+</section>

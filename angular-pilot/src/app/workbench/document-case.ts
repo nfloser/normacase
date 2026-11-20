@@ -1,15 +1,11 @@
 import { isNullableText, isObject, isText, Json } from '../shared/json';
 
 /**
- * Read-only contracts of the anonymous synthetic preview host
- * (`/api/work-queues`, `/api/document-cases`, `/api/document-cases/{id}`).
+ * Read-only case-file contract of the anonymous synthetic preview host
+ * (`/api/document-cases/{id}` with its page previews).
  * Anything that does not match is rejected as a whole.
  */
-export interface DemoQueueItem { caseId: string; stateId: string }
-export interface DemoQueue { queueId: string; items: DemoQueueItem[] }
-export interface DemoQueues { totalCases: number; queues: DemoQueue[] }
 export interface CaseContext { request: string; question: string; background: string }
-export interface ReferenceCase { caseId: string; title: string; scope: string; context: CaseContext | null }
 export interface DemoSource { id: string; title: string; version: string; url: string; scope: string }
 export interface DemoDocument { id: string; title: string; mediaType: string; pages: number; previewPages: number[] }
 export interface Observation { documentId: string; page: number; field: string; value: string; method: string }
@@ -48,35 +44,6 @@ function context(value: unknown): CaseContext | null | undefined {
   if (value === null || value === undefined) return null;
   if (!isObject(value) || !isText(value['request']) || !isText(value['question']) || !isText(value['background'])) return undefined;
   return { request: value['request'], question: value['question'], background: value['background'] };
-}
-
-export function parseDemoQueues(body: unknown): DemoQueues | null {
-  const root = parse(body);
-  if (!isObject(root) || typeof root['totalCases'] !== 'number' || !Array.isArray(root['queues'])) return null;
-  const queues: DemoQueue[] = [];
-  for (const queue of root['queues']) {
-    if (!isObject(queue) || !isText(queue['queueId']) || !Array.isArray(queue['items'])) return null;
-    const items: DemoQueueItem[] = [];
-    for (const item of queue['items']) {
-      if (!isObject(item) || !isText(item['caseId']) || !isText(item['stateId'])) return null;
-      items.push({ caseId: item['caseId'], stateId: item['stateId'] });
-    }
-    queues.push({ queueId: queue['queueId'], items });
-  }
-  return { totalCases: root['totalCases'], queues };
-}
-
-export function parseReferenceCases(body: unknown): ReferenceCase[] | null {
-  const root = parse(body);
-  if (!isObject(root) || !Array.isArray(root['cases'])) return null;
-  const cases: ReferenceCase[] = [];
-  for (const item of root['cases']) {
-    if (!isObject(item) || !isText(item['caseId']) || !SAFE_ID.test(item['caseId']) || !isText(item['title']) || !isText(item['scope'])) return null;
-    const ctx = context(item['context']);
-    if (ctx === undefined) return null;
-    cases.push({ caseId: item['caseId'], title: item['title'], scope: item['scope'], context: ctx });
-  }
-  return cases;
 }
 
 export function parseDocumentCase(body: unknown, expectedCaseId: string): DocumentCase | null {

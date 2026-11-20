@@ -1,6 +1,6 @@
 # NormaCase Angular pilot
 
-A read-only Angular workplace for synthetic cases: an anonymous demo on the local preview host and an authenticated review-queue path. The existing React
+The Angular case workbench for synthetic cases on the local preview host, plus the authenticated review-queue path (`#review`). The existing React
 workbench, ASP.NET API and .NET decision engine remain authoritative. No real
 patient data; do not expose the synthetic host on a network.
 
@@ -40,14 +40,32 @@ The counts describe only the currently displayed page, not total queue sizes.
 The styles follow the existing medical-blue direction; Meta Astryx is a React
 reference, not an Angular dependency.
 
-## Synthetic demo (no login, no database)
+## Case workbench (no login, no database)
 
-„Demo öffnen“ uses the read-only endpoints of the anonymous local preview host:
-`/api/work-queues`, `/api/document-cases` and `/api/document-cases/{caseId}`
-with its page previews. It shows the four work queues with totals and search,
-the 22 reference files, and a case file with document tabs, page navigation,
-zoom, provenance (field → document/page), recorded evidence, findings, context,
-source and the recorded decision trace (condition → rule → source → outcome).
-Numbers in the trace are shown from their exact JSON source text. Nothing is
-evaluated, written or stored in the browser; folder, confirmation and dispatch
-simulation remain in the existing workbench at `/`.
+The default view keeps the concept of the existing React workbench – a mail
+client combined with a file explorer – on Angular, TypeScript and RxJS:
+
+- **Explorer:** all cases, work queues with colours and counts, personal filing
+  (bookmarks, confirmed, simulated dispatch, own folders with sub-folders,
+  unfiled), optional platform cases.
+- **Case list:** two-line rows (person · subject, status, request, note),
+  sorting, search (Ctrl+K) and column filters, multi-select with click,
+  Ctrl/Shift and checkboxes (max. 100), arrow keys, Enter, context menu
+  (Shift+F10). Columns give way to the reading pane via container queries.
+- **Reading pane** right, bottom or off (F4), resizable; full view via Enter or
+  double click, Alt+← returns to the list.
+- **Case file:** header with file number, status and result; next processing
+  step with confirm/dispatch; tabs for overview (open points, context,
+  reasoning tree with rule and source, provenance, evidence, documents),
+  documents, provenance table, case data and organisation history with note.
+- **Document reader:** file list, continuous pages, page field, page width /
+  whole page / zoom steps, rotation, open in new tab, download; provenance
+  links jump to and highlight the cited page.
+- **Organisation** uses the unchanged `/api/demo-workspace` commands with the
+  current revision and a fresh operation ID; dispatch downloads the local
+  package. Nothing changes an assessment and nothing is transmitted.
+
+Styling uses the vendored Astryx neutral theme tokens (`src/vendor/astryx`,
+MIT) with a medical-blue accent, light/dark/system modes and no external fonts.
+The assessment is only read; decimals keep their JSON source text. The
+previous React workbench remains unchanged at `/` as a fallback.

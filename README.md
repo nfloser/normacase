@@ -195,8 +195,8 @@ Native Windows x64, Linux x64 and macOS (arm64/x64) preview packages are built a
 Download the artifact for your operating system from the GitHub Actions run,
 extract the contained application ZIP completely, then follow `START.de.md`.
 The start script opens the browser once the loopback host is ready; it shows the
-Angular workplace (`/angular-pilot/index.html`, including the database-free
-synthetic demo) while the existing workbench stays at `/`.
+Angular case workbench (`/angular-pilot/index.html`); the previous React
+workbench stays available at `/` as a fallback.
 Node and an installed .NET runtime are not needed; Linux still needs the native
 system libraries described in [the German start guide](docs/development/PREVIEW_START.de.md).
 

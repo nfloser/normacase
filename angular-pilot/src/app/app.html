@@ -1,22 +1,19 @@
-<div class="app-shell" [attr.data-theme]="dark() ? 'dark' : 'light'">
-<header><div class="brand" aria-hidden="true">N</div><div><strong>{{ text.app }}</strong><span>{{ demoMode() ? demoText.startTitle : openCaseId() ? text.caseDetail : text.queuesTitle }}</span></div>@if (demoMode()) { <span class="mode-badge">{{ demoText.badge }}</span> }<button type="button" class="theme-toggle" [attr.aria-pressed]="dark()" (click)="toggleTheme()">{{ text.darkTheme }}</button></header>
-<main [class.wide]="demoMode()">
-  @if (demoMode()) {
-    <nc-demo-workspace (leave)="leaveDemo()" />
-  } @else {
+@if (mode() === 'workbench') {
+<div class="app-shell workbench-shell" data-astryx-theme="neutral" [attr.data-theme]="dark() ? 'dark' : 'light'">
+  <nc-workbench [theme]="theme()" (themeChange)="theme.set($event)" (openReview)="showReview()" />
+</div>
+} @else {
+<div class="app-shell" data-astryx-theme="neutral" [attr.data-theme]="dark() ? 'dark' : 'light'">
+<header><div class="brand" aria-hidden="true">N</div><div><strong>{{ text.app }}</strong><span>{{ openCaseId() ? text.caseDetail : text.queuesTitle }}</span></div><button type="button" class="theme-toggle" [attr.aria-pressed]="dark()" (click)="toggleTheme()">{{ text.darkTheme }}</button></header>
+<main>
   <div class="heading"><div><p class="eyebrow">{{ text.section }}</p><h1>{{ text.queuesTitle }}</h1><p>{{ text.description }}</p></div>
     @if (active()) { <button type="button" class="secondary" #logoutButton (click)="logoutFromUi()">{{ text.logout }}</button> }
   </div>
   @if (error()) { <p class="notice error" role="alert">{{ error() }}</p> }
   @if (!active() && !busy()) {
-    <div class="start-grid">
-    <section class="start-card demo-card"><h2>{{ demoText.startTitle }}</h2><p>{{ demoText.startHelp }}</p>
-      <button type="button" #demoButton (click)="openDemo()">{{ demoText.start }}</button>
-    </section>
-    <section class="login"><h2>{{ demoText.reviewTitle }}</h2><p>{{ demoText.reviewHelp }} {{ text.loginHelp }}</p>
+    <section class="login"><h2>{{ text.login }}</h2><p>{{ text.loginHelp }}</p>
       <form (ngSubmit)="login()"><label for="credential">{{ text.credential }}</label><input #credentialField id="credential" name="credential" type="password" autocomplete="off" spellcheck="false" [(ngModel)]="keyInput"><button type="submit">{{ text.open }}</button></form>
     </section>
-    </div>
   }
   @if (busy()) { <p class="notice" role="status">{{ text.loading }}</p> }
   @if (active() && !busy() && openCaseId() === null) {
@@ -44,7 +41,7 @@
           <div class="summary-card"><span>{{ text.state }}</span><strong>{{ stateLabel(d.stateId) }}</strong></div>
         </div>
         <p class="read-only">{{ text.readOnly }}</p>
-        @if (reviewTrace(); as a) { <section class="panel"><h3>{{ demoText.reasoning }}</h3><nc-decision-trace [assessment]="a" /></section> }
+        @if (reviewTrace(); as a) { <section class="panel"><h3>{{ wbText.reasoning }}</h3><nc-decision-trace [assessment]="a" /></section> }
         @if (d.assessment?.missingRequiredFields?.length) {
           <section class="panel"><h3>{{ text.missingFields }}</h3>
             <ul class="tags">@for (field of d.assessment!.missingRequiredFields; track field) { <li><code>{{ field }}</code></li> }</ul>
@@ -87,6 +84,7 @@
       }
     </section>
   }
-  }
+  <p class="review-footer"><button type="button" class="link" (click)="showWorkbench()">{{ wbText.product }} ohne Anmeldung öffnen</button></p>
 </main>
 </div>
+}
