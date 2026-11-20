@@ -251,7 +251,7 @@ def exercise_launcher(root, rid, environment, temporary):
         else:
             raise RuntimeError("Start script did not serve the Angular workplace")
         assert "<app-root" in html and "script-src 'self'" in policy
-        scripts = re.findall(r'src="(main-[A-Z0-9]+\.js)"', html)
+        scripts = re.findall(r'src="(?:/angular-pilot/)?(main-[A-Z0-9]+\.js)"', html)
         assert scripts, "Angular bundle missing from the preview"
         with urlopen(base + "/angular-pilot/" + scripts[0], timeout=5) as response:
             assert len(response.read()) > 0

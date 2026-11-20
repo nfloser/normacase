@@ -379,6 +379,8 @@ jobs:
         run: |
           npm ci --prefix frontend
           npm run build --prefix frontend
+          npm ci --prefix angular-pilot --no-audit --no-fund
+          npm run build --prefix angular-pilot
           python scripts/build_preview.py --rid linux-x64 --commit "$CANDIDATE_COMMIT" --output /tmp/normacase-new-package
       - name: Stage both verified packages and activate exact previous release
         run: |
