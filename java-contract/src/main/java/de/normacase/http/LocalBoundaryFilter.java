@@ -7,12 +7,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /** The synthetic adapter is a same-origin, loopback-only, read-only surface. */
 @Component
 public final class LocalBoundaryFilter extends OncePerRequestFilter {
+    private static final Pattern CASE_DETAIL = Pattern.compile("/api/review/work-cases/" + CaseDetailEndpoint.CASE_ID.pattern());
     @Override protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         response.setHeader("Cache-Control", "no-store");
@@ -35,7 +37,8 @@ public final class LocalBoundaryFilter extends OncePerRequestFilter {
             || origins.size() > 1 || (!origins.isEmpty() && !origins.getFirst().equalsIgnoreCase("http://" + hosts.getFirst())) || forwarded) {
             reject(response, 403); return;
         }
-        if (!ui && !"/api/review/work-queues".equals(path)) { reject(response, 404); return; }
+        boolean api = "/api/review/work-queues".equals(path) || CASE_DETAIL.matcher(path).matches();
+        if (!ui && !api) { reject(response, 404); return; }
         if (!"GET".equals(request.getMethod())) { response.setHeader("Allow", "GET"); reject(response, 405); return; }
         if (ui && request.getQueryString() != null) { reject(response, 400); return; }
         if (request.getContentLengthLong() != -1 && request.getContentLengthLong() != 0

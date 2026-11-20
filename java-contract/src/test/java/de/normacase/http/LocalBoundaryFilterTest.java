@@ -35,6 +35,18 @@ class LocalBoundaryFilterTest {
         var write = valid(); write.setMethod("POST"); assertEquals(405, apply(write));
         var body = valid(); body.setContent("content".getBytes()); assertEquals(400, apply(body));
     }
+    @Test void permitsOnlyWellFormedCaseDetailPaths() throws Exception {
+        var detail = valid(); detail.setRequestURI("/api/review/work-cases/demo-g-review"); assertEquals(200, apply(detail));
+        var intake = valid(); intake.setRequestURI("/api/review/work-cases/synthetic-intake-" + "a".repeat(64)); assertEquals(200, apply(intake));
+        for (String path : java.util.List.of("/api/review/work-cases/", "/api/review/work-cases", "/api/review/work-cases/demo/history",
+                "/api/review/work-cases/demo%2Fhistory", "/api/review/work-cases/demo;jsessionid=x", "/api/review/work-cases/" + "x".repeat(129),
+                "/api/review/work-cases/demo-g-review/reviews")) {
+            var invalid = valid(); invalid.setRequestURI(path); assertEquals(404, apply(invalid), path);
+        }
+        var write = valid(); write.setRequestURI("/api/review/work-cases/demo-g-review"); write.setMethod("POST"); assertEquals(405, apply(write));
+        var foreign = valid(); foreign.setRequestURI("/api/review/work-cases/demo-g-review"); foreign.addHeader("Origin", "https://evil.example");
+        assertEquals(403, apply(foreign));
+    }
     @Test void permitsTheSameOriginButNotADifferentLocalOrigin() throws Exception {
         var same = valid(); same.addHeader("Origin", "http://127.0.0.1:5081"); assertEquals(200, apply(same));
         var different = valid(); different.addHeader("Origin", "http://localhost:5081"); assertEquals(403, apply(different));

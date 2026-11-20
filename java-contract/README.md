@@ -66,12 +66,23 @@ against the requested case ID and checks the required wire types. It returns the
 original JSON unchanged: embedded assessment JSON, exact revision strings and
 unknown additional fields are not reserialized. CI checks the parser against
 the actual .NET host and confirms that inaccessible and unknown cases have the
-same response. This is contract preparation only; Spring does not yet expose a
-case-detail route and the Angular pilot cannot open cases.
+same response.
 
 The local Java client can also read a synthetic case detail directly from the
 .NET host using the supplied bearer credential. It validates the case ID and
 response contract and retains the original JSON. Missing and inaccessible
 cases share the same `NOT_FOUND` result. This client does not grant access;
-the .NET host remains responsible for authorization on each request. The
-Spring adapter does not yet expose this detail operation to the browser.
+the .NET host remains responsible for authorization on each request.
+
+## Read-only case detail route
+
+`GET /api/review/work-cases/{caseId}` on the Spring pilot forwards the caller's
+single bearer credential to the same route on the .NET host and returns the
+validated upstream JSON unchanged. The boundary filter admits only case IDs
+matching `[A-Za-z0-9_-]{1,128}`; sub-routes such as `/history` or `/reviews`,
+encoded separators, path parameters and query strings are refused before any
+upstream call. Malformed, unknown and inaccessible cases all return the same
+generic 404, so the adapter does not reveal whether a case exists. Only `GET`
+is supported: approvals, overrides, corrections and every other write path stay
+in the existing .NET/React workbench. CI checks the route against the real
+synthetic host, including the indistinguishable 404 for an out-of-scope case.
