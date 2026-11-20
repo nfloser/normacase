@@ -14,8 +14,10 @@ Artefakte stehen 14 Tage bereit.
 
 Entpacke den Download und anschließend das enthaltene Anwendungs-ZIP vollständig.
 Prüfe die Archiv-Prüfsumme gemäß [Startanleitung](PREVIEW_START.de.md).
-Unter Windows starte `Pruefwerkstatt-starten.cmd`, unter Linux folge der
-Startanleitung. Öffne <http://localhost:5080> und lasse den Dienst geöffnet.
+Unter Windows starte `Pruefwerkstatt-starten.cmd`, unter macOS/Linux
+`pruefwerkstatt-starten.sh` (siehe `START.de.md`). Der Browser öffnet die neue
+Angular-Oberfläche automatisch; die bisherige Prüfwerkstatt liegt unter
+<http://localhost:5080>. Lasse den Dienst geöffnet.
 Notiere `sourceCommit` und `platformVersion` aus `preview.json` für deine Abnahme.
 
 ## 2. Pitch und deterministische Prüfung abnehmen

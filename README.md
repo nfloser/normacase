@@ -189,11 +189,14 @@ uploaded synthetic snapshot files locally. Imported results remain read-only; se
 
 ## Downloadable synthetic preview
 
-Native Windows x64 and Linux x64 preview packages are built and smoke-tested by
+Native Windows x64, Linux x64 and macOS (arm64/x64) preview packages are built and smoke-tested by
 [the preview workflow](.github/workflows/preview.yml). Successful runs publish
-`synthetic-preview-win-x64` and `synthetic-preview-linux-x64` artifacts for 14 days.
+`synthetic-preview-<runtime>` artifacts for 14 days.
 Download the artifact for your operating system from the GitHub Actions run,
 extract the contained application ZIP completely, then follow `START.de.md`.
+The start script opens the browser once the loopback host is ready; it shows the
+Angular workplace (`/angular-pilot/index.html`, including the database-free
+synthetic demo) while the existing workbench stays at `/`.
 Node and an installed .NET runtime are not needed; Linux still needs the native
 system libraries described in [the German start guide](docs/development/PREVIEW_START.de.md).
 
