@@ -1,6 +1,6 @@
 # NormaCase Angular pilot
 
-An isolated, read-only synthetic review queue experiment. The existing React
+A read-only Angular workplace for synthetic cases: an anonymous demo on the local preview host and an authenticated review-queue path. The existing React
 workbench, ASP.NET API and .NET decision engine remain authoritative. No real
 patient data; do not expose the synthetic host on a network.
 
@@ -39,3 +39,15 @@ appearance switch is held in memory for the current page and does not store pref
 The counts describe only the currently displayed page, not total queue sizes.
 The styles follow the existing medical-blue direction; Meta Astryx is a React
 reference, not an Angular dependency.
+
+## Synthetic demo (no login, no database)
+
+„Demo öffnen“ uses the read-only endpoints of the anonymous local preview host:
+`/api/work-queues`, `/api/document-cases` and `/api/document-cases/{caseId}`
+with its page previews. It shows the four work queues with totals and search,
+the 22 reference files, and a case file with document tabs, page navigation,
+zoom, provenance (field → document/page), recorded evidence, findings, context,
+source and the recorded decision trace (condition → rule → source → outcome).
+Numbers in the trace are shown from their exact JSON source text. Nothing is
+evaluated, written or stored in the browser; folder, confirmation and dispatch
+simulation remain in the existing workbench at `/`.

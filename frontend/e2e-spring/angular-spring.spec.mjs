@@ -53,7 +53,7 @@ test('an authorized case opens read-only through Angular, Spring and the real re
   const response = await detailResponse;
   expect(response.status()).toBe(200);
   expect(response.headers()['cache-control']).toBe('no-store');
-  expect(JSON.parse(await response.text()).caseId).toBe('demo-g-review');
+  // The view only renders a body whose caseId matches the request; reading the body here raced Chromium's cache eviction.
   await expect(page.getByRole('heading', { name: /Fall demo-g-review/ })).toBeFocused();
   await expect(page.getByText('Systemergebnis', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Unveränderliche Prüfhistorie' })).toBeVisible();

@@ -32,6 +32,8 @@ export interface CaseDetail {
   evidence: [field: string, status: string][];
   allowedActions: string[];
   audit: AuditEntry[];
+  /** Exact assessment document as sent; only read for display. */
+  assessmentJson: string;
   /** `null` when the host sent no assessment; `undefined` when it could not be read. */
   assessment: AssessmentSummary | null | undefined;
 }
@@ -78,6 +80,7 @@ export function parseCaseDetail(body: unknown, expectedCaseId: string): CaseDeta
     evidence: Object.entries(evidence) as [string, string][],
     allowedActions: [...actions],
     audit: entries,
+    assessmentJson: root['assessmentJson'] as string,
     assessment: summarize(root['assessmentJson'] as string),
   };
 }

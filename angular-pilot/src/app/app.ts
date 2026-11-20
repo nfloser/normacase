@@ -1,9 +1,12 @@
-import { afterNextRender, Component, ElementRef, inject, Injector, OnDestroy, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, ElementRef, inject, Injector, OnDestroy, signal, viewChild } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { de, label } from './de';
+import { de, demo, label } from './de';
 import { CaseDetail, parseCaseDetail } from './case-detail';
+import { DemoWorkspace } from './demo/demo-workspace';
+import { DecisionTrace } from './shared/decision-trace';
+import { AssessmentView, readAssessment } from './shared/assessment';
 
 interface QueueItem { caseId: string; }
 interface Queue { queueId: string; items: QueueItem[]; }
@@ -11,13 +14,17 @@ interface QueuePage { queues: Queue[]; nextPageCursor: string | null; }
 
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 
-@Component({ selector: 'app-root', imports: [FormsModule], templateUrl: './app.html' })
+@Component({ selector: 'app-root', imports: [FormsModule, DemoWorkspace, DecisionTrace], templateUrl: './app.html' })
 export class App implements OnDestroy {
   protected readonly text = de;
+  protected readonly demoText = demo;
+  /** Anonymous synthetic preview workspace; never combined with a review session. */
+  protected readonly demoMode = signal(false);
   private readonly injector = inject(Injector);
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
   private readonly logoutButton = viewChild<ElementRef<HTMLButtonElement>>('logoutButton');
   private readonly credentialField = viewChild<ElementRef<HTMLInputElement>>('credentialField');
+  private readonly demoButton = viewChild<ElementRef<HTMLButtonElement>>('demoButton');
   private readonly caseTitle = viewChild<ElementRef<HTMLHeadingElement>>('caseTitle');
   protected keyInput = '';
   private key = '';
@@ -34,6 +41,14 @@ export class App implements OnDestroy {
   protected readonly detail = signal<CaseDetail | null>(null);
   protected readonly caseBusy = signal(false);
   protected readonly caseError = signal('');
+  /** Parsed once per loaded case, not on every render. */
+  protected readonly reviewTrace = computed<AssessmentView | null>(() => {
+    const detail = this.detail();
+    return detail ? readAssessment(detail.assessmentJson) ?? null : null;
+  });
+
+  protected openDemo(): void { this.logout(); this.demoMode.set(true); }
+  protected leaveDemo(): void { this.demoMode.set(false); afterNextRender(() => this.demoButton()?.nativeElement.focus(), { injector: this.injector }); }
 
   protected toggleTheme(): void { this.dark.update(value => !value); }
 
@@ -41,6 +56,7 @@ export class App implements OnDestroy {
 
   protected login(): void {
     const key = this.keyInput;
+    this.demoMode.set(false);
     this.logout();
     if (!key.trim()) { this.error.set(de.credentialRequired); return; }
     this.key = key;
