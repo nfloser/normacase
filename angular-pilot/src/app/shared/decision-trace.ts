@@ -1,9 +1,11 @@
 import { Component, input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { demo, label, de } from '../de';
+import { wb, label, de } from '../de';
+
+const demo = wb.trace;
 import { AssessmentView, ConditionView, displayValue, NumericView, ValueView } from './assessment';
 import { germanDecimal, ExactNumber } from './json';
-import type { OutputLabel } from '../demo/demo-data';
+import type { OutputLabel } from '../workbench/document-case';
 
 /** Read-only rendering of the recorded decision trace: input → condition → rule → source → outcome. */
 @Component({
@@ -63,7 +65,7 @@ export class DecisionTrace {
   readonly fieldLabels = input<Record<string, string>>({});
   readonly evidenceLabels = input<Record<string, string>>({});
   readonly outputLabels = input<Record<string, OutputLabel>>({});
-  protected readonly text = demo;
+  protected readonly text = wb.trace;
 
   protected outcomeLabel(outcome: string | null): string { return label(de.outcomes, outcome, de.unknown); }
   protected tone(outcome: string | null): string { return outcome !== null && Object.hasOwn(de.outcomes, outcome) ? outcome : 'NONE'; }

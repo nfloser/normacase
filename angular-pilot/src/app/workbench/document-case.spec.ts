@@ -1,4 +1,4 @@
-import { parseDemoQueues, parseDocumentCase, parseReferenceCases, safeExternalUrl } from './demo-data';
+import { parseDocumentCase, safeExternalUrl } from './document-case';
 
 const file = {
   caseId: 'reference-x', title: 'NC-1 · Akte', scope: 'Nur Demo', context: { request: 'A', question: 'F', background: 'H' }, validationLevel: 'SYNTHETIC',
@@ -9,17 +9,7 @@ const file = {
   assessmentJson: null, inputJson: '{"evidence":{"proof":"MISSING"}}',
 };
 
-describe('demo contracts', () => {
-  it('accepts the work-queue overview', () => {
-    expect(parseDemoQueues(JSON.stringify({ totalCases: 2, queues: [{ queueId: 'review', items: [{ caseId: 'a', stateId: 'manual-review', extra: 1 }] }] })))
-      .toEqual({ totalCases: 2, queues: [{ queueId: 'review', items: [{ caseId: 'a', stateId: 'manual-review' }] }] });
-    expect(parseDemoQueues('{"queues":[]}')).toBeNull();
-    expect(parseDemoQueues(JSON.stringify({ totalCases: 1, queues: [{ queueId: 'r', items: [{ caseId: 1 }] }] }))).toBeNull();
-  });
-  it('accepts reference cases and rejects unsafe IDs', () => {
-    expect(parseReferenceCases(JSON.stringify({ cases: [{ caseId: 'reference-x', title: 'T', scope: 'S', context: null }] }))!.length).toBe(1);
-    expect(parseReferenceCases(JSON.stringify({ cases: [{ caseId: '../x', title: 'T', scope: 'S' }] }))).toBeNull();
-  });
+describe('case file contract', () => {
   it('reads a case file with provenance and recorded evidence', () => {
     const parsed = parseDocumentCase(JSON.stringify(file), 'reference-x')!;
     expect(parsed.documents[0].previewPages).toEqual([1, 2]);

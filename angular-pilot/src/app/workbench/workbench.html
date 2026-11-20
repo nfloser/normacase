@@ -1,0 +1,241 @@
+<header class="appbar">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ text.app }}</strong><small>{{ text.product }}</small></span><span class="badge">{{ text.badge }}</span></div>
+  <label class="search"><span class="sr-only">{{ text.search }}</span><span class="search-icon" aria-hidden="true">⌕</span>
+    <input #searchField type="search" [placeholder]="text.searchPlaceholder" [attr.aria-label]="text.search" [value]="query()" (input)="query.set($any($event.target).value.slice(0, 100))" autocomplete="off" spellcheck="false">
+  </label>
+  <div class="appbar-actions">
+    <label class="theme-select"><span class="sr-only">{{ text.theme }}</span>
+      <select [value]="theme()" (change)="themeChange.emit($any($event.target).value)" [attr.aria-label]="text.theme">
+        @for (t of themes; track t) { <option [value]="t" [selected]="t === theme()">{{ text.themes[t] }}</option> }
+      </select>
+    </label>
+    <button type="button" class="icon-button" [attr.aria-expanded]="showShortcuts()" (click)="showShortcuts.set(!showShortcuts())" [attr.aria-label]="text.shortcuts" [title]="text.shortcuts">?</button>
+    <a class="button ghost" href="/">{{ text.classic }}</a>
+    <button type="button" class="button ghost" (click)="openReview.emit()">{{ text.review }}</button>
+  </div>
+</header>
+@if (showShortcuts()) { <p class="shortcut-bar" role="note"><strong>{{ text.shortcuts }}:</strong> {{ text.shortcutText }}</p> }
+
+<div class="commandbar" role="toolbar" [attr.aria-label]="text.caseActions">
+  <button type="button" class="icon-button" (click)="navOpen.set(!navOpen())" [attr.aria-pressed]="navOpen()" [attr.aria-label]="text.navigation" [title]="text.navigation">☰</button>
+  <span class="divider" aria-hidden="true"></span>
+  <button type="button" class="button ghost" (click)="begin('folder', [])"><span aria-hidden="true">＋</span> {{ text.newFolder }}</button>
+  <button type="button" class="button ghost" [disabled]="!focused()" (click)="focused() && open(focused()!.caseId)">{{ text.open }}</button>
+  <button type="button" class="icon-button" (click)="refresh()" [attr.aria-label]="text.refresh" [title]="text.refresh">⟳</button>
+  <span class="divider" aria-hidden="true"></span>
+  <button type="button" class="button ghost" [disabled]="!targets().length || store.busy()" [title]="targets().length ? '' : text.noSelection" (click)="begin('move')">{{ text.move }}@if (targets().length) { <span class="count">{{ targets().length }}</span> }</button>
+  <button type="button" class="button ghost" [disabled]="!targets().length || store.busy()" (click)="begin('color')">{{ text.mark }}</button>
+  <button type="button" class="button ghost" [disabled]="!targets().length || store.busy()" (click)="bookmark(targets())">☆ {{ text.bookmark }}</button>
+  <button type="button" class="button ghost" [disabled]="!canConfirmTargets() || store.busy()" (click)="begin('confirm')">✓ {{ text.confirm }}</button>
+  <button type="button" class="button ghost" [disabled]="!canDispatchTargets() || store.busy()" (click)="begin('dispatch')">✉ {{ text.dispatch }}</button>
+  <span class="spacer"></span>
+  <button type="button" class="button ghost" [attr.aria-pressed]="showFilters()" (click)="showFilters.set(!showFilters())">{{ text.filters }}</button>
+  <div class="segmented" role="group" [attr.aria-label]="text.density">
+    <button type="button" [attr.aria-pressed]="density() === 'compact'" (click)="density.set('compact')">{{ text.compact }}</button>
+    <button type="button" [attr.aria-pressed]="density() === 'comfortable'" (click)="density.set('comfortable')">{{ text.comfortable }}</button>
+  </div>
+  <div class="segmented" role="group" [attr.aria-label]="text.readingPane + ' (F4)'">
+    <button type="button" [attr.aria-pressed]="pane() === 'right'" (click)="pane.set('right')">{{ text.paneRight }}</button>
+    <button type="button" [attr.aria-pressed]="pane() === 'bottom'" (click)="pane.set('bottom')">{{ text.paneBottom }}</button>
+    <button type="button" [attr.aria-pressed]="pane() === 'off'" (click)="pane.set('off')">{{ text.paneOff }}</button>
+  </div>
+</div>
+
+@if (error()) { <p class="banner error" role="alert">{{ error() }} <button type="button" class="link" (click)="error.set('')">×</button></p> }
+@if (notice()) { <p class="toast" role="status">{{ notice() }}</p> }
+
+<div class="workbench-grid">
+  <nav class="explorer" [attr.aria-label]="text.navigation">
+    <button type="button" class="nav-item" [attr.aria-current]="filter() === 'all' ? 'true' : null" (click)="setFilter('all')">
+      <span class="nav-icon" aria-hidden="true">▤</span><span class="nav-label">{{ text.all }}</span><span class="nav-count">{{ count('all') }}</span></button>
+
+    <h3 class="nav-heading">{{ text.queues }}</h3>
+    @for (q of queues; track q) {
+      <button type="button" class="nav-item" [attr.aria-current]="filter() === q ? 'true' : null" (click)="setFilter(q)" (contextmenu)="openNavMenu($event, q, false)">
+        <span class="nav-dot" [style.background-color]="queueColor(q)" aria-hidden="true"></span><span class="nav-label">{{ queueName(q) }}</span><span class="nav-count">{{ count(q) }}</span></button>
+    }
+    <p class="nav-help">{{ text.listsHelp }}</p>
+
+    <h3 class="nav-heading">{{ text.personal }}<button type="button" class="icon-button tiny" (click)="begin('folder', [])" [attr.aria-label]="text.newFolder" [title]="text.newFolder">＋</button></h3>
+    <button type="button" class="nav-item" [attr.aria-current]="filter() === 'bookmarks' ? 'true' : null" (click)="setFilter('bookmarks')">
+      <span class="nav-icon star" aria-hidden="true">★</span><span class="nav-label">{{ text.bookmarks }}</span><span class="nav-count">{{ count('bookmarks') }}</span></button>
+    <button type="button" class="nav-item" [attr.aria-current]="filter() === 'confirmed' ? 'true' : null" (click)="setFilter('confirmed')">
+      <span class="nav-icon ok" aria-hidden="true">✓</span><span class="nav-label">{{ text.confirmed }}</span><span class="nav-count">{{ count('confirmed') }}</span></button>
+    <button type="button" class="nav-item" [attr.aria-current]="filter() === 'dispatched' ? 'true' : null" (click)="setFilter('dispatched')">
+      <span class="nav-icon" aria-hidden="true">✉</span><span class="nav-label">{{ text.dispatched }}</span><span class="nav-count">{{ count('dispatched') }}</span></button>
+    @for (f of folders(); track f.id) {
+      <div class="nav-folder" [style.padding-left.px]="f.depth * 14">
+        <button type="button" class="nav-item" [attr.aria-current]="filter() === f.id ? 'true' : null" (click)="setFilter(f.id)" (contextmenu)="openNavMenu($event, f.id, true)">
+          <span class="nav-icon" [style.color]="f.color" aria-hidden="true">■</span><span class="nav-label">{{ f.label }}</span><span class="nav-count">{{ count(f.id) }}</span></button>
+        <button type="button" class="icon-button tiny" (click)="begin('folder', [], { parentId: f.id })" [attr.aria-label]="text.addSubfolder + ': ' + f.label" [title]="text.addSubfolder">＋</button>
+        <button type="button" class="icon-button tiny" (click)="begin('rename', [], { folderId: f.id, label: f.label, color: f.color })" [attr.aria-label]="text.editFolder + ': ' + f.label" [title]="text.editFolder">⋯</button>
+      </div>
+    }
+    <button type="button" class="nav-item" [attr.aria-current]="filter() === 'unfiled' ? 'true' : null" (click)="setFilter('unfiled')">
+      <span class="nav-icon" aria-hidden="true">□</span><span class="nav-label">{{ text.unfiled }}</span><span class="nav-count">{{ count('unfiled') }}</span></button>
+    <label class="nav-toggle"><input type="checkbox" [checked]="platformCases()" (change)="platformCases.set($any($event.target).checked)"> {{ text.platformCases }}</label>
+  </nav>
+
+  <main class="workbench-main">
+    @switch (store.state()) {
+      @case ('loading') { <p class="empty-state" role="status">{{ text.loading }}</p> }
+      @case ('unavailable') { <div class="empty-state"><p>{{ text.unavailable }}</p><button type="button" class="button primary" (click)="openReview.emit()">{{ text.review }}</button></div> }
+      @case ('invalid') { <p class="empty-state" role="alert">{{ text.invalid }}</p> }
+    }
+    @if (store.state() === 'ready') {
+      @if (openedCase(); as c) {
+        <nc-case-view [item]="c" [file]="store.files()[c.caseId]" [audit]="workspace()?.audit ?? []" [folderLabel]="folderLabel(c.organization.folderId)" [busy]="store.busy()"
+          mode="full" [initialTab]="opened()!.tab" (back)="closeCase()" (confirmCase)="begin('confirm', [c.caseId])" (dispatchCase)="begin('dispatch', [c.caseId])"
+          (saveNote)="run('NOTE', [c.caseId], { note: $event })" />
+      } @else {
+        <div #body class="list-and-pane" [attr.data-pane]="pane()" [style.--pane-size.%]="panePercent()">
+          <div class="list-scroll">
+            <table class="case-table" [attr.aria-label]="text.list" aria-multiselectable="true">
+              <thead>
+                <tr>
+                  <th class="col-select"><input type="checkbox" [attr.aria-label]="text.selectVisible" [checked]="allVisibleSelected()" [disabled]="!visible().length || store.busy()" (change)="toggleVisible($any($event.target).checked)"></th>
+                  <th [attr.aria-sort]="ariaSort('subject')"><button type="button" class="sort" (click)="sortBy('subject')">{{ text.subject }}</button></th>
+                  <th [attr.aria-sort]="ariaSort('number')" class="col-number"><button type="button" class="sort" (click)="sortBy('number')">{{ text.number }}</button></th>
+                  <th [attr.aria-sort]="ariaSort('status')" class="col-status"><button type="button" class="sort" (click)="sortBy('status')">{{ text.status }}</button></th>
+                  <th class="col-next">{{ text.next }}</th>
+                  <th [attr.aria-sort]="ariaSort('result')" class="col-result"><button type="button" class="sort" (click)="sortBy('result')">{{ text.result }}</button></th>
+                  <th class="col-docs" [title]="text.files">{{ text.documents }}</th>
+                </tr>
+                @if (showFilters()) {
+                  <tr class="filter-row">
+                    <th></th>
+                    <th><input [attr.aria-label]="text.subject + ' ' + text.contains" [placeholder]="text.contains" [value]="columns().subject" (input)="setColumn('subject', $any($event.target).value)"></th>
+                    <th><input [attr.aria-label]="text.number + ' ' + text.contains" [placeholder]="text.contains" [value]="columns().number" (input)="setColumn('number', $any($event.target).value)"></th>
+                    <th><select [attr.aria-label]="text.status" [value]="statusFilter()" (change)="statusFilter.set($any($event.target).value)"><option value="">{{ text.allStates }}</option>@for (q of queues; track q) { <option [value]="q">{{ queueName(q) }}</option> }</select></th>
+                    <th><input [attr.aria-label]="text.next + ' ' + text.contains" [placeholder]="text.contains" [value]="columns().next" (input)="setColumn('next', $any($event.target).value)"></th>
+                    <th><input [attr.aria-label]="text.result + ' ' + text.contains" [placeholder]="text.contains" [value]="columns().result" (input)="setColumn('result', $any($event.target).value)"></th>
+                    <th></th>
+                  </tr>
+                }
+              </thead>
+              <tbody>
+                @for (c of visible(); track c.caseId) {
+                  @let id = identity(c);
+                  <tr [attr.data-case-id]="c.caseId" tabindex="0" [attr.aria-label]="(id.person ? id.person + ' · ' : '') + id.subject + ', ' + id.number + ', ' + status(c)" [attr.aria-selected]="selection().includes(c.caseId)" [class.active]="active() === c.caseId"
+                    [style.--case-color]="caseColor(c)" [attr.data-status]="statusKey(c)"
+                    (click)="rowClick($event, c)" (dblclick)="open(c.caseId)" (contextmenu)="openMenu($event, c.caseId)" (keydown)="rowKeys($event, c)">
+                    <td class="col-select"><input type="checkbox" [attr.aria-label]="text.selectCase + ': ' + id.number" [checked]="selection().includes(c.caseId)" [disabled]="store.busy()" (change)="choose(c.caseId, false, true)"></td>
+                    <td class="col-subject">
+                      <div class="subject-line">
+                        @if (c.organization.bookmark) { <span class="star" [attr.aria-label]="text.bookmarked">★</span> }
+                        @if (c.organization.color) { <span class="mark" [style.background-color]="c.organization.color" [attr.aria-label]="text.personalColor"></span> }
+                        <span class="case-open">@if (id.person) { <strong>{{ id.person }}</strong> · }{{ id.subject }}</span>
+                      </div>
+                      @if (density() === 'comfortable') {
+                        <div class="preview-line"><span class="chip inline-status" [attr.data-queue]="statusKey(c)">{{ status(c) }}</span> {{ request(c) }}@if (c.organization.note) { <span class="note">📝 {{ c.organization.note }}</span> }</div>
+                      }
+                    </td>
+                    <td class="col-number mono">{{ id.number }}</td>
+                    <td class="col-status"><span class="chip" [attr.data-queue]="statusKey(c)">{{ status(c) }}</span></td>
+                    <td class="col-next">{{ nextStep(c) }}@if (findings(c)) { <span class="muted"> · {{ findings(c) }} {{ text.openPoints }}</span> }</td>
+                    <td class="col-result"><span class="result-pill" [attr.data-outcome]="resultTone(c.caseId)">{{ resultLabel(c.caseId) }}</span></td>
+                    <td class="col-docs">{{ documentCount(c) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            @if (!visible().length) { <p class="empty-state">{{ text.noCases }}</p> }
+          </div>
+
+          @if (pane() !== 'off') {
+            <div class="splitter" role="separator" tabindex="0" [attr.aria-label]="text.resize" [attr.aria-orientation]="pane() === 'right' ? 'vertical' : 'horizontal'"
+              aria-valuemin="25" aria-valuemax="75" [attr.aria-valuenow]="panePercent()"
+              (pointerdown)="startResize($event)" (pointermove)="moveResize($event)" (pointerup)="endResize()" (pointercancel)="endResize()" (keydown)="resizeKeys($event)"></div>
+            <section class="reading-pane" [attr.aria-label]="text.readingPane">
+              @if (focused(); as c) {
+                <nc-case-view [item]="c" [file]="store.files()[c.caseId]" [audit]="workspace()?.audit ?? []" [folderLabel]="folderLabel(c.organization.folderId)" [busy]="store.busy()"
+                  mode="pane" (expand)="open(c.caseId)" (confirmCase)="begin('confirm', [c.caseId])" (dispatchCase)="begin('dispatch', [c.caseId])"
+                  (saveNote)="run('NOTE', [c.caseId], { note: $event })" />
+              } @else { <p class="empty-state">{{ text.emptyPane }}</p> }
+            </section>
+          }
+        </div>
+      }
+    }
+  </main>
+</div>
+
+<footer class="statusbar" role="status">
+  <span>{{ visible().length }} {{ text.ofCases }} {{ cases().length }} {{ text.cases }} · {{ selection().length }} {{ text.selected }} · {{ filtering() ? text.filterActive : text.noFilter }}
+    @if (filtering()) { <button type="button" class="link" (click)="resetFilters()">{{ text.resetFilters }}</button> }</span>
+  <span class="muted">{{ text.footer }}</span>
+</footer>
+
+@if (menu(); as m) {
+  @let mc = menuCases();
+  <div class="context-menu" role="menu" [attr.aria-label]="text.caseActions" [style.left.px]="m.x" [style.top.px]="m.y" (keydown)="menuKeys($event)">
+    <button type="button" role="menuitem" (click)="open(m.ids[0])">{{ text.openCase }}</button>
+    <button type="button" role="menuitem" aria-haspopup="true" [attr.aria-expanded]="m.sub === 'color'" (click)="toggleSub('color')">{{ text.mark }} <span aria-hidden="true">›</span></button>
+    @if (m.sub === 'color') {
+      <div class="submenu" role="group" [attr.aria-label]="text.mark">
+        @for (p of presets; track p[0]) { <button type="button" role="menuitem" (click)="run('COLOR', m.ids, { color: p[1] })"><span class="swatch" [style.background-color]="p[1]"></span>{{ text.colors[p[0]] }}</button> }
+        <button type="button" role="menuitem" (click)="begin('color', m.ids)">{{ text.customColor }} …</button>
+        <button type="button" role="menuitem" (click)="run('COLOR', m.ids, { color: null })">{{ text.clearColor }}</button>
+      </div>
+    }
+    <button type="button" role="menuitem" aria-haspopup="true" [attr.aria-expanded]="m.sub === 'folder'" (click)="toggleSub('folder')">{{ text.moveTo }} <span aria-hidden="true">›</span></button>
+    @if (m.sub === 'folder') {
+      <div class="submenu" role="group" [attr.aria-label]="text.moveTo">
+        @for (f of folders(); track f.id) { <button type="button" role="menuitem" (click)="run('MOVE', m.ids, { folderId: f.id })"><span class="swatch" [style.background-color]="f.color"></span>{{ f.label }}</button> }
+        <button type="button" role="menuitem" (click)="begin('folder', [])">{{ text.newFolderEllipsis }}</button>
+      </div>
+    }
+    <button type="button" role="menuitem" [disabled]="store.busy()" (click)="bookmark(m.ids)">{{ allBookmarked(mc) ? text.removeBookmark : text.addBookmark }}</button>
+    <button type="button" role="menuitem" [disabled]="store.busy() || !anyFiled(mc)" (click)="run('MOVE', m.ids, { folderId: null })">{{ text.removeFromFolder }}</button>
+    <button type="button" role="menuitem" [disabled]="m.ids.length !== 1" (click)="begin('note', m.ids)">{{ text.note }} …</button>
+    <hr>
+    <button type="button" role="menuitem" [disabled]="store.busy() || !canConfirmCases(mc)" (click)="begin('confirm', m.ids)">{{ text.confirmCase }} …</button>
+    <button type="button" role="menuitem" [disabled]="store.busy() || !canDispatchCases(mc)" (click)="begin('dispatch', m.ids)">{{ text.dispatchCases }} …</button>
+  </div>
+}
+@if (navMenu(); as n) {
+  <div class="context-menu nav-menu" role="menu" [style.left.px]="n.x" [style.top.px]="n.y" (keydown)="menuKeys($event)">
+    <button type="button" role="menuitem" (click)="editNavItem()">{{ n.folder ? text.editFolder : text.queueColor }} …</button>
+  </div>
+}
+
+@if (dialog(); as d) {
+  <dialog #dialog class="dialog" [attr.aria-label]="text.dialogTitles[d.kind]" (cancel)="$event.preventDefault(); store.busy() || closeDialog()">
+    <form (submit)="submitDialog($event)">
+      <h2>{{ text.dialogTitles[d.kind] }}</h2>
+      @if (d.kind === 'folder') {
+        <label class="field">{{ text.parentFolder }}<select [value]="d.parentId" (change)="patchDialog({ parentId: $any($event.target).value })">
+          <option value="">{{ text.personal }}</option>
+          @for (f of folders(); track f.id) { @if (f.depth < 4) { <option [value]="f.id" [selected]="f.id === d.parentId">{{ '— '.repeat(f.depth) + f.label }}</option> } }
+        </select></label>
+      }
+      @if (d.kind === 'folder' || d.kind === 'rename') {
+        <label class="field">{{ text.folderName }}<input required maxlength="80" [value]="d.label" (input)="patchDialog({ label: $any($event.target).value })"></label>
+      }
+      @if (d.kind === 'folder' || d.kind === 'rename' || d.kind === 'color' || d.kind === 'queueColor') {
+        <div class="field"><span>{{ d.kind === 'folder' || d.kind === 'rename' ? text.folderColor : text.markColor }}</span>
+          <div class="swatches" role="group">
+            @for (p of presets; track p[0]) { <button type="button" class="swatch-button" [attr.aria-pressed]="d.color === p[1]" (click)="patchDialog({ color: p[1] })"><span class="swatch" [style.background-color]="p[1]"></span>{{ text.colors[p[0]] }}</button> }
+            <label class="swatch-button">{{ text.customColor }} <input type="color" [value]="d.color" (input)="patchDialog({ color: $any($event.target).value })"></label>
+          </div>
+        </div>
+      }
+      @if (d.kind === 'move') {
+        <label class="field">{{ text.targetFolder }}<select [value]="d.folderId" (change)="patchDialog({ folderId: $any($event.target).value })">
+          <option value="">{{ text.unfiled }}</option>
+          @for (f of folders(); track f.id) { <option [value]="f.id" [selected]="f.id === d.folderId">{{ '— '.repeat(f.depth) + f.label }}</option> }
+        </select></label>
+      }
+      @if (d.kind === 'note') { <label class="field">{{ text.note }}<textarea rows="5" maxlength="1000" [value]="d.note" (input)="patchDialog({ note: $any($event.target).value })"></textarea></label> }
+      @if (d.kind === 'confirm') { <p>{{ text.confirmHelp }} <strong>({{ d.targets.length }} {{ text.cases }})</strong></p> }
+      @if (d.kind === 'dispatch') { <p>{{ text.dispatchHelp }} <strong>({{ d.targets.length }} {{ text.cases }})</strong></p> }
+      @if (d.kind === 'delete') { <p>{{ text.deleteHelp }}</p> }
+      @if (error()) { <p class="banner error" role="alert">{{ error() }}</p> }
+      <div class="dialog-actions">
+        <button type="submit" class="button primary" [disabled]="store.busy()">{{ d.kind === 'confirm' ? text.confirm : d.kind === 'dispatch' ? text.simulateDispatch : d.kind === 'delete' ? text.delete : d.kind === 'move' ? text.move : text.save }}</button>
+        <button type="button" class="button" [disabled]="store.busy()" (click)="closeDialog()">{{ text.cancel }}</button>
+        @if (d.kind === 'rename') { <button type="button" class="button danger" (click)="patchDialog({ kind: 'delete' })">{{ text.deleteFolder }}</button> }
+      </div>
+    </form>
+  </dialog>
+}

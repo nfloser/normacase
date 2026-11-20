@@ -12,6 +12,7 @@ const detailJson = JSON.stringify({
 });
 
 async function openQueue() {
+  window.location.hash = '#review';
   const fixture = TestBed.createComponent(App); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
   const element: HTMLElement = fixture.nativeElement;
   const input = element.querySelector('input')!; input.value = 'test-key'; input.dispatchEvent(new Event('input')); await fixture.whenStable();
@@ -25,6 +26,8 @@ function caseButton(element: HTMLElement) { return element.querySelector<HTMLBut
 function backButton(element: HTMLElement) { return [...element.querySelectorAll('button')].find(b => b.textContent?.includes('Zurück zu den Arbeitslisten'))!; }
 
 describe('Arbeitslisten', () => {
+  beforeEach(() => { window.location.hash = '#review'; });
+  afterEach(() => { window.location.hash = ''; });
   beforeEach(async () => { await TestBed.configureTestingModule({ imports: [App], providers: [provideHttpClient(), provideHttpClientTesting()] }).compileComponents(); });
   it('switches the appearance and reports its state', async () => {
     const fixture = TestBed.createComponent(App); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
