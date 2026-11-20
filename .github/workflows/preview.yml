@@ -54,6 +54,10 @@ jobs:
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
+      - run: npm ci --no-audit --no-fund
+        working-directory: angular-pilot
+      - run: npm run build
+        working-directory: angular-pilot
       - name: Publish and archive native executables
         run: ${{ matrix.python }} scripts/build_preview.py --rid ${{ matrix.rid }} --commit ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Exercise extracted preview without shared runtime lookup

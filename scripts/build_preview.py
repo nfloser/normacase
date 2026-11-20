@@ -25,6 +25,9 @@ def build(rid, commit, output):
         raise ValueError("A supported runtime and complete source commit are required")
     if not (ROOT / "src/NormaCase.Api/wwwroot/index.html").is_file():
         raise ValueError("Build the bundled frontend before packaging")
+    angular = ROOT / "angular-pilot/dist/angular-pilot/browser"
+    if not (angular / "index.html").is_file():
+        raise ValueError("Build the Angular workplace before packaging")
     output = output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     archive = output / ("normacase-synthetic-preview-" + rid + ".zip")
@@ -42,6 +45,8 @@ def build(rid, commit, output):
                 "-p:Version=0.1.0-preview", "-p:InformationalVersion=" + platform,
                 "-p:IncludeSourceRevisionInInformationalVersion=false",
             ], cwd=ROOT, check=True)
+        # The Angular workplace is served by the same loopback host beside the existing workbench.
+        shutil.copytree(angular, bundle / "api" / "wwwroot" / "angular-pilot")
         shutil.copytree(ROOT / "knowledge", bundle / "knowledge")
         shutil.copytree(ROOT / "examples", bundle / "examples")
         # Package only runtime knowledge, not engineering instructions.
@@ -57,13 +62,19 @@ def build(rid, commit, output):
         for name in ("manage_installation.py", "installation.de.json", "check_preview.py", "workflow_smoke.py", "preview_platform.py"):
             shutil.copy2(ROOT / "scripts" / name, scripts / name)
         shutil.copy2(ROOT / "docs/development/OPERATIONAL_INSTALLATION.de.md", bundle / "BETRIEB.de.md")
+        launchers = ROOT / "scripts" / "preview-launchers"
         if rid == "win-x64":
-            launcher = '@echo off\r\nchcp 65001 >nul\r\ncd /d "%~dp0api"\r\necho NormaCase - synthetische Pruefwerkstatt\r\necho Browser: http://localhost:5080\r\necho Beenden: Strg+C. Nur synthetische Daten verwenden.\r\nNormaCase.Api.exe\r\nset "exitCode=%errorlevel%"\r\nif not "%exitCode%"=="0" (\r\n  echo Der lokale Dienst konnte nicht gestartet werden. Ist Port 5080 bereits belegt?\r\n  pause\r\n)\r\nexit /b %exitCode%\r\n'
-            (bundle / "Pruefwerkstatt-starten.cmd").write_bytes(launcher.encode("utf-8"))
+            # cmd.exe expects CRLF line endings; normalize regardless of the checkout settings.
+            for name, target in [("Pruefwerkstatt-starten.cmd", bundle / "Pruefwerkstatt-starten.cmd"),
+                                 ("browser-oeffnen.cmd", scripts / "browser-oeffnen.cmd")]:
+                text = (launchers / name).read_text(encoding="utf-8").replace("\r\n", "\n")
+                if not text.isascii():
+                    raise ValueError("Windows launchers must stay ASCII for every console code page")
+                target.write_bytes(text.replace("\n", "\r\n").encode("ascii"))
         else:
-            launcher = '#!/bin/sh\nset -eu\ncd -- "$(dirname -- "$0")/api"\nprintf "%s\\n" "NormaCase - synthetische Prüfwerkstatt" "Browser: http://localhost:5080" "Beenden: Strg+C. Nur synthetische Daten verwenden."\nexec ./NormaCase.Api\n'
             script = bundle / "pruefwerkstatt-starten.sh"
-            script.write_text(launcher, encoding="utf-8")
+            script.write_text((launchers / "pruefwerkstatt-starten.sh").read_text(encoding="utf-8").replace("\r\n", "\n"),
+                              encoding="utf-8", newline="\n")
             script.chmod(0o755)
         files = {path.relative_to(bundle).as_posix(): digest(path)
                  for path in sorted(bundle.rglob("*")) if path.is_file()}

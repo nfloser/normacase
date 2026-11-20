@@ -217,7 +217,74 @@ def check(archive, rid, commit):
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait(timeout=5)
+        exercise_launcher(root, rid, environment, temporary)
     print("Self-contained preview integrity, local assets and precise CLI/API replay passed.")
+
+
+def exercise_launcher(root, rid, environment, temporary):
+    """Start the bundle the way a user does, without opening a browser, and stop it again."""
+    windows = rid == "win-x64"
+    launcher = root / ("Pruefwerkstatt-starten.cmd" if windows else "pruefwerkstatt-starten.sh")
+    assert launcher.is_file(), "Start script missing"
+    if windows:
+        assert (root / "scripts" / "browser-oeffnen.cmd").is_file(), "Browser helper missing"
+        assert b"\r\n" in launcher.read_bytes() and launcher.read_bytes().isascii(), "Windows launcher must be ASCII/CRLF"
+    else:
+        assert os.access(launcher, os.X_OK), "Start script is not executable"
+    command = ["cmd.exe", "/d", "/c", str(launcher)] if windows else [str(launcher)]
+    launch_environment = {**environment, "NORMACASE_NO_BROWSER": "1"}
+    options = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if windows else {"start_new_session": True})
+    process = subprocess.Popen(command, cwd=temporary, env=launch_environment, stdin=subprocess.DEVNULL,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **options)
+    base = "http://localhost:5080"
+    try:
+        for _ in range(120):
+            try:
+                with urlopen(base + "/angular-pilot/index.html", timeout=1) as response:
+                    html = response.read().decode("utf-8")
+                    policy = response.headers["Content-Security-Policy"]
+                break
+            except OSError:  # includes URLError and resets while the host starts
+                if process.poll() is not None:
+                    raise RuntimeError("Start script terminated before readiness")
+                time.sleep(0.25)
+        else:
+            raise RuntimeError("Start script did not serve the Angular workplace")
+        assert "<app-root" in html and "script-src 'self'" in policy
+        scripts = re.findall(r'src="(?:/angular-pilot/)?(main-[A-Z0-9]+\.js)"', html)
+        assert scripts, "Angular bundle missing from the preview"
+        with urlopen(base + "/angular-pilot/" + scripts[0], timeout=5) as response:
+            assert len(response.read()) > 0
+        with urlopen(base + "/", timeout=5) as response:
+            assert '<html lang="de"' in response.read().decode("utf-8"), "Existing workbench missing"
+        with urlopen(base + "/api/work-queues", timeout=5) as response:
+            assert json.load(response)["totalCases"] == 100
+        # A second start must notice the running host and exit instead of failing on the port.
+        second = subprocess.run(command, cwd=temporary, env=launch_environment, stdin=subprocess.DEVNULL,
+                                capture_output=True, timeout=60)
+        assert second.returncode == 0, "Second start did not detect the running host"
+    finally:
+        if windows:
+            subprocess.run(["taskkill", "/T", "/F", "/PID", str(process.pid)], capture_output=True)
+        else:
+            try:
+                os.killpg(process.pid, 15)
+            except ProcessLookupError:
+                pass
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+    # The host must be gone so later steps cannot talk to a stale process.
+    for _ in range(40):
+        try:
+            urlopen(base + "/health/live", timeout=1).close()
+            time.sleep(0.25)
+        except OSError:
+            break
+    else:
+        raise RuntimeError("Launched host is still running")
 
 
 if __name__ == "__main__":

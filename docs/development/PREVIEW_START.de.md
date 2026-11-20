@@ -1,6 +1,6 @@
 # NormaCase lokal ausprobieren
 
-Dieses Testpaket enthält die deutsche Prüfwerkstatt, den Offline-Evaluator und
+Dieses Testpaket enthält die deutsche Prüfwerkstatt, den neuen Angular-Prüfarbeitsplatz, den Offline-Evaluator und
 sieben synthetische Wissenspakete. Es benötigt weder Node.js, Python, Docker noch
 eine installierte .NET-Laufzeit. Es verbindet sich nicht mit PostgreSQL.
 Die aktuelle Funktionalität ist eine synthetische Demonstration ohne fachliche
@@ -9,10 +9,31 @@ Verwende ausschließlich synthetische Daten.
 
 ## Windows x64
 
-Entpacke das gesamte ZIP in einen eigenen Ordner. Starte
-`Pruefwerkstatt-starten.cmd` per Doppelklick. Lasse das Konsolenfenster geöffnet
-und öffne anschließend <http://localhost:5080> im Browser.
-Mit Strg+C beendest du den lokalen Dienst.
+1. **Vor dem Entpacken freigeben (empfohlen):** Rechtsklick auf die
+   heruntergeladene ZIP-Datei → *Eigenschaften* → unten *Zulassen* anhaken →
+   *OK*. Dann fragt Windows nicht bei jeder einzelnen Datei nach.
+2. **Vollständig entpacken:** Rechtsklick → *Alle extrahieren…*. Liegt darin eine
+   weitere ZIP-Datei (Download aus GitHub Actions), diese ebenfalls entpacken.
+   Nicht direkt aus der ZIP-Ansicht des Explorers starten – dort fehlen die
+   übrigen Programmdateien.
+3. Im entpackten Ordner `Pruefwerkstatt-starten.cmd` doppelklicken. Ein
+   Konsolenfenster zeigt den Start; sobald der Dienst bereit ist, öffnet sich
+   der Browser automatisch mit der neuen Oberfläche
+   <http://localhost:5080/angular-pilot/index.html>. Dort *Demo öffnen* wählen.
+   Die bisherige Prüfwerkstatt bleibt unter <http://localhost:5080> erreichbar.
+4. Das Konsolenfenster geöffnet lassen. Beenden: Strg+C oder Fenster schließen.
+
+Hinweise:
+
+- Zeigt Windows *„Der Computer wurde durch Windows geschützt“*, auf
+  *Weitere Informationen* → *Trotzdem ausführen* klicken. Das Paket ist nicht
+  signiert; prüfe vorher Herkunft (Actions-Lauf des Repositorys) und Prüfsumme.
+  Schutzfunktionen bitte nicht pauschal deaktivieren.
+- Fragt die Windows-Firewall nach, genügt *Abbrechen* oder *Privates Netzwerk*:
+  der Dienst lauscht nur lokal (`localhost`).
+- Ein zweiter Doppelklick bei laufendem Dienst öffnet nur den Browser erneut.
+- Meldet das Fenster einen Fehlercode, ist meist Port 5080 durch ein anderes
+  Programm belegt.
 
 ## Linux x64
 
@@ -30,7 +51,9 @@ chmod +x pruefwerkstatt-starten.sh api/NormaCase.Api cli/NormaCase.Cli
 ./pruefwerkstatt-starten.sh
 ```
 
-Öffne anschließend <http://localhost:5080>. Beenden: Strg+C.
+Der Browser öffnet sich automatisch mit der neuen Oberfläche
+(<http://localhost:5080/angular-pilot/index.html>); die bisherige
+Prüfwerkstatt liegt unter <http://localhost:5080>. Beenden: Strg+C.
 
 ## macOS: Apple Silicon und Intel
 
@@ -47,7 +70,8 @@ chmod +x pruefwerkstatt-starten.sh api/NormaCase.Api cli/NormaCase.Cli
 ./pruefwerkstatt-starten.sh
 ```
 
-Öffne <http://localhost:5080> im Browser und lasse Terminal geöffnet.
+Der Browser öffnet sich automatisch mit der neuen Oberfläche; die bisherige
+Prüfwerkstatt liegt unter <http://localhost:5080>. Lasse Terminal geöffnet.
 Beenden: Ctrl+C. Eine separate .NET-Installation ist nicht erforderlich.
 Dies ist ein lokales Browser-Testpaket, keine signierte oder notarisierte Mac-App.
 Die CI prüft keinen heruntergeladenen Gatekeeper-Dialog. Bei einer Schutzmeldung
