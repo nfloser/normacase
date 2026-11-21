@@ -100,6 +100,18 @@ public final class AssessmentJson {
 
     // ---------------------------------------------------------------- schreiben
 
+    /** Kanonische Falleingabe: sortierte Schlüssel, exakte Zahlen. Grundlage des Eingabe-Hashes. */
+    public static ObjectNode caseInput(CaseInput input) {
+        ObjectNode canonical = StrictJson.object();
+        canonical.put("formatVersion", CASE_FORMAT_VERSION);
+        canonical.put("assessmentDate", input.assessmentDate().toString());
+        ObjectNode facts = canonical.putObject("facts");
+        input.facts().forEach((k, v) -> facts.set(k, caseValue(v)));
+        ObjectNode evidence = canonical.putObject("evidence");
+        input.evidence().forEach((k, v) -> evidence.put(k, v.name()));
+        return canonical;
+    }
+
     public static ObjectNode document(AssessmentResult result, String platformVersion) {
         ObjectNode root = StrictJson.object();
         root.put("formatVersion", ASSESSMENT_FORMAT_VERSION);

@@ -32,6 +32,14 @@ paths:
       summary: Geladene Knowledge Releases
       responses:
         '200': { description: Releases mit Inhalts-Hash, Feldern und Belegen }
+  /api/v1/knowledge/releases/{releaseId}/presentation:
+    get:
+      summary: Deutsche Beschriftungen eines Releases (Felder, Belege, Ergebnisse)
+      parameters:
+        - { name: releaseId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: presentation.de-DE.json oder leeres Objekt }
+        '404': { $ref: '#/components/responses/Problem' }
   /api/v1/assessments:
     post:
       summary: Fall bewerten (headless)
@@ -75,6 +83,124 @@ paths:
             schema: { $ref: '#/components/schemas/CaseInput' }
       responses:
         '200': { description: Abgleich von Eingabe-Hash, Regelwerk und Ergebnis }
+  /api/v1/intake:
+    post:
+      summary: Vorgang einliefern (Fachsystem)
+      description: >
+        Rolle integration. Idempotent über den Header Idempotency-Key. Der Fall wird bewertet und je nach Ergebnis
+        in den Korb Rückfragen oder Prüfung gelegt. Inhalte sind befristet und werden nach der Quittung gelöscht.
+      parameters:
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string, minLength: 8, maxLength: 128 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/IntakeRequest' }
+      responses:
+        '201': { description: Vorgang angelegt }
+        '200': { description: Wiederholung mit gleichem Inhalt; derselbe Vorgang }
+        '400': { $ref: '#/components/responses/Problem' }
+        '409': { $ref: '#/components/responses/Problem' }
+        '422': { $ref: '#/components/responses/Problem' }
+  /api/v1/queues:
+    get:
+      summary: Arbeitskörbe mit Anzahl
+      responses:
+        '200': { description: Körbe }
+  /api/v1/processes:
+    get:
+      summary: Vorgänge eines Korbs
+      parameters:
+        - { name: queue, in: query, required: true, schema: { type: string, enum: [clarification, review, approval, done] } }
+      responses:
+        '200': { description: Vorgangsliste }
+  /api/v1/processes/{id}:
+    get:
+      summary: Fallakte mit Entscheidungspfad, Dokumenten, Verlauf und erlaubten Aktionen
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Fallakte }
+        '404': { $ref: '#/components/responses/Problem' }
+  /api/v1/processes/{id}/documents/{documentId}:
+    get:
+      summary: Dokument der Fallakte
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: documentId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Dokumentinhalt }
+  /api/v1/processes/{id}/documents/{documentId}/pages/{page}:
+    get:
+      summary: Seitenvorschau (PNG) eines PDF
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: documentId, in: path, required: true, schema: { type: string } }
+        - { name: page, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      responses:
+        '200': { description: PNG }
+  /api/v1/processes/{id}/confirmation:
+    post:
+      summary: Ergebnis bestätigen (gutachter)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204': { description: Bestätigt; wartet auf Freigabe }
+        '409': { $ref: '#/components/responses/Problem' }
+  /api/v1/processes/confirmation:
+    post:
+      summary: Sammelbestätigung (gutachter)
+      responses:
+        '200': { description: Ergebnis je Vorgang }
+  /api/v1/processes/{id}/approval:
+    post:
+      summary: Freigeben (freigabe, Vier-Augen-Prinzip)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204': { description: Freigegeben; Ergebnis liegt zur Abholung bereit }
+        '409': { $ref: '#/components/responses/Problem' }
+  /api/v1/processes/{id}/rejection:
+    post:
+      summary: Zurückweisen mit festem Grund (freigabe)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string, enum: [CRITERIA_UNCLEAR, EVIDENCE_INSUFFICIENT, WRONG_KNOWLEDGE_RELEASE, OTHER] }
+      responses:
+        '204': { description: Zurück in die Prüfung }
+  /api/v1/processes/{id}/clarification:
+    post:
+      summary: Rückfrage beantworten; neu bewerten und neu einordnen (gutachter)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CaseInput' }
+      responses:
+        '200': { description: Neuer Zustand }
+  /api/v1/outbound:
+    get:
+      summary: Freigegebene Ergebnisse zur Abholung (integration, nur eigene)
+      responses:
+        '200': { description: Offene Nachrichten }
+  /api/v1/outbound/{id}/acknowledgement:
+    post:
+      summary: Übernahme quittieren; NormaCase löscht danach die Fallinhalte
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204': { description: Quittiert }
+        '404': { $ref: '#/components/responses/Problem' }
 components:
   securitySchemes:
     bearer: { type: http, scheme: bearer, bearerFormat: JWT }
@@ -105,6 +231,34 @@ components:
             system: { type: string }
             caseId: { type: string, description: Pseudonyme Vorgangskennung des Fachsystems }
         case: { $ref: '#/components/schemas/CaseInput' }
+    IntakeRequest:
+      type: object
+      required: [knowledgeRelease, externalReference, subject, case]
+      additionalProperties: false
+      properties:
+        knowledgeRelease: { type: string }
+        externalReference:
+          type: object
+          required: [system, caseId]
+          properties: { system: { type: string }, caseId: { type: string } }
+        subject:
+          type: object
+          required: [displayName]
+          description: Identifikationsdaten; getrennt gespeichert und nach Abschluss gelöscht
+          properties: { displayName: { type: string, maxLength: 200 } }
+        case: { $ref: '#/components/schemas/CaseInput' }
+        documents:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            required: [id, title, mediaType, contentBase64]
+            properties:
+              id: { type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$' }
+              title: { type: string }
+              mediaType: { enum: [application/pdf, image/png, image/jpeg, text/plain] }
+              contentBase64: { type: string, contentEncoding: base64 }
+              pagesBase64: { type: array, items: { type: string, contentEncoding: base64 } }
     CaseInput:
       type: object
       required: [formatVersion, assessmentDate, facts]

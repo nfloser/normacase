@@ -63,7 +63,13 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
                     .sorted(Comparator.naturalOrder()).toList()) {
                 byte[] bytes = Files.readAllBytes(file);
                 KnowledgePack pack = reader.read(new String(bytes, StandardCharsets.UTF_8));
-                KnowledgeRelease release = new KnowledgeRelease(pack, sha256(bytes));
+                Path presentation = file.resolveSibling("presentation.de-DE.json");
+                String labels = null;
+                if (Files.isRegularFile(presentation)) {
+                    labels = Files.readString(presentation, StandardCharsets.UTF_8);
+                    de.normacase.common.StrictJson.parseObject(labels);
+                }
+                KnowledgeRelease release = new KnowledgeRelease(pack, sha256(bytes), labels);
                 if (result.putIfAbsent(release.releaseId(), release) != null) {
                     throw new IllegalStateException("Release-ID doppelt vorhanden: " + release.releaseId());
                 }

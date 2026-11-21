@@ -1,0 +1,66 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "public-reference.md-bund-pflege-adult-score",
+  "name": "Öffentliche Referenz – Pflege: Score-Schwellen Erwachsene",
+  "description": "Ordnet bereits festgestellte Modulsummen den gewichteten Punkten zu. Öffentliche Referenz, fachlich nicht freigegeben; keine Pflegegradentscheidung.",
+  "fields": {
+    "module_1_sum": {
+      "label": "Modul 1: Mobilität"
+    },
+    "module_2_sum": {
+      "label": "Modul 2: Kognition und Kommunikation"
+    },
+    "module_3_sum": {
+      "label": "Modul 3: Verhalten und psychische Problemlagen"
+    },
+    "module_4_sum": {
+      "label": "Modul 4: Selbstversorgung"
+    },
+    "module_5_sum": {
+      "label": "Modul 5: Krankheit und Therapie"
+    },
+    "module_6_sum": {
+      "label": "Modul 6: Alltagsleben und Kontakte"
+    }
+  },
+  "evidenceRequirements": {},
+  "outputs": {
+    "score_threshold_12_5": {
+      "label": "Score-Schwelle 12,5",
+      "choices": {
+        "REACHED": "Erreicht",
+        "NOT_REACHED": "Nicht erreicht"
+      }
+    },
+    "score_threshold_27": {
+      "label": "Score-Schwelle 27",
+      "choices": {
+        "REACHED": "Erreicht",
+        "NOT_REACHED": "Nicht erreicht"
+      }
+    },
+    "score_threshold_47_5": {
+      "label": "Score-Schwelle 47,5",
+      "choices": {
+        "REACHED": "Erreicht",
+        "NOT_REACHED": "Nicht erreicht"
+      }
+    },
+    "score_threshold_70": {
+      "label": "Score-Schwelle 70",
+      "choices": {
+        "REACHED": "Erreicht",
+        "NOT_REACHED": "Nicht erreicht"
+      }
+    },
+    "score_threshold_90": {
+      "label": "Score-Schwelle 90",
+      "choices": {
+        "REACHED": "Erreicht",
+        "NOT_REACHED": "Nicht erreicht"
+      }
+    }
+  },
+  "examples": []
+}

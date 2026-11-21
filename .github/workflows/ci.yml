@@ -36,7 +36,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
       - name: Knowledge Packs match the reference
-        run: diff -r legacy/knowledge knowledge
+        run: python scripts/check_knowledge_copy.py
       - name: Evaluate every synthetic case with the reference
         run: |
           python scripts/parity/legacy_oracle.py > "$RUNNER_TEMP/cases.json"
