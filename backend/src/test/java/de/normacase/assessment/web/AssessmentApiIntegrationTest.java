@@ -180,5 +180,12 @@ class AssessmentApiIntegrationTest {
         mvc.perform(get("/api/v1/knowledge/releases").with(as("gutachter", "gutachterin.a")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.releaseId == 'demo-a-2026.1')].contentSha256").isNotEmpty());
+        mvc.perform(get("/api/v1/knowledge/releases/demo-g-2026.1/presentation").with(as("gutachter", "gutachterin.a")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fields.request_complete.label").value("Pflichtangaben vollständig"));
+        mvc.perform(get("/api/v1/knowledge/releases/pflege-adult-score-2026-10-01-public-reference.1/presentation")
+                        .with(as("gutachter", "gutachterin.a")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fields.module_1_sum.label").value("Modul 1: Mobilität"));
     }
 }

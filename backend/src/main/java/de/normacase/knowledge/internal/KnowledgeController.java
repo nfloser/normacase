@@ -28,6 +28,15 @@ class KnowledgeController {
         return ResponseEntity.ok().cacheControl(CacheControl.maxAge(Duration.ofMinutes(5)).cachePrivate()).body(body);
     }
 
+    @GetMapping(path = "/api/v1/knowledge/releases/{releaseId}/presentation", produces = "application/json")
+    ResponseEntity<String> presentation(@org.springframework.web.bind.annotation.PathVariable String releaseId) {
+        return catalog.release(releaseId)
+                .map(r -> ResponseEntity.ok().cacheControl(CacheControl.maxAge(Duration.ofMinutes(5)).cachePrivate())
+                        .body(r.presentationJson() == null ? "{}" : r.presentationJson()))
+                .orElseGet(() -> ResponseEntity.status(404).contentType(org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON)
+                        .body("{\"type\":\"https://normacase.local/problems/not-found\",\"title\":\"Nicht gefunden\",\"status\":404}"));
+    }
+
     record ReleaseSummary(String releaseId, String packId, String lifecycleStatus, String validationLevel,
             String entryRuleId, String contentSha256, List<FieldSummary> fields, List<String> evidenceRequirements) {
     }

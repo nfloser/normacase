@@ -64,13 +64,7 @@ public class AssessmentService {
 
     /** SHA-256 der kanonischen Eingabe: sortierte Schlüssel, exakte Zahlen, kein Leerraum. */
     public static String inputSha256(CaseInput input) {
-        ObjectNode canonical = StrictJson.object();
-        canonical.put("formatVersion", AssessmentJson.CASE_FORMAT_VERSION);
-        canonical.put("assessmentDate", input.assessmentDate().toString());
-        ObjectNode facts = canonical.putObject("facts");
-        input.facts().forEach((k, v) -> facts.set(k, AssessmentJson.caseValue(v)));
-        ObjectNode evidence = canonical.putObject("evidence");
-        input.evidence().forEach((k, v) -> evidence.put(k, v.name()));
+        ObjectNode canonical = AssessmentJson.caseInput(input);
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256")
                     .digest(StrictJson.write(canonical).getBytes(StandardCharsets.UTF_8));

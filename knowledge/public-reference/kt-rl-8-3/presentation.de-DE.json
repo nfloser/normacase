@@ -1,0 +1,57 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "public-reference.gba-kt-rl-8-3",
+  "name": "Öffentliche Referenz – Krankentransport-Richtlinie § 8 Abs. 3",
+  "description": "Prüfpfad der Genehmigungsfiktion nach strukturierten Angaben. Öffentliche Referenz, fachlich nicht freigegeben.",
+  "fields": {
+    "ambulatory_treatment": {
+      "label": "Ambulante Behandlung"
+    },
+    "strict_medical_necessity": {
+      "label": "Medizinische Notwendigkeit ausdrücklich bestätigt"
+    },
+    "disability_marker_ag": {
+      "label": "Merkzeichen aG"
+    },
+    "disability_marker_bl": {
+      "label": "Merkzeichen Bl"
+    },
+    "disability_marker_h": {
+      "label": "Merkzeichen H"
+    },
+    "care_grade": {
+      "label": "Pflegegrad laut Bescheid"
+    },
+    "care_grade_3_permanent_mobility_transport_need": {
+      "label": "Dauerhafte Mobilitätsbeeinträchtigung bei Pflegegrad 3"
+    },
+    "care_level_2_on_2016_12_31": {
+      "label": "Pflegestufe 2 am 31.12.2016"
+    },
+    "care_grade_3_or_higher_since_2017_01_01": {
+      "label": "Pflegegrad mindestens 3 seit 01.01.2017"
+    }
+  },
+  "evidenceRequirements": {
+    "severe_disability_card": {
+      "label": "Schwerbehindertenausweis"
+    },
+    "care_grade_notice": {
+      "label": "Pflegegradbescheid"
+    },
+    "care_transition_classification_proof": {
+      "label": "Nachweis der Überleitung"
+    }
+  },
+  "outputs": {
+    "approval_state": {
+      "label": "Genehmigungsfiktion nach diesem Referenzpfad",
+      "choices": {
+        "DEEMED_GRANTED": "Nach diesem Referenzpfad als erteilt anzusehen",
+        "SECTION_8_3_DEEMING_RULE_NOT_APPLICABLE": "Dieser Referenzpfad ist nicht anwendbar"
+      }
+    }
+  },
+  "examples": []
+}
