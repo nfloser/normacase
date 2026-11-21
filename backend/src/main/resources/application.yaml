@@ -22,6 +22,11 @@ spring:
     problemdetails:
       enabled: true
 
+normacase:
+  knowledge:
+    # Regelwerke werden getrennt von der Plattform ausgeliefert (PLATFORM != DOMAIN KNOWLEDGE).
+    directory: ${NORMACASE_KNOWLEDGE_DIR:../knowledge}
+
 server:
   error:
     include-stacktrace: never

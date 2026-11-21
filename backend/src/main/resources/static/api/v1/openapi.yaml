@@ -1,0 +1,138 @@
+openapi: 3.1.0
+info:
+  title: NormaCase API
+  version: v1
+  description: >
+    Deterministische Entscheidungsunterstützung. Fälle werden bewertet und nicht gespeichert; es bleibt ein
+    Entscheidungsnachweis ohne Fallinhalt. Alle Daten in Beispielen sind synthetisch.
+    Fehler folgen RFC 9457 (application/problem+json).
+servers:
+  - url: /
+security:
+  - bearer: []
+paths:
+  /api/v1/system:
+    get:
+      summary: Plattformversion und Datenhaltungsmodus
+      security: []
+      responses:
+        '200':
+          description: Systemauskunft
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SystemInfo' }
+  /api/v1/me:
+    get:
+      summary: Angemeldete Person oder angemeldetes Fachsystem
+      responses:
+        '200': { description: Name und Rollen }
+        '401': { $ref: '#/components/responses/Problem' }
+  /api/v1/knowledge/releases:
+    get:
+      summary: Geladene Knowledge Releases
+      responses:
+        '200': { description: Releases mit Inhalts-Hash, Feldern und Belegen }
+  /api/v1/assessments:
+    post:
+      summary: Fall bewerten (headless)
+      description: Rollen integration oder gutachter. Der Fall wird nicht gespeichert.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AssessmentRequest' }
+      responses:
+        '200': { description: Bewertungsdokument (Format 2) mit Nachweis-ID und Hashes }
+        '400': { $ref: '#/components/responses/Problem' }
+        '403': { $ref: '#/components/responses/Problem' }
+        '404': { $ref: '#/components/responses/Problem' }
+        '422': { $ref: '#/components/responses/Problem' }
+  /api/v1/evidence:
+    get:
+      summary: Entscheidungsnachweise zu einem Vorgang des Fachsystems
+      parameters:
+        - { name: system, in: query, required: true, schema: { type: string } }
+        - { name: caseId, in: query, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Nachweise ohne Fallinhalt }
+  /api/v1/evidence/{id}:
+    get:
+      summary: Ein Entscheidungsnachweis
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Nachweis }
+        '404': { $ref: '#/components/responses/Problem' }
+  /api/v1/evidence/{id}/verification:
+    post:
+      summary: Bewertung nachvollziehen, indem die Originaleingabe erneut eingereicht wird
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CaseInput' }
+      responses:
+        '200': { description: Abgleich von Eingabe-Hash, Regelwerk und Ergebnis }
+components:
+  securitySchemes:
+    bearer: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    Problem:
+      description: Problem Details nach RFC 9457
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    SystemInfo:
+      type: object
+      properties:
+        product: { type: string }
+        platformVersion: { type: string }
+        retentionMode: { type: string, enum: [zero-retention] }
+    AssessmentRequest:
+      type: object
+      required: [knowledgeRelease, case]
+      additionalProperties: false
+      properties:
+        knowledgeRelease: { type: string, examples: [demo-a-2026.1] }
+        externalReference:
+          type: object
+          additionalProperties: false
+          required: [system, caseId]
+          properties:
+            system: { type: string }
+            caseId: { type: string, description: Pseudonyme Vorgangskennung des Fachsystems }
+        case: { $ref: '#/components/schemas/CaseInput' }
+    CaseInput:
+      type: object
+      required: [formatVersion, assessmentDate, facts]
+      additionalProperties: false
+      properties:
+        formatVersion: { const: 1 }
+        assessmentDate: { type: string, format: date }
+        facts:
+          type: object
+          additionalProperties: { $ref: '#/components/schemas/CaseValue' }
+        evidence:
+          type: object
+          additionalProperties: { type: string, enum: [MISSING, PRESENT, CONFLICTING] }
+    CaseValue:
+      oneOf:
+        - { type: object, additionalProperties: false, required: [kind], properties: { kind: { const: UNKNOWN } } }
+        - type: object
+          additionalProperties: false
+          required: [kind, truth]
+          properties: { kind: { const: TRUTH }, truth: { enum: [YES, NO, NOT_APPLICABLE] } }
+        - type: object
+          additionalProperties: false
+          required: [kind, number]
+          properties: { kind: { const: NUMBER }, number: { type: number } }
+    Problem:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }

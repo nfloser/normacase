@@ -1,7 +1,5 @@
 package de.normacase.system;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +12,8 @@ class SystemController {
 
     private final String platformVersion;
 
-    SystemController(ObjectProvider<BuildProperties> buildProperties) {
-        BuildProperties build = buildProperties.getIfAvailable();
-        this.platformVersion = build != null ? build.getVersion() : "development";
+    SystemController(PlatformVersion version) {
+        this.platformVersion = version.value();
     }
 
     @GetMapping
