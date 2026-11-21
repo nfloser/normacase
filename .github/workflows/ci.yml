@@ -114,6 +114,10 @@ jobs:
           curl -fsS -H "Authorization: Bearer $token" http://127.0.0.1:4200/api/v1/me | tee /dev/stderr | jq -e '.roles | index("integration")'
           code=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $token" http://127.0.0.1:4200/api/v1/gibt-es-nicht)
           test "$code" = 404
+          jq -n --slurpfile c legacy/examples/cases/demo-a-supported.json \
+            '{knowledgeRelease: "demo-a-2026.1", externalReference: {system: "ci", caseId: "SMOKE-1"}, case: $c[0]}' \
+            | curl -fsS -H "Authorization: Bearer $token" -H 'Content-Type: application/json' --data-binary @- \
+              http://127.0.0.1:4200/api/v1/assessments | jq -e '.document.assessment.outcome == "SUPPORTED"' 
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
