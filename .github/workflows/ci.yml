@@ -27,6 +27,35 @@ jobs:
             if [ -n "$changed" ]; then echo "legacy/ is frozen:"; echo "$changed"; exit 1; fi
           fi
 
+  parity:
+    # Der eingefrorene .NET-Kern dient als Orakel für die Java-Regel-Engine (ADR 0005).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Knowledge Packs match the reference
+        run: diff -r legacy/knowledge knowledge
+      - name: Evaluate every synthetic case with the reference
+        run: |
+          python scripts/parity/legacy_oracle.py > "$RUNNER_TEMP/cases.json"
+          dotnet run --project scripts/parity/oracle -c Release -- "$RUNNER_TEMP/cases.json" "$RUNNER_TEMP/parity"
+          cp "$RUNNER_TEMP/cases.json" "$RUNNER_TEMP/parity/cases.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-golden
+          path: ${{ runner.temp }}/parity
+      - name: Committed expectations are current
+        run: |
+          if ! diff -r "$RUNNER_TEMP/parity" backend/src/test/resources/parity; then
+            echo "Erwartungen veraltet. Aktueller Stand als tar.gz (base64) zwischen den Markern:"
+            echo "-----BEGIN PARITY-----"
+            tar czf - -C "$RUNNER_TEMP" parity | base64
+            echo "-----END PARITY-----"
+            exit 1
+          fi
+
   backend:
     runs-on: ubuntu-latest
     steps:

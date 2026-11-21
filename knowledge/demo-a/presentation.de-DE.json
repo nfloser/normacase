@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "synthetic.demo-a",
+  "name": "Demo A – Wahrheitskriterien",
+  "description": "Synthetisches Beispiel für Pflichtkriterien, optionale Angaben und UNKNOWN.",
+  "fields": {
+    "criterion_a": { "label": "Pflichtkriterium A", "helpText": "Synthetische Ja/Nein-Angabe." },
+    "criterion_b": { "label": "Pflichtkriterium B", "helpText": "Synthetische Ja/Nein-Angabe." },
+    "criterion_c": { "label": "Optionales Kriterium C", "helpText": "Darf ausdrücklich unbekannt bleiben." }
+  },
+  "evidenceRequirements": {},
+  "outputs": {},
+  "examples": [
+    { "id": "supported", "label": "Voraussetzungen erfüllt", "caseFile": "demo-a-supported.json" },
+    { "id": "incomplete", "label": "Angaben unvollständig", "caseFile": "demo-a-incomplete.json" }
+  ]
+}

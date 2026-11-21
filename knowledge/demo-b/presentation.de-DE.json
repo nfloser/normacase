@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "synthetic.demo-b",
+  "name": "Demo B – Zahlen und Zeitstände",
+  "description": "Synthetisches Beispiel für numerische Schwellen, Bereiche und zeitabhängige Regelversionen.",
+  "fields": {
+    "score": { "label": "Synthetischer Wert", "helpText": "Dezimalwert ohne fachliche Bedeutung." },
+    "band_value": { "label": "Bereichswert", "helpText": "Dezimalwert für die synthetische Bereichsprüfung." }
+  },
+  "evidenceRequirements": {},
+  "outputs": {},
+  "examples": [
+    { "id": "supported", "label": "Numerisches Beispiel", "caseFile": "demo-b-supported.json" }
+  ]
+}

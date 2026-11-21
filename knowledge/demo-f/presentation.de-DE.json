@@ -1,0 +1,39 @@
+{
+  "formatVersion": 1,
+  "locale": "de-DE",
+  "packId": "synthetic.demo-f",
+  "name": "Demo F – Vorgang und Prüfung",
+  "description": "Synthetischer Vorgang mit manuellen Übergängen und nachvollziehbarer Historie.",
+  "fields": {
+    "ready": {
+      "label": "Synthetische Voraussetzung erfüllt",
+      "helpText": "Die Auswertung steuert den Vorgang nicht automatisch."
+    }
+  },
+  "evidenceRequirements": {},
+  "outputs": {},
+  "examples": [
+    {
+      "id": "ready",
+      "label": "Voraussetzung erfüllt",
+      "caseFile": "demo-f-ready.json"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "synthetic.review",
+      "version": 1,
+      "label": "Synthetischer Prüfvorgang",
+      "states": {
+        "draft": "In Vorbereitung",
+        "review": "In Prüfung",
+        "done": "Abgeschlossen"
+      },
+      "transitions": {
+        "submit": "Zur Prüfung geben",
+        "return": "Zur Vorbereitung zurückgeben",
+        "finish": "Prüfung abschließen"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1450 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "packId": "public-reference.md-bund-pflege-adult-score",
+    "releaseId": "pflege-adult-score-2026-10-01-public-reference.1",
+    "lifecycleStatus": "IN_REVIEW",
+    "validationLevel": "PUBLIC_REFERENCE",
+    "entryRuleId": "MD-BUND-PFLEGE-ADULT-SCORE-12_5"
+  },
+  "fields": [
+    {
+      "id": "module_1_sum",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "module_2_sum",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "module_3_sum",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "module_4_sum",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "module_5_sum",
+      "type": "number",
+      "required": true
+    },
+    {
+      "id": "module_6_sum",
+      "type": "number",
+      "required": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "MD-BUND-PFLEGE-BRI-2026-08-26",
+      "authority": "Medizinischer Dienst Bund (KöR)",
+      "title": "Richtlinien des Medizinischen Dienstes Bund zur Feststellung der Pflegebedürftigkeit nach dem XI. Buch des Sozialgesetzbuches",
+      "documentType": "RICHTLINIE",
+      "publicationDate": null,
+      "validFrom": "2026-10-01",
+      "validUntil": null,
+      "version": "2026-08-26",
+      "sourceLocation": "https://md-bund.de/fileadmin/dokumente/Publikationen/SPV/Begutachtungsgrundlagen/BRi_Pflege_26_08_2026.pdf",
+      "retrievedAt": "2026-10-02",
+      "contentHash": "sha256:f39b25b55a30cd2dcf9b5ac1547f73be3f9d077b12c87f69ded38e6fac104e4b",
+      "status": "ACTIVE"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "score_threshold_12_5",
+      "version": 1,
+      "validFrom": "2026-10-01",
+      "validUntil": null,
+      "sourceId": "MD-BUND-PFLEGE-BRI-2026-08-26",
+      "type": "choice",
+      "choices": [
+        "REACHED",
+        "NOT_REACHED"
+      ],
+      "condition": {
+        "kind": "number_gte",
+        "threshold": 12.5,
+        "numericExpression": {
+          "kind": "sum",
+          "operands": [
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_1_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 1,
+                  "value": 0
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 2.5
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 5
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 9,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 10,
+                  "maximum": 15,
+                  "value": 10
+                }
+              ]
+            },
+            {
+              "kind": "max",
+              "operands": [
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_2_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 1,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 2,
+                      "maximum": 5,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 6,
+                      "maximum": 10,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 11,
+                      "maximum": 16,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 17,
+                      "maximum": 33,
+                      "value": 15
+                    }
+                  ]
+                },
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_3_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 0,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 1,
+                      "maximum": 2,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 3,
+                      "maximum": 4,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 5,
+                      "maximum": 6,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 7,
+                      "maximum": 65,
+                      "value": 15
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_4_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 2,
+                  "value": 0
+                },
+                {
+                  "minimum": 3,
+                  "maximum": 7,
+                  "value": 10
+                },
+                {
+                  "minimum": 8,
+                  "maximum": 18,
+                  "value": 20
+                },
+                {
+                  "minimum": 19,
+                  "maximum": 36,
+                  "value": 30
+                },
+                {
+                  "minimum": 37,
+                  "maximum": 54,
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_5_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 1,
+                  "value": 5
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 10
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 15
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 15,
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_6_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "value": 3.75
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 6,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 7,
+                  "maximum": 11,
+                  "value": 11.25
+                },
+                {
+                  "minimum": 12,
+                  "maximum": 18,
+                  "value": 15
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "onMatch": "REACHED",
+      "onNoMatch": "NOT_REACHED"
+    },
+    {
+      "id": "score_threshold_27",
+      "version": 1,
+      "validFrom": "2026-10-01",
+      "validUntil": null,
+      "sourceId": "MD-BUND-PFLEGE-BRI-2026-08-26",
+      "type": "choice",
+      "choices": [
+        "REACHED",
+        "NOT_REACHED"
+      ],
+      "condition": {
+        "kind": "number_gte",
+        "threshold": 27,
+        "numericExpression": {
+          "kind": "sum",
+          "operands": [
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_1_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 1,
+                  "value": 0
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 2.5
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 5
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 9,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 10,
+                  "maximum": 15,
+                  "value": 10
+                }
+              ]
+            },
+            {
+              "kind": "max",
+              "operands": [
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_2_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 1,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 2,
+                      "maximum": 5,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 6,
+                      "maximum": 10,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 11,
+                      "maximum": 16,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 17,
+                      "maximum": 33,
+                      "value": 15
+                    }
+                  ]
+                },
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_3_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 0,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 1,
+                      "maximum": 2,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 3,
+                      "maximum": 4,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 5,
+                      "maximum": 6,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 7,
+                      "maximum": 65,
+                      "value": 15
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_4_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 2,
+                  "value": 0
+                },
+                {
+                  "minimum": 3,
+                  "maximum": 7,
+                  "value": 10
+                },
+                {
+                  "minimum": 8,
+                  "maximum": 18,
+                  "value": 20
+                },
+                {
+                  "minimum": 19,
+                  "maximum": 36,
+                  "value": 30
+                },
+                {
+                  "minimum": 37,
+                  "maximum": 54,
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_5_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 1,
+                  "value": 5
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 10
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 15
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 15,
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_6_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "value": 3.75
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 6,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 7,
+                  "maximum": 11,
+                  "value": 11.25
+                },
+                {
+                  "minimum": 12,
+                  "maximum": 18,
+                  "value": 15
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "onMatch": "REACHED",
+      "onNoMatch": "NOT_REACHED"
+    },
+    {
+      "id": "score_threshold_47_5",
+      "version": 1,
+      "validFrom": "2026-10-01",
+      "validUntil": null,
+      "sourceId": "MD-BUND-PFLEGE-BRI-2026-08-26",
+      "type": "choice",
+      "choices": [
+        "REACHED",
+        "NOT_REACHED"
+      ],
+      "condition": {
+        "kind": "number_gte",
+        "threshold": 47.5,
+        "numericExpression": {
+          "kind": "sum",
+          "operands": [
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_1_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 1,
+                  "value": 0
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 2.5
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 5
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 9,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 10,
+                  "maximum": 15,
+                  "value": 10
+                }
+              ]
+            },
+            {
+              "kind": "max",
+              "operands": [
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_2_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 1,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 2,
+                      "maximum": 5,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 6,
+                      "maximum": 10,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 11,
+                      "maximum": 16,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 17,
+                      "maximum": 33,
+                      "value": 15
+                    }
+                  ]
+                },
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_3_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 0,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 1,
+                      "maximum": 2,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 3,
+                      "maximum": 4,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 5,
+                      "maximum": 6,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 7,
+                      "maximum": 65,
+                      "value": 15
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_4_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 2,
+                  "value": 0
+                },
+                {
+                  "minimum": 3,
+                  "maximum": 7,
+                  "value": 10
+                },
+                {
+                  "minimum": 8,
+                  "maximum": 18,
+                  "value": 20
+                },
+                {
+                  "minimum": 19,
+                  "maximum": 36,
+                  "value": 30
+                },
+                {
+                  "minimum": 37,
+                  "maximum": 54,
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_5_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 1,
+                  "value": 5
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 10
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 15
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 15,
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_6_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "value": 3.75
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 6,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 7,
+                  "maximum": 11,
+                  "value": 11.25
+                },
+                {
+                  "minimum": 12,
+                  "maximum": 18,
+                  "value": 15
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "onMatch": "REACHED",
+      "onNoMatch": "NOT_REACHED"
+    },
+    {
+      "id": "score_threshold_70",
+      "version": 1,
+      "validFrom": "2026-10-01",
+      "validUntil": null,
+      "sourceId": "MD-BUND-PFLEGE-BRI-2026-08-26",
+      "type": "choice",
+      "choices": [
+        "REACHED",
+        "NOT_REACHED"
+      ],
+      "condition": {
+        "kind": "number_gte",
+        "threshold": 70,
+        "numericExpression": {
+          "kind": "sum",
+          "operands": [
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_1_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 1,
+                  "value": 0
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 2.5
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 5
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 9,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 10,
+                  "maximum": 15,
+                  "value": 10
+                }
+              ]
+            },
+            {
+              "kind": "max",
+              "operands": [
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_2_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 1,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 2,
+                      "maximum": 5,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 6,
+                      "maximum": 10,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 11,
+                      "maximum": 16,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 17,
+                      "maximum": 33,
+                      "value": 15
+                    }
+                  ]
+                },
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_3_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 0,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 1,
+                      "maximum": 2,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 3,
+                      "maximum": 4,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 5,
+                      "maximum": 6,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 7,
+                      "maximum": 65,
+                      "value": 15
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_4_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 2,
+                  "value": 0
+                },
+                {
+                  "minimum": 3,
+                  "maximum": 7,
+                  "value": 10
+                },
+                {
+                  "minimum": 8,
+                  "maximum": 18,
+                  "value": 20
+                },
+                {
+                  "minimum": 19,
+                  "maximum": 36,
+                  "value": 30
+                },
+                {
+                  "minimum": 37,
+                  "maximum": 54,
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_5_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 1,
+                  "value": 5
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 10
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 15
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 15,
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_6_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "value": 3.75
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 6,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 7,
+                  "maximum": 11,
+                  "value": 11.25
+                },
+                {
+                  "minimum": 12,
+                  "maximum": 18,
+                  "value": 15
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "onMatch": "REACHED",
+      "onNoMatch": "NOT_REACHED"
+    },
+    {
+      "id": "score_threshold_90",
+      "version": 1,
+      "validFrom": "2026-10-01",
+      "validUntil": null,
+      "sourceId": "MD-BUND-PFLEGE-BRI-2026-08-26",
+      "type": "choice",
+      "choices": [
+        "REACHED",
+        "NOT_REACHED"
+      ],
+      "condition": {
+        "kind": "number_gte",
+        "threshold": 90,
+        "numericExpression": {
+          "kind": "sum",
+          "operands": [
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_1_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 1,
+                  "value": 0
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 2.5
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 5
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 9,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 10,
+                  "maximum": 15,
+                  "value": 10
+                }
+              ]
+            },
+            {
+              "kind": "max",
+              "operands": [
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_2_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 1,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 2,
+                      "maximum": 5,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 6,
+                      "maximum": 10,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 11,
+                      "maximum": 16,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 17,
+                      "maximum": 33,
+                      "value": 15
+                    }
+                  ]
+                },
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_3_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 0,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 1,
+                      "maximum": 2,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 3,
+                      "maximum": 4,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 5,
+                      "maximum": 6,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 7,
+                      "maximum": 65,
+                      "value": 15
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_4_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 2,
+                  "value": 0
+                },
+                {
+                  "minimum": 3,
+                  "maximum": 7,
+                  "value": 10
+                },
+                {
+                  "minimum": 8,
+                  "maximum": 18,
+                  "value": 20
+                },
+                {
+                  "minimum": 19,
+                  "maximum": 36,
+                  "value": 30
+                },
+                {
+                  "minimum": 37,
+                  "maximum": 54,
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_5_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 1,
+                  "value": 5
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 10
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 15
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 15,
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_6_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "value": 3.75
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 6,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 7,
+                  "maximum": 11,
+                  "value": 11.25
+                },
+                {
+                  "minimum": 12,
+                  "maximum": 18,
+                  "value": 15
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "onMatch": "REACHED",
+      "onNoMatch": "NOT_REACHED"
+    }
+  ],
+  "rules": [
+    {
+      "id": "MD-BUND-PFLEGE-ADULT-SCORE-12_5",
+      "version": 1,
+      "validFrom": "2026-10-01",
+      "validUntil": null,
+      "sourceId": "MD-BUND-PFLEGE-BRI-2026-08-26",
+      "condition": {
+        "kind": "number_gte",
+        "threshold": 12.5,
+        "numericExpression": {
+          "kind": "sum",
+          "operands": [
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_1_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 1,
+                  "value": 0
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 2.5
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 5
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 9,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 10,
+                  "maximum": 15,
+                  "value": 10
+                }
+              ]
+            },
+            {
+              "kind": "max",
+              "operands": [
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_2_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 1,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 2,
+                      "maximum": 5,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 6,
+                      "maximum": 10,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 11,
+                      "maximum": 16,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 17,
+                      "maximum": 33,
+                      "value": 15
+                    }
+                  ]
+                },
+                {
+                  "kind": "range_lookup",
+                  "input": {
+                    "kind": "field",
+                    "field": "module_3_sum"
+                  },
+                  "bands": [
+                    {
+                      "minimum": 0,
+                      "maximum": 0,
+                      "value": 0
+                    },
+                    {
+                      "minimum": 1,
+                      "maximum": 2,
+                      "value": 3.75
+                    },
+                    {
+                      "minimum": 3,
+                      "maximum": 4,
+                      "value": 7.5
+                    },
+                    {
+                      "minimum": 5,
+                      "maximum": 6,
+                      "value": 11.25
+                    },
+                    {
+                      "minimum": 7,
+                      "maximum": 65,
+                      "value": 15
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_4_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 2,
+                  "value": 0
+                },
+                {
+                  "minimum": 3,
+                  "maximum": 7,
+                  "value": 10
+                },
+                {
+                  "minimum": 8,
+                  "maximum": 18,
+                  "value": 20
+                },
+                {
+                  "minimum": 19,
+                  "maximum": 36,
+                  "value": 30
+                },
+                {
+                  "minimum": 37,
+                  "maximum": 54,
+                  "value": 40
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_5_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 1,
+                  "value": 5
+                },
+                {
+                  "minimum": 2,
+                  "maximum": 3,
+                  "value": 10
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 5,
+                  "value": 15
+                },
+                {
+                  "minimum": 6,
+                  "maximum": 15,
+                  "value": 20
+                }
+              ]
+            },
+            {
+              "kind": "range_lookup",
+              "input": {
+                "kind": "field",
+                "field": "module_6_sum"
+              },
+              "bands": [
+                {
+                  "minimum": 0,
+                  "maximum": 0,
+                  "value": 0
+                },
+                {
+                  "minimum": 1,
+                  "maximum": 3,
+                  "value": 3.75
+                },
+                {
+                  "minimum": 4,
+                  "maximum": 6,
+                  "value": 7.5
+                },
+                {
+                  "minimum": 7,
+                  "maximum": 11,
+                  "value": 11.25
+                },
+                {
+                  "minimum": 12,
+                  "maximum": 18,
+                  "value": 15
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED",
+      "onUnknown": "HUMAN_REVIEW"
+    }
+  ]
+}

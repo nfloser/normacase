@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Wertet Fälle mit dem eingefrorenen .NET-Referenzstand aus (ADR 0005). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../legacy/src/NormaCase.RuleEngine/NormaCase.RuleEngine.csproj" />
+    <ProjectReference Include="../../../legacy/src/NormaCase.Serialization/NormaCase.Serialization.csproj" />
+    <ProjectReference Include="../../../legacy/src/NormaCase.Knowledge/NormaCase.Knowledge.csproj" />
+  </ItemGroup>
+</Project>
