@@ -50,7 +50,9 @@ class WorkflowIntegrationTest {
 
     static RequestPostProcessor as(String user, String... roles) {
         return jwt().jwt(j -> j.claim("preferred_username", user))
-                .authorities(java.util.Arrays.stream(roles).map(r -> new SimpleGrantedAuthority("ROLE_" + r)).toList());
+                .authorities(java.util.Arrays.stream(roles)
+                        .<org.springframework.security.core.GrantedAuthority>map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                        .toList());
     }
 
     static final RequestPostProcessor HOST = as("host-a", "integration");
