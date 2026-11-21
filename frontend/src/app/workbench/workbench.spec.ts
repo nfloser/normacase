@@ -114,6 +114,6 @@ describe('Workbench', () => {
     await settle(fixture);
     el.querySelectorAll<HTMLElement>('tbody tr')[1].dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
     fixture.detectChanges();
-    expect(el.querySelectorAll('tbody tr')[1].getAttribute('aria-selected')).toBe('true');
+    expect(el.querySelectorAll('tbody tr')[1].getAttribute('data-selected')).toBe('true');
   });
 });

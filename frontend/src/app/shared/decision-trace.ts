@@ -18,12 +18,12 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
       <strong>{{ outcomeLabel(a.outcome) }}</strong>
     </div>
     @if (a.missingRequiredFields.length) {
-      <div class="trace-block"><h4>{{ text.missingFields }}</h4>
+      <div class="trace-block"><h3>{{ text.missingFields }}</h3>
         <ul class="tags">@for (field of a.missingRequiredFields; track field) { <li>{{ fieldLabel(field) }}</li> }</ul>
       </div>
     }
     @if (a.rule; as r) {
-      <div class="trace-block"><h4>{{ text.reasoning }}</h4>
+      <div class="trace-block"><h3>{{ text.reasoning }}</h3>
         <ul class="tree" role="tree" [attr.aria-label]="text.reasoning">
           <ng-container *ngTemplateOutlet="node; context: { $implicit: r.condition, level: 1 }" />
         </ul>
@@ -36,7 +36,7 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
       </dl>
     }
     @if (a.outputs.length) {
-      <div class="trace-block"><h4>{{ text.outputs }}</h4>
+      <div class="trace-block"><h3>{{ text.outputs }}</h3>
         <ul class="plain">@for (o of a.outputs; track o.outputId) {
           <li><strong>{{ outputName(o.outputId) }}:</strong> {{ outputValue(o.outputId, o.value) }} <span class="muted">({{ conditionLabel(o.conditionResult) }})</span></li>
         }</ul>

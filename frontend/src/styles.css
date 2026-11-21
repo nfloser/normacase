@@ -31,14 +31,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
   --nc-hover: var(--color-overlay-hover, light-dark(rgb(0 0 0 / 4%), rgb(255 255 255 / 6%)));
   --nc-selected: light-dark(#dbe8f6, #24405a);
   --nc-focus: light-dark(#1d5f9b, #8cc4f2);
-  --nc-good: var(--color-text-success, light-dark(#1c6b45, #8bd8b0));
-  --nc-good-bg: var(--color-success-muted, light-dark(#e2f3e9, #1b3328));
-  --nc-warn: var(--color-text-warning, light-dark(#8a5300, #f2c77a));
-  --nc-warn-bg: var(--color-warning-muted, light-dark(#fcf0d9, #3a2f1a));
-  --nc-bad: var(--color-text-error, light-dark(#a1312b, #ffb4ad));
-  --nc-bad-bg: var(--color-error-muted, light-dark(#fbe7e5, #3d2423));
-  --nc-info: var(--color-text-info, light-dark(#3d4fa8, #b9c4ff));
-  --nc-info-bg: var(--color-info-muted, light-dark(#e8ebfb, #262c4d));
+  --nc-good: light-dark(#17562a, #9be2bb);
+  --nc-good-bg: light-dark(#e2f3e9, #173022);
+  --nc-warn: light-dark(#734600, #f4cf8a);
+  --nc-warn-bg: light-dark(#fcf0d9, #362a12);
+  --nc-bad: light-dark(#8f2a24, #ffbdb6);
+  --nc-bad-bg: light-dark(#fbe7e5, #3a201f);
+  --nc-info: light-dark(#33449a, #c3ccff);
+  --nc-info-bg: light-dark(#e8ebfb, #232946);
   --nc-radius: var(--radius-element, .625rem);
   --nc-radius-lg: var(--radius-container, .75rem);
   --nc-shadow: var(--shadow-low, 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 6%));
@@ -182,7 +182,7 @@ th[aria-sort='descending'] .sort::after { content: ' ↓'; }
 .case-table tbody tr { cursor: default; background: var(--nc-surface); }
 .case-table tbody tr td:first-child { box-shadow: inset 3px 0 0 var(--case-color, transparent); }
 .case-table tbody tr:hover { background: var(--nc-hover); }
-.case-table tbody tr[aria-selected='true'] { background: var(--nc-selected); }
+.case-table tbody tr[data-selected='true'] { background: var(--nc-selected); }
 .case-table tbody tr.active td:first-child { box-shadow: inset 4px 0 0 var(--nc-accent); }
 .case-table tbody tr:focus-visible { outline: 2px solid var(--nc-focus); outline-offset: -2px; }
 .subject-line { display: flex; align-items: center; gap: .35rem; min-width: 0; }
@@ -224,7 +224,7 @@ nc-case-file.full { background: var(--nc-surface); }
 .case-title span { font-weight: 700; }
 .case-meta-line { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-top: .3rem; color: var(--nc-text-2); font-size: .82rem; }
 .outcome-badge { display: grid; padding: .35rem .75rem; border-radius: var(--nc-radius); background: var(--nc-muted-bg); border-left: 4px solid var(--nc-border-strong); min-width: 180px; }
-.outcome-badge small { font-size: .7rem; color: inherit; opacity: .8; }
+.outcome-badge small { font-size: .7rem; color: inherit; }
 .outcome-badge[data-outcome='SUPPORTED'] { background: var(--nc-good-bg); color: var(--nc-good); border-color: var(--nc-good); }
 .outcome-badge[data-outcome='NOT_SUPPORTED'] { background: var(--nc-bad-bg); color: var(--nc-bad); border-color: var(--nc-bad); }
 .outcome-badge[data-outcome='INCOMPLETE'] { background: var(--nc-warn-bg); color: var(--nc-warn); border-color: var(--nc-warn); }
@@ -435,7 +435,6 @@ nc-pdf-reader { flex: 1; min-height: 0; display: grid; grid-template-columns: 23
 }
 nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .app-shell input, .app-shell select, .app-shell textarea { min-height: 32px; padding: 0 .55rem; border-radius: var(--nc-radius); border: 1px solid var(--nc-border); background: var(--nc-surface); }
-.case-table tbody tr[aria-selected='true'] { background: var(--nc-accent-soft); }
 .clarify-form { display: grid; gap: .6rem; }
 .clarify-form .field-row { display: grid; grid-template-columns: minmax(0, 1fr) 12rem; gap: .75rem; align-items: center; }
 .clarify-form .hint { font-size: .8rem; color: var(--nc-text-2); }
@@ -453,3 +452,7 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .nav-dot[data-queue='approval'] { background: light-dark(#13606f, #8fd6e4); }
 .nav-dot[data-queue='done'] { background: var(--nc-good); }
 .result-pill[data-outcome='NOT_APPLICABLE'] { background: var(--nc-muted-bg); }
+
+.chrome { display: contents; }
+.nav-item[aria-current='true'] .nav-count { color: inherit; }
+.brand-mark { color: light-dark(#ffffff, #0c2236); }

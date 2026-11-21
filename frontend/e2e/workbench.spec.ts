@@ -41,7 +41,7 @@ test('Gutachterin prüft eine Fallakte mit Dokumenten und bestätigt', async ({ 
 
   const results = await new AxeBuilder({ page }).analyze();
   const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
-  expect(serious.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+  expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
 
   await file.getByRole('tab', { name: 'Prüfung' }).click();
   await file.getByRole('button', { name: /Bestätigen/ }).click();

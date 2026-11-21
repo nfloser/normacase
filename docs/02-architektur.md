@@ -40,7 +40,9 @@ Jedes Modul ist ein Java-Paket unter `de.normacase.<modul>` mit öffentlicher AP
 | `documents` | Dokumente eines Vorgangs für die Dauer der Bearbeitung bereitstellen (PDF-Leser) | befristeter Zwischenspeicher oder Durchreichen vom Fachsystem |
 | `outbound` | Rückgabe an das Fachsystem, Wiederholung, Quittung | Ausgangsquittung |
 | `audit` | Nachweis jeder fachlich relevanten Handlung, nur anfügend | Entscheidungsnachweise (ohne Fallinhalt) |
-| `identity` | Abbildung der IdP-Rollen, Korbzuordnung, fallbezogene Rechte | Korbzuordnungen |
+| `identity` | Abbildung der IdP-Rollen, Akteur, Sicherheitskonfiguration | keine |
+| `system` | Plattformversion, Systemauskunft | keine |
+| `common` | Striktes JSON, Problem Details, Uhr, Rate Limiting (offenes Modul ohne Fachbezug) | keine |
 
 Die Regel-Engine (`assessment`) hängt weder von Spring noch von der Datenbank ab. Sie ist eine Bibliothek aus reinen Funktionen mit eigenen Unit- und Paritätstests.
 
@@ -65,7 +67,7 @@ Die Regel-Engine (`assessment`) hängt weder von Spring noch von der Datenbank a
 
 Angular mit Standalone-Komponenten, Signals für Oberflächenzustand und RxJS für HTTP und Ereignisströme. Gestaltung nach dem bewährten Konzept der Prüfwerkstatt: links Körbe wie Ordner, in der Mitte die Fallliste wie ein Postfach, rechts die Fallakte mit Kriterien, Belegen und PDF-Leser. Das Astryx-Theme (MIT) wird lokal eingebunden, nicht per CDN. Texte liegen in Übersetzungsressourcen (de-DE).
 
-Bausteine aus `legacy/angular-pilot` (exaktes Dezimal-Parsing, Entscheidungspfad-Darstellung, Arbeitsbereich) werden übernommen, sobald es ihre Gegenstücke im neuen Backend gibt.
+Aus `legacy/angular-pilot` übernommen sind das exakte Dezimal-Parsing, die Darstellung des Entscheidungspfads und das Stylesheet. Die Anmeldung läuft über einen eigenen PKCE-Ablauf ohne Fremdbibliothek; Tokens liegen nur im Arbeitsspeicher.
 
 ## 6. Datenhaltung
 
@@ -75,10 +77,10 @@ PostgreSQL mit einem Schema je Modul und einer Datenbankrolle je Modul (Least Pr
 
 | Bereich | Wahl |
 |---|---|
-| Backend | Java 25 (LTS), Spring Boot 4.x, Spring Modulith, Spring Security (Resource Server) |
-| Persistenz | PostgreSQL 17, Flyway, Spring JDBC (kein ORM im Nachweis-Pfad) |
-| API | OpenAPI 3.1, springdoc |
-| Frontend | Angular (aktuelle Hauptversion), TypeScript strict, RxJS, Signals |
+| Backend | Java 25 (LTS), Spring Boot 4.1, Spring Modulith 2.1, Spring Security (Resource Server), Jackson 3 |
+| Persistenz | PostgreSQL 17, Flyway, `JdbcClient` (kein ORM: jede Spalte ist bewusst gewählt) |
+| API | OpenAPI 3.1 als eingecheckte Datei, `OpenApiContractTest` gleicht sie mit den Endpunkten ab |
+| Frontend | Angular 22, TypeScript strict, RxJS, Signals, Vitest, angular-eslint |
 | Tests | JUnit 5, AssertJ, ArchUnit, Testcontainers, Playwright, axe |
 | Betrieb | Docker Compose lokal, Kubernetes-Manifeste, Actuator, Micrometer/Prometheus |
 
