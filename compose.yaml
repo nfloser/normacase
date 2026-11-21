@@ -17,6 +17,7 @@ services:
       retries: 10
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./ops/postgres/init.sql:/docker-entrypoint-initdb.d/10-runtime-role.sql:ro
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.4
@@ -46,8 +47,10 @@ services:
       NORMACASE_KNOWLEDGE_DIR: /opt/normacase/knowledge
       NORMACASE_RATE_LIMIT_PER_MINUTE: "6000"
       NORMACASE_DB_URL: jdbc:postgresql://db:5432/normacase
-      NORMACASE_DB_USER: normacase
-      NORMACASE_DB_PASSWORD: normacase
+      NORMACASE_DB_USER: normacase_app
+      NORMACASE_DB_PASSWORD: normacase-app
+      NORMACASE_DB_MIGRATION_USER: normacase
+      NORMACASE_DB_MIGRATION_PASSWORD: normacase
     volumes:
       # Regelwerke getrennt von der Plattform ausliefern (PLATFORM != DOMAIN KNOWLEDGE).
       - ./knowledge:/opt/normacase/knowledge:ro

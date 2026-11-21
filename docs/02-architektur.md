@@ -71,7 +71,7 @@ Aus `legacy/angular-pilot` übernommen sind das exakte Dezimal-Parsing, die Dars
 
 ## 6. Datenhaltung
 
-PostgreSQL mit einem Schema je Modul. Getrennte Datenbankrollen je Modul (Least Privilege) sind vorbereitet, aber noch nicht umgesetzt (siehe Roadmap). Migrationen mit Flyway, nur vorwärts. Fallinhalte liegen ausschließlich im Schema `workflow`, haben eine Ablaufzeit und werden nach Rückgabe gelöscht. Was dauerhaft bleibt, steht in [Datenschutz und Datenhaltung](03-datenschutz-und-datenhaltung.md).
+PostgreSQL mit einem Schema je Modul. Migrationen laufen mit dem Eigentümerkonto, die Anwendung mit dem Laufzeitkonto `normacase_app`: nur Datenzugriff, keine Schemaänderung, Nachweise, Eingangsquittungen und Release-Register nur lesen und anfügen (`V4__runtime_role.sql`, `RuntimeRoleIntegrationTest`). Getrennte Konten je Modul würden getrennte Verbindungspools verlangen; das lohnt erst bei einer Aufteilung in mehrere Dienste. Migrationen mit Flyway, nur vorwärts. Fallinhalte liegen ausschließlich im Schema `workflow`, haben eine Ablaufzeit und werden nach Rückgabe gelöscht. Was dauerhaft bleibt, steht in [Datenschutz und Datenhaltung](03-datenschutz-und-datenhaltung.md).
 
 ## 7. Technik und Versionen
 

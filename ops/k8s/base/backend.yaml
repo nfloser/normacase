@@ -58,6 +58,10 @@ spec:
               valueFrom: { secretKeyRef: { name: normacase-db, key: username } }
             - name: NORMACASE_DB_PASSWORD
               valueFrom: { secretKeyRef: { name: normacase-db, key: password } }
+            - name: NORMACASE_DB_MIGRATION_USER
+              valueFrom: { secretKeyRef: { name: normacase-db-migration, key: username } }
+            - name: NORMACASE_DB_MIGRATION_PASSWORD
+              valueFrom: { secretKeyRef: { name: normacase-db-migration, key: password } }
             - name: JAVA_TOOL_OPTIONS
               value: -Djava.io.tmpdir=/tmp
           readinessProbe:

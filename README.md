@@ -36,6 +36,8 @@ Vier-Augen-Ablauf ausprobieren:
 2. Abmelden, als `freigabe.c` anmelden, im Korb „Zur Freigabe“ **Freigeben**.
 3. Fälle in „Rückfragen“ lassen sich über **Angaben ergänzen** vervollständigen; NormaCase bewertet dann neu.
 
+Wer den Stack schon vor dem 21.11.2026 gestartet hatte, setzt die Datenbank einmal zurück (`docker compose down -v`), damit das eingeschränkte Laufzeitkonto angelegt wird.
+
 Mit `docker compose --profile monitoring up --build` kommen Prometheus (<http://localhost:9090>) und Grafana (<http://localhost:3000>, Dashboard „NormaCase – Betrieb“) dazu. Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
 
 ## So arbeitet NormaCase
