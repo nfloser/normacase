@@ -10,7 +10,10 @@ async function login(page: Page, user: string) {
   await page.locator('#username').fill(user);
   await page.locator('#password').fill('demo');
   await page.locator('#kc-login').click();
-  await expect(page.getByRole('navigation', { name: 'Arbeitskörbe' })).toBeVisible();
+  const workbench = page.getByRole('navigation', { name: 'Arbeitskörbe' });
+  const problem = page.getByRole('alert');
+  await expect(workbench.or(problem)).toBeVisible();
+  if (await problem.isVisible()) throw new Error(`Anmeldung fehlgeschlagen: ${await problem.textContent()} (${page.url()})`);
 }
 
 async function logout(page: Page) {

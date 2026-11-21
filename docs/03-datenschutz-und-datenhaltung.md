@@ -37,7 +37,7 @@ Nicht gespeichert werden: Namen, Geburtsdaten, Versichertennummern, Freitexte, B
 | Vertraulichkeit | OIDC, Rollen, fallbezogene Rechte, TLS, keine Inhalte in Logs | Sicherheitstests, Log-Prüfung im CI |
 | Nichtverkettung | Getrennte Schemas und DB-Rollen je Modul; Identifikationsdaten nie im Audit oder in Metriken | ArchUnit-/Schema-Test |
 | Transparenz | Entscheidungspfad zu jeder Bewertung; dokumentierte Felder und Löschregeln (diese Tabelle) | API-Vertrag, Doku |
-| Intervenierbarkeit | Menschliche Prüfung bei `INCOMPLETE`/`HUMAN_REVIEW`; Zurückweisen jederzeit; Löschung auf Anforderung des Fachsystems | Workflow-Tests, Lösch-Endpunkt |
+| Intervenierbarkeit | Menschliche Prüfung bei `INCOMPLETE`/`HUMAN_REVIEW`; Zurückweisen jederzeit; Rückzug und sofortige Löschung auf Anforderung des Fachsystems (`DELETE /api/v1/intake/{id}`) | `WorkflowIntegrationTest` |
 
 ### 3.2 DSGVO
 
@@ -55,7 +55,7 @@ Die Vorschrift verlangt unter anderem, dass der Medizinische Dienst Identifikati
 
 ### 3.4 BSI TR-03161 (Teil 2 Webanwendungen, Teil 3 Hintergrundsysteme)
 
-Die Richtlinie richtet sich an Anwendungen im Gesundheitswesen. NormaCase nutzt ihre Prüfaspekte als Checkliste. Die Zuordnung je Prüfaspekt entsteht schrittweise in `docs/sicherheit/tr-03161-checkliste.md` (ab Phase 2), jeweils mit Verweis auf Test oder Konfiguration. Schwerpunkte:
+Die Richtlinie richtet sich an Anwendungen im Gesundheitswesen. NormaCase nutzt ihre Prüfaspekte als Checkliste. Die Zuordnung steht in [`docs/sicherheit/tr-03161-checkliste.md`](sicherheit/tr-03161-checkliste.md), jeweils mit Verweis auf Test oder Konfiguration. Schwerpunkte:
 
 - Authentisierung und Sitzungsverwaltung über OIDC, kurze Token-Laufzeiten, Abmeldung serverseitig wirksam
 - Autorisierung serverseitig, fallbezogen, nicht unterscheidbare Antwort bei fehlendem Recht
@@ -65,12 +65,13 @@ Die Richtlinie richtet sich an Anwendungen im Gesundheitswesen. NormaCase nutzt 
 
 ## 4. Prüfbarkeit im Code
 
-Jede Zusage oben bekommt einen automatischen Test, sobald das betroffene Modul existiert. Kandidaten:
+Jede Zusage oben ist durch einen automatischen Test belegt:
 
-- `RetentionTest`: Nach Rückgabe-Quittung enthält das Schema `workflow` keine Zeile mehr zum Vorgang.
-- `AuditContainsNoContentTest`: Audit-Tabellen haben keine Spalten für Inhalte; Werte werden gegen eine Positivliste geprüft.
-- `LogRedactionTest`: Bei einem vollständigen Ablauf mit markierten synthetischen Werten erscheint kein Marker im Log.
-- `ModuleBoundaryTest`: Spring Modulith/ArchUnit verhindern Zugriffe über Modulgrenzen.
+- `WorkflowIntegrationTest`: Nach der Quittung sind Fall, Identifikationsdaten, Dokumente und Rückgabeinhalt gelöscht; Fristablauf und Rückzug durch das Fachsystem löschen vollständig.
+- `AssessmentApiIntegrationTest.auditTableHasNoColumnsForCaseContent`: Die Nachweistabelle hat nur die Spalten der Positivliste.
+- `AssessmentApiIntegrationTest.caseValuesNeverReachTheLog`: Ein markierter Fallwert erscheint nach einem vollständigen Ablauf nicht im Log.
+- `OperationsIntegrationTest`: Metriken enthalten keine Vorgangskennungen oder Felder.
+- `ModularityTest`: Spring Modulith verhindert Zugriffe über Modulgrenzen.
 
 ## 5. Offene Punkte
 

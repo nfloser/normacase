@@ -71,7 +71,7 @@ Aus `legacy/angular-pilot` übernommen sind das exakte Dezimal-Parsing, die Dars
 
 ## 6. Datenhaltung
 
-PostgreSQL mit einem Schema je Modul und einer Datenbankrolle je Modul (Least Privilege). Migrationen mit Flyway, nur vorwärts. Fallinhalte liegen ausschließlich im Schema `workflow`, haben eine Ablaufzeit und werden nach Rückgabe gelöscht. Was dauerhaft bleibt, steht in [Datenschutz und Datenhaltung](03-datenschutz-und-datenhaltung.md).
+PostgreSQL mit einem Schema je Modul. Getrennte Datenbankrollen je Modul (Least Privilege) sind vorbereitet, aber noch nicht umgesetzt (siehe Roadmap). Migrationen mit Flyway, nur vorwärts. Fallinhalte liegen ausschließlich im Schema `workflow`, haben eine Ablaufzeit und werden nach Rückgabe gelöscht. Was dauerhaft bleibt, steht in [Datenschutz und Datenhaltung](03-datenschutz-und-datenhaltung.md).
 
 ## 7. Technik und Versionen
 

@@ -177,11 +177,13 @@ jobs:
             http://localhost:8081/realms/normacase/protocol/openid-connect/token | jq -r .access_token)
           k6 run -e TOKEN="$token" -e BASE_URL=http://127.0.0.1:4200 ops/load/assessments.js
       - name: Playwright report
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: frontend/playwright-report
+          path: |
+            frontend/playwright-report
+            frontend/test-results
       - name: Logs
         if: failure()
         run: docker compose logs --no-color

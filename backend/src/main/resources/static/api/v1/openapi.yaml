@@ -102,6 +102,14 @@ paths:
         '400': { $ref: '#/components/responses/Problem' }
         '409': { $ref: '#/components/responses/Problem' }
         '422': { $ref: '#/components/responses/Problem' }
+  /api/v1/intake/{processId}:
+    delete:
+      summary: Vorgang zurückziehen (nur eigene); NormaCase löscht Inhalte sofort, der Nachweis bleibt
+      parameters:
+        - { name: processId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204': { description: Zurückgezogen und gelöscht }
+        '404': { $ref: '#/components/responses/Problem' }
   /api/v1/queues:
     get:
       summary: Arbeitskörbe mit Anzahl

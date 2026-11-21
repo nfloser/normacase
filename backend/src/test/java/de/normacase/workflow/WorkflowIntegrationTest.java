@@ -251,6 +251,21 @@ class WorkflowIntegrationTest {
                 .andExpect(jsonPath("$[?(@.externalReference.caseId == 'Q-1')].displayName").value("Synthetische Person Q-1"));
     }
 
+    @Test
+    void hostCanWithdrawItsOwnProcessAndEverythingIsDeleted() throws Exception {
+        UUID id = submit("demo-g-supported", "WD-1");
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/intake/" + id)
+                        .with(as("host-b", "integration")))
+                .andExpect(status().isNotFound());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/intake/" + id).with(HOST))
+                .andExpect(status().isNoContent())
+                .andExpect(header().exists("X-Request-Id"));
+        assertThat(count("select count(*) from workflow.process where process_id = :id", id)).isZero();
+        assertThat(count("select count(*) from documents.document where process_id = :id", id)).isZero();
+        assertThat(jdbc.sql("select action from audit.process_evidence where process_id = :id order by recorded_at")
+                .param("id", id).query(String.class).list()).containsExactly("RECEIVED", "WITHDRAWN");
+    }
+
     int count(String sql, UUID id) {
         return jdbc.sql(sql).param("id", id).query(Integer.class).single();
     }

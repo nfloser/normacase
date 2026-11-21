@@ -15,7 +15,7 @@ Stand: 21.11.2026 · Ein Abschnitt je Querschnittsthema. Jeder Abschnitt nennt d
 - Sichere Voreinstellungen: alles gesperrt, was nicht ausdrücklich freigegeben ist.
 - HTTP-Header: strikte CSP ohne externe Quellen, `frame-ancestors 'none'`, HSTS hinter TLS, keine Server-Banner.
 - Eingaben gegen JSON-Schema bzw. Bean Validation; Größenlimits für Anfragen und Dokumente.
-- Abhängigkeiten: Dependabot, OWASP Dependency-Check bzw. `npm audit`, CycloneDX-SBOM als CI-Artefakt, CodeQL.
+- Abhängigkeiten: Dependabot und CycloneDX-SBOM (Backend und Frontend) als CI-Artefakt. Eine Schwachstellenprüfung der SBOM im Haus (etwa mit Dependency-Track) ist der nächste Schritt.
 - Geheimnisse nur über Umgebung oder Kubernetes Secrets, nie im Repository.
 - Bedrohungsmodell aus `legacy/docs/security/THREAT_MODEL.md` wird für die neue Architektur fortgeschrieben.
 
@@ -34,7 +34,7 @@ Stand: 21.11.2026 · Ein Abschnitt je Querschnittsthema. Jeder Abschnitt nennt d
 
 ## Fehlerverfolgung und Logs
 
-- Strukturierte JSON-Logs (Spring Boot Structured Logging) mit Korrelations-ID aus `traceparent` bzw. eigener Kennung.
+- Strukturierte JSON-Logs (ECS) mit Korrelations-ID: nginx setzt `X-Request-Id`, das Backend übernimmt sie oder erzeugt eine und schreibt sie in jeden Logeintrag und in die Antwort.
 - Positivliste statt Schwärzung: Geloggt werden technische IDs, Regel-IDs, Fehlercodes, Dauer. Fallinhalte nie.
 - Fehler gehen als Problem Details an den Aufrufer und mit Stacktrace nur ins Log. Kein externer Fehlerdienst; ein im Haus betriebener (etwa GlitchTip) ist anschließbar.
 - Nachweis: `LogRedactionTest` (siehe Datenschutzkonzept).
