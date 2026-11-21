@@ -32,7 +32,7 @@ class SecurityConfiguration {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health/**", "/actuator/health", "/actuator/info").permitAll()
-                        .requestMatchers("/api/v1/system").permitAll()
+                        .requestMatchers("/api/v1/system", "/api/v1/openapi.yaml").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(rs -> rs

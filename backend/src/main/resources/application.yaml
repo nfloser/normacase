@@ -9,7 +9,12 @@ spring:
     locations: classpath:db/migration
   security:
     oauth2:
-      resourceserver:
+      resourcenormacase:
+  knowledge:
+    # Regelwerke werden getrennt von der Plattform ausgeliefert (PLATFORM != DOMAIN KNOWLEDGE).
+    directory: ${NORMACASE_KNOWLEDGE_DIR:../knowledge}
+
+server:
         jwt:
           # Schlüssel werden intern geholt, der Aussteller muss trotzdem exakt passen.
           issuer-uri: ${NORMACASE_OIDC_ISSUER:http://localhost:8081/realms/normacase}
