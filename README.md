@@ -13,8 +13,8 @@ Das Projekt wird mit **Angular/TypeScript/RxJS**, **Java/Spring Boot** und **Pos
 | Phase | Inhalt | Status |
 |---|---|---|
 | 1 | System Design, Architektur, Datenschutzkonzept, ADRs | erledigt |
-| 2 | Lauffähiges Grundgerüst: Spring Boot, PostgreSQL/Flyway, Angular-Shell, CI, Compose | in Arbeit (Anmeldung offen) |
-| 3 | Knowledge Packs und Regel-Engine in Java, Parität zum Referenzstand | geplant |
+| 2 | Lauffähiges Grundgerüst: Spring Boot, PostgreSQL/Flyway, Angular-Shell, CI, Compose | erledigt |
+| 3 | Knowledge Packs und Regel-Engine in Java, Parität zum Referenzstand | als Nächstes |
 | 4 | Arbeitskörbe und Fallakte (Postfach × Explorer, PDF-Leser, Freigabe) | geplant |
 | 5 | Adapter, fallbezogene Rechte, Monitoring, Lasttests, Kubernetes | geplant |
 
@@ -28,7 +28,7 @@ Voraussetzung ist Docker (unter Windows Docker Desktop).
 docker compose up --build
 ```
 
-Danach ist die Prüfwerkstatt unter <http://localhost:4200> erreichbar. Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
+Danach ist die Prüfwerkstatt unter <http://localhost:4200> erreichbar. Anmelden etwa mit `gutachterin.a` / `demo`; alle synthetischen Konten stehen in [ops/keycloak](ops/keycloak/README.md). Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
 
 ## Dokumentation
 

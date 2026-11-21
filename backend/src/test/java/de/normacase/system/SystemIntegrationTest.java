@@ -1,6 +1,7 @@
 package de.normacase.system;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -59,7 +60,7 @@ class SystemIntegrationTest {
 
     @Test
     void unknownRoutesAnswerWithProblemDetails() throws Exception {
-        mvc.perform(get("/api/v1/gibt-es-nicht"))
+        mvc.perform(get("/api/v1/gibt-es-nicht").with(jwt()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.status").value(404))

@@ -6,6 +6,9 @@ COPY . .
 RUN npx ng build
 
 FROM nginxinc/nginx-unprivileged:1.29-alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+ENV NORMACASE_OIDC_ISSUER=http://localhost:8081/realms/normacase \
+    NORMACASE_OIDC_ORIGIN=http://localhost:8081 \
+    NORMACASE_OIDC_CLIENT_ID=normacase-workbench
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /src/dist/normacase/browser /usr/share/nginx/html
 EXPOSE 8080

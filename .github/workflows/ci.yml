@@ -77,8 +77,31 @@ jobs:
           curl -fsS http://127.0.0.1:4200/ | grep -q '<app-root'
           curl -fsSI http://127.0.0.1:4200/ | grep -qi "content-security-policy: default-src 'self'"
           curl -fsS http://127.0.0.1:4200/api/v1/system | grep -q '"retentionMode":"zero-retention"'
-          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4200/api/v1/gibt-es-nicht)
+          curl -fsS http://127.0.0.1:4200/config.json | grep -q '"clientId":"normacase-workbench"'
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4200/api/v1/me)
+          test "$code" = 401
+          token=$(curl -fsS -d grant_type=client_credentials -d client_id=normacase-host -d client_secret=synthetic-host-secret \
+            http://localhost:8081/realms/normacase/protocol/openid-connect/token | jq -r .access_token)
+          curl -fsS -H "Authorization: Bearer $token" http://127.0.0.1:4200/api/v1/me | tee /dev/stderr | jq -e '.roles | index("integration")'
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $token" http://127.0.0.1:4200/api/v1/gibt-es-nicht)
           test "$code" = 404
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Browser test against the stack
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          npx playwright test
+      - name: Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
       - name: Logs
         if: failure()
         run: docker compose logs --no-color

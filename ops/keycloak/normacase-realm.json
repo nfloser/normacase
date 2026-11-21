@@ -1,0 +1,268 @@
+{
+  "realm": "normacase",
+  "enabled": true,
+  "displayName": "NormaCase (synthetisch)",
+  "sslRequired": "external",
+  "bruteForceProtected": true,
+  "failureFactor": 5,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "de"
+  ],
+  "defaultLocale": "de",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "gutachter",
+        "description": "Prüft Fälle und bestätigt Ergebnisse"
+      },
+      {
+        "name": "freigabe",
+        "description": "Gibt bestätigte Ergebnisse frei (Vier-Augen)"
+      },
+      {
+        "name": "regelwerk-redaktion",
+        "description": "Pflegt Knowledge Packs"
+      },
+      {
+        "name": "regelwerk-freigabe",
+        "description": "Aktiviert Knowledge Releases"
+      },
+      {
+        "name": "administration",
+        "description": "Konfiguriert Benutzer, Körbe, Adapter"
+      },
+      {
+        "name": "integration",
+        "description": "Technisches Konto eines Fachsystems"
+      },
+      {
+        "name": "revision",
+        "description": "Liest Nachweise, keine Fallinhalte"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "normacase-workbench",
+      "name": "NormaCase Prüfwerkstatt",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:4200/*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4200/*"
+      },
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "normacase-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "normacase-host",
+      "name": "Synthetisches Fachsystem",
+      "publicClient": false,
+      "secret": "synthetic-host-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "normacase-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "gutachterin.a",
+      "enabled": true,
+      "firstName": "Gutachterin",
+      "lastName": "A",
+      "email": "gutachterin.a@synthetisch.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "gutachter"
+      ]
+    },
+    {
+      "username": "gutachter.b",
+      "enabled": true,
+      "firstName": "Gutachter",
+      "lastName": "B",
+      "email": "gutachter.b@synthetisch.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "gutachter"
+      ]
+    },
+    {
+      "username": "freigabe.c",
+      "enabled": true,
+      "firstName": "Freigabe",
+      "lastName": "C",
+      "email": "freigabe.c@synthetisch.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "freigabe"
+      ]
+    },
+    {
+      "username": "redaktion.d",
+      "enabled": true,
+      "firstName": "Redaktion",
+      "lastName": "D",
+      "email": "redaktion.d@synthetisch.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "regelwerk-redaktion"
+      ]
+    },
+    {
+      "username": "regelwerk.e",
+      "enabled": true,
+      "firstName": "Regelwerk",
+      "lastName": "E",
+      "email": "regelwerk.e@synthetisch.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "regelwerk-freigabe"
+      ]
+    },
+    {
+      "username": "admin.f",
+      "enabled": true,
+      "firstName": "Administration",
+      "lastName": "F",
+      "email": "admin.f@synthetisch.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "administration"
+      ]
+    },
+    {
+      "username": "revision.g",
+      "enabled": true,
+      "firstName": "Revision",
+      "lastName": "G",
+      "email": "revision.g@synthetisch.invalid",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "revision"
+      ]
+    },
+    {
+      "username": "service-account-normacase-host",
+      "enabled": true,
+      "serviceAccountClientId": "normacase-host",
+      "realmRoles": [
+        "integration"
+      ]
+    }
+  ]
+}
