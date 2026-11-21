@@ -1,0 +1,84 @@
+/*
+ * NormaCase on Astryx design tokens.
+ * The vendored Astryx theme (src/vendor/astryx) supplies type scale, spacing, radius,
+ * shadow and the light/dark palette. NormaCase overrides the neutral accent with its
+ * medical blue and adds status colours. Every token has a fallback so the layout stays
+ * usable if a browser cannot apply the scoped theme.
+ */
+:root { color-scheme: light dark; }
+html[data-theme='light'] { color-scheme: light; }
+html[data-theme='dark'] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+.app-shell {
+  --color-accent: light-dark(#1d5f9b, #8cc4f2);
+  --color-on-accent: light-dark(#ffffff, #0c2236);
+  --nc-font: var(--font-family-body, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+  --nc-mono: var(--font-family-code, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  --nc-body: var(--color-background-body, light-dark(#f1f3f5, #18191b));
+  --nc-surface: var(--color-background-surface, light-dark(#ffffff, #222326));
+  --nc-muted-bg: var(--color-background-muted, light-dark(#eef0f2, #2b2c30));
+  --nc-popover: var(--color-background-popover, light-dark(#ffffff, #2a2b2f));
+  --nc-text: var(--color-text-primary, light-dark(#1b1b1b, #f1f1f1));
+  --nc-text-2: var(--color-text-secondary, light-dark(#5b6168, #b4b8be));
+  --nc-border: var(--color-border, light-dark(#dfe2e6, #3a3c41));
+  --nc-border-strong: var(--color-border-emphasized, light-dark(#c3c8ce, #55585e));
+  --nc-accent: var(--color-accent);
+  --nc-on-accent: var(--color-on-accent);
+  --nc-accent-soft: light-dark(#e4eef8, #1e3347);
+  --nc-hover: var(--color-overlay-hover, light-dark(rgb(0 0 0 / 4%), rgb(255 255 255 / 6%)));
+  --nc-selected: light-dark(#dbe8f6, #24405a);
+  --nc-focus: light-dark(#1d5f9b, #8cc4f2);
+  --nc-good: var(--color-text-success, light-dark(#1c6b45, #8bd8b0));
+  --nc-good-bg: var(--color-success-muted, light-dark(#e2f3e9, #1b3328));
+  --nc-warn: var(--color-text-warning, light-dark(#8a5300, #f2c77a));
+  --nc-warn-bg: var(--color-warning-muted, light-dark(#fcf0d9, #3a2f1a));
+  --nc-bad: var(--color-text-error, light-dark(#a1312b, #ffb4ad));
+  --nc-bad-bg: var(--color-error-muted, light-dark(#fbe7e5, #3d2423));
+  --nc-info: var(--color-text-info, light-dark(#3d4fa8, #b9c4ff));
+  --nc-info-bg: var(--color-info-muted, light-dark(#e8ebfb, #262c4d));
+  --nc-radius: var(--radius-element, .625rem);
+  --nc-radius-lg: var(--radius-container, .75rem);
+  --nc-shadow: var(--shadow-low, 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 6%));
+  --nc-shadow-high: var(--shadow-high, 0 12px 32px rgb(0 0 0 / 18%));
+  --nc-fast: var(--duration-fast, 120ms);
+  min-height: 100vh; background: var(--nc-body); color: var(--nc-text); font-family: var(--nc-font); font-size: 14px;
+}
+.app-shell :where(h1, h2, h3, h4) { margin: 0; font-family: var(--nc-font); color: var(--nc-text); }
+.app-shell :where(p) { margin: 0; color: inherit; }
+.app-shell :where(code, .mono) { font-family: var(--nc-mono); font-size: .9em; overflow-wrap: anywhere; }
+.app-shell a { color: var(--nc-accent); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.muted { color: var(--nc-text-2); }
+.small { font-size: .85em; }
+:where(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--nc-focus); outline-offset: 2px; }
+
+/* ---------- Prüfwerkstatt-Rahmen: Körbe | Vorgänge | Fallakte ---------- */
+.workbench { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
+.topbar { display: flex; align-items: center; gap: .75rem; padding: .5rem 1rem; background: var(--nc-surface); border-bottom: 1px solid var(--nc-border); }
+.brand { font-weight: 700; letter-spacing: -.01em; }
+.brand span { color: var(--nc-accent); }
+.spacer { flex: 1; }
+.status { display: inline-flex; align-items: center; gap: .4rem; padding: .15rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 600; background: var(--nc-muted-bg); color: var(--nc-text-2); }
+.status::before { content: ''; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
+.status.ok { background: var(--nc-good-bg); color: var(--nc-good); }
+.status.offline { background: var(--nc-bad-bg); color: var(--nc-bad); }
+.panes { display: grid; grid-template-columns: 15rem minmax(18rem, 1fr) minmax(20rem, 1.3fr); min-height: 0; }
+.pane { min-height: 0; overflow: auto; border-right: 1px solid var(--nc-border); }
+.pane:last-child { border-right: none; background: var(--nc-surface); }
+.pane-header { position: sticky; top: 0; padding: .75rem 1rem; background: inherit; border-bottom: 1px solid var(--nc-border); font-weight: 600; }
+.queues { list-style: none; margin: 0; padding: .5rem; }
+.queue { display: flex; align-items: center; width: 100%; gap: .5rem; padding: .45rem .6rem; border: none; border-radius: var(--nc-radius); background: transparent; text-align: left; cursor: pointer; }
+.queue:hover { background: var(--nc-hover); }
+.queue[aria-current='true'] { background: var(--nc-selected); font-weight: 600; }
+.count { display: inline-grid; place-items: center; min-width: 1.4rem; height: 1.25rem; padding: 0 .35rem; border-radius: 999px; background: var(--nc-muted-bg); color: var(--nc-text-2); font-size: .75rem; font-weight: 600; }
+.empty { display: grid; gap: .35rem; place-content: center; text-align: center; min-height: 12rem; padding: 2rem; color: var(--nc-text-2); }
+.empty strong { color: var(--nc-text); }
+.footer { display: flex; gap: 1rem; padding: .35rem 1rem; font-size: .8rem; color: var(--nc-text-2); background: var(--nc-surface); border-top: 1px solid var(--nc-border); }
+
+@media (max-width: 900px) {
+  .panes { grid-template-columns: 1fr; grid-auto-rows: auto; overflow: auto; }
+  .pane { border-right: none; border-bottom: 1px solid var(--nc-border); }
+}

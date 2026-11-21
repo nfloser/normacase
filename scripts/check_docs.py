@@ -9,7 +9,7 @@ LINK = re.compile(r"\]\(([^)#\s]+)(?:#[^)]*)?\)")
 errors = []
 for md in ROOT.rglob("*.md"):
     rel = md.relative_to(ROOT)
-    if rel.parts[0] in {"legacy", "node_modules", ".git"}:
+    if rel.parts[0] in {"legacy", ".git"} or {"node_modules", "target", "dist"} & set(rel.parts):
         continue
     for target in LINK.findall(md.read_text(encoding="utf-8")):
         if "://" in target or target.startswith("mailto:"):

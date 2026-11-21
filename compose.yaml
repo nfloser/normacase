@@ -1,0 +1,39 @@
+# Lokaler Start mit synthetischen Daten: docker compose up --build
+# Prüfwerkstatt: http://localhost:4200
+name: normacase
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: normacase
+      POSTGRES_USER: normacase
+      POSTGRES_PASSWORD: normacase
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U normacase -d normacase"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    environment:
+      NORMACASE_DB_URL: jdbc:postgresql://db:5432/normacase
+      NORMACASE_DB_USER: normacase
+      NORMACASE_DB_PASSWORD: normacase
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:4200:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  db-data:
