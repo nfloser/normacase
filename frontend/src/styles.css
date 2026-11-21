@@ -403,8 +403,6 @@ nc-pdf-reader { flex: 1; min-height: 0; display: grid; grid-template-columns: 23
 /* ---------- Prüfwerkstatt-Rahmen: Körbe | Vorgänge | Fallakte ---------- */
 .workbench { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
 .topbar { display: flex; align-items: center; gap: .75rem; padding: .5rem 1rem; background: var(--nc-surface); border-bottom: 1px solid var(--nc-border); }
-.brand { font-weight: 700; letter-spacing: -.01em; }
-.brand span { color: var(--nc-accent); }
 .status { display: inline-flex; align-items: center; gap: .4rem; padding: .15rem .6rem; border-radius: 999px; font-size: .8rem; font-weight: 600; background: var(--nc-muted-bg); color: var(--nc-text-2); }
 .status::before { content: ''; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
 .status.ok { background: var(--nc-good-bg); color: var(--nc-good); }
@@ -456,3 +454,4 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .chrome { display: contents; }
 .nav-item[aria-current='true'] .nav-count { color: inherit; }
 .brand-mark { color: light-dark(#ffffff, #0c2236); }
+.facts + .trace-block { margin-top: 1rem; }

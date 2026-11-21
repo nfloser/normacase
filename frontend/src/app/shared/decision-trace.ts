@@ -90,7 +90,8 @@ export class DecisionTrace {
       case 'field_equals':
         return `${this.fieldLabel(c.field ?? '')}: ${demo.expected} ${value(c.expected)}, ${demo.actual} ${value(c.actual)}`;
       case 'number_gte':
-        return `${this.fieldLabel(c.field ?? '')}: ${demo.minimum} ${num(c.minimum)}, ${demo.actual} ${value(c.actual)}`;
+        // Die Schwelle steht im Nachweis als erwarteter Zahlenwert; ohne Feld stammt der Wert aus einer Berechnung.
+        return `${c.field ? this.fieldLabel(c.field) : kind}: ${demo.minimum} ${c.minimum ? num(c.minimum) : value(c.expected)}, ${demo.actual} ${value(c.actual)}`;
       case 'number_in_range':
         return `${c.field ? this.fieldLabel(c.field) : kind}: ${demo.range} ${num(c.minimum)} – ${num(c.maximum)}, ${demo.actual} ${value(c.actual)}`;
       case 'requires_evidence': {

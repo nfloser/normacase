@@ -1,9 +1,9 @@
 @if (user(); as u) {
   <nc-workbench class="app-shell workbench-shell" data-astryx-theme="neutral" [user]="u" />
 } @else {
-  <div class="app-shell login-shell" data-astryx-theme="neutral">
-    <header class="topbar">
-      <span class="brand">{{ t.product }} <span>{{ t.workbench }}</span></span>
+  <div class="app-shell workbench-shell login-shell" data-astryx-theme="neutral">
+    <header class="appbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span><span class="badge">{{ t.badge }}</span></div>
       <span class="spacer"></span>
       <span class="status" [attr.data-status]="system().status === 'ok' ? 'PRESENT' : system().status === 'offline' ? 'CONFLICTING' : 'MISSING'" role="status">{{ statusLabel() }}</span>
     </header>
@@ -20,6 +20,6 @@
         </section>
       </main>
     }
-    <footer class="footer"><span class="spacer"></span><span>{{ t.syntheticNotice }}</span></footer>
+    <footer class="statusbar"><span></span><span>{{ t.syntheticNotice }}</span></footer>
   </div>
 }
