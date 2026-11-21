@@ -7,6 +7,9 @@ spring:
     password: ${NORMACASE_DB_PASSWORD:normacase}
   flyway:
     locations: classpath:db/migration
+    # Migrationen als Eigentümer; die Anwendung selbst läuft mit dem eingeschränkten Laufzeitkonto.
+    user: ${NORMACASE_DB_MIGRATION_USER:${NORMACASE_DB_USER:normacase}}
+    password: ${NORMACASE_DB_MIGRATION_PASSWORD:${NORMACASE_DB_PASSWORD:normacase}}
   security:
     oauth2:
       resourceserver:

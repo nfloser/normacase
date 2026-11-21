@@ -8,4 +8,4 @@ docker run -d --name normacase-db -e POSTGRES_USER=normacase -e POSTGRES_PASSWOR
 mvn -f backend/pom.xml spring-boot:run # http://localhost:8080/api/v1/system
 ```
 
-Konfiguration über `NORMACASE_DB_URL`, `NORMACASE_DB_USER`, `NORMACASE_DB_PASSWORD`. Die Modulübersicht als PlantUML erzeugt `ModularityTest` unter `target/spring-modulith-docs/`.
+Konfiguration über `NORMACASE_DB_URL`, `NORMACASE_DB_USER`, `NORMACASE_DB_PASSWORD` (Laufzeitkonto) und optional `NORMACASE_DB_MIGRATION_USER`, `NORMACASE_DB_MIGRATION_PASSWORD` (Eigentümer für Flyway; ohne Angabe gilt das Laufzeitkonto). Die Modulübersicht als PlantUML erzeugt `ModularityTest` unter `target/spring-modulith-docs/`.

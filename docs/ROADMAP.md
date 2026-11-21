@@ -34,5 +34,4 @@ System Design, Architektur, Datenschutz und Datenhaltung, Qualität und Betrieb,
 - Verbindliche Schnittstellenbeschreibung eines Fachsystems einholen und den ersten echten Adapter hinter dem Eingangsvertrag bauen
 - Regelwerk-Redaktion in der Oberfläche (Entwurf, Review, Aktivierung mit Vier-Augen-Prinzip)
 - Asynchroner Eingang (Nachrichten) und Rückgabe per Push, wenn ein Fachsystem es verlangt
-- Datenbankrollen je Modul mit getrennten Rechten
 - Externe Sicherheitsprüfung
