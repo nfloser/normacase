@@ -1,5 +1,6 @@
 # Lokaler Start mit synthetischen Daten: docker compose up --build
-# Prüfwerkstatt: http://localhost:4200
+# Prüfwerkstatt: http://localhost:4200 (Konten: ops/keycloak/README.md)
+# Keycloak: http://localhost:8081
 name: normacase
 
 services:
@@ -17,14 +18,38 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: http://localhost:8081
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "127.0.0.1:8081:8080"
+    volumes:
+      - ./ops/keycloak:/opt/keycloak/data/import:ro
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 20s
+
   backend:
     build: ./backend
     environment:
+      NORMACASE_OIDC_ISSUER: http://localhost:8081/realms/normacase
+      NORMACASE_OIDC_JWKS: http://keycloak:8080/realms/normacase/protocol/openid-connect/certs
       NORMACASE_DB_URL: jdbc:postgresql://db:5432/normacase
       NORMACASE_DB_USER: normacase
       NORMACASE_DB_PASSWORD: normacase
     depends_on:
       db:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   frontend:

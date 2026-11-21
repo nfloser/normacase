@@ -7,6 +7,17 @@ spring:
     password: ${NORMACASE_DB_PASSWORD:normacase}
   flyway:
     locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Schlüssel werden intern geholt, der Aussteller muss trotzdem exakt passen.
+          issuer-uri: ${NORMACASE_OIDC_ISSUER:http://localhost:8081/realms/normacase}
+          jwk-set-uri: ${NORMACASE_OIDC_JWKS:http://localhost:8081/realms/normacase/protocol/openid-connect/certs}
+          audiences: normacase-api
+          authorities-claim-name: roles
+          authority-prefix: ROLE_
+          principal-claim-name: preferred_username
   mvc:
     problemdetails:
       enabled: true

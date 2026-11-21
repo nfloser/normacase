@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { AuthService } from './auth/auth.service';
 
 describe('App', () => {
   let http: HttpTestingController;
@@ -16,7 +17,13 @@ describe('App', () => {
 
   afterEach(() => http.verify());
 
-  async function render() {
+  async function render(authenticated = true) {
+    const auth = TestBed.inject(AuthService);
+    auth.state.set(
+      authenticated
+        ? { status: 'authenticated', user: { username: 'gutachterin.a', displayName: 'Gutachterin A', roles: ['gutachter'] } }
+        : { status: 'anonymous' },
+    );
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     return fixture;
@@ -69,5 +76,35 @@ describe('App', () => {
 
     expect(el.querySelector('#queue-title')!.textContent).toContain('Zur Freigabe');
     expect(approval.getAttribute('aria-current')).toBe('true');
+  });
+
+  it('zeigt Name und Rolle der angemeldeten Person', async () => {
+    const fixture = await render();
+    http.expectOne('/api/v1/system').flush(null, { status: 503, statusText: 'x' });
+    await fixture.whenStable();
+    const header = (fixture.nativeElement as HTMLElement).querySelector('.topbar')!.textContent!;
+
+    expect(header).toContain('Gutachterin A');
+    expect(header).toContain('Gutachter:in');
+    expect(header).toContain('Abmelden');
+  });
+
+  it('zeigt ohne Anmeldung nur die Anmeldung, keine Arbeitskörbe', async () => {
+    const fixture = await render(false);
+    http.expectOne('/api/v1/system').flush(null, { status: 503, statusText: 'x' });
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('.queues')).toBeNull();
+    expect(el.querySelector('#login-title')!.textContent).toContain('Anmeldung');
+  });
+
+  it('erklärt einen fehlgeschlagenen Login verständlich', async () => {
+    const fixture = await render(false);
+    TestBed.inject(AuthService).state.set({ status: 'anonymous', error: 'login-failed' });
+    http.expectOne('/api/v1/system').flush(null, { status: 503, statusText: 'x' });
+    await fixture.whenStable();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('[role=alert]')!.textContent).toContain('nicht abgeschlossen');
   });
 });

@@ -78,6 +78,20 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .empty strong { color: var(--nc-text); }
 .footer { display: flex; gap: 1rem; padding: .35rem 1rem; font-size: .8rem; color: var(--nc-text-2); background: var(--nc-surface); border-top: 1px solid var(--nc-border); }
 
+/* ---------- Anmeldung ---------- */
+.button { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 0 .9rem; border-radius: var(--nc-radius); border: 1px solid var(--nc-border); background: var(--nc-surface); color: var(--nc-text); font-weight: 500; cursor: pointer; }
+.button:hover { border-color: var(--nc-border-strong); background: var(--nc-hover); }
+.button.primary { background: var(--nc-accent); border-color: var(--nc-accent); color: var(--nc-on-accent); }
+.button.primary:hover { filter: brightness(1.08); }
+.user { display: inline-flex; gap: .4rem; align-items: baseline; }
+.muted { color: var(--nc-text-2); }
+.small { font-size: .85em; }
+.login { display: grid; place-items: center; padding: 2rem; }
+.login-card { display: grid; gap: .9rem; max-width: 26rem; padding: 2rem; border-radius: var(--nc-radius-lg); background: var(--nc-surface); border: 1px solid var(--nc-border); box-shadow: var(--nc-shadow); }
+.login-card h1 { font-size: 1.4rem; }
+.error { padding: .6rem .8rem; border-radius: var(--nc-radius); background: var(--nc-bad-bg); color: var(--nc-bad); }
+:where(button, a, [tabindex]):focus-visible { outline: 2px solid var(--nc-focus); outline-offset: 2px; }
+
 @media (max-width: 900px) {
   .panes { grid-template-columns: 1fr; grid-auto-rows: auto; overflow: auto; }
   .pane { border-right: none; border-bottom: 1px solid var(--nc-border); }

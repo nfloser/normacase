@@ -3,7 +3,14 @@
     <span class="brand">{{ t.product }} <span>{{ t.workbench }}</span></span>
     <span class="spacer"></span>
     <span class="status" [class]="'status ' + system().status" role="status">{{ statusLabel() }}</span>
+    @if (user(); as u) {
+      <span class="user"><strong>{{ u.displayName }}</strong> <span class="muted">{{ roleLabels() }}</span></span>
+      <button type="button" class="button" (click)="auth.logout()">{{ t.auth.logout }}</button>
+    }
   </header>
+
+  @switch (auth.state().status) {
+    @case ('authenticated') {
 
   <main class="panes">
     <nav class="pane" [attr.aria-label]="t.queuesHeading">
@@ -37,6 +44,24 @@
       </div>
     </section>
   </main>
+    }
+    @case ('initializing') {
+      <main class="login"><p class="muted">{{ t.auth.initializing }}</p></main>
+    }
+    @default {
+      <main class="login">
+        <section class="login-card" aria-labelledby="login-title">
+          <h1 id="login-title">{{ t.auth.title }}</h1>
+          <p>{{ t.auth.intro }}</p>
+          @if (authError(); as error) {
+            <p class="error" role="alert">{{ error }}</p>
+          }
+          <button type="button" class="button primary" (click)="auth.login()">{{ t.auth.login }}</button>
+          <p class="muted small">{{ t.auth.demoHint }}</p>
+        </section>
+      </main>
+    }
+  }
 
   <footer class="footer">
     @if (system(); as s) {
