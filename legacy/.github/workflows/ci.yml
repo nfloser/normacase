@@ -1,0 +1,639 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security-inventory:
+    name: Security evidence inventory
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Test conservative readiness boundary
+        run: python scripts/test_security_readiness.py -q
+      - name: Validate retained security requirements and evidence links
+        run: python scripts/check_security_readiness.py validate
+
+  domain:
+    name: Domain build and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj
+
+      - name: Build
+        run: dotnet build tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release --no-build
+
+  rule-engine:
+    name: Synthetic knowledge slice
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj
+
+      - name: Build
+        run: dotnet build tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release --no-build
+
+  serialization:
+    name: Assessment JSON roundtrip
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Serialization.Tests/NormaCase.Serialization.Tests.csproj
+      - name: Build
+        run: dotnet build tests/NormaCase.Serialization.Tests/NormaCase.Serialization.Tests.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/NormaCase.Serialization.Tests/NormaCase.Serialization.Tests.csproj --configuration Release --no-build
+
+  offline-evaluator:
+    name: Offline evaluator integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Cli.Tests/NormaCase.Cli.Tests.csproj
+      - name: Build
+        run: dotnet build tests/NormaCase.Cli.Tests/NormaCase.Cli.Tests.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/NormaCase.Cli.Tests/NormaCase.Cli.Tests.csproj --configuration Release --no-build
+      - name: Run executable against synthetic example
+        run: dotnet run --project src/NormaCase.Cli --configuration Release --no-build -- evaluate --pack knowledge/demo-c/pack.json --case examples/cases/demo-c-supported.json --platform-version ci
+
+      - name: Verify real snapshot capture and replay
+        run: python scripts/smoke_snapshot_cli.py
+
+  local-api:
+    name: Local HTTP adapter integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj
+      - name: Build
+        run: dotnet build tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --no-build
+      - name: Run actual local HTTP executable
+        run: python scripts/smoke_local_api.py
+
+  workbench:
+    name: German workbench integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: normacase_browser
+          POSTGRES_USER: normacase_browser
+          POSTGRES_PASSWORD: synthetic-browser-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U normacase_browser -d normacase_browser"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NORMACASE_REVIEW_E2E_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_browser;Username=normacase_browser;Password=synthetic-browser-password;Pooling=true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Verify retained synthetic document corpus
+        run: |
+          python -m pip install -r scripts/document-fixture-requirements.txt
+          python scripts/test_document_cases.py
+      - run: npm ci
+        working-directory: frontend
+      - run: npm test
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - run: dotnet build src/NormaCase.Api --configuration Release
+      - name: Build Angular pilot for the local review host
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+        working-directory: angular-pilot
+      - name: Install pilot beside the existing workbench in the disposable build output
+        run: |
+          npm run stage:local --prefix angular-pilot
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Capture previous workplace at acceptance viewports
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_COMMIT: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch --no-tags origin "$BASE_COMMIT"
+          git worktree add --detach /tmp/normacase-workspace-before "$BASE_COMMIT"
+          npm ci --prefix /tmp/normacase-workspace-before/frontend
+          npm run build --prefix /tmp/normacase-workspace-before/frontend
+          dotnet build /tmp/normacase-workspace-before/src/NormaCase.Api --configuration Release
+          cd frontend
+          node scripts/capture-workspace.mjs /tmp/normacase-workspace-before
+      - run: npm run test:e2e
+        working-directory: frontend
+      - run: npm run test:e2e:review
+        working-directory: frontend
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: workbench-browser-results
+          path: frontend/test-results
+          retention-days: 7
+
+  application:
+    name: Assessment record application tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj
+      - name: Build
+        run: dotnet build tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj --configuration Release --no-build
+
+
+  replay:
+    name: Portable snapshot replay
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet test tests/NormaCase.Replay.Tests --configuration Release
+
+
+  postgres-persistence:
+    name: Immutable PostgreSQL assessment storage
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: normacase_test
+          POSTGRES_USER: normacase_test
+          POSTGRES_PASSWORD: synthetic-test-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U normacase_test -d normacase_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_test;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Restore
+        run: dotnet restore tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj
+      - name: Build
+        run: dotnet build tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test tests/NormaCase.Persistence.PostgreSql.Tests/NormaCase.Persistence.PostgreSql.Tests.csproj --configuration Release --no-build
+      - name: Persistent synthetic review API
+        run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --filter FullyQualifiedName~SyntheticReviewHostTests
+      - name: Authenticated synthetic Knowledge governance API
+        run: dotnet test tests/NormaCase.Api.Tests/NormaCase.Api.Tests.csproj --configuration Release --filter FullyQualifiedName~SyntheticKnowledgeGovernanceTests
+
+      - name: Create clean synthetic rehearsal databases
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_roundtrip
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_restored
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_least_privilege
+      - name: Provision and exercise separate least-privilege database roles
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+          NORMACASE_DEMO_DB_MIGRATION_PASSWORD: synthetic-migration-password
+          NORMACASE_DEMO_DB_RUNTIME_PASSWORD: synthetic-runtime-password
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_least_privilege;Username=normacase_runtime;Password=synthetic-runtime-password;Pooling=true
+          NORMACASE_POSTGRES_MIGRATION_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_least_privilege;Username=normacase_migrator;Password=synthetic-migration-password;Pooling=true
+        run: |
+          docker exec -i \
+            -e NORMACASE_DEMO_DB_MIGRATION_PASSWORD \
+            -e NORMACASE_DEMO_DB_RUNTIME_PASSWORD \
+            "$POSTGRES_CONTAINER" psql -v ON_ERROR_STOP=1 -U normacase_test -d normacase_least_privilege \
+            < ops/postgresql/provision-least-privilege.sql
+          python scripts/smoke_synthetic_roundtrip.py create /tmp/normacase-least-privilege.json
+          if docker exec -e PGPASSWORD=synthetic-runtime-password "$POSTGRES_CONTAINER" \
+            psql -v ON_ERROR_STOP=1 -U normacase_runtime -d normacase_least_privilege \
+            -c 'CREATE TABLE normacase.runtime_must_not_create(id integer)'; then
+            echo "Restricted runtime role unexpectedly created a table" >&2
+            exit 1
+          fi
+          if docker exec -e PGPASSWORD=synthetic-runtime-password "$POSTGRES_CONTAINER" \
+            psql -v ON_ERROR_STOP=1 -U normacase_runtime -d normacase_least_privilege \
+            -c 'DELETE FROM normacase.case_review_versions WHERE false'; then
+            echo "Restricted runtime role unexpectedly deleted rows" >&2
+            exit 1
+          fi
+          docker exec -i \
+            -e NORMACASE_DEMO_DB_MIGRATION_PASSWORD \
+            -e NORMACASE_DEMO_DB_RUNTIME_PASSWORD \
+            "$POSTGRES_CONTAINER" psql -v ON_ERROR_STOP=1 -U normacase_test -d normacase_least_privilege \
+            < ops/postgresql/provision-least-privilege.sql
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-least-privilege.json
+      - name: Clean install and exact restart replay
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_roundtrip;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+        run: |
+          python scripts/smoke_synthetic_roundtrip.py create /tmp/normacase-rehearsal.json
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-rehearsal.json
+      - name: Back up and restore immutable synthetic history to a fresh database
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U normacase_test --format=custom --no-owner --no-acl normacase_roundtrip > /tmp/normacase-rehearsal.dump
+          tar -cf /tmp/normacase-outbound.tar -C /tmp/synthetic-outbound .
+          mv /tmp/synthetic-outbound /tmp/normacase-outbound-before-restore
+          mkdir /tmp/synthetic-outbound
+          tar -xf /tmp/normacase-outbound.tar -C /tmp/synthetic-outbound
+          docker exec -i "$POSTGRES_CONTAINER" pg_restore -U normacase_test --dbname=normacase_restored --no-owner --no-acl --exit-on-error < /tmp/normacase-rehearsal.dump
+      - name: Verify original cases and delivery receipts after restore
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_restored;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+        run: python scripts/smoke_synthetic_roundtrip.py verify /tmp/normacase-rehearsal.json
+
+
+  native-update-recovery:
+    name: Native installation, update and recovery
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: normacase_native
+          POSTGRES_USER: normacase_test
+          POSTGRES_PASSWORD: synthetic-test-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U normacase_test -d normacase_native"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_native;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+      PREVIOUS_COMMIT: ${{ github.event.pull_request.base.sha || github.event.before }}
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact candidate and previous sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Verify staging failures and prepare previous exact package
+        run: |
+          python scripts/test_installation.py
+          git worktree add --detach /tmp/normacase-previous "$PREVIOUS_COMMIT"
+          npm ci --prefix /tmp/normacase-previous/frontend
+          npm run build --prefix /tmp/normacase-previous/frontend
+          # Packages since #355 also contain the Angular workbench.
+          if [ -f /tmp/normacase-previous/angular-pilot/package.json ]; then
+            npm ci --prefix /tmp/normacase-previous/angular-pilot --no-audit --no-fund
+            npm run build --prefix /tmp/normacase-previous/angular-pilot
+          fi
+          python /tmp/normacase-previous/scripts/build_preview.py --rid linux-x64 --commit "$PREVIOUS_COMMIT" --output /tmp/normacase-old-package
+      - name: Build candidate native package
+        run: |
+          npm ci --prefix frontend
+          npm run build --prefix frontend
+          npm ci --prefix angular-pilot --no-audit --no-fund
+          npm run build --prefix angular-pilot
+          python scripts/build_preview.py --rid linux-x64 --commit "$CANDIDATE_COMMIT" --output /tmp/normacase-new-package
+      - name: Stage both verified packages and activate exact previous release
+        run: |
+          python scripts/manage_installation.py stage --root /tmp/normacase-installed --archive /tmp/normacase-old-package/normacase-synthetic-preview-linux-x64.zip --rid linux-x64 --commit "$PREVIOUS_COMMIT"
+          python scripts/manage_installation.py stage --root /tmp/normacase-installed --archive /tmp/normacase-new-package/normacase-synthetic-preview-linux-x64.zip --rid linux-x64 --commit "$CANDIDATE_COMMIT"
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$PREVIOUS_COMMIT"
+          mkdir /tmp/native-rehearsal
+      - name: Install previous native version and retain original exact history
+        env:
+          NORMACASE_INSTALLATION_TEST_ROOT: /tmp/normacase-installed
+          NORMACASE_REFUSED_SWITCH_TEST_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$PREVIOUS_COMMIT/api/NormaCase.Api"
+          python scripts/smoke_synthetic_roundtrip.py create /tmp/native-rehearsal/state.json
+          cp /tmp/native-rehearsal/state.json /tmp/native-rehearsal/before.json
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rehearsal/state.json
+      - name: Preserve pre-update database and files
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U normacase_test --format=custom --no-owner --no-acl normacase_native > /tmp/native-before.dump
+          tar -cf /tmp/native-before-files.tar -C /tmp/native-rehearsal/synthetic-outbound .
+      - name: Activate exact candidate and process new revisions under its platform identity
+        env:
+          NORMACASE_INSTALLATION_TEST_ROOT: /tmp/normacase-installed
+          NORMACASE_REFUSED_SWITCH_TEST_COMMIT: ${{ github.event.pull_request.base.sha || github.event.before }}
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$CANDIDATE_COMMIT"
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$CANDIDATE_COMMIT/api/NormaCase.Api"
+          export NORMACASE_EXPECTED_PLATFORM_VERSION="0.1.0-preview+$CANDIDATE_COMMIT"
+          python scripts/smoke_synthetic_roundtrip.py upgrade /tmp/native-rehearsal/state.json
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rehearsal/state.json
+          python scripts/smoke_failed_startup.py "$NORMACASE_API_TEST_EXECUTABLE"
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rehearsal/state.json
+      - name: Restore old and updated snapshots into separate fresh databases
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_native_rollback
+          docker exec "$POSTGRES_CONTAINER" createdb -U normacase_test normacase_native_restored
+          docker exec "$POSTGRES_CONTAINER" pg_dump -U normacase_test --format=custom --no-owner --no-acl normacase_native > /tmp/native-updated.dump
+          tar -cf /tmp/native-updated-files.tar -C /tmp/native-rehearsal/synthetic-outbound .
+          docker exec -i "$POSTGRES_CONTAINER" pg_restore -U normacase_test --dbname=normacase_native_rollback --no-owner --no-acl --exit-on-error < /tmp/native-before.dump
+          docker exec -i "$POSTGRES_CONTAINER" pg_restore -U normacase_test --dbname=normacase_native_restored --no-owner --no-acl --exit-on-error < /tmp/native-updated.dump
+          mkdir -p /tmp/native-rollback/synthetic-outbound /tmp/native-restored/synthetic-outbound
+          cp /tmp/native-rehearsal/before.json /tmp/native-rollback/state.json
+          cp /tmp/native-rehearsal/state.json /tmp/native-restored/state.json
+          tar -xf /tmp/native-before-files.tar -C /tmp/native-rollback/synthetic-outbound
+          tar -xf /tmp/native-updated-files.tar -C /tmp/native-restored/synthetic-outbound
+      - name: Verify previous native release against its own restored snapshot
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_native_rollback;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$PREVIOUS_COMMIT"
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$PREVIOUS_COMMIT/api/NormaCase.Api"
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-rollback/state.json
+      - name: Verify candidate correction and clarification history after physical restore
+        env:
+          NORMACASE_POSTGRES_TEST_CONNECTION: Host=127.0.0.1;Port=5432;Database=normacase_native_restored;Username=normacase_test;Password=synthetic-test-password;Pooling=true
+          DOTNET_ROOT: /tmp/absent-shared-dotnet
+          DOTNET_ROOT_X64: /tmp/absent-shared-dotnet
+          DOTNET_MULTILEVEL_LOOKUP: 0
+        run: |
+          python scripts/manage_installation.py activate --root /tmp/normacase-installed --commit "$CANDIDATE_COMMIT"
+          export NORMACASE_API_TEST_EXECUTABLE="/tmp/normacase-installed/releases/$CANDIDATE_COMMIT/api/NormaCase.Api"
+          python scripts/smoke_synthetic_roundtrip.py verify /tmp/native-restored/state.json
+
+  angular-pilot:
+    name: Angular synthetic queue pilot
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: angular-pilot
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: angular-pilot/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm test -- --watch=false
+      - run: npm run build
+
+  java-contract:
+    name: Java synthetic review queue contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: java-contract
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: java-contract/pom.xml
+      - run: mvn --batch-mode --no-transfer-progress verify
+      - name: Verify forwarded-header regression test
+        run: |
+          source=src/main/java/de/normacase/http/LocalBoundaryFilter.java
+          cp "$source" /tmp/normacase-boundary-original.java
+          trap 'cp /tmp/normacase-boundary-original.java "$source"' EXIT
+          python -c 'from pathlib import Path
+          p=Path("src/main/java/de/normacase/http/LocalBoundaryFilter.java"); text=p.read_text()
+          assert text.count("|| forwarded)") == 1
+          p.write_text(text.replace("|| forwarded)", ")"))'
+          if mvn --batch-mode --no-transfer-progress -Dtest=LocalBoundaryFilterTest test > /tmp/normacase-mutation.log 2>&1; then
+            echo "Forwarded-header mutation was not caught" >&2; exit 1
+          fi
+          python -c 'import xml.etree.ElementTree as ET
+          root=ET.parse("target/surefire-reports/TEST-de.normacase.http.LocalBoundaryFilterTest.xml").getroot()
+          case=next(c for c in root.findall("testcase") if c.get("name") == "permitsOnlyTheLocalReadPath")
+          failure=case.find("failure")
+          assert failure is not None and "expected: <403> but was: <200>" in failure.get("message", ""), "Mutation did not fail for the intended reason"'
+          cp /tmp/normacase-boundary-original.java "$source"
+          python -c 'from pathlib import Path
+          p=Path("src/main/java/de/normacase/http/LocalBoundaryFilter.java"); text=p.read_text()
+          original="if (!ui && !api)"
+          assert text.count(original) == 1
+          p.write_text(text.replace(original, "if (false && !ui && !api)"))'
+          if mvn --batch-mode --no-transfer-progress -Dtest=LocalBoundaryFilterTest test > /tmp/normacase-mutation.log 2>&1; then
+            echo "Static path mutation was not caught" >&2; exit 1
+          fi
+          python -c 'import xml.etree.ElementTree as ET
+          root=ET.parse("target/surefire-reports/TEST-de.normacase.http.LocalBoundaryFilterTest.xml").getroot()
+          case=next(c for c in root.findall("testcase") if c.get("name") == "allowsOnlyBundledUiPathsWithoutRelaxingLocalOrWriteBoundaries")
+          failure=case.find("failure")
+          assert failure is not None and "expected: <404> but was: <200>" in failure.get("message", ""), "Static path mutation failed for the wrong reason"'
+          cp /tmp/normacase-boundary-original.java "$source"
+          endpoint=src/main/java/de/normacase/http/QueueEndpoint.java
+          cp "$endpoint" /tmp/normacase-endpoint-original.java
+          trap 'cp /tmp/normacase-boundary-original.java "$source"; cp /tmp/normacase-endpoint-original.java "$endpoint"' EXIT
+          python -c 'from pathlib import Path
+          p=Path("src/main/java/de/normacase/http/QueueEndpoint.java"); text=p.read_text()
+          assert text.count("size > 100") == 1
+          p.write_text(text.replace("size > 100", "size > 999"))'
+          if mvn --batch-mode --no-transfer-progress -Dtest=QueueEndpointTest test > /tmp/normacase-mutation.log 2>&1; then
+            echo "Page-size boundary mutation was not caught" >&2; exit 1
+          fi
+          python -c 'import xml.etree.ElementTree as ET
+          root=ET.parse("target/surefire-reports/TEST-de.normacase.http.QueueEndpointTest.xml").getroot()
+          case=next(c for c in root.findall("testcase") if c.get("name") == "acceptsValidPageSizeAndRejectsMalformedOrRepeatedPageSizes")
+          failure=case.find("failure")
+          assert failure is not None and "expected: <400> but was: <200>" in failure.get("message", ""), "Page-size mutation failed for the wrong reason"'
+
+  java-loopback-integration:
+    name: Java client with synthetic .NET review host
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: normacase_java
+          POSTGRES_USER: normacase_java
+          POSTGRES_PASSWORD: synthetic-java-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U normacase_java -d normacase_java"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NORMACASE_JAVA_INTEGRATION: 'true'
+      NORMACASE_JAVA_TEST_CREDENTIAL: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=
+      NORMACASE_JAVA_PAGED_CREDENTIAL: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      SyntheticReview__Users__paged__Credential: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+      SyntheticReview__Users__paged__Actions__0: READ
+      SyntheticReview__Users__paged__CaseIds__0: demo-g-review
+      SyntheticReview__Users__paged__CaseIds__1: demo-g-supported
+      SyntheticReview__Enabled: 'true'
+      SyntheticReview__PersistenceEnabled: 'true'
+      SyntheticReview__Users__reader__Credential: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=
+      SyntheticReview__Users__reader__Actions__0: READ
+      SyntheticReview__Users__reader__CaseIds__0: demo-g-review
+      ConnectionStrings__SyntheticReview: Host=127.0.0.1;Port=5432;Database=normacase_java;Username=normacase_java;Password=synthetic-java-password;Pooling=true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: java-contract/pom.xml
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: angular-pilot
+      - run: npm run build
+        working-directory: angular-pilot
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: dotnet build src/NormaCase.Api --configuration Release
+      - run: mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -DskipTests clean package
+      - name: Run Java against the local synthetic host
+        run: |
+          dotnet src/NormaCase.Api/bin/Release/net10.0/NormaCase.Api.dll > /tmp/normacase-java-host.log 2>&1 &
+          host_pid=$!
+          SERVER_ADDRESS=0.0.0.0 SERVER_PORT=5082 java -jar java-contract/target/review-queue-contract-0.1.0-SNAPSHOT.jar > /tmp/normacase-spring-host.log 2>&1 &
+          spring_pid=$!
+          trap 'kill "$host_pid" "$spring_pid" 2>/dev/null || true' EXIT
+          python -c 'import time,urllib.request,sys
+          for attempt in range(60):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:5080/health/live", timeout=1).close(); sys.exit(0)
+              except Exception:
+                  time.sleep(1)
+          sys.exit("Synthetic host did not start")'
+          python -c 'import time,urllib.request,urllib.error,sys
+          for attempt in range(60):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:5081/api/review/work-queues", timeout=1).close()
+              except urllib.error.HTTPError as e:
+                  if e.code == 401: sys.exit(0)
+              except Exception: pass
+              time.sleep(1)
+          sys.exit("Synthetic Spring host did not start")'
+          python -c 'import ipaddress
+          listeners=[]
+          for file, version in (("/proc/net/tcp",4),("/proc/net/tcp6",6)):
+              for line in open(file).read().splitlines()[1:]:
+                  fields=line.split(); address,port=fields[1].split(":")
+                  if fields[3] != "0A" or port != "13D9": continue
+                  raw=bytes.fromhex(address)
+                  raw=raw[::-1] if version == 4 else b"".join(raw[i:i+4][::-1] for i in range(0,16,4))
+                  ip=ipaddress.ip_address(raw)
+                  if version == 6 and ip.ipv4_mapped: ip=ip.ipv4_mapped
+                  listeners.append(ip)
+          assert listeners and all(ip.is_loopback for ip in listeners), "Spring pilot is not bound exclusively to loopback"'
+          mvn --batch-mode --no-transfer-progress -f java-contract/pom.xml -Dtest=RealSyntheticReviewHostTest test
+          (cd frontend && npx playwright test --config playwright.spring.config.mjs)

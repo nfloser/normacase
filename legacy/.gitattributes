@@ -1,0 +1,6 @@
+# Retained document hashes require identical bytes on Windows and Linux.
+examples/document-cases/**/*.json text eol=lf
+examples/document-cases/**/*.txt text eol=lf
+examples/document-cases/catalog.json text eol=lf
+*.pdf binary
+*.png binary

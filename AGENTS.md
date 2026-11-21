@@ -23,6 +23,13 @@ NormaCase is a deterministic, auditable and modular decision-support platform fo
 - Avoid sensitive values in logs; prefer technical identifiers such as case, rule, error and correlation IDs.
 - Apply least privilege, secure defaults, defense in depth and separation of duties where relevant.
 
+## Data retention
+
+- NormaCase processes cases on behalf of a leading host system and does not become a second record of health data.
+- Default mode is zero retention: case content is held only for the duration of processing. Persist only what is required to prove a decision (hashes, versions, rule IDs, outcomes, timestamps, technical identifiers), never free text or document content, unless an explicit, documented and configurable retention mode requires it.
+- Identification data and medical/social data are kept in separate structures and are never joined in logs, metrics or audit records.
+- Every persisted field needs a documented purpose and deletion rule (`docs/03-datenschutz-und-datenhaltung.md`).
+
 ## Architecture
 
 - Start as a modular monolith.
@@ -30,7 +37,9 @@ NormaCase is a deterministic, auditable and modular decision-support platform fo
 - Prefer clear module boundaries, dependency inversion, high cohesion and low coupling.
 - New domains should normally be addable through Knowledge Packs without changing platform core code.
 - Do not introduce microservices, secondary databases or other infrastructure without demonstrated need.
-- Preferred baseline: .NET / ASP.NET Core, React + TypeScript, PostgreSQL and Docker.
+- Mandatory stack: Angular + TypeScript + RxJS (frontend), Java + Spring Boot (backend), PostgreSQL with Flyway migrations, Docker. Module boundaries in the backend are enforced with Spring Modulith and ArchUnit.
+- The API contract is OpenAPI and versioned. Errors use RFC 9457 problem details.
+- `legacy/` is a frozen reference (.NET/React). Do not change it. Use it as a parity oracle for the rule engine and as a source of knowledge packs, fixtures and specifications.
 
 ## Product operating model
 
@@ -69,6 +78,7 @@ Use:
 `Issue -> Branch -> Tests/TDD -> Implementation -> Documentation -> Pull Request -> CI -> Review -> Fixes -> Merge`.
 
 - Do not develop directly on `main`.
+- Commits and pull requests are authored by the repository owner. Do not add co-author or tool attribution lines.
 - Read this file plus relevant area-specific `AGENTS.md`, architecture docs, ADRs, security docs, issues, PRs and CI before changes.
 - Keep changes small and code-complete.
 - Write failing/reproducing tests first for bugs and behavior changes where practical.
@@ -95,10 +105,9 @@ Optimize for the shortest verified path to the target operating model, not for t
 
 ## Platform compatibility
 
-- Maintain Windows x64, Linux x64 and macOS (Apple Silicon arm64 and Intel x64) compatibility for the local workbench and evaluator.
-- Platform-specific filesystem, process, launcher and native-library behavior belongs behind explicit host/packaging boundaries; do not add Windows-only dependencies to shared product code.
-- The preview matrix must build and exercise each native target on a matching runner before merging changes that affect those targets. Preserve self-contained runtime, offline assets, deterministic results and German start instructions.
-- A future desktop host must retain macOS as a first-class target. Signed/notarized macOS app distribution and Safari-specific UI validation require separate explicit verification; native preview CI does not establish either.
+- The runtime is containerized (Linux x64/arm64). Local development and the demo must work on Windows, Linux and macOS with Docker or a JDK and Node.js only.
+- No runtime dependency on external cloud services, CDNs, web fonts or telemetry endpoints; the product must run fully offline/on-prem.
+- Do not add OS-specific dependencies to shared code; launchers and packaging stay behind explicit boundaries.
 
 ## Product language
 

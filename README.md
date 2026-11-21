@@ -1,238 +1,30 @@
 # NormaCase
 
-NormaCase is a deterministic, auditable decision-support platform for rule-based medical and social-medical assessment workflows.
+Deterministische, nachvollziehbare Entscheidungsunterstützung für regelbasierte sozialmedizinische Begutachtung.
 
-The platform separates executable application code from versioned domain knowledge. It is designed to make rule evaluation reproducible, uncertainty explicit, source traceability inspectable and human review first-class.
+NormaCase prüft strukturierte Falldaten gegen versionierte Regelwerke (Knowledge Packs) und liefert ein Ergebnis mit vollständigem Entscheidungspfad: Eingabe → Kriterium → Regel → Quelle → Ergebnis. Fehlt etwas, sagt das System das, statt zu raten. Gedacht ist es als Baustein neben einem führenden Fachsystem (etwa MDconnect oder MEDIKOS): Der Fall kommt herein, wird bewertet und geht mit Begründung zurück. Gesundheitsdaten bleiben im führenden System.
 
-## Project status
+> Alle Daten in diesem Repository sind synthetisch. Es gibt keine echten Patienten- oder Versichertendaten.
 
-NormaCase has an executable synthetic end-to-end demonstration: normalized JSON/XML intake, deterministic assessment, persisted work queues, human review, outbound delivery and restart/backup restoration. Windows, Linux and macOS (Apple Silicon/Intel) self-contained previews and browser/database integration are verified in CI. This is **not** a production assessment system or domain-approved knowledge base.
+## Stand
 
-The institution-independent platform scope also includes live case/action permissions and audited administration, durable reviewed Knowledge activation, immutable corrections and targeted clarification, policy-gated batch review and authorized paginated queues. Integrated API, German workbench, PostgreSQL and native update/recovery acceptance are recorded in the [readiness inventory](docs/project/EXTERNAL_DATA_FREE_READINESS.md).
+Das Projekt wird mit **Angular/TypeScript/RxJS**, **Java/Spring Boot** und **PostgreSQL** neu aufgebaut. Der bisherige .NET/React-Stand liegt unverändert unter [`legacy/`](legacy/README.md) und dient als Vergleich und als Prüforakel für die neue Regel-Engine.
 
-Start with the [German demo acceptance guide](docs/development/DEMO_ABNAHME.de.md) for downloads, the pitch and the persistent integration test. For reproducible persistent installation, exact version activation and backup/update/recovery, follow the [German operational installation guide](docs/development/OPERATIONAL_INSTALLATION.de.md), also included as `BETRIEB.de.md` in native bundles. Actual institutional integration, binding domain policy and productive deployment approval remain external prerequisites.
+| Phase | Inhalt | Status |
+|---|---|---|
+| 1 | System Design, Architektur, Datenschutzkonzept, ADRs | erledigt |
+| 2 | Lauffähiges Grundgerüst: Spring Boot, PostgreSQL/Flyway, Angular-Shell, CI, Compose | als Nächstes |
+| 3 | Knowledge Packs und Regel-Engine in Java, Parität zum Referenzstand | geplant |
+| 4 | Arbeitskörbe und Fallakte (Postfach × Explorer, PDF-Leser, Freigabe) | geplant |
+| 5 | Adapter, fallbezogene Rechte, Monitoring, Lasttests, Kubernetes | geplant |
 
-Only synthetic data belongs in the repository.
+Details: [Roadmap](docs/ROADMAP.md).
 
-The [security acceptance inventory](docs/security/SECURITY_ACCEPTANCE.de.md) records
-synthetic security test coverage separately from technical gaps and institutional
-approval. Its offline readiness check explicitly reports that real patient-data
-operation remains blocked; green development CI is not a productive clearance.
+## Dokumentation
 
-## Core principles
-
-- Platform first; domain knowledge stays external and versioned.
-- Deterministic evaluation with no AI decision core.
-- `UNKNOWN` is a real state, never an implicit yes/no.
-- Historical assessments keep their platform, knowledge and rule versions.
-- Every productive domain rule must be traceable to a source.
-- Public reference knowledge is not equivalent to expert/domain approval.
-- On-premises and offline-capable operation is a design goal.
-- Humans remain responsible for domain decisions.
-
-## Repository direction
-
-```text
-src/
-  NormaCase.Domain/       framework-independent case/decision/workflow/audit contracts
-  NormaCase.Knowledge/    Knowledge Pack model, loader and validation
-  NormaCase.RuleEngine/   deterministic rule evaluation and Decision Trace
-  NormaCase.Application/  storage-neutral assessment, review and outbound contracts
-  NormaCase.SyntheticIntegration/
-                         offline synthetic message/file integration adapters
-  NormaCase.Replay/       portable snapshot capture and verified offline replay
-  NormaCase.Persistence.PostgreSql/
-                         append-only PostgreSQL assessment record adapter
-
-tests/
-  NormaCase.Domain.Tests/
-  NormaCase.RuleEngine.Tests/
-  NormaCase.Application.Tests/
-  NormaCase.Replay.Tests/
-
-knowledge/
-  demo-a/                 truth-valued AND/OR/UNKNOWN synthetic pack
-  demo-b/                 numeric/range/temporal-version synthetic pack
-  demo-c/                 evidence dependency and review synthetic pack
-  demo-d/                 derived numeric expression synthetic pack
-  demo-e/                 independent domain-output synthetic pack
-  demo-f/                 manual generic review workflow and run-history synthetic pack
-  demo-g/                 repeatable synthetic pitch scenario with incomplete/review/decision paths
-  public-reference/
-    pflege-adult-score/    narrow MD Bund adult weighted-score PUBLIC_REFERENCE pack
-    kt-rl-8-3/             narrow G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack
-
-docs/
-  project/
-  architecture/
-  adr/
-  security/
-  knowledge/
-```
-
-The system grows as a modular monolith. ASP.NET Core, React + TypeScript, PostgreSQL and Docker remain the preferred product stack, while the domain/rule core stays independent from framework and storage details.
-
-
-## Product direction
-
-The production target is an integration-first case flow rather than manual per-case imports. External case sources feed explicit adapters, NormaCase normalizes and evaluates the case deterministically, and routing places complete routine cases into an approval-oriented work queue while `INCOMPLETE`, conflicting or `HUMAN_REVIEW` cases are surfaced for focused human work.
-
-Assessment outcomes stay separate from workflow/case-processing states. External systems such as future MDconnect, MEDIKOS or standards-based SPV-MD integrations belong behind adapters and must not shape the generic core. Manual import remains a useful synthetic/test/fallback path.
-
-See [the target operating model](docs/project/TARGET_OPERATING_MODEL.md) for the durable product-flow constraints.
-
-## Current deterministic slice
-
-The current core can:
-- load external JSON Knowledge Packs,
-- retain multiple validated Knowledge Releases in an exact-selection in-memory catalog without implicit latest resolution,
-- validate manifests, fields, sources, rule references and validity intervals,
-- evaluate typed truth and numeric case values,
-- evaluate nested AND/OR, truth equality, inclusive numeric thresholds and ranges,
-- derive numeric values through declarative range lookup, sum and max expressions,
-- preserve UNKNOWN instead of coercing it,
-- gate criteria on structured evidence availability and escalate conflicts,
-- configure safe unknown outcomes as INCOMPLETE or HUMAN_REVIEW,
-- select a rule version from an explicit assessment date,
-- return source-backed recursive Decision Trace data,
-- emit multiple independently evaluated, source-backed categorical outputs while preserving UNKNOWN per output,
-- advance generic immutable workflow instances through explicitly declared deterministic transitions,
-- bind validated, source-backed Knowledge workflows to immutable in-memory application executions,
-- capture and restore detached workflow execution snapshots without re-reading current Knowledge,
-- serialize workflow execution snapshots through a strict versioned JSON interchange contract,
-- bind workflow runs to typed case identities and retain immutable actor/time/reason transition history with strict replay-checked JSON interchange,
-- persist workflow run revisions append-only in PostgreSQL with transactional conflict checks and explicit historical reads,
-- start, advance, export and resume synthetic workflow runs through the German loopback workbench without automatic transitions or database exposure,
-- model immutable human review and append-only assessment audit semantics without coupling the domain core to storage or system time,
-- wrap one evaluation in a storage-neutral assessment record with explicit ids/time, a canonical typed input snapshot and a defensively detached evaluator result,
-- persist complete assessment records append-only in PostgreSQL while preserving exact strict JSON, queryable version/date metadata and an integrity fingerprint,
-- evaluate a narrowly scoped, source-pinned MD Bund adult weighted-score PUBLIC_REFERENCE pack without assigning a Pflegegrad or implying domain approval,
-- evaluate a narrowly scoped, source-pinned G-BA KT-RL § 8(3) PUBLIC_REFERENCE pack without treating it as domain approval.
-
-## Local verification
-
-Requires the .NET 10 SDK.
-
-```bash
-dotnet test tests/NormaCase.Domain.Tests/NormaCase.Domain.Tests.csproj --configuration Release
-dotnet test tests/NormaCase.RuleEngine.Tests/NormaCase.RuleEngine.Tests.csproj --configuration Release
-dotnet test tests/NormaCase.Application.Tests/NormaCase.Application.Tests.csproj --configuration Release
-```
-
-The deterministic core itself needs no external runtime service. The assessment-record contract is documented in [docs/architecture/ASSESSMENT_RECORDS.md](docs/architecture/ASSESSMENT_RECORDS.md), while human review/audit semantics are documented in [docs/architecture/AUDIT.md](docs/architecture/AUDIT.md).
-
-An optional PostgreSQL adapter persists immutable assessment records without coupling the core to storage. Its schema, migration and integrity guarantees are documented in [docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md](docs/architecture/POSTGRESQL_ASSESSMENT_STORAGE.md). The local synthetic host can opt into a separately authenticated PostgreSQL review API; the normal preview remains read-only.
-
-## Development
-
-Read [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md), the architecture docs and relevant ADRs before changing code.
-
-Development follows issue -> branch -> tests -> implementation -> documentation -> pull request -> CI -> review -> merge.
-
-## Offline synthetic evaluator
-
-A runnable German command-line adapter is available for synthetic case files:
-
-```bash
-dotnet run --project src/NormaCase.Cli -- evaluate --pack knowledge/demo-c/pack.json --case examples/cases/demo-c-supported.json --platform-version development
-```
-
-Use `--json` for the versioned lossless assessment document. See
-[the German offline guide](docs/development/OFFLINE_EVALUATOR.md) for supported,
-incomplete and human-review examples, file formats, exit codes and limitations.
-The adapter needs no runtime network service. It accepts SYNTHETIC packs only;
-the CLI does not provide production authorization. Persistent assessment and review are available through the separate PostgreSQL adapter and opt-in synthetic review host.
-
-## Local synthetic HTTP adapter
-
-```bash
-dotnet run --project src/NormaCase.Api
-```
-
-The ASP.NET Core development host listens on loopback port 5080 and provides
-`GET /api/packs` and `POST /api/assessments/{packId}`. It uses the same engine and
-lossless assessment contract as the CLI. See [the German API guide](docs/development/LOCAL_API.md)
-for curl examples, limits and security boundaries. Synthetic knowledge only;
-the default preview remains anonymous/read-only. A separate synthetic authentication and PostgreSQL review mode exists only for local development; productive identity/privacy remain open work.
-Loopback-only `/health/live` and `/health/ready` probes distinguish a running process
-from a currently usable persistent store without exposing infrastructure details; see
-[operational health probes](docs/architecture/OPERATIONAL_HEALTH.md).
-
-## German synthetic workbench
-
-The browser UI uses the same local engine and assessment contract. Build its bundled
-assets and start the API with Node.js 24 and the .NET 10 SDK:
-
-```bash
-npm --prefix frontend ci
-npm --prefix frontend run build
-dotnet run --project src/NormaCase.Api
-```
-
-Open http://localhost:5080. The workbench provides externally labelled German
-synthetic examples, explicit dates, evidence states, source revisions, independent
-domain outputs and exact JSON export. See [the German workbench guide](docs/development/WORKBENCH.md).
-`frontend/` is the canonical browser project; its production build writes the API's
-bundled web assets. No runtime CDN, external font or analytics service is used.
-
-## Self-contained offline snapshots
-
-The synthetic CLI can capture the original case, complete Knowledge Pack and
-assessment in a portable snapshot, then verify replay against that embedded
-knowledge and an explicit platform identity. See
-[the German snapshot guide](docs/development/ASSESSMENT_SNAPSHOTS.md) for commands,
-checksum limitations and historical replay requirements.
-
-The German workbench also downloads complete snapshots after evaluation and verifies
-uploaded synthetic snapshot files locally. Imported results remain read-only; see
-[the workbench guide](docs/development/WORKBENCH.md).
-
-## Downloadable synthetic preview
-
-Native Windows x64, Linux x64 and macOS (arm64/x64) preview packages are built and smoke-tested by
-[the preview workflow](.github/workflows/preview.yml). Successful runs publish
-`synthetic-preview-<runtime>` artifacts for 14 days.
-Download the artifact for your operating system from the GitHub Actions run,
-extract the contained application ZIP completely, then follow `START.de.md`.
-The start script opens the browser once the loopback host is ready; it shows the
-Angular case workbench (`/angular-pilot/index.html`); the previous React
-workbench stays available at `/` as a fallback.
-Node and an installed .NET runtime are not needed; Linux still needs the native
-system libraries described in [the German start guide](docs/development/PREVIEW_START.de.md).
-
-The preview includes the German workbench, offline CLI, all synthetic packs and
-examples, its exact source/platform identity and corruption-detection checksums.
-The default launch keeps the loopback-only host without persistence. An explicitly
-configured synthetic review mode can use a separate local PostgreSQL instance;
-productive authorization is not provided. A CI preview is not an approved product release.
-
-For a repeatable product presentation, use the
-[German synthetic pitch runbook](docs/development/PITCH_DEMO.de.md). It walks the
-same four case states exercised by CI and keeps the demonstration explicitly
-separate from public-reference or production domain knowledge.
-
-## Persistente synthetische Review-Demo
-
-Die [lokale Review-Anleitung](docs/development/SYNTHETIC_REVIEW.de.md) beschreibt
-PostgreSQL-Start, Anmeldung, individuelle Freigabe und append-only Override im
-Browser. Der normale Vorschau-Modus funktioniert weiterhin ohne Datenbank und
-Schlüssel. Ausschließlich synthetische Daten; keine produktive MD-Freigabe.
-
-
-Der vollständige lokale Testablauf mit frischen JSON-/XML-Eingängen, gespeicherter
-Arbeitsliste, menschlicher Freigabe, zwei Rückgabezielen und Wiederherstellungsprobe
-steht in [Synthetischer Gesamtablauf](docs/development/SYNTHETIC_ROUNDTRIP.de.md).
-
-### Dokumentakten in der Demo
-
-Arbeitslistenfälle enthalten lokale synthetische PDFs, Scanbilder und Textdateien
-mit Vorschau, Download und Fundstellen. Zwölf zusätzliche Referenzakten zeigen
-Krankenfahrt, Pflege-Score, Rehabilitation und Onkologie; die letzten beiden bleiben
-Unterlagensichtung ohne fachliche Entscheidung. Details und Grenzen:
-[Dokumentakten](docs/development/DOCUMENT_CASES.de.md).
-
-Die Browser-Demo nutzt den für ein späteres Desktop-Fenster vorgesehenen
-Arbeitsplatz: Fallübersicht, Ergebnisansicht mit Begründung und Fundstellen sowie
-eine ausdrücklich geöffnete Dokumentansicht. Weitere Werkzeuge sind über feste
-Arbeitsbereiche erreichbar.
-Ein nativer Desktop-Host ist damit noch nicht enthalten.
+- [System Design](docs/01-system-design.md) – Zweck, Rollen, Anwendungsfälle, Domänenmodell, Qualitätsziele
+- [Architektur](docs/02-architektur.md) – Module, Schnittstellen, Datenfluss, Technik
+- [Datenschutz und Datenhaltung](docs/03-datenschutz-und-datenhaltung.md) – Verarbeitung ohne Vorhaltung, Zuordnung zu SDM, BSI TR-03161, SGB V
+- [Qualität und Betrieb](docs/04-qualitaet-und-betrieb.md) – Auth, Sicherheit, Rate Limiting, Caching, Logs, Monitoring, Tests, Skalierung, Hosting, CI/CD
+- [Architekturentscheidungen (ADRs)](docs/adr/)
+- [Entwicklungsregeln](AGENTS.md)
