@@ -112,7 +112,7 @@ class WorkflowIntegrationTest {
         assertThat(open.get("state").stringValue()).isEqualTo("IN_REVIEW");
         assertThat(open.get("outcome").stringValue()).isEqualTo("SUPPORTED");
         assertThat(open.get("displayName").stringValue()).isEqualTo("Synthetische Person FLOW-1");
-        assertThat(open.at("/assessment/ruleTrace/ruleId").stringValue()).isNotBlank();
+        assertThat(open.at("/assessment/assessment/ruleTrace/ruleId").stringValue()).isNotBlank();
         assertThat(open.at("/documents/0/pageCount").intValue()).isEqualTo(1);
         assertThat(open.get("actions").toString()).contains("confirm");
 

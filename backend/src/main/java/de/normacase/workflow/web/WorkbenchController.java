@@ -116,7 +116,7 @@ class WorkbenchController {
         if (row.assessmentJson() == null) {
             o.putNull("assessment");
         } else {
-            o.set("assessment", StrictJson.parseObject(row.assessmentJson()).node().get("assessment"));
+            o.set("assessment", StrictJson.parseObject(row.assessmentJson()).node());
         }
         String input = jdbc.sql("select case_input::text from workflow.process where process_id = :id").param("id", id)
                 .query(String.class).optional().orElse(null);
