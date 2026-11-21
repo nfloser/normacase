@@ -51,16 +51,16 @@ class RuntimeRoleIntegrationTest {
     @Test
     void mayNotChangeEvidenceOrRegistersOrSchema() {
         assertThatThrownBy(() -> app.sql("update audit.decision_evidence set outcome = 'X'").update())
-                .hasMessageContaining("permission denied");
+                .rootCause().hasMessageContaining("permission denied");
         assertThatThrownBy(() -> app.sql("delete from audit.process_evidence").update())
-                .hasMessageContaining("permission denied");
+                .rootCause().hasMessageContaining("permission denied");
         assertThatThrownBy(() -> app.sql("update knowledge.release set content_sha256 = 'x'").update())
-                .hasMessageContaining("permission denied");
+                .rootCause().hasMessageContaining("permission denied");
         assertThatThrownBy(() -> app.sql("delete from intake.receipt").update())
-                .hasMessageContaining("permission denied");
+                .rootCause().hasMessageContaining("permission denied");
         assertThatThrownBy(() -> app.sql("create table workflow.fremd (id int)").update())
-                .hasMessageContaining("permission denied");
+                .rootCause().hasMessageContaining("permission denied");
         assertThatThrownBy(() -> app.sql("drop table workflow.process").update())
-                .hasMessageContaining("must be owner");
+                .rootCause().hasMessageContaining("must be owner");
     }
 }
