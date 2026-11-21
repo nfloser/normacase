@@ -75,7 +75,7 @@ class WorkflowIntegrationTest {
     }
 
     UUID submit(String caseName, String caseId) throws Exception {
-        String response = mvc.perform(post("/api/v1/intake").with(HOST).header("Idempotency-Key", "key-" + caseId)
+        String response = mvc.perform(post("/api/v1/intake").with(HOST).header("Idempotency-Key", "intake-key-" + caseId)
                         .contentType(MediaType.APPLICATION_JSON).content(intake(caseName, caseId, PDF, "application/pdf")))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
