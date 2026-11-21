@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: normacase
+  datasource:
+    url: ${NORMACASE_DB_URL:jdbc:postgresql://localhost:5432/normacase}
+    username: ${NORMACASE_DB_USER:normacase}
+    password: ${NORMACASE_DB_PASSWORD:normacase}
+  flyway:
+    locations: classpath:db/migration
+  mvc:
+    problemdetails:
+      enabled: true
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  error:
+    include-stacktrace: never
+    include-message: never
+  shutdown: graceful
+
+logging:
+  structured:
+    format:
+      console: ecs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  info:
+    build:
+      enabled: true
