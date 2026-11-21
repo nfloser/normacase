@@ -44,12 +44,12 @@ services:
       NORMACASE_OIDC_ISSUER: http://localhost:8081/realms/normacase
       NORMACASE_OIDC_JWKS: http://keycloak:8080/realms/normacase/protocol/openid-connect/certs
       NORMACASE_KNOWLEDGE_DIR: /opt/normacase/knowledge
-    volumes:
-      # Regelwerke getrennt von der Plattform ausliefern (PLATFORM != DOMAIN KNOWLEDGE).
-      - ./knowledge:/opt/normacase/knowledge:ro
       NORMACASE_DB_URL: jdbc:postgresql://db:5432/normacase
       NORMACASE_DB_USER: normacase
       NORMACASE_DB_PASSWORD: normacase
+    volumes:
+      # Regelwerke getrennt von der Plattform ausliefern (PLATFORM != DOMAIN KNOWLEDGE).
+      - ./knowledge:/opt/normacase/knowledge:ro
     depends_on:
       db:
         condition: service_healthy
