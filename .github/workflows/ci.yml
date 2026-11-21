@@ -45,3 +45,43 @@ jobs:
           name: module-docs
           path: backend/target/spring-modulith-docs
           if-no-files-found: ignore
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npx ng test --watch=false
+      - run: npx ng build
+      - name: No external runtime sources
+        run: "! grep -rIlE 'https?://(fonts\\.|cdn|unpkg|jsdelivr)' dist/"
+
+  compose:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start stack
+        run: docker compose up --build --wait --wait-timeout 300
+      - name: Smoke test through the frontend proxy
+        run: |
+          curl -fsS http://127.0.0.1:4200/ | grep -q '<app-root'
+          curl -fsSI http://127.0.0.1:4200/ | grep -qi "content-security-policy: default-src 'self'"
+          curl -fsS http://127.0.0.1:4200/api/v1/system | grep -q '"retentionMode":"zero-retention"'
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4200/api/v1/gibt-es-nicht)
+          test "$code" = 404
+      - name: Logs
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Stop stack
+        if: always()
+        run: docker compose down -v

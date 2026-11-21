@@ -13,12 +13,22 @@ Das Projekt wird mit **Angular/TypeScript/RxJS**, **Java/Spring Boot** und **Pos
 | Phase | Inhalt | Status |
 |---|---|---|
 | 1 | System Design, Architektur, Datenschutzkonzept, ADRs | erledigt |
-| 2 | Lauffähiges Grundgerüst: Spring Boot, PostgreSQL/Flyway, Angular-Shell, CI, Compose | als Nächstes |
+| 2 | Lauffähiges Grundgerüst: Spring Boot, PostgreSQL/Flyway, Angular-Shell, CI, Compose | in Arbeit (Anmeldung offen) |
 | 3 | Knowledge Packs und Regel-Engine in Java, Parität zum Referenzstand | geplant |
 | 4 | Arbeitskörbe und Fallakte (Postfach × Explorer, PDF-Leser, Freigabe) | geplant |
 | 5 | Adapter, fallbezogene Rechte, Monitoring, Lasttests, Kubernetes | geplant |
 
 Details: [Roadmap](docs/ROADMAP.md).
+
+## Lokal starten
+
+Voraussetzung ist Docker (unter Windows Docker Desktop).
+
+```bash
+docker compose up --build
+```
+
+Danach ist die Prüfwerkstatt unter <http://localhost:4200> erreichbar. Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
 
 ## Dokumentation
 
