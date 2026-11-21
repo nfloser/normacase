@@ -91,7 +91,7 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -158,7 +158,7 @@ jobs:
             '{knowledgeRelease: "demo-a-2026.1", externalReference: {system: "ci", caseId: "SMOKE-1"}, case: $c[0]}' \
             | curl -fsS -H "Authorization: Bearer $token" -H 'Content-Type: application/json' --data-binary @- \
               http://127.0.0.1:4200/api/v1/assessments | jq -e '.document.assessment.outcome == "SUPPORTED"' 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
