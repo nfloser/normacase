@@ -1,0 +1,592 @@
+[
+  {
+    "name": "demo-a-incomplete",
+    "pack": "legacy/knowledge/demo-a/pack.json",
+    "case": "legacy/examples/cases/demo-a-incomplete.json"
+  },
+  {
+    "name": "demo-a-supported",
+    "pack": "legacy/knowledge/demo-a/pack.json",
+    "case": "legacy/examples/cases/demo-a-supported.json"
+  },
+  {
+    "name": "demo-b-supported",
+    "pack": "legacy/knowledge/demo-b/pack.json",
+    "case": "legacy/examples/cases/demo-b-supported.json"
+  },
+  {
+    "name": "demo-c-review",
+    "pack": "legacy/knowledge/demo-c/pack.json",
+    "case": "legacy/examples/cases/demo-c-review.json"
+  },
+  {
+    "name": "demo-c-supported",
+    "pack": "legacy/knowledge/demo-c/pack.json",
+    "case": "legacy/examples/cases/demo-c-supported.json"
+  },
+  {
+    "name": "demo-d-supported",
+    "pack": "legacy/knowledge/demo-d/pack.json",
+    "case": "legacy/examples/cases/demo-d-supported.json"
+  },
+  {
+    "name": "demo-e-mixed",
+    "pack": "legacy/knowledge/demo-e/pack.json",
+    "case": "legacy/examples/cases/demo-e-mixed.json"
+  },
+  {
+    "name": "demo-e-partial",
+    "pack": "legacy/knowledge/demo-e/pack.json",
+    "case": "legacy/examples/cases/demo-e-partial.json"
+  },
+  {
+    "name": "demo-f-ready",
+    "pack": "legacy/knowledge/demo-f/pack.json",
+    "case": "legacy/examples/cases/demo-f-ready.json"
+  },
+  {
+    "name": "demo-g-incomplete",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/cases/demo-g-incomplete.json"
+  },
+  {
+    "name": "demo-g-not-supported",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/cases/demo-g-not-supported.json"
+  },
+  {
+    "name": "demo-g-review",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/cases/demo-g-review.json"
+  },
+  {
+    "name": "demo-g-supported",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/cases/demo-g-supported.json"
+  },
+  {
+    "name": "document-demo-g-supported",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-g-supported/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-01",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-01/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-02",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-02/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-03",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-03/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-04",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-04/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-05",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-05/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-06",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-06/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-07",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-07/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-08",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-08/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-09",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-09/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-10",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-10/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-11",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-11/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-12",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-12/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-13",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-13/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-14",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-14/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-15",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-15/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-16",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-16/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-17",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-17/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-18",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-18/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-19",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-19/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-20",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-20/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-21",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-21/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-22",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-22/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-23",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-23/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-24",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-24/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-25",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-25/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-26",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-26/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-27",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-27/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-28",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-28/input.json"
+  },
+  {
+    "name": "document-demo-volume-supported-29",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-supported-29/input.json"
+  },
+  {
+    "name": "document-demo-g-not-supported",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-g-not-supported/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-01",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-01/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-02",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-02/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-03",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-03/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-04",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-04/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-05",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-05/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-06",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-06/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-07",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-07/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-08",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-08/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-09",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-09/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-10",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-10/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-11",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-11/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-12",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-12/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-13",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-13/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-14",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-14/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-15",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-15/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-16",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-16/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-17",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-17/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-18",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-18/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-19",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-19/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-20",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-20/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-21",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-21/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-22",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-22/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-23",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-23/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-24",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-24/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-25",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-25/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-26",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-26/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-27",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-27/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-28",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-28/input.json"
+  },
+  {
+    "name": "document-demo-volume-not-supported-29",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-not-supported-29/input.json"
+  },
+  {
+    "name": "document-demo-g-incomplete",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-g-incomplete/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-01",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-01/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-02",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-02/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-03",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-03/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-04",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-04/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-05",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-05/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-06",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-06/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-07",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-07/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-08",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-08/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-09",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-09/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-10",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-10/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-11",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-11/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-12",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-12/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-13",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-13/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-14",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-14/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-15",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-15/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-16",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-16/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-17",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-17/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-18",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-18/input.json"
+  },
+  {
+    "name": "document-demo-volume-incomplete-19",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-incomplete-19/input.json"
+  },
+  {
+    "name": "document-demo-g-review",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-g-review/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-01",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-01/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-02",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-02/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-03",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-03/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-04",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-04/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-05",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-05/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-06",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-06/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-07",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-07/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-08",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-08/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-09",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-09/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-10",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-10/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-11",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-11/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-12",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-12/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-13",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-13/input.json"
+  },
+  {
+    "name": "document-demo-volume-review-14",
+    "pack": "legacy/knowledge/demo-g/pack.json",
+    "case": "legacy/examples/document-cases/demo-volume-review-14/input.json"
+  },
+  {
+    "name": "document-reference-transport-complete",
+    "pack": "legacy/knowledge/public-reference/kt-rl-8-3/pack.json",
+    "case": "legacy/examples/document-cases/reference-transport-complete/input.json"
+  },
+  {
+    "name": "document-reference-transport-missing",
+    "pack": "legacy/knowledge/public-reference/kt-rl-8-3/pack.json",
+    "case": "legacy/examples/document-cases/reference-transport-missing/input.json"
+  },
+  {
+    "name": "document-reference-transport-conflicting",
+    "pack": "legacy/knowledge/public-reference/kt-rl-8-3/pack.json",
+    "case": "legacy/examples/document-cases/reference-transport-conflicting/input.json"
+  },
+  {
+    "name": "document-reference-transport-negative",
+    "pack": "legacy/knowledge/public-reference/kt-rl-8-3/pack.json",
+    "case": "legacy/examples/document-cases/reference-transport-negative/input.json"
+  },
+  {
+    "name": "document-reference-care-complete",
+    "pack": "legacy/knowledge/public-reference/pflege-adult-score/pack.json",
+    "case": "legacy/examples/document-cases/reference-care-complete/input.json"
+  },
+  {
+    "name": "document-reference-care-missing",
+    "pack": "legacy/knowledge/public-reference/pflege-adult-score/pack.json",
+    "case": "legacy/examples/document-cases/reference-care-missing/input.json"
+  },
+  {
+    "name": "document-reference-care-out-of-range",
+    "pack": "legacy/knowledge/public-reference/pflege-adult-score/pack.json",
+    "case": "legacy/examples/document-cases/reference-care-out-of-range/input.json"
+  },
+  {
+    "name": "document-reference-care-conflicting",
+    "pack": "legacy/knowledge/public-reference/pflege-adult-score/pack.json",
+    "case": "legacy/examples/document-cases/reference-care-conflicting/input.json"
+  },
+  {
+    "name": "document-reference-md-mueller",
+    "pack": "legacy/knowledge/public-reference/pflege-adult-score/pack.json",
+    "case": "legacy/examples/document-cases/reference-md-mueller/input.json"
+  },
+  {
+    "name": "document-reference-md-kraemer",
+    "pack": "legacy/knowledge/public-reference/pflege-adult-score/pack.json",
+    "case": "legacy/examples/document-cases/reference-md-kraemer/input.json"
+  }
+]
