@@ -1,0 +1,135 @@
+@let d = detail();
+<header class="case-header">
+  <div class="case-heading">
+    <h2 tabindex="-1" class="case-title" id="case-title">{{ d.displayName ?? d.externalReference.caseId }}</h2>
+    <div class="case-meta-line">
+      <span class="mono">{{ d.externalReference.caseId }}</span>
+      <span class="chip" [attr.data-queue]="de.stateQueue[d.state]">{{ stateLabel() }}</span>
+      @if (presentation().name; as name) { <span class="chip subtle">{{ name }}</span> }
+    </div>
+  </div>
+  <div class="outcome-badge" [attr.data-outcome]="d.outcome"><small>{{ de.trace.result }}</small><strong>{{ outcomeLabel() }}</strong></div>
+</header>
+
+<section class="next-step" [attr.data-step]="step() === 'approve' ? 'dispatch' : step() === 'closed' || step() === 'dispatched' ? 'complete' : 'confirm'" [attr.aria-label]="t.nextStep">
+  <div><strong>{{ t.nextStep }}</strong><p>{{ t.steps[step()] }}</p></div>
+  <div class="next-step-actions">
+    @if (can('clarify')) { <button type="button" class="button" [class.primary]="step() === 'clarify'" [disabled]="busy()" (click)="startClarify()">{{ t.clarify }}</button> }
+    @if (can('confirm')) { <button type="button" class="button primary" [disabled]="busy()" (click)="act.emit({ kind: 'confirm' })">✓ {{ t.confirm }}</button> }
+    @if (can('approve')) { <button type="button" class="button primary" [disabled]="busy()" (click)="act.emit({ kind: 'approve' })">✓ {{ t.approve }}</button> }
+    @if (can('reject')) { <button type="button" class="button" [disabled]="busy()" (click)="rejecting.set(true)">{{ t.reject }}</button> }
+  </div>
+</section>
+
+<div class="tabs" role="tablist" [attr.aria-label]="de.wb.readingPane">
+  @for (tb of tabs; track tb) {
+    <button type="button" role="tab" class="tab" [id]="'tab-' + tb" [attr.aria-selected]="tab() === tb" [attr.aria-controls]="'panel-' + tb"
+      [attr.tabindex]="tab() === tb ? 0 : -1" (click)="select(tb)" (keydown)="tabKeys($event)">
+      {{ t.tabs[tb] }}@if (tb === 'documents') { <span class="count">{{ d.documents.length }}</span> }
+    </button>
+  }
+</div>
+
+<div class="tab-panel" role="tabpanel" [id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()" [class.flush]="tab() === 'documents'">
+  @switch (tab()) {
+    @case ('review') {
+      @if (assessment(); as a) {
+        <div class="overview-grid">
+          <section class="block">
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" />
+          </section>
+          <section class="block">
+            <h3>{{ t.facts }}</h3>
+            @if (facts().length) {
+              <table class="data-table">
+                <thead><tr><th>{{ t.field }}</th><th>{{ t.value }}</th></tr></thead>
+                <tbody>@for (f of facts(); track f.id) { <tr [attr.data-kind]="f.kind"><td>{{ f.label }}</td><td>{{ f.value }}</td></tr> }</tbody>
+              </table>
+            } @else { <p class="muted">{{ t.noFacts }}</p> }
+            @if (evidence().length) {
+              <h3>{{ t.evidence }}</h3>
+              <ul class="plain">@for (e of evidence(); track e.id) {
+                <li>{{ e.label }}: <span class="status-pill" [attr.data-status]="e.status">{{ de.evidenceStatuses[e.status] ?? e.status }}</span></li>
+              }</ul>
+            }
+          </section>
+        </div>
+      } @else {
+        <p class="muted">{{ t.contentDeleted }}</p>
+      }
+    }
+    @case ('documents') {
+      <nc-pdf-reader [processId]="d.processId" [documents]="d.documents" />
+    }
+    @case ('history') {
+      <ol class="history">
+        @for (h of d.history; track $index) {
+          <li><span class="muted">{{ dateTime(h.at) }}</span><span><strong>{{ historyLabel(h.action) }}</strong> · {{ h.actor }}@if (h.reason) { · {{ reasonLabel(h.reason) }} }</span></li>
+        }
+      </ol>
+    }
+    @case ('evidence') {
+      <dl class="kv">
+        <dt>{{ t.externalCase }}</dt><dd><span class="mono">{{ d.externalReference.system }} / {{ d.externalReference.caseId }}</span></dd>
+        <dt>{{ t.release }}</dt><dd><code>{{ d.knowledgeRelease }}</code></dd>
+        <dt>{{ t.evidenceId }}</dt><dd><code>{{ d.evidenceId ?? '–' }}</code></dd>
+        <dt>{{ t.received }}</dt><dd>{{ dateTime(d.receivedAt) }}</dd>
+        <dt>{{ t.expires }}</dt><dd>{{ dateTime(d.expiresAt) }}</dd>
+        @if (d.confirmedBy) { <dt>{{ t.confirmedBy }}</dt><dd>{{ d.confirmedBy }}</dd> }
+      </dl>
+      <p class="muted small">{{ t.retentionHint }}</p>
+    }
+  }
+</div>
+
+@if (rejecting()) {
+  <div class="dialog-backdrop">
+    <form class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="reject-title" (submit)="$event.preventDefault(); submitReject()">
+      <h3 id="reject-title">{{ t.rejectTitle }}</h3>
+      <label>{{ t.rejectReason }}
+        <select [value]="rejectReason()" (change)="rejectReason.set($any($event.target).value)">
+          @for (r of reasons; track r) { <option [value]="r" [selected]="r === rejectReason()">{{ de.rejectionReasons[r] }}</option> }
+        </select>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" class="button ghost" (click)="rejecting.set(false)">{{ t.cancel }}</button>
+        <button type="submit" class="button primary">{{ t.reject }}</button>
+      </div>
+    </form>
+  </div>
+}
+
+@if (clarifying()) {
+  <div class="dialog-backdrop">
+    <form class="dialog-card clarify-form" role="dialog" aria-modal="true" aria-labelledby="clarify-title" (submit)="$event.preventDefault(); submitClarify()">
+      <h3 id="clarify-title">{{ t.clarifyTitle }}</h3>
+      @for (f of form(); track f.id) {
+        <div class="field-row">
+          <label [for]="'f-' + f.id">{{ f.label }}@if (f.required) { * }</label>
+          @if (f.type === 'truth') {
+            <select [id]="'f-' + f.id" [value]="f.value || 'UNKNOWN'" (change)="setField(f.id, $any($event.target).value)">
+              @for (v of ['YES', 'NO', 'NOT_APPLICABLE', 'UNKNOWN']; track v) { <option [value]="v" [selected]="v === (f.value || 'UNKNOWN')">{{ t.truth[v] }}</option> }
+            </select>
+          } @else {
+            <input [id]="'f-' + f.id" inputmode="decimal" [value]="f.value === 'UNKNOWN' ? '' : f.value" [attr.aria-invalid]="!!f.error"
+              [attr.aria-describedby]="'h-' + f.id" (input)="setField(f.id, $any($event.target).value)">
+          }
+        </div>
+        @if (f.error) { <p class="error-text" role="alert" [id]="'h-' + f.id">{{ f.error }}</p> }
+        @else if (f.type === 'number') { <p class="hint" [id]="'h-' + f.id">{{ t.numberHint }}</p> }
+      }
+      @for (e of formEvidence(); track e.id) {
+        <div class="field-row">
+          <label [for]="'e-' + e.id">{{ e.label }}</label>
+          <select [id]="'e-' + e.id" [value]="e.value" (change)="setEvidence(e.id, $any($event.target).value)">
+            @for (s of ['PRESENT', 'MISSING', 'CONFLICTING']; track s) { <option [value]="s" [selected]="s === e.value">{{ de.evidenceStatuses[s] }}</option> }
+          </select>
+        </div>
+      }
+      <div class="dialog-actions">
+        <button type="button" class="button ghost" (click)="clarifying.set(false)">{{ t.cancel }}</button>
+        <button type="submit" class="button primary">{{ t.clarifySubmit }}</button>
+      </div>
+    </form>
+  </div>
+}

@@ -32,7 +32,11 @@ public class AssessmentService {
     private final PlatformVersion platformVersion;
     private final Clock clock;
 
-    AssessmentService(KnowledgeCatalog catalog, ApplicationEventPublisher events, PlatformVersion platformVersion, Clock clock) {
+    private final io.micrometer.core.instrument.MeterRegistry meters;
+
+    AssessmentService(KnowledgeCatalog catalog, ApplicationEventPublisher events, PlatformVersion platformVersion, Clock clock,
+            io.micrometer.core.instrument.MeterRegistry meters) {
+        this.meters = meters;
         this.catalog = catalog;
         this.events = events;
         this.platformVersion = platformVersion;
@@ -42,7 +46,11 @@ public class AssessmentService {
     @Transactional
     public Assessment assess(String releaseId, CaseInput input, ExternalReference reference, Actor actor) {
         KnowledgeRelease release = catalog.release(releaseId).orElseThrow(() -> new UnknownReleaseException(releaseId));
+        io.micrometer.core.instrument.Timer.Sample timer = io.micrometer.core.instrument.Timer.start(meters);
         AssessmentResult result = engine.evaluate(release.pack(), input);
+        // Nur Ergebnis und Release als Merkmale: nie Fall- oder Personenbezug in Metriken.
+        timer.stop(meters.timer("normacase.assessment.duration", "release", release.releaseId()));
+        meters.counter("normacase.assessments", "outcome", result.outcome().name(), "release", release.releaseId()).increment();
         String inputSha256 = inputSha256(input);
         UUID evidenceId = UUID.randomUUID();
         events.publishEvent(new AssessmentCompleted(evidenceId, clock.instant(), reference, inputSha256,

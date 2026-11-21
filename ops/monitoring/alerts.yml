@@ -1,0 +1,51 @@
+# Alarmregeln für den Betrieb. Merkmale enthalten nie Fall- oder Personenbezug.
+groups:
+  - name: normacase
+    rules:
+      - alert: NormaCaseBackendDown
+        expr: up{job="normacase-backend"} == 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: Backend nicht erreichbar
+          description: Prometheus erreicht das Backend seit zwei Minuten nicht.
+      - alert: NormaCaseNotReady
+        expr: sum(application_ready_time_seconds{application="normacase"}) == 0
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: Backend nicht bereit
+      - alert: NormaCaseHighErrorRate
+        expr: |
+          sum(rate(http_server_requests_seconds_count{application="normacase", status=~"5.."}[5m]))
+            / clamp_min(sum(rate(http_server_requests_seconds_count{application="normacase"}[5m])), 1) > 0.05
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: Mehr als 5 % Serverfehler
+      - alert: NormaCaseSlowAssessments
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(normacase_assessment_duration_seconds_bucket[5m]))) > 0.2
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: Bewertung p95 über 200 ms
+      - alert: NormaCaseRetentionOverdue
+        expr: max(normacase_processes_overdue) > 0
+        for: 30m
+        labels: { severity: critical }
+        annotations:
+          summary: Löschfrist überschritten
+          description: Vorgänge sind länger als zulässig gespeichert. Löschlauf und Datenbank prüfen.
+      - alert: NormaCaseOutboundBacklog
+        expr: max(normacase_outbound_pending) > 50
+        for: 30m
+        labels: { severity: warning }
+        annotations:
+          summary: Fachsystem holt Ergebnisse nicht ab
+      - alert: NormaCaseOldOpenProcess
+        expr: max(normacase_processes_oldest_age_seconds) > 7 * 24 * 3600
+        for: 1h
+        labels: { severity: info }
+        annotations:
+          summary: Ein Vorgang ist seit über sieben Tagen offen

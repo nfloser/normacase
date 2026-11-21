@@ -2,18 +2,9 @@
 export const de = {
   product: 'NormaCase',
   workbench: 'Prüfwerkstatt',
-  queuesHeading: 'Arbeitskörbe',
-  queues: {
-    open: 'Neu eingegangen',
-    clarification: 'Rückfragen',
-    approval: 'Zur Freigabe',
-    done: 'Erledigt',
-  },
-  emptyQueueTitle: 'Keine Vorgänge in diesem Korb',
-  emptyQueueHint: 'Vorgänge erscheinen hier, sobald das Fachsystem sie übergibt.',
-  noCaseTitle: 'Kein Vorgang ausgewählt',
-  noCaseHint: 'Wähle links einen Vorgang, um Kriterien, Belege und Dokumente zu sehen.',
-  caseFile: 'Fallakte',
+  badge: 'Synthetisch',
+  syntheticNotice: 'Nur synthetische Daten',
+  unknown: 'Unbekannt',
   system: {
     loading: 'Verbinde …',
     ok: 'Verbunden',
@@ -23,7 +14,6 @@ export const de = {
       'zero-retention': 'Datenhaltung: ohne Vorhaltung',
     } as Record<string, string>,
   },
-  syntheticNotice: 'Nur synthetische Daten',
   auth: {
     title: 'Anmeldung',
     intro: 'Melde dich mit deinem Konto des Hauses an, um Arbeitskörbe und Fallakten zu sehen.',
@@ -45,6 +35,178 @@ export const de = {
     integration: 'Fachsystem',
     revision: 'Revision',
   } as Record<string, string>,
+  queuesHeading: 'Arbeitskörbe',
+  queues: {
+    clarification: 'Rückfragen',
+    review: 'Zur Prüfung',
+    approval: 'Zur Freigabe',
+    done: 'Erledigt',
+  } as Record<string, string>,
+  queueHelp: {
+    clarification: 'Angaben fehlen oder ein Nachweis ist offen. Hier wird nichts geraten.',
+    review: 'Eindeutig bewertet; wartet auf Bestätigung durch eine Gutachterin oder einen Gutachter.',
+    approval: 'Bestätigt; wartet auf Freigabe durch eine zweite Person.',
+    done: 'Freigegeben und an das Fachsystem übergeben. Inhalte werden nach der Quittung gelöscht.',
+  } as Record<string, string>,
+  states: {
+    IN_CLARIFICATION: 'Rückfrage offen',
+    IN_REVIEW: 'Zur Prüfung',
+    AWAITING_APPROVAL: 'Wartet auf Freigabe',
+    DISPATCHED: 'Zur Abholung bereit',
+    CLOSED: 'Abgeschlossen',
+  } as Record<string, string>,
+  stateQueue: {
+    IN_CLARIFICATION: 'clarification',
+    IN_REVIEW: 'review',
+    AWAITING_APPROVAL: 'approval',
+    DISPATCHED: 'complete',
+    CLOSED: 'complete',
+  } as Record<string, string>,
+  outcomes: {
+    SUPPORTED: 'Voraussetzungen erfüllt',
+    NOT_SUPPORTED: 'Voraussetzungen nicht erfüllt',
+    INCOMPLETE: 'Angaben unvollständig',
+    HUMAN_REVIEW: 'Manuelle Prüfung erforderlich',
+    NOT_APPLICABLE: 'Nicht anwendbar',
+  } as Record<string, string>,
+  evidenceStatuses: { PRESENT: 'Vorhanden', MISSING: 'Fehlend', CONFLICTING: 'Widersprüchlich' } as Record<string, string>,
+  historyActions: {
+    RECEIVED: 'Vom Fachsystem eingegangen und bewertet',
+    CLARIFIED: 'Rückfrage beantwortet und neu bewertet',
+    CONFIRMED: 'Ergebnis bestätigt',
+    APPROVED: 'Freigegeben',
+    REJECTED: 'Zurückgewiesen',
+    ACKNOWLEDGED: 'Vom Fachsystem übernommen; Inhalte gelöscht',
+  } as Record<string, string>,
+  rejectionReasons: {
+    CRITERIA_UNCLEAR: 'Kriterien nicht nachvollziehbar',
+    EVIDENCE_INSUFFICIENT: 'Nachweise reichen nicht aus',
+    WRONG_KNOWLEDGE_RELEASE: 'Falsches Regelwerk',
+    OTHER: 'Sonstiger Grund (im Fachsystem dokumentieren)',
+  } as Record<string, string>,
+  wb: {
+    search: 'Vorgänge durchsuchen',
+    searchPlaceholder: 'Name, Vorgangsnummer oder Ergebnis',
+    refresh: 'Aktualisieren',
+    confirmSelected: 'Auswahl bestätigen',
+    selectVisible: 'Alle sichtbaren auswählen',
+    selectCase: 'Vorgang auswählen',
+    subject: 'Vorgang',
+    number: 'Vorgangsnummer',
+    status: 'Stand',
+    result: 'Ergebnis',
+    received: 'Eingang',
+    documents: 'Dok.',
+    noCases: 'Keine Vorgänge in diesem Korb.',
+    noMatches: 'Keine Vorgänge passen zur Suche.',
+    emptyPane: 'Wähle einen Vorgang, um die Fallakte zu sehen.',
+    loading: 'Wird geladen …',
+    loadFailed: 'Die Daten konnten nicht geladen werden.',
+    ofCases: 'von',
+    cases: 'Vorgängen',
+    selected: 'ausgewählt',
+    readingPane: 'Fallakte',
+    caseActions: 'Aktionen',
+    shortcuts: '↑/↓ Vorgang wählen · Leertaste auswählen · Eingabe Fallakte öffnen',
+    batchResult: (ok: number, total: number) => `${ok} von ${total} Vorgängen bestätigt.`,
+    sort: 'Sortieren nach',
+  },
+  caseFile: {
+    nextStep: 'Nächster Schritt',
+    steps: {
+      clarify: 'Angaben ergänzen oder Nachweis klären; danach wird automatisch neu bewertet.',
+      confirm: 'Ergebnis und Begründung prüfen und bestätigen.',
+      approve: 'Bestätigtes Ergebnis freigeben oder mit Grund zurückweisen.',
+      ownConfirmation: 'Du hast dieses Ergebnis bestätigt. Die Freigabe muss eine andere Person übernehmen.',
+      waiting: 'Keine Aktion für deine Rolle offen.',
+      dispatched: 'Ergebnis liegt zur Abholung durch das Fachsystem bereit.',
+      closed: 'Abgeschlossen. Fallinhalte und Dokumente wurden gelöscht; der Nachweis bleibt.',
+    } as Record<string, string>,
+    confirm: 'Bestätigen',
+    approve: 'Freigeben',
+    reject: 'Zurückweisen',
+    clarify: 'Angaben ergänzen',
+    tabs: { review: 'Prüfung', documents: 'Dokumente', history: 'Verlauf', evidence: 'Nachweis' } as Record<string, string>,
+    facts: 'Angaben im Fall',
+    field: 'Angabe',
+    value: 'Wert',
+    evidence: 'Nachweise',
+    noFacts: 'Keine Angaben übermittelt.',
+    contentDeleted: 'Die Fallinhalte wurden nach der Übernahme durch das Fachsystem gelöscht.',
+    externalCase: 'Vorgang im Fachsystem',
+    release: 'Regelwerk',
+    evidenceId: 'Nachweis-ID',
+    received: 'Eingegangen',
+    expires: 'Löschung spätestens',
+    confirmedBy: 'Bestätigt durch',
+    retentionHint: 'NormaCase hält Fallinhalte nur befristet. Dauerhaft bleibt ein Nachweis ohne Inhalt: Hash der Eingabe, Versionen, Regeln und Ergebnis.',
+    rejectTitle: 'Zurückweisen',
+    rejectReason: 'Grund',
+    cancel: 'Abbrechen',
+    clarifyTitle: 'Angaben ergänzen',
+    clarifySubmit: 'Neu bewerten',
+    truth: { YES: 'Ja', NO: 'Nein', NOT_APPLICABLE: 'Nicht anwendbar', UNKNOWN: 'Unbekannt' } as Record<string, string>,
+    numberHint: 'Zahl, z. B. 12,5; leer lassen für unbekannt',
+    invalidNumber: 'Bitte eine Zahl eingeben (Komma als Dezimaltrenner).',
+    done: {
+      confirm: 'Ergebnis bestätigt. Der Vorgang liegt jetzt zur Freigabe.',
+      approve: 'Freigegeben. Das Ergebnis liegt zur Abholung bereit.',
+      reject: 'Zurückgewiesen. Der Vorgang liegt wieder zur Prüfung.',
+      clarify: 'Neu bewertet.',
+    } as Record<string, string>,
+    errors: {
+      'four-eyes': 'Wer bestätigt hat, darf nicht selbst freigeben.',
+      'invalid-state': 'Der Vorgang wurde zwischenzeitlich geändert. Bitte aktualisieren.',
+      generic: 'Die Aktion ist fehlgeschlagen.',
+    } as Record<string, string>,
+  },
+  reader: {
+    title: 'Dokumentleser',
+    files: 'Unterlagen',
+    page: 'Seite',
+    of: 'von',
+    previousPage: 'Vorherige Seite',
+    nextPage: 'Nächste Seite',
+    zoomIn: 'Vergrößern',
+    zoomOut: 'Verkleinern',
+    fitWidth: 'Seitenbreite',
+    rotate: 'Drehen',
+    download: 'Herunterladen',
+    noDocuments: 'Keine Dokumente zum Vorgang.',
+    noPreview: 'Für dieses Dokument gibt es keine Seitenvorschau. Bitte herunterladen.',
+    loading: 'Seite wird geladen …',
+    failed: 'Die Seite konnte nicht geladen werden.',
+    kinds: { 'application/pdf': 'PDF', 'image/png': 'Bild', 'image/jpeg': 'Bild', 'text/plain': 'Text' } as Record<string, string>,
+    hint: '←/→ blättern · +/− zoomen · 0 Seitenbreite · R drehen',
+  },
+  trace: {
+    result: 'Ergebnis', missingFields: 'Fehlende Pflichtangaben', reasoning: 'Begründung', rule: 'Regel', ruleVersion: 'Version',
+    ruleSource: 'Regelquelle', release: 'Wissensstand', assessedOn: 'Bewertungsdatum', outputs: 'Teilbewertungen',
+    expected: 'erwartet', actual: 'vorliegend', range: 'Bereich', minimum: 'mindestens', sourceVersion: 'Stand',
+    conditionResults: { MATCHED: 'erfüllt', NOT_MATCHED: 'nicht erfüllt', UNKNOWN: 'offen' } as Record<string, string>,
+    conditionKinds: {
+      all: 'Alle folgenden Bedingungen', any: 'Mindestens eine Bedingung', not: 'Darf nicht erfüllt sein',
+      requires_evidence: 'Nachweis erforderlich', field_equals: 'Angabe', number_gte: 'Zahlenwert', number_in_range: 'Zahlenwert im Bereich',
+    } as Record<string, string>,
+    numericKinds: { field: 'Wert', range_lookup: 'Bereichszuordnung', sum: 'Summe', max: 'Maximum' } as Record<string, string>,
+    values: { yes: 'Ja', no: 'Nein', na: 'Nicht anwendbar', unknown: 'Unbekannt', unrecorded: 'nicht erfasst' },
+  },
 } as const;
 
-export type QueueId = keyof typeof de.queues;
+/** Sucht eine deutsche Bezeichnung für eine technische ID, ohne Prototyp-Schlüssel zu erben. */
+export function label(labels: Record<string, string>, id: string | null | undefined, fallback: string): string {
+  return id != null && Object.hasOwn(labels, id) ? labels[id] : fallback;
+}
+
+/** de-DE-Datum und Uhrzeit für ISO-Zeitpunkte. */
+export function germanDateTime(iso: string | null | undefined): string {
+  if (!iso) return '–';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+}
+
+export function germanDate(iso: string | null | undefined): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? '');
+  return match ? `${match[3]}.${match[2]}.${match[1]}` : (iso ?? '–');
+}
