@@ -1,11 +1,11 @@
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
 RUN npx ng build
 
-FROM nginxinc/nginx-unprivileged:1.29-alpine
+FROM nginxinc/nginx-unprivileged:1.31-alpine
 ENV NORMACASE_OIDC_ISSUER=http://localhost:8081/realms/normacase \
     NORMACASE_OIDC_ORIGIN=http://localhost:8081 \
     NORMACASE_OIDC_CLIENT_ID=normacase-workbench

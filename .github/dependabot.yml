@@ -11,12 +11,22 @@ updates:
     groups:
       angular:
         patterns: ["@angular/*", "@angular-devkit/*", "angular-eslint"]
+    ignore:
+      # TypeScript-Hauptversionen folgen Angular, nicht umgekehrt.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: monthly }
   - package-ecosystem: docker
     directory: /backend
     schedule: { interval: monthly }
+    ignore:
+      # Laufzeit bleibt auf Java-LTS (ADR 0001); Nicht-LTS-Images nicht vorschlagen.
+      - dependency-name: maven
+        versions: ["3.9-eclipse-temurin-26", "3.9-eclipse-temurin-27"]
+      - dependency-name: eclipse-temurin
+        versions: ["26-jre-alpine", "27-jre-alpine"]
   - package-ecosystem: docker
     directory: /frontend
     schedule: { interval: monthly }
