@@ -47,7 +47,14 @@ jobs:
           name: parity-golden
           path: ${{ runner.temp }}/parity
       - name: Committed expectations are current
-        run: diff -r "$RUNNER_TEMP/parity" backend/src/test/resources/parity
+        run: |
+          if ! diff -r "$RUNNER_TEMP/parity" backend/src/test/resources/parity; then
+            echo "Erwartungen veraltet. Aktueller Stand als tar.gz (base64) zwischen den Markern:"
+            echo "-----BEGIN PARITY-----"
+            tar czf - -C "$RUNNER_TEMP" parity | base64
+            echo "-----END PARITY-----"
+            exit 1
+          fi
 
   backend:
     runs-on: ubuntu-latest
