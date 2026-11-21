@@ -1,0 +1,83 @@
+{
+  "manifest": {
+    "formatVersion": 1,
+    "packId": "synthetic.demo-f",
+    "releaseId": "demo-f-2026.1",
+    "lifecycleStatus": "ACTIVE",
+    "validationLevel": "SYNTHETIC",
+    "entryRuleId": "DEMO-F-READY"
+  },
+  "fields": [
+    {
+      "id": "ready",
+      "type": "truth",
+      "required": true
+    }
+  ],
+  "sources": [
+    {
+      "id": "SYNTH-DEMO-F-001",
+      "authority": "NormaCase synthetic test suite",
+      "title": "Synthetic Demo F workflow source",
+      "documentType": "SYNTHETIC",
+      "status": "ACTIVE",
+      "version": "1",
+      "sourceLocation": "repository:knowledge/demo-f/pack.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "DEMO-F-READY",
+      "version": 1,
+      "validFrom": "2026-01-01",
+      "validUntil": null,
+      "sourceId": "SYNTH-DEMO-F-001",
+      "condition": {
+        "kind": "field_equals",
+        "field": "ready",
+        "expected": "YES"
+      },
+      "onMatch": "SUPPORTED",
+      "onNoMatch": "NOT_SUPPORTED"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "synthetic.review",
+      "version": 1,
+      "sourceId": "SYNTH-DEMO-F-001",
+      "initialStateId": "draft",
+      "states": [
+        {
+          "id": "draft",
+          "terminal": false
+        },
+        {
+          "id": "review",
+          "terminal": false
+        },
+        {
+          "id": "done",
+          "terminal": true
+        }
+      ],
+      "transitions": [
+        {
+          "id": "submit",
+          "fromStateId": "draft",
+          "toStateId": "review"
+        },
+        {
+          "id": "return",
+          "fromStateId": "review",
+          "toStateId": "draft"
+        },
+        {
+          "id": "finish",
+          "fromStateId": "review",
+          "toStateId": "done"
+        }
+      ]
+    }
+  ]
+}

@@ -21,8 +21,6 @@ spring:
   mvc:
     problemdetails:
       enabled: true
-  jackson:
-    default-property-inclusion: non_null
 
 server:
   error:
