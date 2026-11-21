@@ -28,7 +28,15 @@ Voraussetzung ist Docker (unter Windows Docker Desktop).
 docker compose up --build
 ```
 
-`docker compose up --build` startet PostgreSQL, Keycloak, Backend, Oberfläche und ein synthetisches Fachsystem, das Beispielvorgänge einliefert. Danach ist die Prüfwerkstatt unter <http://localhost:4200> erreichbar. Anmelden etwa mit `gutachterin.a` / `demo`; alle synthetischen Konten stehen in [ops/keycloak](ops/keycloak/README.md). Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
+`docker compose up --build` startet PostgreSQL, Keycloak, Backend, Oberfläche und ein synthetisches Fachsystem, das Beispielvorgänge einliefert. Danach ist die Prüfwerkstatt unter <http://localhost:4200> erreichbar. Alle synthetischen Konten stehen in [ops/keycloak](ops/keycloak/README.md), Passwort jeweils `demo`.
+
+Vier-Augen-Ablauf ausprobieren:
+
+1. Als `gutachterin.a` anmelden, im Korb „Zur Prüfung“ einen Vorgang öffnen, Begründung und Dokumente ansehen, **Bestätigen**.
+2. Abmelden, als `freigabe.c` anmelden, im Korb „Zur Freigabe“ **Freigeben**.
+3. Fälle in „Rückfragen“ lassen sich über **Angaben ergänzen** vervollständigen; NormaCase bewertet dann neu.
+
+Mit `docker compose --profile monitoring up --build` kommen Prometheus (<http://localhost:9090>) und Grafana (<http://localhost:3000>, Dashboard „NormaCase – Betrieb“) dazu. Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
 
 ## So arbeitet NormaCase
 
