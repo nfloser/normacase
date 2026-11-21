@@ -41,3 +41,9 @@ src/NormaCase.Api/wwwroot/
 # Self-contained preview archives
 artifacts/
 **/__pycache__/
+
+# Neuaufbau
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
