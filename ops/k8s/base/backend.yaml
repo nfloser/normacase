@@ -1,0 +1,132 @@
+# Backend: zustandslos, horizontal skalierbar. Regelwerke kommen als eigenes Image (PLATFORM != DOMAIN KNOWLEDGE)
+# und werden per Init-Container in ein schreibgeschütztes Volume kopiert.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: normacase-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: normacase-backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: /actuator/prometheus
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: knowledge
+          image: ghcr.io/nfloser/normacase-knowledge:latest
+          command: ["sh", "-c", "cp -r /knowledge/. /opt/normacase/knowledge/"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: knowledge
+              mountPath: /opt/normacase/knowledge
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits: { cpu: 100m, memory: 64Mi }
+      containers:
+        - name: backend
+          image: ghcr.io/nfloser/normacase-backend:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: backend-config
+          env:
+            - name: NORMACASE_DB_URL
+              valueFrom: { secretKeyRef: { name: normacase-db, key: url } }
+            - name: NORMACASE_DB_USER
+              valueFrom: { secretKeyRef: { name: normacase-db, key: username } }
+            - name: NORMACASE_DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: normacase-db, key: password } }
+            - name: JAVA_TOOL_OPTIONS
+              value: -Djava.io.tmpdir=/tmp
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { cpu: "1", memory: 768Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: knowledge
+              mountPath: /opt/normacase/knowledge
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: knowledge
+          emptyDir: { sizeLimit: 50Mi }
+        - name: tmp
+          emptyDir: { sizeLimit: 100Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app.kubernetes.io/name: normacase-backend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: normacase-backend
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 70 }

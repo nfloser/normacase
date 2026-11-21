@@ -89,6 +89,14 @@ class IntakeController {
         return response(HttpStatus.CREATED, ref.processId(), false);
     }
 
+    /** Rückzug durch das Fachsystem: löscht den Vorgang sofort. Fremde Vorgänge sind nicht sichtbar (404). */
+    @org.springframework.web.bind.annotation.DeleteMapping("/api/v1/intake/{processId}")
+    @PreAuthorize("hasRole('integration')")
+    ResponseEntity<Void> withdraw(@org.springframework.web.bind.annotation.PathVariable UUID processId, Authentication authentication) {
+        workflow.withdraw(processId, Actor.from(authentication));
+        return ResponseEntity.noContent().build();
+    }
+
     private ResponseEntity<String> response(HttpStatus status, UUID processId, boolean replayed) {
         var row = workflow.find(processId);
         ObjectNode o = StrictJson.object();

@@ -44,6 +44,7 @@ services:
       NORMACASE_OIDC_ISSUER: http://localhost:8081/realms/normacase
       NORMACASE_OIDC_JWKS: http://keycloak:8080/realms/normacase/protocol/openid-connect/certs
       NORMACASE_KNOWLEDGE_DIR: /opt/normacase/knowledge
+      NORMACASE_RATE_LIMIT_PER_MINUTE: "6000"
       NORMACASE_DB_URL: jdbc:postgresql://db:5432/normacase
       NORMACASE_DB_USER: normacase
       NORMACASE_DB_PASSWORD: normacase
@@ -56,6 +57,24 @@ services:
       keycloak:
         condition: service_healthy
 
+  # Synthetisches Fachsystem: liefert Beispielvorgänge über die Intake-API ein und beendet sich.
+  demo-host:
+    image: python:3.13-alpine
+    command: ["python", "/app/seed.py"]
+    environment:
+      NORMACASE_API: http://backend:8080
+      NORMACASE_TOKEN_URL: http://keycloak:8080/realms/normacase/protocol/openid-connect/token
+      NORMACASE_CASES: /cases
+      NORMACASE_KNOWLEDGE: /knowledge
+    volumes:
+      - ./scripts/demo:/app:ro
+      - ./legacy/examples/document-cases:/cases:ro
+      - ./knowledge:/knowledge:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: "no"
+
   frontend:
     build: ./frontend
     ports:
@@ -63,6 +82,30 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+
+  # Optional: docker compose --profile monitoring up
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    profiles: ["monitoring"]
+    volumes:
+      - ./ops/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./ops/monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "127.0.0.1:9090:9090"
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    profiles: ["monitoring"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./ops/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./ops/monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3000:3000"
 
 volumes:
   db-data:

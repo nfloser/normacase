@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: normacase
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: normacase
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - backend.yaml
+  - frontend.yaml
+  - network-policies.yaml
+  - ingress.yaml
+configMapGenerator:
+  - name: backend-config
+    literals:
+      - NORMACASE_OIDC_ISSUER=https://idp.example.invalid/realms/normacase
+      - NORMACASE_OIDC_JWKS=https://idp.example.invalid/realms/normacase/protocol/openid-connect/certs
+      - NORMACASE_KNOWLEDGE_DIR=/opt/normacase/knowledge
+      - NORMACASE_RATE_LIMIT_PER_MINUTE=120
+  - name: frontend-config
+    literals:
+      - NORMACASE_OIDC_ISSUER=https://idp.example.invalid/realms/normacase
+      - NORMACASE_OIDC_ORIGIN=https://idp.example.invalid
+      - NORMACASE_OIDC_CLIENT_ID=normacase-workbench

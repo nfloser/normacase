@@ -31,7 +31,8 @@ class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health/**", "/actuator/health", "/actuator/info").permitAll()
+                        // Metriken nur clusterintern: nginx leitet ausschließlich /api weiter, der Ingress ebenso.
+                        .requestMatchers("/actuator/health/**", "/actuator/health", "/actuator/info", "/actuator/prometheus").permitAll()
                         .requestMatchers("/api/v1/system", "/api/v1/openapi.yaml").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: normacase-frontend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: normacase-frontend
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: frontend
+          image: ghcr.io/nfloser/normacase-frontend:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: frontend-config
+          readinessProbe:
+            httpGet: { path: /, port: http }
+          livenessProbe:
+            httpGet: { path: /, port: http }
+          resources:
+            requests: { cpu: 25m, memory: 32Mi }
+            limits: { cpu: 250m, memory: 128Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - { name: cache, mountPath: /var/cache/nginx }
+            - { name: run, mountPath: /tmp }
+            - { name: conf, mountPath: /etc/nginx/conf.d }
+      volumes:
+        - { name: cache, emptyDir: {} }
+        - { name: run, emptyDir: {} }
+        - { name: conf, emptyDir: {} }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app.kubernetes.io/name: normacase-frontend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

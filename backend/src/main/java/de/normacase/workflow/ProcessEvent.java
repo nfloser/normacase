@@ -8,5 +8,5 @@ import java.util.UUID;
 public record ProcessEvent(UUID processId, ExternalReference reference, Action action, String actor, String outcome,
         String reason, Instant at) {
 
-    public enum Action { RECEIVED, CLARIFIED, CONFIRMED, APPROVED, REJECTED, ACKNOWLEDGED, EXPIRED }
+    public enum Action { RECEIVED, CLARIFIED, CONFIRMED, APPROVED, REJECTED, ACKNOWLEDGED, WITHDRAWN, EXPIRED }
 }

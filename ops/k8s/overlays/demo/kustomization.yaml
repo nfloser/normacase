@@ -1,0 +1,18 @@
+# Beispiel-Overlay: konkrete Image-Versionen und Hostnamen je Umgebung.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: ghcr.io/nfloser/normacase-backend
+    newTag: "0.1.0"
+  - name: ghcr.io/nfloser/normacase-frontend
+    newTag: "0.1.0"
+  - name: ghcr.io/nfloser/normacase-knowledge
+    newTag: "2026.11"
+patches:
+  - target: { kind: Deployment, name: backend }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1

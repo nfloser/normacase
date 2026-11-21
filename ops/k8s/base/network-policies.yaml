@@ -1,0 +1,59 @@
+# Standard: nichts erlaubt. Danach nur die nötigen Wege freigeben.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: normacase-frontend
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports: [{ port: 8080 }]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: normacase-backend
+      ports: [{ port: 8080 }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: normacase-backend
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: normacase-frontend
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports: [{ port: 8080 }]
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports: [{ port: 8080 }]
+  egress:
+    # PostgreSQL und Identitätsanbieter des Hauses; Adressen je Umgebung im Overlay anpassen.
+    - ports: [{ port: 5432 }, { port: 443 }]
+    - ports: [{ port: 53, protocol: UDP }, { port: 53, protocol: TCP }]

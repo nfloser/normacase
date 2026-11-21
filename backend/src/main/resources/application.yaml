@@ -23,6 +23,8 @@ spring:
       enabled: true
 
 normacase:
+  rate-limit:
+    per-minute: ${NORMACASE_RATE_LIMIT_PER_MINUTE:120}
   knowledge:
     # Regelwerke werden getrennt von der Plattform ausgeliefert (PLATFORM != DOMAIN KNOWLEDGE).
     directory: ${NORMACASE_KNOWLEDGE_DIR:../knowledge}
@@ -42,7 +44,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   endpoint:
     health:
       probes:
@@ -51,3 +53,6 @@ management:
   info:
     build:
       enabled: true
+  metrics:
+    tags:
+      application: normacase

@@ -155,6 +155,20 @@ public class WorkflowService {
         record(row.processId(), row.reference(), ProcessEvent.Action.ACKNOWLEDGED, event.acknowledgedBy(), row.outcome(), null);
     }
 
+    /**
+     * Das einliefernde Fachsystem zieht einen Vorgang zurück (Intervenierbarkeit): Inhalte, Identifikationsdaten,
+     * Dokumente und nicht abgeholte Ergebnisse werden sofort gelöscht; der Nachweis bleibt.
+     */
+    @Transactional
+    public void withdraw(UUID processId, Actor actor) {
+        Row row = find(processId).filter(r -> r.submittedBy().equals(actor.id()))
+                .orElseThrow(() -> new WorkflowException(WorkflowException.Kind.NOT_FOUND, "Vorgang nicht gefunden"));
+        documents.deleteAll(processId);
+        outbound.discard(processId);
+        jdbc.sql("delete from workflow.process where process_id = :id").param("id", processId).update();
+        record(processId, row.reference(), ProcessEvent.Action.WITHDRAWN, actor.id(), row.outcome(), null);
+    }
+
     /** Löscht abgelaufene Vorgänge vollständig. Mehrere Instanzen sperren sich gegenseitig zeilenweise aus. */
     @Transactional
     public int purgeExpired(Instant now) {
@@ -208,7 +222,7 @@ public class WorkflowService {
 
     private void record(UUID processId, ExternalReference reference, ProcessEvent.Action action, String actor, String outcome,
             String reason) {
-        if (action != ProcessEvent.Action.EXPIRED) {
+        if (action != ProcessEvent.Action.EXPIRED && action != ProcessEvent.Action.WITHDRAWN) {
             jdbc.sql("""
                     insert into workflow.review_event (process_id, at, actor, action, reason)
                     values (:id, :at, :actor, :action, :reason)""")
