@@ -1,6 +1,18 @@
-# Retained document hashes require identical bytes on Windows and Linux.
-examples/document-cases/**/*.json text eol=lf
-examples/document-cases/**/*.txt text eol=lf
-examples/document-cases/catalog.json text eol=lf
+# Default: normalize text files to LF in the repository.
+* text=auto eol=lf
+
+*.cmd text eol=crlf
+*.bat text eol=crlf
 *.pdf binary
 *.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
+
+# Frozen reference implementation (.NET/React). Kept for comparison and as a
+# parity oracle; excluded from GitHub language statistics.
+legacy/** linguist-vendored
+# Retained document hashes in the reference fixtures require identical bytes.
+legacy/examples/document-cases/**/*.json text eol=lf
+legacy/examples/document-cases/**/*.txt text eol=lf
+legacy/examples/document-cases/catalog.json text eol=lf
