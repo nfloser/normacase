@@ -1,6 +1,16 @@
 # Vorführfälle
 
-Zehn ausgearbeitete Vorgänge für Vorführung, Screenshots und Case Study: fünf Pflegebegutachtungen und fünf Anträge auf Krankenbeförderung, mit Auftrag, Befundbericht, Pflegetagebuch, Erhebungsbogen, Verordnung, Bescheid oder Ausweis-Scan.
+Die Demo liefert 132 fiktive Vorgänge ein (`scripts/demo/seed.py`): die zehn hier ausgearbeiteten Vorgänge und alle Fälle der bisherigen NormaCase-Demo aus `legacy/examples/document-cases`.
+
+| Herkunft | Anzahl | Arbeitslisten |
+|---|---|---|
+| Ausgearbeitete Vorgänge (PG-…, KT-…) | 10 | Zur Freigabe vorbereitet, Informationen nachfordern, Gegenprüfung |
+| Referenzfälle der bisherigen Demo (NC-2026-4101 bis 4122): Krankenfahrt und Pflege mit Regelwerk | 10 | alle bewertenden Listen |
+| Referenzfälle ohne Regelwerk: Reha, Onkologie, Arbeitsunfall, Überleitung, Arzneimittel, Hilfsmittel | 12 | Unterlagensichtung |
+| Technischer Eingang (NC-2026-4190, unbekannte Angabe, `Prefer: handling=lenient`) | 1 | Technische Klärung |
+| Plattformfälle (Massenfälle PF-2026-…, nur mit „Plattformfälle einbeziehen“) | 99 | alle Listen, 4 davon technische Klärung |
+
+Ausgearbeitet sind zehn Vorgänge für Vorführung, Screenshots und Case Study: fünf Pflegebegutachtungen und fünf Anträge auf Krankenbeförderung, mit Auftrag, Befundbericht, Pflegetagebuch, Erhebungsbogen, Verordnung, Bescheid oder Ausweis-Scan.
 
 **Alle Personen, Einrichtungen, Befunde und Kennungen sind frei erfunden.** Echte Gesundheitsdaten gehören nicht in ein Repository. Die Auswertung nutzt nur die vorhandenen Knowledge Packs (öffentliche Referenzen, fachlich nicht freigegeben); es werden keine medizinischen Regeln erfunden.
 

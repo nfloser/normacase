@@ -17,6 +17,8 @@ export interface ProcessSummary {
   readonly confirmedBy: string | null;
   readonly documentCount: number;
   readonly missingFieldCount: number;
+  /** Arbeitsliste, aus der der Vorgang geladen wurde (von der Oberfläche gesetzt). */
+  readonly queue?: string;
 }
 
 export interface DocumentMeta {

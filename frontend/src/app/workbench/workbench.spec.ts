@@ -17,12 +17,15 @@ describe('Workbench', () => {
     fixture.detectChanges();
     http.expectOne('/api/v1/system').flush({ product: 'NormaCase', platformVersion: '0.1.0', retentionMode: 'zero-retention' });
     http.expectOne('/api/v1/knowledge/releases').flush([{ releaseId: 'demo-g-2026.1', fields: [{ id: 'request_complete', type: 'truth', required: true }], evidenceRequirements: ['supporting_document'] }]);
-    http.expectOne('/api/v1/queues').flush([{ id: 'clarification', count: 1 }, { id: 'review', count: 2 }, { id: 'approval', count: 0 }, { id: 'done', count: 0 }]);
     await fixture.whenStable();
     // Start ist „Alle Vorgänge“: alle vier Körbe werden geladen.
     for (const r of http.match((req) => req.url === '/api/v1/processes')) {
-      r.flush(r.request.params.get('queue') === 'review'
-        ? [summary('a'), summary('b', { displayName: 'Andere Person', outcome: 'NOT_SUPPORTED' })] : []);
+      const queue = r.request.params.get('queue');
+      r.flush(queue === 'review'
+        ? [summary('a'), summary('b', { displayName: 'Andere Person', outcome: 'NOT_SUPPORTED' })]
+        : queue === 'technical'
+          ? [summary('p', { externalReference: { system: 'plattform-demo', caseId: 'PF-2026-0001' }, state: 'TECHNICAL_CLARIFICATION', outcome: 'NOT_ASSESSED' })]
+          : []);
     }
     await fixture.whenStable();
     fixture.detectChanges();
@@ -45,8 +48,7 @@ describe('Workbench', () => {
       if (!open.length) return;
       for (const r of open) {
         const url = r.request.url;
-        if (url === '/api/v1/queues') r.flush([]);
-        else if (url === '/api/v1/processes') r.flush(r.request.params.get('queue') === 'review' ? [summary('a'), summary('b')] : []);
+        if (url === '/api/v1/processes') r.flush(r.request.params.get('queue') === 'review' ? [summary('a'), summary('b')] : []);
         else if (url.includes('/documents/')) r.flush(new Blob(['x'], { type: 'image/png' }));
         else if (url.startsWith('/api/v1/processes/')) r.flush(detailJson(url.split('/').pop()!));
         else r.flush({});
@@ -64,7 +66,7 @@ describe('Workbench', () => {
       expect(nav).toContain(list);
     }
     expect(el.querySelector('.nav-item[aria-current=true]')!.textContent).toContain('Alle Vorgänge');
-    expect(el.querySelector('.nav-item[aria-current=true] .nav-count')!.textContent).toBe('3');
+    expect(el.querySelector('.nav-item[aria-current=true] .nav-count')!.textContent).toBe('2');
     expect(el.querySelector('tbody td.col-request')!.textContent).toContain('Pitch-Demo');
     expect(el.querySelector('tbody td.col-next')!.textContent).toContain('Ergebnis prüfen');
     expect(el.querySelectorAll('.case-table tbody tr').length).toBe(2);
@@ -240,6 +242,19 @@ describe('Workbench', () => {
     item('Ansicht zurücksetzen').click();
     fixture.detectChanges();
     expect(el.classList).not.toContain('nav-collapsed');
+    await settle(fixture);
+  });
+
+  it('blendet Plattformfälle nur auf Wunsch ein, Zähler eingeschlossen', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    const technical = () => Array.from(el.querySelectorAll('.nav-item')).find((b) => b.textContent!.includes('Technische Klärung'))!;
+    expect(technical().querySelector('.nav-count')!.textContent).toBe('0');
+    expect(el.textContent).not.toContain('PF-2026-0001');
+    el.querySelector<HTMLInputElement>('.nav-toggle input')!.click();
+    fixture.detectChanges();
+    expect(technical().querySelector('.nav-count')!.textContent).toBe('1');
+    expect(el.querySelector('.case-table')!.textContent).toContain('PF-2026-0001');
     await settle(fixture);
   });
 });
