@@ -32,6 +32,8 @@ class WorkspaceIntegrationTest {
 
     static final RequestPostProcessor OWNER = WorkflowIntegrationTest.as("ablage.a", "gutachter");
     static final RequestPostProcessor OTHER = WorkflowIntegrationTest.as("ablage.b", "freigabe");
+    /** Eigenes Konto je Test, damit sich die Ablagen nicht berühren. */
+    RequestPostProcessor user = OWNER;
 
     UUID submit(String caseId) throws Exception {
         String response = mvc.perform(post("/api/v1/intake").with(WorkflowIntegrationTest.HOST)
@@ -42,7 +44,7 @@ class WorkspaceIntegrationTest {
     }
 
     JsonNode send(org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request, int status) throws Exception {
-        String body = mvc.perform(request.with(OWNER)).andExpect(status().is(status)).andReturn().getResponse().getContentAsString();
+        String body = mvc.perform(request.with(user)).andExpect(status().is(status)).andReturn().getResponse().getContentAsString();
         return body.isEmpty() ? null : StrictJson.MAPPER.readTree(body);
     }
 
@@ -107,6 +109,7 @@ class WorkspaceIntegrationTest {
 
     @Test
     void invalidInputIsRejected() throws Exception {
+        user = WorkflowIntegrationTest.as("ablage.c", "gutachter");
         UUID a = submit("ABLAGE-3");
         send(post("/api/v1/workspace/folders").contentType(MediaType.APPLICATION_JSON).content("{\"label\": \" \", \"color\": \"#497ab7\"}"), 400);
         send(post("/api/v1/workspace/folders").contentType(MediaType.APPLICATION_JSON).content("{\"label\": \"X\", \"color\": \"blau\"}"), 400);
