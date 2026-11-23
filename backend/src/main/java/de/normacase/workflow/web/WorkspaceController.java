@@ -258,8 +258,9 @@ class WorkspaceController {
         while (current != null && chain.size() <= MAX_DEPTH + 1) {
             requireFolder(owner, current);
             chain.add(current);
-            current = jdbc.sql("select parent_id from workflow.personal_folder where folder_id = :id").param("id", current)
-                    .query((rs, n) -> rs.getObject(1, UUID.class)).single();
+            List<String> parent = jdbc.sql("select parent_id::text from workflow.personal_folder where folder_id = :id")
+                    .param("id", current).query(String.class).list();
+            current = parent.isEmpty() || parent.get(0) == null ? null : UUID.fromString(parent.get(0));
         }
         return chain;
     }
