@@ -137,7 +137,8 @@ jobs:
           $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path .\demo.ps1))
           if ($bytes[0] -ne 0xEF -or $bytes[1] -ne 0xBB -or $bytes[2] -ne 0xBF) { Write-Error 'demo.ps1 braucht UTF-8 mit BOM'; exit 1 }
           $text = Get-Content -Raw -Encoding UTF8 .\demo.ps1
-          if ($text -notmatch 'Prüfwerkstatt') { Write-Error 'Umlaute werden falsch gelesen (BOM fehlt?)'; exit 1 }
+          # Prüfwort ohne Umlaut im Quelltext dieses Schritts: GitHub legt ihn ohne BOM ab.
+          if (-not $text.Contains('Pr' + [char]0x00FC + 'fwerkstatt')) { Write-Error 'Umlaute werden falsch gelesen (BOM fehlt?)'; exit 1 }
           Get-Help .\demo.ps1 | Out-String | Write-Host
 
   compose:
