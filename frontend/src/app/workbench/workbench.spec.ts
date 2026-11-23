@@ -98,7 +98,7 @@ describe('Workbench', () => {
     const el = fixture.nativeElement as HTMLElement;
     el.querySelector<HTMLInputElement>('thead input[type=checkbox]')!.click();
     fixture.detectChanges();
-    const button = Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.getAttribute('aria-label') === 'Auswahl bestätigen')!;
+    const button = Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.getAttribute('title') === 'Auswahl bestätigen')!;
     expect(button.disabled).toBe(false);
     button.click();
 
@@ -201,7 +201,7 @@ describe('Workbench', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F4' }));
     fixture.detectChanges();
     expect(el.querySelector('.reading-pane')).toBeNull();
-    expect(Array.from(el.querySelectorAll('.commandbar button')).some((b) => b.getAttribute('aria-label') === 'Details einblenden (F4)')).toBe(true);
+    expect(Array.from(el.querySelectorAll('.commandbar button')).some((b) => b.getAttribute('title') === 'Details einblenden (F4)' && b.getAttribute('aria-pressed') === 'false')).toBe(true);
 
     el.querySelector<HTMLElement>('tbody tr')!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
     await settle(fixture);

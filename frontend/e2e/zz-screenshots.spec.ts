@@ -94,7 +94,7 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'spaltenoptionen');
   await page.getByRole('button', { name: 'Abbrechen' }).click();
   await page.getByRole('button', { name: /Alle Vorgänge/ }).click();
-  await page.getByRole('button', { name: 'Details ausblenden (F4)' }).click();
+  await page.getByRole('button', { name: 'Details (F4)' }).click();
   await expect(page.getByRole('region', { name: 'Fallakte' })).toHaveCount(0);
   await expect(page.locator('.toast')).toHaveCount(0, { timeout: 10_000 });
   await shot(page, 'liste-zeilenfaerbung');

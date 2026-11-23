@@ -562,3 +562,4 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .notice-box[data-state='TECHNICAL_CLARIFICATION'] { background: light-dark(#fbe7e7, #2e1a1c); }
 .notice-box[data-state='DOCUMENT_REVIEW'] { background: light-dark(#f1ebfa, #262236); }
 .commandbar .button { padding: 0 .55rem; }
+.case-table.row-colors .case-note { color: var(--nc-text); font-style: italic; }

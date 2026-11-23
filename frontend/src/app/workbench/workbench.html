@@ -42,13 +42,13 @@
   }
   <button type="button" class="icon-button" (click)="refresh()" [attr.aria-label]="t.wb.refresh" [title]="t.wb.refresh">⟳</button>
   <span class="divider" aria-hidden="true"></span>
-  <button type="button" class="button ghost" [disabled]="!canBatchConfirm() || busy()" (click)="confirmSelected()" [attr.aria-label]="t.wb.confirmSelected" [title]="t.wb.confirmSelected">✓ {{ t.wb.ablage.confirm }}@if (selectedVisible().length) { <span class="count">{{ selectedVisible().length }}</span> }</button>
+  <button type="button" class="button ghost" [disabled]="!canBatchConfirm() || busy()" (click)="confirmSelected()" [title]="t.wb.confirmSelected">✓ {{ t.wb.ablage.confirm }}@if (selectedVisible().length) { <span class="count">{{ selectedVisible().length }}</span> }</button>
   @if (user().roles.includes('freigabe')) {
-    <button type="button" class="button ghost" [disabled]="!available('approve')" (click)="menu('approve')" [attr.aria-label]="t.wb.ablage.approve" [title]="t.wb.ablage.approve">✉ {{ t.wb.ablage.approveShort }}</button>
+    <button type="button" class="button ghost" [disabled]="!available('approve')" (click)="menu('approve')" [title]="t.wb.ablage.approve">✉ {{ t.wb.ablage.approveShort }}</button>
   }
   <span class="divider" aria-hidden="true"></span>
   <button type="button" class="icon-button" (click)="begin('folder', [])" [attr.aria-label]="t.wb.ablage.newFolder" [title]="t.wb.ablage.newFolder"><span aria-hidden="true">＋</span></button>
-  <button type="button" class="button ghost" [disabled]="!available('move')" (click)="menu('move')" [attr.aria-label]="t.wb.ablage.move" [title]="t.wb.ablage.move">▤ {{ t.wb.ablage.moveShort }}@if (targetIds().length > 1) { <span class="count">{{ targetIds().length }}</span> }</button>
+  <button type="button" class="button ghost" [disabled]="!available('move')" (click)="menu('move')" [title]="t.wb.ablage.move">▤ {{ t.wb.ablage.moveShort }}@if (targetIds().length > 1) { <span class="count">{{ targetIds().length }}</span> }</button>
   <button type="button" class="button ghost" [disabled]="!available('mark')" (click)="menu('mark')">◆ {{ t.wb.ablage.mark }}</button>
   <button type="button" class="button ghost" [disabled]="!available('bookmark')" [attr.aria-pressed]="allBookmarked(targetIds())" (click)="menu('bookmark')">★ {{ t.wb.ablage.bookmark }}</button>
   @if (!opened()) {
@@ -58,7 +58,7 @@
     <button type="button" class="icon-button" (click)="openQueryDialog()" [attr.aria-label]="t.wb.saveQuery" [title]="t.wb.saveQuery"><span aria-hidden="true">☆</span></button>
     <span class="divider" aria-hidden="true"></span>
     <button type="button" class="icon-button" [disabled]="!view().showDetails" (click)="togglePreviewPosition()" [attr.aria-label]="view().previewPosition === 'bottom' ? t.wb.previewRight : t.wb.previewBottom" [title]="view().previewPosition === 'bottom' ? t.wb.previewRight : t.wb.previewBottom"><span aria-hidden="true">{{ view().previewPosition === 'bottom' ? '◨' : '⬓' }}</span></button>
-    <button type="button" class="button ghost" [attr.aria-pressed]="!view().showDetails" (click)="toggleDetails()" [attr.aria-label]="view().showDetails ? t.wb.hideDetails : t.wb.showDetails" [title]="view().showDetails ? t.wb.hideDetails : t.wb.showDetails">▭ {{ t.wb.detailsShort }}</button>
+    <button type="button" class="button ghost" [attr.aria-pressed]="view().showDetails" (click)="toggleDetails()" [title]="view().showDetails ? t.wb.hideDetails : t.wb.showDetails">▭ {{ t.wb.detailsShort }}</button>
   }
   <span class="spacer"></span>
   <label class="toggle"><input type="checkbox" [checked]="view().rowColors" (change)="setRowColors($any($event.target).checked)"> {{ t.wb.rowColors }}</label>
