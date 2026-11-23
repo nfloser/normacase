@@ -1,7 +1,12 @@
 # NormaCase
 
+[![CI](https://github.com/nfloser/normacase/actions/workflows/ci.yml/badge.svg)](https://github.com/nfloser/normacase/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/nfloser/normacase?label=Version)](https://github.com/nfloser/normacase/releases)
+
 **Nachvollziehbare Entscheidungsunterstützung für die sozialmedizinische Begutachtung.**
 NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem Ergebnis den vollständigen Entscheidungspfad. Fehlen Angaben, entsteht eine gezielte Rückfrage; widersprechen sich Belege, entscheidet ein Mensch.
+
+*In English:* NormaCase is a rule-based decision support platform for medical assessments. Every result shows its full decision trail; missing information leads to a targeted follow-up request, conflicting evidence goes to a human, and approval follows the four-eyes principle. Built with Java/Spring Boot, Angular and PostgreSQL.
 
 ![Prüfwerkstatt mit Fallakte: Arbeitskörbe, Vorgänge und Begründung Modul für Modul](docs/screenshots/01-pruefung.png)
 
@@ -13,6 +18,8 @@ NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem E
 |---|---|
 | 118 Paritätsfälle exakt wie die frühere .NET-Engine | 10 durchgespielte Demo-Vorgänge |
 | Bewertung p95 rund 5 ms (k6 in der CI) | Barrierefreiheit mit axe geprüft |
+
+NormaCase ist ein Neuaufbau: Die erste Fassung (.NET/React) liegt eingefroren unter [`legacy/`](legacy/). Die neue Java-Regel-Engine muss in der CI für alle 118 Prüffälle exakt dieselben Ergebnisse liefern wie die alte.
 
 ## Drei Wege eines Antrags
 
@@ -81,3 +88,7 @@ Vertrag: [`openapi.yaml`](backend/src/main/resources/static/api/v1/openapi.yaml)
 - [TR-03161-Checkliste](docs/sicherheit/tr-03161-checkliste.md)
 - [Betrieb: Kubernetes](ops/k8s/), [Monitoring](ops/monitoring/), [Lasttest](ops/load/)
 - [Entwicklungsregeln](AGENTS.md)
+
+## Lizenz
+
+© Nils Flöser. Alle Rechte vorbehalten. Der Quellcode ist zur Ansicht und Bewertung öffentlich; eine Nutzung, Weitergabe oder Veränderung bedarf der Zustimmung.
