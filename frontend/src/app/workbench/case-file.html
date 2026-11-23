@@ -30,7 +30,7 @@
   }
 </div>
 
-<div class="tab-panel" role="tabpanel" [id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()" [class.flush]="tab() === 'documents'">
+<div class="tab-panel" role="tabpanel" tabindex="0" [id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()" [class.flush]="tab() === 'documents'">
   @switch (tab()) {
     @case ('review') {
       @if (assessment(); as a) {

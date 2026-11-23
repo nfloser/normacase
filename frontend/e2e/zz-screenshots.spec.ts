@@ -77,6 +77,17 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'mehrfachauswahl');
   await page.locator('thead input[type=checkbox]').uncheck();
 
+  await page.getByRole('button', { name: /^⚲ Filter/ }).click();
+  await page.getByLabel('Filter für Ergebnis').selectOption('Voraussetzungen erfüllt');
+  await expect(page.locator('.case-table tbody tr')).not.toHaveCount(0);
+  await shot(page, 'spaltenfilter');
+  await page.getByRole('button', { name: 'Filter zurücksetzen' }).click();
+  await page.getByRole('button', { name: /^⚲ Filter/ }).click();
+  await page.getByRole('button', { name: /Spaltenoptionen/ }).click();
+  await page.locator('.column-options select').selectOption({ label: 'Frist' });
+  await shot(page, 'spaltenoptionen');
+  await page.getByRole('button', { name: 'Abbrechen' }).click();
+
   file = await open(page, /Zur Prüfung/, 'PG-2026-104233');
   await file.getByRole('button', { name: /Bestätigen/ }).click();
   await expect(page.locator('.toast')).toContainText('Freigabe');

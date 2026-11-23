@@ -7,9 +7,13 @@ import { de, germanDateTime, label } from '../de';
 import { SystemService } from '../system/system.service';
 import { Presentation, ProcessDetail, ProcessSummary, QueueCount, ReleaseSummary, WorkbenchApi } from './api';
 import { CaseAction, CaseFile } from './case-file';
+import {
+  COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, SELECT_COLUMNS, SavedQuery, ViewSettings, ViewStore,
+  rowTone, storableFilters,
+} from './case-view';
 
 type Load<T> = { state: 'loading' } | { state: 'ready'; value: T } | { state: 'error' };
-type SortKey = 'received' | 'subject' | 'number' | 'result';
+const QUEUES = ['clarification', 'review', 'approval', 'done'];
 
 /**
  * Prüfwerkstatt nach dem bewährten Konzept: Körbe wie Ordner, Vorgänge wie ein Postfach, rechts die Fallakte.
@@ -27,10 +31,25 @@ export class Workbench {
   private readonly api = inject(WorkbenchApi);
   private readonly destroy = inject(DestroyRef);
   private readonly reload$ = new Subject<void>();
+  private readonly store = inject(ViewStore);
 
   protected readonly queue = signal('review');
   protected readonly query = signal('');
-  protected readonly sort = signal<{ key: SortKey; asc: boolean }>({ key: 'received', asc: true });
+  /** Ansicht: Spalten, Färbung, Sortierung, gespeicherte Abfragen. Wird je Konto im Browser gehalten. */
+  protected readonly view = signal<ViewSettings>(this.store.load(''));
+  protected readonly filters = signal<Filters>({});
+  protected readonly columnDialog = signal<ColumnId[] | null>(null);
+  protected readonly queryDialog = signal(false);
+  protected readonly columns = computed(() => this.view().columns);
+  protected readonly sort = computed(() => this.view().sort);
+  protected readonly selectColumns = SELECT_COLUMNS;
+  /** Mindestbreite der Tabelle aus den gewählten Spalten; reicht der Platz nicht, scrollt die Liste waagerecht. */
+  protected readonly tableMinWidth = computed(() => 38 + this.columns().reduce((sum, c) => sum + COLUMN_WIDTHS[c], 0));
+  protected width(c: ColumnId): number | null {
+    return c === 'subject' ? null : COLUMN_WIDTHS[c];
+  }
+  protected readonly rowTone = rowTone;
+  protected readonly tones = ['ready', 'missing', 'conflict', 'done'];
   protected readonly selection = signal<ReadonlySet<string>>(new Set());
   protected readonly active = signal<string | null>(null);
   protected readonly busy = signal(false);
@@ -45,16 +64,29 @@ export class Workbench {
   protected readonly presentation = signal<Presentation>({});
   protected readonly releases = toSignal(this.api.releases().pipe(catchError(() => of([] as ReleaseSummary[]))), { initialValue: [] });
 
+  protected readonly activeFilters = computed(() => Object.values(this.filters()).filter((v) => !!v?.trim()).length);
   protected readonly visible = computed(() => {
     const l = this.list();
     if (l.state !== 'ready') return [];
     const q = this.query().trim().toLocaleLowerCase('de-DE');
-    const filtered = q ? l.value.filter((p) => this.searchText(p).includes(q)) : l.value;
+    const filters = Object.entries(this.filters())
+      .filter((e): e is [ColumnId, string] => !!e[1]?.trim())
+      .map(([id, v]) => [id, v.trim().toLocaleLowerCase('de-DE')] as const);
+    const filtered = l.value.filter((p) =>
+      (!q || this.searchText(p).includes(q)) &&
+      filters.every(([id, v]) => SELECT_COLUMNS.has(id)
+        ? this.cellText(p, id).toLocaleLowerCase('de-DE') === v
+        : this.cellText(p, id).toLocaleLowerCase('de-DE').includes(v)));
     const { key, asc } = this.sort();
-    const value = (p: ProcessSummary) =>
-      key === 'subject' ? (p.displayName ?? '') : key === 'number' ? p.externalReference.caseId
-        : key === 'result' ? this.outcome(p.outcome) : p.receivedAt;
-    return [...filtered].sort((a, b) => value(a).localeCompare(value(b), 'de-DE') * (asc ? 1 : -1));
+    return [...filtered].sort((a, b) => this.compare(a, b, key) * (asc ? 1 : -1));
+  });
+  /** Auswahlwerte je Spalte aus den geladenen Vorgängen. */
+  protected readonly options = computed(() => {
+    const l = this.list();
+    const values = l.state === 'ready' ? l.value : [];
+    const out: Partial<Record<ColumnId, string[]>> = {};
+    for (const id of SELECT_COLUMNS) out[id] = [...new Set(values.map((p) => this.cellText(p, id)))].sort((a, b) => a.localeCompare(b, 'de-DE'));
+    return out;
   });
   protected readonly selectedVisible = computed(() => this.visible().filter((p) => this.selection().has(p.processId)));
   protected readonly allVisibleSelected = computed(() => this.visible().length > 0 && this.selectedVisible().length === this.visible().length);
@@ -66,6 +98,10 @@ export class Workbench {
   });
 
   constructor() {
+    effect(() => {
+      const name = this.user().username;
+      untracked(() => this.view.set(this.store.load(name)));
+    });
     this.reload$.pipe(
       startWith(undefined),
       switchMap(() => this.guard(this.api.queues())),
@@ -130,11 +166,12 @@ export class Workbench {
     this.selection.set(checked ? new Set(this.visible().map((p) => p.processId)) : new Set());
   }
 
-  protected sortBy(key: SortKey): void {
-    this.sort.update((s) => ({ key, asc: s.key === key ? !s.asc : true }));
+  protected sortBy(key: ColumnId): void {
+    const s = this.sort();
+    this.updateView({ sort: { key, asc: s.key === key ? !s.asc : true } });
   }
 
-  protected ariaSort(key: SortKey): string | null {
+  protected ariaSort(key: ColumnId): string | null {
     const s = this.sort();
     return s.key === key ? (s.asc ? 'ascending' : 'descending') : null;
   }
@@ -188,6 +225,128 @@ export class Workbench {
       },
       error: (e: unknown) => this.fail(e),
     });
+  }
+
+  protected columnLabel(id: ColumnId): string {
+    return de.wb.columns[id] ?? id;
+  }
+
+  /** Anzeigetext einer Zelle; zugleich Grundlage für Filter. */
+  protected cellText(p: ProcessSummary, id: ColumnId): string {
+    switch (id) {
+      case 'subject': return p.displayName ?? '';
+      case 'number': return p.externalReference.caseId;
+      case 'status': return this.stateLabel(p.state);
+      case 'result': return this.outcome(p.outcome);
+      case 'received': return germanDateTime(p.receivedAt);
+      case 'expires': return germanDateTime(p.expiresAt);
+      case 'missing': return String(p.missingFieldCount);
+      case 'documents': return String(p.documentCount);
+      case 'confirmedBy': return p.confirmedBy ?? '';
+      case 'release': return p.knowledgeRelease;
+      case 'system': return p.externalReference.system;
+    }
+  }
+
+  private compare(a: ProcessSummary, b: ProcessSummary, id: ColumnId): number {
+    switch (id) {
+      case 'received': return a.receivedAt.localeCompare(b.receivedAt);
+      case 'expires': return a.expiresAt.localeCompare(b.expiresAt);
+      case 'missing': return a.missingFieldCount - b.missingFieldCount;
+      case 'documents': return a.documentCount - b.documentCount;
+      default: return this.cellText(a, id).localeCompare(this.cellText(b, id), 'de-DE', { numeric: true });
+    }
+  }
+
+  protected setRowColors(on: boolean): void {
+    this.updateView({ rowColors: on });
+  }
+
+  protected toggleFilters(): void {
+    const show = !this.view().showFilters;
+    this.updateView({ showFilters: show });
+    if (!show) this.filters.set({});
+  }
+
+  protected setFilter(id: ColumnId, value: string): void {
+    this.filters.update((f) => ({ ...f, [id]: value.slice(0, 100) }));
+  }
+
+  protected clearFilters(): void {
+    this.filters.set({});
+  }
+
+  protected openColumnOptions(): void {
+    this.columnDialog.set([...this.columns()]);
+    this.focusLater('.column-options');
+  }
+
+  protected openQueryDialog(): void {
+    this.queryDialog.set(true);
+    this.focusLater('#query-name');
+  }
+
+  private focusLater(selector: string): void {
+    setTimeout(() => document.querySelector<HTMLElement>(selector)?.focus());
+  }
+
+  protected availableColumns(draft: readonly ColumnId[]): ColumnId[] {
+    return COLUMN_IDS.filter((id) => !draft.includes(id));
+  }
+
+  protected addColumn(id: string): void {
+    const col = COLUMN_IDS.find((c) => c === id);
+    if (col) this.columnDialog.update((d) => (d && !d.includes(col) ? [...d, col] : d));
+  }
+
+  protected removeColumn(id: ColumnId): void {
+    this.columnDialog.update((d) => (d && d.length > 1 ? d.filter((c) => c !== id) : d));
+  }
+
+  protected moveColumn(index: number, delta: -1 | 1): void {
+    this.columnDialog.update((d) => {
+      if (!d || index + delta < 0 || index + delta >= d.length) return d;
+      const next = [...d];
+      [next[index], next[index + delta]] = [next[index + delta], next[index]];
+      return next;
+    });
+  }
+
+  protected resetColumns(): void {
+    this.columnDialog.set([...DEFAULT_COLUMNS]);
+  }
+
+  protected applyColumns(): void {
+    const draft = this.columnDialog();
+    if (!draft?.length) return;
+    const sort = draft.includes(this.sort().key) ? this.sort() : { key: draft[0], asc: true };
+    this.updateView({ columns: draft, sort });
+    this.filters.update((f) => Object.fromEntries(Object.entries(f).filter(([k]) => draft.includes(k as ColumnId))));
+    this.columnDialog.set(null);
+  }
+
+  protected saveQuery(name: string): void {
+    const trimmed = name.trim().slice(0, 60);
+    if (!trimmed) return;
+    const query: SavedQuery = { name: trimmed, queue: this.queue(), columns: this.columns(), filters: storableFilters(this.filters()), sort: this.sort() };
+    this.updateView({ queries: [...this.view().queries.filter((q) => q.name !== trimmed), query].slice(-20) });
+    this.queryDialog.set(false);
+    this.flash(de.wb.querySaved(trimmed));
+  }
+
+  protected openQuery(q: SavedQuery): void {
+    this.openQueue(QUEUES.includes(q.queue) ? q.queue : 'review');
+    this.updateView({ columns: q.columns, sort: q.sort, showFilters: this.view().showFilters || Object.keys(q.filters).length > 0 });
+    this.filters.set({ ...q.filters });
+  }
+
+  protected deleteQuery(name: string): void {
+    this.updateView({ queries: this.view().queries.filter((q) => q.name !== name) });
+  }
+
+  private updateView(change: Partial<ViewSettings>): void {
+    this.view.update((v) => ({ ...v, ...change }));
+    this.store.save(this.user().username, this.view());
   }
 
   protected stateLabel(state: string): string {

@@ -7,6 +7,8 @@ import { detailJson, summary } from './fixtures';
 describe('Workbench', () => {
   let http: HttpTestingController;
 
+  beforeEach(() => globalThis.localStorage?.clear());
+
   async function render(roles = ['gutachter']) {
     TestBed.configureTestingModule({ imports: [Workbench], providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
@@ -115,5 +117,61 @@ describe('Workbench', () => {
     el.querySelectorAll<HTMLElement>('tbody tr')[1].dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
     fixture.detectChanges();
     expect(el.querySelectorAll('tbody tr')[1].getAttribute('data-selected')).toBe('true');
+  });
+
+  it('färbt Zeilen standardmäßig und lässt sich abschalten', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.case-table')!.classList).toContain('row-colors');
+    expect(el.querySelector('tbody tr')!.getAttribute('data-tone')).toBe('ready');
+    const toggle = Array.from(el.querySelectorAll<HTMLLabelElement>('.commandbar label')).find((l) => l.textContent!.includes('Zeilenfärbung'))!.querySelector('input')!;
+    toggle.click();
+    fixture.detectChanges();
+    expect(el.querySelector('.case-table')!.classList).not.toContain('row-colors');
+    expect(JSON.parse(localStorage.getItem('normacase.workbench.view.v1.gutachterin.a')!).rowColors).toBe(false);
+  });
+
+  it('passt Spalten über die Spaltenoptionen an', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    const headers = () => Array.from(el.querySelectorAll('.case-table thead tr:first-child th')).map((th) => th.textContent!.trim()).filter(Boolean);
+    expect(headers()).toEqual(['Vorgang', 'Vorgangsnummer', 'Bearbeitungsstand', 'Ergebnis', 'Eingang', 'Dokumente']);
+
+    Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.textContent!.includes('Spaltenoptionen'))!.click();
+    fixture.detectChanges();
+    el.querySelector<HTMLButtonElement>('[aria-label="Vorgangsnummer nach oben"]')!.click();
+    el.querySelector<HTMLButtonElement>('[aria-label="Dokumente entfernen"]')!.click();
+    fixture.detectChanges();
+    const add = el.querySelector<HTMLSelectElement>('.column-options select')!;
+    add.value = 'release';
+    add.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    el.querySelector<HTMLButtonElement>('.column-options button[type=submit]')!.click();
+    fixture.detectChanges();
+
+    expect(headers()).toEqual(['Vorgangsnummer', 'Vorgang', 'Bearbeitungsstand', 'Ergebnis', 'Eingang', 'Regelwerk']);
+    expect(el.querySelector('tbody td.col-release')!.textContent).toContain('demo-g-2026.1');
+  });
+
+  it('filtert je Spalte und speichert die Ansicht als Abfrage ohne Namensfilter', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.textContent!.includes('Filter'))!.click();
+    fixture.detectChanges();
+    const result = el.querySelector<HTMLSelectElement>('select[aria-label="Filter für Ergebnis"]')!;
+    result.value = 'Voraussetzungen nicht erfüllt';
+    result.dispatchEvent(new Event('change'));
+    const name = el.querySelector<HTMLInputElement>('input[aria-label="Filter für Vorgang"]')!;
+    name.value = 'andere';
+    name.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(el.querySelectorAll('.case-table tbody tr').length).toBe(1);
+
+    fixture.componentInstance['saveQuery']('Nicht erfüllt');
+    fixture.detectChanges();
+    const stored = JSON.parse(localStorage.getItem('normacase.workbench.view.v1.gutachterin.a')!);
+    expect(stored.queries[0]).toMatchObject({ name: 'Nicht erfüllt', queue: 'review', filters: { result: 'Voraussetzungen nicht erfüllt' } });
+    expect(JSON.stringify(stored)).not.toContain('andere');
+    expect(el.querySelector('.explorer')!.textContent).toContain('Nicht erfüllt');
   });
 });

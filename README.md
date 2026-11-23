@@ -25,6 +25,8 @@ NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem E
 |---|---|---|
 | ![Rückfrageformular](docs/screenshots/04-angaben-ergaenzen.png) | ![Freigabe durch zweite Person](docs/screenshots/06-freigabe.png) | ![Entscheidungsnachweis](docs/screenshots/07-nachweis.png) |
 
+Die Fallliste lässt sich wie eine Abfrage in Azure DevOps anpassen: Zeilenfärbung nach Bearbeitungsstand (abschaltbar), Spaltenoptionen, Filter je Spalte und gespeicherte Abfragen unter „Meine Abfragen“.
+
 Die Screenshots entstehen bei jedem Build automatisch aus dem laufenden Stack (`frontend/e2e/zz-screenshots.spec.ts`).
 
 ## Lokal starten
