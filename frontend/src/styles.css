@@ -117,7 +117,8 @@ nc-workbench { display: grid; grid-template-rows: auto auto auto minmax(0, 1fr) 
 .search { position: relative; flex: 1; max-width: 620px; margin: 0 auto; }
 .app-shell .search input { width: 100%; padding-left: 2.25rem; background: var(--nc-muted-bg); border-color: transparent; }
 .app-shell .search input:focus { background: var(--nc-surface); border-color: var(--nc-border-strong); }
-.search-icon { position: absolute; left: .65rem; top: 50%; transform: translateY(-52%); color: var(--nc-text-2); }
+.search-icon { position: absolute; left: .7rem; top: 50%; transform: translateY(-50%); display: flex; color: var(--nc-text-2); pointer-events: none; }
+.appbar .search input[type=search] { padding-left: 2.2rem; }
 .appbar-actions { display: flex; align-items: center; gap: .25rem; flex: none; }
 .shortcut-bar { margin: 0; padding: .45rem 1rem; background: var(--nc-accent-soft); color: var(--nc-text); font-size: .85rem; border-bottom: 1px solid var(--nc-border); }
 .commandbar { display: flex; align-items: center; flex-wrap: wrap; gap: .2rem; padding: .35rem .75rem; background: var(--nc-surface); border-bottom: 1px solid var(--nc-border); overflow-x: auto; }

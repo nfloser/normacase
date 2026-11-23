@@ -114,19 +114,21 @@ export class DecisionTrace {
   /** Zerlegt eine Berechnung in lesbare Zeilen: je Bestandteil eine Zeile, zuletzt das Ergebnis. */
   protected numericLines(n: NumericView): string[] {
     const v = (node: NumericView) => displayValue(node.value, demo.values);
-    const part = (node: NumericView): string => {
-      if (node.kind === 'field') return `${this.fieldLabel(node.field ?? '')}: ${v(node)}`;
-      if (node.kind === 'range_lookup' && node.children.length === 1 && node.children[0].kind === 'field') {
-        const f = node.children[0];
-        return `${this.fieldLabel(f.field ?? '')}: ${v(f)} Punkte → ${v(node)} gewichtet`;
-      }
-      if (node.kind === 'max') return `höherer Wert aus ${node.children.map(part).join(' bzw. ')} → ${v(node)}`;
-      const name = label(demo.numericKinds, node.kind, node.kind);
-      return node.children.length ? `${name} aus ${node.children.map(part).join('; ')} = ${v(node)}` : `${name} = ${v(node)}`;
+    const known = (node: NumericView) => node.value?.kind === 'NUMBER';
+    const points = (node: NumericView) => (known(node) ? `${v(node)} ${v(node) === '1' ? 'Punkt' : 'Punkte'}` : v(node).toLowerCase());
+    const weighted = (node: NumericView): string | null => {
+      if (node.kind !== 'range_lookup' || node.children.length !== 1 || node.children[0].kind !== 'field') return null;
+      const f = node.children[0];
+      return known(f) ? `${this.fieldLabel(f.field ?? '')}: ${points(f)} → ${v(node)} gewichtet` : `${this.fieldLabel(f.field ?? '')}: ${points(f)}`;
     };
-    if (n.kind === 'sum' && n.children.length) {
-      return [...n.children.map(part), `${label(demo.numericKinds, 'sum', 'Summe')}: ${v(n)}`];
-    }
-    return [part(n)];
+    const lines = (node: NumericView): string[] => {
+      const w = weighted(node);
+      if (w) return [w];
+      if (node.kind === 'field') return [`${this.fieldLabel(node.field ?? '')}: ${points(node)}`];
+      if (node.kind === 'max') return [...node.children.flatMap(lines), `↳ davon zählt der höhere Wert: ${v(node)}`];
+      const name = label(demo.numericKinds, node.kind, node.kind);
+      return [...node.children.flatMap(lines), `${name}: ${v(node)}`];
+    };
+    return lines(n);
   }
 }
