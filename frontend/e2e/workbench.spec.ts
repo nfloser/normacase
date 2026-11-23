@@ -79,18 +79,21 @@ test('Freigabe durch eine zweite Person; das Fachsystem holt ab und NormaCase l�
   await logout(page);
 });
 
-test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page }) => {
+test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page }, info) => {
+  const folder = `Rückfragen KW ${48 + info.retry}`;
   await login(page, 'gutachter.b');
   const nav = page.getByRole('navigation', { name: 'Arbeitslisten und Ablage' });
 
   await page.getByRole('button', { name: 'Neuer Ordner' }).first().click();
-  await page.getByLabel('Name', { exact: true }).fill('Rückfragen diese Woche');
+  await page.getByLabel('Name', { exact: true }).fill(folder);
   await page.getByRole('button', { name: 'Grün', exact: true }).click();
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
-  await expect(nav.getByRole('button', { name: /^Rückfragen diese Woche/ })).toBeVisible();
+  await expect(nav.getByRole('button', { name: new RegExp(`^${folder}`) })).toBeVisible();
 
   await nav.getByRole('button', { name: /Informationen nachfordern/ }).click();
+  await expect(nav.getByRole('button', { name: /Informationen nachfordern/ })).toHaveAttribute('aria-current', 'true');
   const row = page.locator('.case-table tbody tr').first();
+  await expect(row.locator('.col-status')).toHaveText('Informationen nachfordern');
   const number = (await row.locator('.col-number').textContent())!.trim();
   await row.click({ button: 'right' });
   const menu = page.getByRole('menu', { name: 'Vorgangsaktionen' });
@@ -98,12 +101,12 @@ test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page 
   const results = await new AxeBuilder({ page }).include('.context-menu').analyze();
   expect(results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
   await menu.getByRole('menuitem', { name: /Verschieben nach/ }).hover();
-  await menu.getByRole('menuitem', { name: 'Rückfragen diese Woche' }).click();
+  await menu.getByRole('menuitem', { name: folder }).click();
   await expect(page.locator('.toast')).toContainText('Gespeichert');
 
   // Die Arbeitsliste zeigt den Vorgang weiter; „Alle Vorgänge“ nicht mehr, der Ordner schon.
   await expect(page.locator('.case-table tbody tr').filter({ hasText: number })).toHaveCount(1);
-  await nav.getByRole('button', { name: /^Rückfragen diese Woche/ }).click();
+  await nav.getByRole('button', { name: new RegExp(`^${folder}`) }).click();
   const filed = page.locator('.case-table tbody tr').filter({ hasText: number });
   await expect(filed).toHaveCount(1);
 
