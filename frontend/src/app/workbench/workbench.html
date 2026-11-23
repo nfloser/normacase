@@ -21,6 +21,8 @@
   @if (activeFilters()) { <button type="button" class="button ghost" (click)="clearFilters()">{{ t.wb.clearFilters }}</button> }
   <button type="button" class="button ghost" (click)="openColumnOptions()">☰ {{ t.wb.columnOptions }}</button>
   <button type="button" class="button ghost" (click)="openQueryDialog()">☆ {{ t.wb.saveQuery }}</button>
+  <span class="divider" aria-hidden="true"></span>
+  <button type="button" class="button ghost" [attr.aria-pressed]="!view().showDetails" (click)="toggleDetails()">{{ view().showDetails ? t.wb.hideDetails : t.wb.showDetails }}</button>
   <span class="spacer"></span>
   <span class="muted small shortcuts">{{ t.wb.shortcuts }}</span>
   <label class="toggle"><input type="checkbox" [checked]="view().rowColors" (change)="setRowColors($any($event.target).checked)"> {{ t.wb.rowColors }}</label>
@@ -105,6 +107,7 @@
           @default { @if (!visible().length) { <p class="empty-state">{{ query() ? t.wb.noMatches : t.wb.noCases }}</p> } }
         }
       </div>
+      @if (view().showDetails) {
       <section class="reading-pane" [attr.aria-label]="t.wb.readingPane">
         @if (detail(); as d) {
           @switch (d.state) {
@@ -118,6 +121,7 @@
           }
         } @else { <p class="empty-state">{{ t.wb.emptyPane }}</p> }
       </section>
+      }
     </div>
   </main>
 </div>

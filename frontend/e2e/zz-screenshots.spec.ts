@@ -87,6 +87,12 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await page.locator('.column-options select').selectOption({ label: 'Frist' });
   await shot(page, 'spaltenoptionen');
   await page.getByRole('button', { name: 'Abbrechen' }).click();
+  await page.getByRole('button', { name: /Rückfragen/ }).click();
+  await page.getByRole('button', { name: 'Details ausblenden (F4)' }).click();
+  await expect(page.getByRole('region', { name: 'Fallakte' })).toHaveCount(0);
+  await shot(page, 'liste-zeilenfaerbung');
+  await page.keyboard.press('F4');
+  await expect(page.getByRole('region', { name: 'Fallakte' })).toBeVisible();
 
   file = await open(page, /Zur Prüfung/, 'PG-2026-104233');
   await file.getByRole('button', { name: /Bestätigen/ }).click();

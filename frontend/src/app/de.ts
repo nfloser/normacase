@@ -124,6 +124,8 @@ export const de = {
       system: 'Fachsystem',
     } as Record<string, string>,
     rowColors: 'Zeilenfärbung',
+    hideDetails: 'Details ausblenden (F4)',
+    showDetails: 'Details einblenden (F4)',
     tones: {
       ready: 'Bereit zur Bearbeitung oder Freigabe',
       missing: 'Angaben fehlen',

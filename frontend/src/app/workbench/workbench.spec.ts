@@ -135,7 +135,7 @@ describe('Workbench', () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
     const headers = () => Array.from(el.querySelectorAll('.case-table thead tr:first-child th')).map((th) => th.textContent!.trim()).filter(Boolean);
-    expect(headers()).toEqual(['Vorgang', 'Vorgangsnummer', 'Bearbeitungsstand', 'Ergebnis', 'Eingang', 'Dokumente']);
+    expect(headers()).toEqual(['Vorgang', 'Ergebnis', 'Vorgangsnummer', 'Bearbeitungsstand', 'Eingang', 'Dokumente']);
 
     Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.textContent!.includes('Spaltenoptionen'))!.click();
     fixture.detectChanges();
@@ -149,7 +149,7 @@ describe('Workbench', () => {
     el.querySelector<HTMLButtonElement>('.column-options button[type=submit]')!.click();
     fixture.detectChanges();
 
-    expect(headers()).toEqual(['Vorgangsnummer', 'Vorgang', 'Bearbeitungsstand', 'Ergebnis', 'Eingang', 'Regelwerk']);
+    expect(headers()).toEqual(['Vorgang', 'Vorgangsnummer', 'Ergebnis', 'Bearbeitungsstand', 'Eingang', 'Regelwerk']);
     expect(el.querySelector('tbody td.col-release')!.textContent).toContain('demo-g-2026.1');
   });
 
@@ -173,5 +173,17 @@ describe('Workbench', () => {
     expect(stored.queries[0]).toMatchObject({ name: 'Nicht erfüllt', queue: 'review', filters: { result: 'Voraussetzungen nicht erfüllt' } });
     expect(JSON.stringify(stored)).not.toContain('andere');
     expect(el.querySelector('.explorer')!.textContent).toContain('Nicht erfüllt');
+  });
+
+  it('blendet die Fallakte mit F4 aus und wieder ein', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F4' }));
+    fixture.detectChanges();
+    expect(el.querySelector('.reading-pane')).toBeNull();
+    expect(Array.from(el.querySelectorAll('.commandbar button')).some((b) => b.textContent!.includes('Details einblenden'))).toBe(true);
+    el.querySelector<HTMLElement>('tbody tr')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    fixture.detectChanges();
+    expect(el.querySelector('.reading-pane')).not.toBeNull();
   });
 });

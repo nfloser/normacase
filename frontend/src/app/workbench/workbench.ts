@@ -23,6 +23,7 @@ const QUEUES = ['clarification', 'review', 'approval', 'done'];
   selector: 'nc-workbench',
   imports: [CaseFile],
   templateUrl: './workbench.html',
+  host: { '(document:keydown.f4)': 'toggleDetails($event)' },
 })
 export class Workbench {
   readonly user = input.required<AuthUser>();
@@ -191,7 +192,12 @@ export class Workbench {
       case 'Home': event.preventDefault(); move(0); break;
       case 'End': event.preventDefault(); move(rows.length - 1); break;
       case ' ': event.preventDefault(); this.toggle(p.processId); break;
-      case 'Enter': event.preventDefault(); this.active.set(p.processId); document.getElementById('case-title')?.focus(); break;
+      case 'Enter':
+        event.preventDefault();
+        this.active.set(p.processId);
+        if (!this.view().showDetails) this.updateView({ showDetails: true });
+        setTimeout(() => document.getElementById('case-title')?.focus());
+        break;
     }
   }
 
@@ -256,6 +262,11 @@ export class Workbench {
       case 'documents': return a.documentCount - b.documentCount;
       default: return this.cellText(a, id).localeCompare(this.cellText(b, id), 'de-DE', { numeric: true });
     }
+  }
+
+  protected toggleDetails(event?: Event): void {
+    event?.preventDefault();
+    this.updateView({ showDetails: !this.view().showDetails });
   }
 
   protected setRowColors(on: boolean): void {

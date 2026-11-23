@@ -7,11 +7,11 @@ export type ColumnId = (typeof COLUMN_IDS)[number];
 
 /** Breite je Spalte in Pixeln; der Vorgang bekommt den Rest, mindestens aber diese Breite. */
 export const COLUMN_WIDTHS: Readonly<Record<ColumnId, number>> = {
-  subject: 260, number: 150, status: 176, result: 212, received: 150, expires: 150,
+  subject: 240, number: 150, status: 176, result: 212, received: 150, expires: 150,
   missing: 128, documents: 96, confirmedBy: 150, release: 230, system: 150,
 };
 
-export const DEFAULT_COLUMNS: readonly ColumnId[] = ['subject', 'number', 'status', 'result', 'received', 'documents'];
+export const DEFAULT_COLUMNS: readonly ColumnId[] = ['subject', 'result', 'number', 'status', 'received', 'documents'];
 
 /** Spalten, deren Filter eine Auswahlliste statt Freitext anbietet. */
 export const SELECT_COLUMNS: ReadonlySet<ColumnId> = new Set<ColumnId>(['status', 'result', 'release', 'system']);
@@ -37,6 +37,8 @@ export interface ViewSettings {
   readonly columns: readonly ColumnId[];
   readonly rowColors: boolean;
   readonly showFilters: boolean;
+  /** Fallakte rechts neben der Liste; ausgeblendet hat die Liste die volle Breite (F4). */
+  readonly showDetails: boolean;
   readonly sort: SortState;
   readonly queries: readonly SavedQuery[];
 }
@@ -45,6 +47,7 @@ export const DEFAULT_VIEW: ViewSettings = {
   columns: DEFAULT_COLUMNS,
   rowColors: true,
   showFilters: false,
+  showDetails: true,
   sort: { key: 'received', asc: true },
   queries: [],
 };
@@ -113,6 +116,7 @@ export function sanitize(v: unknown): ViewSettings {
     columns: columns(o['columns']),
     rowColors: o['rowColors'] !== false,
     showFilters: o['showFilters'] === true,
+    showDetails: o['showDetails'] !== false,
     sort: sort(o['sort']),
     queries: queries
       .filter((q): q is Record<string, unknown> => !!q && typeof q === 'object' && typeof q['name'] === 'string' && typeof q['queue'] === 'string')
