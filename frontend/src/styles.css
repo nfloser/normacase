@@ -455,3 +455,6 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .nav-item[aria-current='true'] .nav-count { color: inherit; }
 .brand-mark { color: light-dark(#ffffff, #0c2236); }
 .facts + .trace-block { margin-top: 1rem; }
+.output-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .1rem; }
+.output-list .cond strong { font-weight: 600; }
+.reader-toolbar { flex-wrap: nowrap; }

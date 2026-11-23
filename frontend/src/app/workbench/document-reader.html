@@ -31,7 +31,7 @@
         <button type="button" class="icon-button" (click)="rotate()" [attr.aria-label]="t.rotate" [title]="t.rotate">⟳</button>
       }
       <span class="spacer"></span>
-      <button type="button" class="button ghost" (click)="saveOriginal()">{{ t.download }}</button>
+      <button type="button" class="icon-button" (click)="saveOriginal()" [attr.aria-label]="t.download" [title]="t.download">⤓</button>
     </div>
 
     <div class="reader-stage" tabindex="0" (keydown)="keys($event)" [attr.aria-label]="doc.title + ' – ' + t.hint">

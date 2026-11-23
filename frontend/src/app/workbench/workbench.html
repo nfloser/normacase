@@ -1,7 +1,7 @@
 <header class="chrome">
 <div class="appbar">
   <h1 class="sr-only">{{ t.product }} {{ t.workbench }}</h1>
-  <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span><span class="badge">{{ t.badge }}</span></div>
+  <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span></div>
   <label class="search"><span class="sr-only">{{ t.wb.search }}</span><span class="search-icon" aria-hidden="true">⌕</span>
     <input type="search" [placeholder]="t.wb.searchPlaceholder" [attr.aria-label]="t.wb.search" [value]="query()" (input)="query.set($any($event.target).value.slice(0, 100))" autocomplete="off" spellcheck="false">
   </label>

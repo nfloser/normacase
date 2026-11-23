@@ -37,8 +37,12 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
     }
     @if (a.outputs.length) {
       <div class="trace-block"><h3>{{ text.outputs }}</h3>
-        <ul class="plain">@for (o of a.outputs; track o.outputId) {
-          <li><strong>{{ outputName(o.outputId) }}:</strong> {{ outputValue(o.outputId, o.value) }} <span class="muted">({{ conditionLabel(o.conditionResult) }})</span></li>
+        <ul class="output-list">@for (o of a.outputs; track o.outputId) {
+          <li class="cond" [attr.data-result]="o.conditionResult">
+            <span class="cond-mark" aria-hidden="true">{{ o.conditionResult === 'MATCHED' ? '✓' : o.conditionResult === 'NOT_MATCHED' ? '✕' : '?' }}</span>
+            <span class="cond-text">{{ outputName(o.outputId) }}</span>
+            <span class="cond-result"><strong>{{ outputValue(o.outputId, o.value) }}</strong></span>
+          </li>
         }</ul>
       </div>
     }

@@ -1,7 +1,7 @@
 {
   "realm": "normacase",
   "enabled": true,
-  "displayName": "NormaCase (synthetisch)",
+  "displayName": "NormaCase",
   "sslRequired": "external",
   "bruteForceProtected": true,
   "failureFactor": 5,
@@ -133,8 +133,8 @@
     {
       "username": "gutachterin.a",
       "enabled": true,
-      "firstName": "Gutachterin",
-      "lastName": "A",
+      "firstName": "Anna",
+      "lastName": "Seidel",
       "email": "gutachterin.a@synthetisch.invalid",
       "emailVerified": true,
       "credentials": [
@@ -151,8 +151,8 @@
     {
       "username": "gutachter.b",
       "enabled": true,
-      "firstName": "Gutachter",
-      "lastName": "B",
+      "firstName": "Bernd",
+      "lastName": "Krause",
       "email": "gutachter.b@synthetisch.invalid",
       "emailVerified": true,
       "credentials": [
@@ -169,8 +169,8 @@
     {
       "username": "freigabe.c",
       "enabled": true,
-      "firstName": "Freigabe",
-      "lastName": "C",
+      "firstName": "Clara",
+      "lastName": "Wendt",
       "email": "freigabe.c@synthetisch.invalid",
       "emailVerified": true,
       "credentials": [
@@ -187,8 +187,8 @@
     {
       "username": "redaktion.d",
       "enabled": true,
-      "firstName": "Redaktion",
-      "lastName": "D",
+      "firstName": "David",
+      "lastName": "Lorenz",
       "email": "redaktion.d@synthetisch.invalid",
       "emailVerified": true,
       "credentials": [
@@ -205,8 +205,8 @@
     {
       "username": "regelwerk.e",
       "enabled": true,
-      "firstName": "Regelwerk",
-      "lastName": "E",
+      "firstName": "Eva",
+      "lastName": "Brinkmann",
       "email": "regelwerk.e@synthetisch.invalid",
       "emailVerified": true,
       "credentials": [
@@ -223,8 +223,8 @@
     {
       "username": "admin.f",
       "enabled": true,
-      "firstName": "Administration",
-      "lastName": "F",
+      "firstName": "Frank",
+      "lastName": "Albrecht",
       "email": "admin.f@synthetisch.invalid",
       "emailVerified": true,
       "credentials": [
@@ -241,8 +241,8 @@
     {
       "username": "revision.g",
       "enabled": true,
-      "firstName": "Revision",
-      "lastName": "G",
+      "firstName": "Greta",
+      "lastName": "Hansen",
       "email": "revision.g@synthetisch.invalid",
       "emailVerified": true,
       "credentials": [

@@ -169,6 +169,19 @@ jobs:
           npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
           npx playwright test
+      - name: Screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: frontend/screenshots
+          if-no-files-found: ignore
+      - name: Screenshots im Log (für Doku-Aktualisierung)
+        if: contains(github.head_ref, 'showcase')
+        run: |
+          echo "-----BEGIN SCREENSHOTS-----"
+          tar czf - -C frontend screenshots | base64
+          echo "-----END SCREENSHOTS-----"
       - name: Load test (k6)
         uses: grafana/setup-k6-action@v1
       - name: Run k6

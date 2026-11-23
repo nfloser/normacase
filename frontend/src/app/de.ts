@@ -3,7 +3,7 @@ export const de = {
   product: 'NormaCase',
   workbench: 'Prüfwerkstatt',
   badge: 'Synthetisch',
-  syntheticNotice: 'Nur synthetische Daten',
+  syntheticNotice: 'Demo-Umgebung · alle Personen und Daten frei erfunden',
   unknown: 'Unbekannt',
   system: {
     loading: 'Verbinde …',
@@ -171,7 +171,7 @@ export const de = {
     zoomOut: 'Verkleinern',
     fitWidth: 'Seitenbreite',
     rotate: 'Drehen',
-    download: 'Herunterladen',
+    download: 'Original herunterladen',
     noDocuments: 'Keine Dokumente zum Vorgang.',
     noPreview: 'Für dieses Dokument gibt es keine Seitenvorschau. Bitte herunterladen.',
     loading: 'Seite wird geladen …',
