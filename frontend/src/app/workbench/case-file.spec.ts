@@ -79,4 +79,19 @@ describe('CaseFile', () => {
     el.querySelector<HTMLFormElement>('[aria-labelledby=reject-title]')!.dispatchEvent(new Event('submit'));
     expect(actions).toEqual([{ kind: 'reject', reason: 'CRITERIA_UNCLEAR' }]);
   });
+
+  it('zeigt bei der Unterlagensichtung die Dokumente und erklärt, dass keine Regel hinterlegt ist', () => {
+    const { fixture, el } = render(detail({ state: 'DOCUMENT_REVIEW', outcome: 'NOT_ASSESSED', assessment: null, knowledgeRelease: null, actions: [] }), 'gutachterin.a');
+    expect(el.querySelector('[role=tab][aria-selected=true]')!.textContent).toContain('Dokumente');
+    expect(el.querySelector('.next-step')!.textContent).toContain('kein Regelwerk');
+    Array.from(el.querySelectorAll<HTMLButtonElement>('[role=tab]')).find((b) => b.textContent!.includes('Prüfung'))!.click();
+    fixture.detectChanges();
+    expect(el.querySelector('.notice-box')!.textContent).toContain('kein Regelwerk hinterlegt');
+  });
+
+  it('nennt bei der technischen Klärung den Fehler statt einer Bewertung', () => {
+    const { el } = render(detail({ state: 'TECHNICAL_CLARIFICATION', outcome: 'NOT_ASSESSED', assessment: null, technicalError: 'UNKNOWN_RELEASE', actions: [] }), 'gutachterin.a');
+    expect(el.querySelector('.notice-box')!.textContent).toContain('Regelwerk ist nicht bekannt');
+    expect(el.querySelector('.outcome-badge')!.textContent).toContain('Keine Bewertung');
+  });
 });

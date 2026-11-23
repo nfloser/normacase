@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, effect, input, output, signal, untracked } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { de, germanDate, germanDateTime, label } from '../de';
 import { readAssessmentDocument, displayValue, ValueView } from '../shared/assessment';
@@ -60,9 +60,34 @@ export class CaseFile {
     if (can('approve')) return 'approve';
     if (d.state === 'AWAITING_APPROVAL' && d.confirmedBy === this.username()) return 'ownConfirmation';
     if (can('confirm')) return 'confirm';
+    if (d.state === 'DOCUMENT_REVIEW') return 'documents';
+    if (d.state === 'TECHNICAL_CLARIFICATION') return can('clarify') ? 'technicalFixable' : 'technical';
+    if (d.state === 'IN_CONFLICT_REVIEW' && can('clarify')) return 'conflict';
     if (can('clarify')) return 'clarify';
     return 'waiting';
   });
+
+  /** Ohne Bewertung erklärt die Fallakte, warum: keine Regel hinterlegt, technischer Fehler oder bereits gelöscht. */
+  protected readonly noAssessment = computed(() => {
+    const d = this.detail();
+    if (d.state === 'DOCUMENT_REVIEW') return this.t.noRule;
+    if (d.state === 'TECHNICAL_CLARIFICATION') return label(this.t.technicalErrors, d.technicalError ?? '', this.t.steps['technical']);
+    return this.t.contentDeleted;
+  });
+
+  private lastProcess: string | null = null;
+
+  constructor() {
+    // Beim Wechsel des Vorgangs: Unterlagensichtung beginnt bei den Dokumenten, alles andere bei der Prüfung.
+    effect(() => {
+      const d = this.detail();
+      untracked(() => {
+        if (d.processId === this.lastProcess) return;
+        this.lastProcess = d.processId;
+        this.tab.set(d.state === 'DOCUMENT_REVIEW' && d.documents.length ? 'documents' : 'review');
+      });
+    });
+  }
 
   protected readonly facts = computed<FactRow[]>(() => {
     const input = this.detail().caseInput;
@@ -117,7 +142,8 @@ export class CaseFile {
   }
 
   protected reasonLabel(reason: string | null): string {
-    return reason ? label(de.rejectionReasons, reason, reason) : '';
+    if (!reason) return '';
+    return label(de.rejectionReasons, reason, label(de.technicalReasons, reason, reason));
   }
 
   protected readonly dateTime = germanDateTime;

@@ -113,6 +113,7 @@ class WorkbenchController {
         o.put("confirmedBy", row.confirmedBy());
         o.put("receivedAt", row.receivedAt().toString());
         o.put("expiresAt", row.expiresAt().toString());
+        o.put("technicalError", row.technicalError());
         if (row.assessmentJson() == null) {
             o.putNull("assessment");
         } else {
@@ -216,7 +217,7 @@ class WorkbenchController {
         o.put("processId", ref.processId().toString());
         o.put("state", ref.state().name());
         o.put("queue", ref.state().queue().id());
-        o.put("outcome", ref.outcome().name());
+        o.put("outcome", ref.outcome());
         return json(o);
     }
 
@@ -225,7 +226,7 @@ class WorkbenchController {
         boolean assessor = has(auth, Roles.ASSESSOR);
         boolean approver = has(auth, Roles.APPROVER);
         String me = Actor.from(auth).id();
-        if (assessor && (row.state() == ProcessState.IN_REVIEW || row.state() == ProcessState.IN_CLARIFICATION)) {
+        if (assessor && WorkflowService.clarifiable(row)) {
             actions.add("clarify");
         }
         if (assessor && row.state() == ProcessState.IN_REVIEW) {

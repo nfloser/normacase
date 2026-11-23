@@ -20,7 +20,7 @@ async function login(page: Page, user: string, capture = false) {
   await page.locator('#username').fill(user);
   await page.locator('#password').fill('demo');
   await page.locator('#kc-login').click();
-  await expect(page.getByRole('navigation', { name: 'Arbeitskörbe' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Arbeitslisten und Ablage' })).toBeVisible();
 }
 
 async function open(page: Page, queue: RegExp, caseNumber: string) {
@@ -43,7 +43,7 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
 
   await expect(page.locator('.case-table tbody tr').first()).toBeVisible();
   await shot(page, 'alle-vorgaenge');
-  let file = await open(page, /Zur Prüfung/, 'PG-2026-104233');
+  let file = await open(page, /Zur Freigabe vorbereitet/, 'PG-2026-104233');
   await shot(page, 'pruefung-fallakte');
   await page.locator('.case-table tbody tr').filter({ hasText: 'PG-2026-104233' }).dblclick();
   await expect(page.locator('.opened-case')).toBeVisible();
@@ -61,12 +61,12 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'pruefung-nachweis');
   await file.getByRole('tab', { name: 'Prüfung' }).click();
 
-  file = await open(page, /Rückfragen/, 'KT-2026-208157');
+  file = await open(page, /Gegenprüfung erforderlich/, 'KT-2026-208157');
   await shot(page, 'rueckfrage-widerspruch');
   await documentTab(page, file, 'Schwerbehindertenausweis');
   await shot(page, 'rueckfrage-ausweis');
 
-  file = await open(page, /Rückfragen/, 'PG-2026-104315');
+  file = await open(page, /Informationen nachfordern/, 'PG-2026-104315');
   await shot(page, 'rueckfrage-unvollstaendig');
   await documentTab(page, file, 'Nachtrag');
   await shot(page, 'rueckfrage-nachtrag');
@@ -77,10 +77,10 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await page.getByRole('button', { name: 'Neu bewerten' }).click();
   await expect(page.locator('.toast')).toBeVisible();
 
-  file = await open(page, /Zur Prüfung/, 'PG-2026-104315');
+  file = await open(page, /Zur Freigabe vorbereitet/, 'PG-2026-104315');
   await shot(page, 'nach-rueckfrage-neu-bewertet');
 
-  await page.getByRole('button', { name: /Zur Prüfung/ }).click();
+  await page.getByRole('button', { name: /Zur Freigabe vorbereitet/ }).click();
   await page.locator('thead input[type=checkbox]').check();
   await shot(page, 'mehrfachauswahl');
   await page.locator('thead input[type=checkbox]').uncheck();
@@ -93,7 +93,7 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await page.locator('.column-options select').selectOption({ label: 'Frist' });
   await shot(page, 'spaltenoptionen');
   await page.getByRole('button', { name: 'Abbrechen' }).click();
-  await page.getByRole('button', { name: /Rückfragen/ }).click();
+  await page.getByRole('button', { name: /Alle Vorgänge/ }).click();
   await page.getByRole('button', { name: 'Details ausblenden (F4)' }).click();
   await expect(page.getByRole('region', { name: 'Fallakte' })).toHaveCount(0);
   await expect(page.locator('.toast')).toHaveCount(0, { timeout: 10_000 });
@@ -107,14 +107,14 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'dunkel');
   await page.getByLabel('Darstellung').selectOption('system');
 
-  file = await open(page, /Zur Prüfung/, 'PG-2026-104233');
+  file = await open(page, /Zur Freigabe vorbereitet/, 'PG-2026-104233');
   await file.getByRole('button', { name: /Bestätigen/ }).click();
   await expect(page.locator('.toast')).toContainText('Freigabe');
   await shot(page, 'bestaetigt');
   await page.getByRole('button', { name: 'Abmelden' }).click();
 
   await login(page, 'freigabe.c');
-  file = await open(page, /Zur Freigabe/, 'PG-2026-104233');
+  file = await open(page, /^Bestätigt/, 'PG-2026-104233');
   await shot(page, 'freigabe');
   await file.getByRole('button', { name: 'Zurückweisen' }).click();
   await shot(page, 'freigabe-zurueckweisen');
@@ -122,7 +122,7 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await file.getByRole('button', { name: /Freigeben/ }).click();
   await expect(page.locator('.toast')).toContainText('Abholung');
 
-  await page.getByRole('button', { name: /Erledigt/ }).click();
+  await page.getByRole('button', { name: /^Versendet/ }).click();
   await page.locator('.case-table tbody tr').first().click();
   await shot(page, 'erledigt');
 });

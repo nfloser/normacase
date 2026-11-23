@@ -11,7 +11,7 @@
   <div class="outcome-badge" [attr.data-outcome]="d.outcome"><small>{{ de.trace.result }}</small><strong>{{ outcomeLabel() }}</strong></div>
 </header>
 
-<section class="next-step" [attr.data-step]="step() === 'approve' ? 'dispatch' : step() === 'closed' || step() === 'dispatched' ? 'complete' : 'confirm'" [attr.aria-label]="t.nextStep">
+<section class="next-step" [attr.data-step]="step() === 'approve' ? 'dispatch' : step() === 'closed' || step() === 'dispatched' ? 'complete' : step() === 'technical' || step() === 'technicalFixable' ? 'technical' : step() === 'documents' ? 'documents' : 'confirm'" [attr.aria-label]="t.nextStep">
   <div><strong>{{ t.nextStep }}</strong><p>{{ t.steps[step()] }}</p></div>
   <div class="next-step-actions">
     @if (can('clarify')) { <button type="button" class="button" [class.primary]="step() === 'clarify'" [disabled]="busy()" (click)="startClarify()">{{ t.clarify }}</button> }
@@ -68,7 +68,7 @@
           </section>
         </ng-template>
       } @else {
-        <p class="muted">{{ t.contentDeleted }}</p>
+        <p class="notice-box" [attr.data-state]="detail().state">{{ noAssessment() }}</p>
       }
     }
     @case ('documents') {

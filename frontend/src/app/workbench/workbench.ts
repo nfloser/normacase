@@ -14,7 +14,10 @@ import {
 } from './case-view';
 
 type Load<T> = { state: 'loading' } | { state: 'ready'; value: T } | { state: 'error' };
-const QUEUES = ['clarification', 'review', 'approval', 'done'];
+/** Arbeitslisten wie im bisherigen Fallexplorer; Bestätigt und Versendet stehen unter „Meine Ablage“. */
+const WORK_LISTS = ['review', 'clarification', 'conflict', 'technical', 'documents'];
+const PERSONAL = ['approval', 'done'];
+const QUEUES = [...WORK_LISTS, ...PERSONAL];
 const ALL = 'all';
 
 /**
@@ -42,7 +45,8 @@ export class Workbench {
   private readonly reload$ = new Subject<void>();
   private readonly store = inject(ViewStore);
   protected readonly theme = inject(ThemeStore);
-  protected readonly queueIds = QUEUES;
+  protected readonly queueIds = WORK_LISTS;
+  protected readonly personalIds = PERSONAL;
 
   protected readonly queue = signal(ALL);
   /** Vorgang in voller Größe (Doppelklick, Eingabe, „Vorgang öffnen“); sonst Liste mit Vorschau. */
@@ -65,7 +69,7 @@ export class Workbench {
     return c === 'subject' ? null : COLUMN_WIDTHS[c];
   }
   protected readonly rowTone = rowTone;
-  protected readonly tones = ['ready', 'missing', 'conflict', 'done'];
+  protected readonly tones = ['ready', 'missing', 'conflict', 'technical', 'documents', 'done'];
   protected readonly selection = signal<ReadonlySet<string>>(new Set());
   protected readonly active = signal<string | null>(null);
   protected readonly busy = signal(false);
@@ -151,10 +155,10 @@ export class Workbench {
       }
       untracked(() => { if (this.detail()?.state !== 'ready') this.detail.set({ state: 'loading' }); });
       const sub = this.guard(this.api.process(id)).pipe(
-        switchMap((d) => d.state === 'ready'
+        switchMap((d) => d.state === 'ready' && d.value.knowledgeRelease
           ? this.api.presentation(d.value.knowledgeRelease).pipe(catchError(() => of({} as Presentation)),
             switchMap((p) => { this.presentation.set(p); return of(d); }))
-          : of(d)),
+          : (this.presentation.set({}), of(d))),
       ).subscribe((d) => this.detail.set(d));
       cleanup(() => sub.unsubscribe());
     });
@@ -261,8 +265,11 @@ export class Workbench {
 
   protected nextStep(p: ProcessSummary): string {
     const steps = de.wb.nextSteps;
-    const step = p.state === 'IN_CLARIFICATION' ? (p.outcome === 'HUMAN_REVIEW' ? steps['conflict'] : steps['clarify'])
-      : p.state === 'IN_REVIEW' ? steps['review']
+    const step = p.state === 'IN_CLARIFICATION' ? steps['clarify']
+      : p.state === 'IN_CONFLICT_REVIEW' ? steps['conflict']
+        : p.state === 'TECHNICAL_CLARIFICATION' ? steps['technical']
+          : p.state === 'DOCUMENT_REVIEW' ? steps['documents']
+            : p.state === 'IN_REVIEW' ? steps['review']
         : p.state === 'AWAITING_APPROVAL' ? steps['approval']
           : p.state === 'DISPATCHED' ? steps['dispatched'] : steps['closed'];
     return p.missingFieldCount > 0 ? `${step} · ${de.wb.openPoints(p.missingFieldCount)}` : step;
@@ -270,7 +277,7 @@ export class Workbench {
 
   private loadRequestNames(list: readonly ProcessSummary[]): void {
     const known = this.requestNames();
-    for (const release of new Set(list.map((p) => p.knowledgeRelease))) {
+    for (const release of new Set(list.map((p) => p.knowledgeRelease).filter((r): r is string => !!r))) {
       if (known.has(release)) continue;
       this.api.presentation(release).pipe(catchError(() => of({} as Presentation)), takeUntilDestroyed(this.destroy))
         .subscribe((pr) => this.requestNames.update((m) => new Map(m).set(release, pr.name ?? release)));
@@ -466,7 +473,8 @@ export class Workbench {
   protected cellText(p: ProcessSummary, id: ColumnId): string {
     switch (id) {
       case 'subject': return p.displayName ?? '';
-      case 'request': return this.requestNames().get(p.knowledgeRelease) ?? p.knowledgeRelease;
+      case 'request': return p.knowledgeRelease
+        ? (this.requestNames().get(p.knowledgeRelease) ?? p.knowledgeRelease) : de.queues['documents'];
       case 'next': return this.nextStep(p);
       case 'number': return p.externalReference.caseId;
       case 'status': return this.stateLabel(p.state);
@@ -476,7 +484,7 @@ export class Workbench {
       case 'missing': return String(p.missingFieldCount);
       case 'documents': return String(p.documentCount);
       case 'confirmedBy': return p.confirmedBy ?? '';
-      case 'release': return p.knowledgeRelease;
+      case 'release': return p.knowledgeRelease ?? '–';
       case 'system': return p.externalReference.system;
     }
   }

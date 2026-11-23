@@ -88,9 +88,14 @@ paths:
       summary: Vorgang einliefern (Fachsystem)
       description: >
         Rolle integration. Idempotent über den Header Idempotency-Key. Der Fall wird bewertet und je nach Ergebnis
-        in den Korb Rückfragen oder Prüfung gelegt. Inhalte sind befristet und werden nach der Quittung gelöscht.
+        in eine Arbeitsliste gelegt: zur Freigabe vorbereitet, Informationen nachfordern oder Gegenprüfung. Ohne
+        knowledgeRelease (und ohne case) ist der Vorgang eine reine Unterlagensichtung ohne Bewertung. Mit
+        Prefer: handling=lenient (RFC 7240) landen Vorgänge, deren Regelwerk unbekannt ist oder deren Falldaten nicht
+        zum Regelwerk passen, in der technischen Klärung statt abgelehnt zu werden. Inhalte sind befristet und werden
+        nach der Quittung gelöscht.
       parameters:
         - { name: Idempotency-Key, in: header, required: true, schema: { type: string, minLength: 8, maxLength: 128 } }
+        - { name: Prefer, in: header, required: false, schema: { type: string, examples: [handling=lenient] } }
       requestBody:
         required: true
         content:
@@ -119,7 +124,7 @@ paths:
     get:
       summary: Vorgänge eines Korbs
       parameters:
-        - { name: queue, in: query, required: true, schema: { type: string, enum: [clarification, review, approval, done] } }
+        - { name: queue, in: query, required: true, schema: { type: string, enum: [review, clarification, conflict, technical, documents, approval, done] } }
       responses:
         '200': { description: Vorgangsliste }
   /api/v1/processes/{id}:
@@ -241,8 +246,9 @@ components:
         case: { $ref: '#/components/schemas/CaseInput' }
     IntakeRequest:
       type: object
-      required: [knowledgeRelease, externalReference, subject, case]
+      required: [externalReference, subject]
       additionalProperties: false
+      description: Mit knowledgeRelease ist case Pflicht; ohne knowledgeRelease ist es eine Unterlagensichtung mit mindestens einem Dokument.
       properties:
         knowledgeRelease: { type: string }
         externalReference:

@@ -58,13 +58,18 @@
 </header>
 
 <div class="workbench-grid">
-  <nav class="explorer" [attr.aria-label]="t.queuesHeading">
+  <nav class="explorer" [attr.aria-label]="t.navLabel">
     <button type="button" class="nav-item all" [attr.aria-current]="queue() === 'all' ? 'true' : null" (click)="openQueue('all')">
       <span class="nav-icon" aria-hidden="true">☰</span><span class="nav-label">{{ t.wb.allCases }}</span><span class="nav-count">{{ count('all') }}</span></button>
     <h2 class="nav-heading">{{ t.queuesHeading }}</h2>
     @for (q of queueIds; track q) {
       <button type="button" class="nav-item" [attr.aria-current]="queue() === q ? 'true' : null" (click)="openQueue(q)">
         <span class="nav-dot" [attr.data-queue]="q" aria-hidden="true"></span><span class="nav-label">{{ t.queues[q] }}</span><span class="nav-count">{{ count(q) }}</span></button>
+    }
+    <h2 class="nav-heading">{{ t.personalHeading }}</h2>
+    @for (q of personalIds; track q) {
+      <button type="button" class="nav-item" [attr.aria-current]="queue() === q ? 'true' : null" (click)="openQueue(q)">
+        <span class="nav-icon" [class.ok]="q === 'approval'" aria-hidden="true">{{ q === 'approval' ? '✓' : '✉' }}</span><span class="nav-label">{{ t.queues[q] }}</span><span class="nav-count">{{ count(q) }}</span></button>
     }
     <p class="nav-help">{{ queueHelp(queue()) }}</p>
     <h2 class="nav-heading">{{ t.wb.myQueries }}</h2>

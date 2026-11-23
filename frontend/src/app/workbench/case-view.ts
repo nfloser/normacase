@@ -72,12 +72,17 @@ export const DEFAULT_VIEW: ViewSettings = {
 
 /**
  * Farbton einer Zeile nach Bearbeitungsstand, wie im bisherigen Fallexplorer:
- * grün bereit zur Bearbeitung oder erledigt, gelb Angaben fehlen, orange Gegenprüfung durch einen Menschen.
+ * grün bereit, gelb Angaben fehlen, orange Gegenprüfung, rot technische Klärung, lila Unterlagensichtung, grau erledigt.
  */
-export function rowTone(p: Pick<ProcessSummary, 'state' | 'outcome'>): 'ready' | 'missing' | 'conflict' | 'done' {
-  if (p.state === 'IN_CLARIFICATION') return p.outcome === 'HUMAN_REVIEW' ? 'conflict' : 'missing';
-  if (p.state === 'DISPATCHED' || p.state === 'CLOSED') return 'done';
-  return 'ready';
+export function rowTone(p: Pick<ProcessSummary, 'state' | 'outcome'>): 'ready' | 'missing' | 'conflict' | 'technical' | 'documents' | 'done' {
+  switch (p.state) {
+    case 'IN_CLARIFICATION': return p.outcome === 'HUMAN_REVIEW' ? 'conflict' : 'missing';
+    case 'IN_CONFLICT_REVIEW': return 'conflict';
+    case 'TECHNICAL_CLARIFICATION': return 'technical';
+    case 'DOCUMENT_REVIEW': return 'documents';
+    case 'DISPATCHED': case 'CLOSED': return 'done';
+    default: return 'ready';
+  }
 }
 
 /** Hält die Ansichtseinstellungen je Konto im Browser. Speicher kann fehlen oder gesperrt sein; dann gilt der Standard. */

@@ -58,7 +58,8 @@ class IntakeController {
     @PostMapping(path = "/api/v1/intake", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('integration')")
     @Transactional
-    ResponseEntity<?> submit(@RequestHeader(name = "Idempotency-Key", required = false) String key, @RequestBody String body,
+    ResponseEntity<?> submit(@RequestHeader(name = "Idempotency-Key", required = false) String key,
+            @RequestHeader(name = "Prefer", required = false) String prefer, @RequestBody String body,
             Authentication authentication) {
         if (key == null || !KEY.matcher(key).matches()) {
             return ResponseEntity.badRequest().body(Problems.of(HttpStatus.BAD_REQUEST, "idempotency-key-required",
@@ -80,7 +81,7 @@ class IntakeController {
             return response(HttpStatus.OK, previous.get().processId(), true);
         }
 
-        var ref = workflow.open(parse(body), actor);
+        var ref = workflow.open(parse(body), actor, lenient(prefer));
         jdbc.sql("""
                 insert into intake.receipt (submitted_by, idempotency_key, request_sha256, process_id, received_at)
                 values (:by, :k, :h, :p, :at)""")
@@ -111,6 +112,23 @@ class IntakeController {
                 .body(StrictJson.write(o));
     }
 
+    /** RFC 7240: {@code Prefer: handling=lenient} leitet Vorgänge, die vor der Bewertung scheitern, in die technische Klärung. */
+    static boolean lenient(String prefer) {
+        if (prefer == null) {
+            return false;
+        }
+        for (String part : prefer.split(",")) {
+            if (part.trim().replace(" ", "").equalsIgnoreCase("handling=lenient")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Ohne {@code knowledgeRelease} ist der Vorgang eine reine Unterlagensichtung; dann darf kein {@code case} folgen.
+     * Mit Regelwerk ist {@code case} Pflicht.
+     */
     static OpenProcess parse(String body) {
         Obj root = StrictJson.parseObject(body)
                 .allow(Set.of("knowledgeRelease", "externalReference", "subject", "case", "documents"));
@@ -126,9 +144,15 @@ class IntakeController {
                     base64(d.string("contentBase64"), path + ".contentBase64"),
                     d.list("pagesBase64", (p, pp) -> base64(p.isString() ? p.stringValue() : null, pp)));
         });
-        return new OpenProcess(root.string("knowledgeRelease"),
-                new ExternalReference(ref.string("system"), ref.string("caseId")), displayName,
-                AssessmentJson.readCase(root.object("case")), documents);
+        String release = root.optString("knowledgeRelease");
+        if (release == null && root.has("case")) {
+            throw new InvalidDocumentException(root.path() + ".case", "Ohne Regelwerk keine Falldaten (Unterlagensichtung)");
+        }
+        if (release == null && documents.isEmpty()) {
+            throw new InvalidDocumentException(root.path() + ".documents", "Unterlagensichtung braucht mindestens ein Dokument");
+        }
+        return new OpenProcess(release, new ExternalReference(ref.string("system"), ref.string("caseId")), displayName,
+                release == null ? null : AssessmentJson.readCase(root.object("case")), documents);
     }
 
     private static byte[] base64(String value, String path) {

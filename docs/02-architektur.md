@@ -53,6 +53,8 @@ Die Regel-Engine (`assessment`) hängt weder von Spring noch von der Datenbank a
 3. `assessment` bewertet und erzeugt Ergebnis und Entscheidungspfad.
 4. `audit` schreibt den Entscheidungsnachweis: Vorgangs-ID, Eingabe-Hash, Plattform- und Release-Version, Regel-IDs, Ergebnis.
 5. Eindeutig und nach Hausregel ohne Prüfung zulässig: direkt zu `outbound`. Sonst legt `workflow` einen befristeten Vorgang im passenden Korb an.
+
+   Arbeitslisten (wie im bisherigen Fallexplorer): *Zur Freigabe vorbereitet* (eindeutig bewertet), *Informationen nachfordern* (`INCOMPLETE`), *Gegenprüfung erforderlich* (`HUMAN_REVIEW`), *Technische Klärung* (Fehler vor der Bewertung, nur mit `Prefer: handling=lenient` nach RFC 7240; sonst lehnt der Eingang ab) und *Unterlagensichtung* (Einlieferung ohne Regelwerk: nur Dokumente, keine Bewertung). Nach der Bestätigung folgen *Bestätigt* (wartet auf Freigabe) und *Versendet*.
 6. Nach Freigabe gibt `outbound` das Ergebnis zurück. Mit der Quittung des Fachsystems löscht `workflow` den Fallinhalt; der Nachweis bleibt.
 
 ## 4. Schnittstellen
