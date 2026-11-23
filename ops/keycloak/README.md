@@ -4,8 +4,8 @@
 
 | Benutzer | Rolle |
 |---|---|
-| `gutachterin.a`, `gutachter.b` | gutachter |
-| `freigabe.c` | freigabe |
+| `gutachterin.a` (Anna Seidel), `gutachter.b` (Bernd Krause) | gutachter |
+| `freigabe.c` (Clara Wendt) | freigabe |
 | `redaktion.d` | regelwerk-redaktion |
 | `regelwerk.e` | regelwerk-freigabe |
 | `admin.f` | administration |

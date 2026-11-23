@@ -103,6 +103,7 @@
   <div class="dialog-backdrop">
     <form class="dialog-card clarify-form" role="dialog" aria-modal="true" aria-labelledby="clarify-title" (submit)="$event.preventDefault(); submitClarify()">
       <h3 id="clarify-title">{{ t.clarifyTitle }}</h3>
+      @if (hasNumberField()) { <p class="hint" id="clarify-hint">{{ t.numberHint }}</p> }
       @for (f of form(); track f.id) {
         <div class="field-row">
           <label [for]="'f-' + f.id">{{ f.label }}@if (f.required) { * }</label>
@@ -112,11 +113,10 @@
             </select>
           } @else {
             <input [id]="'f-' + f.id" inputmode="decimal" [value]="f.value === 'UNKNOWN' ? '' : f.value" [attr.aria-invalid]="!!f.error"
-              [attr.aria-describedby]="'h-' + f.id" (input)="setField(f.id, $any($event.target).value)">
+              [attr.aria-describedby]="f.error ? 'h-' + f.id : 'clarify-hint'" (input)="setField(f.id, $any($event.target).value)">
           }
         </div>
         @if (f.error) { <p class="error-text" role="alert" [id]="'h-' + f.id">{{ f.error }}</p> }
-        @else if (f.type === 'number') { <p class="hint" [id]="'h-' + f.id">{{ t.numberHint }}</p> }
       }
       @for (e of formEvidence(); track e.id) {
         <div class="field-row">

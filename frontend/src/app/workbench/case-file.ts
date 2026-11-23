@@ -41,6 +41,7 @@ export class CaseFile {
   protected readonly clarifying = signal(false);
   protected readonly form = signal<FormField[]>([]);
   protected readonly formEvidence = signal<FormEvidence[]>([]);
+  protected readonly hasNumberField = computed(() => this.form().some((f) => f.type === 'number'));
   protected readonly reasons = Object.keys(de.rejectionReasons);
 
   protected readonly assessment = computed(() => readAssessmentDocument(this.detail().assessment) ?? null);

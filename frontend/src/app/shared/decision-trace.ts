@@ -37,8 +37,12 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
     }
     @if (a.outputs.length) {
       <div class="trace-block"><h3>{{ text.outputs }}</h3>
-        <ul class="plain">@for (o of a.outputs; track o.outputId) {
-          <li><strong>{{ outputName(o.outputId) }}:</strong> {{ outputValue(o.outputId, o.value) }} <span class="muted">({{ conditionLabel(o.conditionResult) }})</span></li>
+        <ul class="output-list">@for (o of a.outputs; track o.outputId) {
+          <li class="cond" [attr.data-result]="o.conditionResult">
+            <span class="cond-mark" aria-hidden="true">{{ o.conditionResult === 'MATCHED' ? '✓' : o.conditionResult === 'NOT_MATCHED' ? '✕' : '?' }}</span>
+            <span class="cond-text">{{ outputName(o.outputId) }}</span>
+            <span class="cond-result"><strong>{{ outputValue(o.outputId, o.value) }}</strong></span>
+          </li>
         }</ul>
       </div>
     }
@@ -50,7 +54,11 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
           <span class="cond-text">{{ describe(c) }}</span>
           <span class="cond-result">{{ conditionLabel(c.result) }}</span>
         </div>
-        @if (c.numeric) { <p class="cond-detail">{{ numericText(c.numeric) }}</p> }
+        @if (c.numeric) {
+          <ul class="numeric-list">@for (line of numericLines(c.numeric); track $index) {
+            <li [class.numeric-total]="$last">{{ line }}</li>
+          }</ul>
+        }
         @if (c.children.length) {
           <ul role="group">@for (child of c.children; track $index) {
             <ng-container *ngTemplateOutlet="node; context: { $implicit: child, level: level + 1 }" />
@@ -103,11 +111,24 @@ export class DecisionTrace {
         return c.field ? `${kind}: ${this.fieldLabel(c.field)}` : kind;
     }
   }
-  protected numericText(n: NumericView): string {
-    const parts = (node: NumericView): string => {
-      const own = `${label(demo.numericKinds, node.kind, node.kind)}${node.field ? ' ' + this.fieldLabel(node.field) : ''} = ${displayValue(node.value, demo.values)}`;
-      return node.children.length ? `${own} (${node.children.map(parts).join('; ')})` : own;
+  /** Zerlegt eine Berechnung in lesbare Zeilen: je Bestandteil eine Zeile, zuletzt das Ergebnis. */
+  protected numericLines(n: NumericView): string[] {
+    const v = (node: NumericView) => displayValue(node.value, demo.values);
+    const known = (node: NumericView) => node.value?.kind === 'NUMBER';
+    const points = (node: NumericView) => (known(node) ? `${v(node)} ${v(node) === '1' ? 'Punkt' : 'Punkte'}` : v(node).toLowerCase());
+    const weighted = (node: NumericView): string | null => {
+      if (node.kind !== 'range_lookup' || node.children.length !== 1 || node.children[0].kind !== 'field') return null;
+      const f = node.children[0];
+      return known(f) ? `${this.fieldLabel(f.field ?? '')}: ${points(f)} → ${v(node)} gewichtet` : `${this.fieldLabel(f.field ?? '')}: ${points(f)}`;
     };
-    return parts(n);
+    const lines = (node: NumericView): string[] => {
+      const w = weighted(node);
+      if (w) return [w];
+      if (node.kind === 'field') return [`${this.fieldLabel(node.field ?? '')}: ${points(node)}`];
+      if (node.kind === 'max') return [...node.children.flatMap(lines), `↳ davon zählt der höhere Wert: ${v(node)}`];
+      const name = label(demo.numericKinds, node.kind, node.kind);
+      return [...node.children.flatMap(lines), `${name}: ${v(node)}`];
+    };
+    return lines(n);
   }
 }

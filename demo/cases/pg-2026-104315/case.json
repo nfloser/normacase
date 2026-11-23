@@ -1,0 +1,55 @@
+{
+  "caseNumber": "PG-2026-104315",
+  "displayName": "Kowalski, Werner · Pflegegrad · Erstantrag",
+  "title": "Pflegegrad · Erstantrag",
+  "knowledgeRelease": "pflege-adult-score-2026-10-01-public-reference.1",
+  "expectedOutcome": "INCOMPLETE",
+  "documents": [
+    {
+      "id": "auftrag",
+      "title": "Auftrag der Pflegekasse",
+      "file": "auftrag.pdf",
+      "mediaType": "application/pdf",
+      "pages": [
+        "auftrag.page-1.png"
+      ]
+    },
+    {
+      "id": "befundbericht",
+      "title": "Befundbericht Hausarztpraxis Dr. Behrens",
+      "file": "befundbericht.pdf",
+      "mediaType": "application/pdf",
+      "pages": [
+        "befundbericht.page-1.png"
+      ]
+    },
+    {
+      "id": "pflegetagebuch",
+      "title": "Pflegetagebuch der Angehörigen",
+      "file": "pflegetagebuch.pdf",
+      "mediaType": "application/pdf",
+      "pages": [
+        "pflegetagebuch.page-1.png"
+      ]
+    },
+    {
+      "id": "erhebung",
+      "title": "Erhebungsbogen Module 1–6",
+      "file": "erhebung.pdf",
+      "mediaType": "application/pdf",
+      "pages": [
+        "erhebung.page-1.png"
+      ]
+    },
+    {
+      "id": "nachtrag",
+      "title": "Nachtrag Modul 4",
+      "file": "nachtrag.pdf",
+      "mediaType": "application/pdf",
+      "pages": [
+        "nachtrag.page-1.png"
+      ]
+    }
+  ],
+  "expectedOutcomeAfterClarification": "SUPPORTED"
+}

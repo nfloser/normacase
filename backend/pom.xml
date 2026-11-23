@@ -13,7 +13,7 @@
 
   <groupId>de.normacase</groupId>
   <artifactId>normacase-backend</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>NormaCase Backend</name>
   <description>Deterministische Entscheidungsunterstützung für sozialmedizinische Begutachtung</description>
 

@@ -3,7 +3,7 @@
 } @else {
   <div class="app-shell workbench-shell login-shell" data-astryx-theme="neutral">
     <header class="appbar">
-      <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span><span class="badge">{{ t.badge }}</span></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span></div>
       <span class="spacer"></span>
       <span class="status" [attr.data-status]="system().status === 'ok' ? 'PRESENT' : system().status === 'offline' ? 'CONFLICTING' : 'MISSING'" role="status">{{ statusLabel() }}</span>
     </header>

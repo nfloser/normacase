@@ -60,7 +60,7 @@ services:
       keycloak:
         condition: service_healthy
 
-  # Synthetisches Fachsystem: liefert Beispielvorgänge über die Intake-API ein und beendet sich.
+  # Fachsystem-Attrappe: liefert die fiktiven Vorgänge aus demo/cases über die Intake-API ein und beendet sich.
   demo-host:
     image: python:3.13-alpine
     command: ["python", "/app/seed.py"]
@@ -68,11 +68,9 @@ services:
       NORMACASE_API: http://backend:8080
       NORMACASE_TOKEN_URL: http://keycloak:8080/realms/normacase/protocol/openid-connect/token
       NORMACASE_CASES: /cases
-      NORMACASE_KNOWLEDGE: /knowledge
     volumes:
       - ./scripts/demo:/app:ro
-      - ./legacy/examples/document-cases:/cases:ro
-      - ./knowledge:/knowledge:ro
+      - ./demo/cases:/cases:ro
     depends_on:
       backend:
         condition: service_healthy

@@ -1,24 +1,31 @@
 # NormaCase
 
-Deterministische, nachvollziehbare Entscheidungsunterstützung für regelbasierte sozialmedizinische Begutachtung.
+**Nachvollziehbare Entscheidungsunterstützung für die sozialmedizinische Begutachtung.**
+NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem Ergebnis den vollständigen Entscheidungspfad. Fehlen Angaben, entsteht eine gezielte Rückfrage; widersprechen sich Belege, entscheidet ein Mensch.
 
-NormaCase prüft strukturierte Falldaten gegen versionierte Regelwerke (Knowledge Packs) und liefert ein Ergebnis mit vollständigem Entscheidungspfad: Eingabe → Kriterium → Regel → Quelle → Ergebnis. Fehlt etwas, sagt das System das, statt zu raten. Gedacht ist es als Baustein neben einem führenden Fachsystem (etwa MDconnect oder MEDIKOS): Der Fall kommt herein, wird bewertet und geht mit Begründung zurück. Gesundheitsdaten bleiben im führenden System.
+![Prüfwerkstatt mit Fallakte: Arbeitskörbe, Vorgänge und Begründung Modul für Modul](docs/screenshots/01-pruefung.png)
 
-> Alle Daten in diesem Repository sind synthetisch. Es gibt keine echten Patienten- oder Versichertendaten.
+> Alle Personen, Befunde und Vorgänge in diesem Repository sind frei erfunden. Die Regeln bilden öffentliche Vorgaben vereinfacht nach und sind kein geprüftes Regelwerk eines Medizinischen Dienstes.
 
-## Stand
+**Angular · TypeScript · RxJS · Java 25 · Spring Boot 4.1 · PostgreSQL 17 · Docker · Kubernetes**
 
-Das Projekt wird mit **Angular/TypeScript/RxJS**, **Java/Spring Boot** und **PostgreSQL** neu aufgebaut. Der bisherige .NET/React-Stand liegt unverändert unter [`legacy/`](legacy/README.md) und dient als Vergleich und als Prüforakel für die neue Regel-Engine.
+| | |
+|---|---|
+| 118 Paritätsfälle exakt wie die frühere .NET-Engine | 10 durchgespielte Demo-Vorgänge |
+| Bewertung p95 rund 5 ms (k6 in der CI) | Barrierefreiheit mit axe geprüft |
 
-| Phase | Inhalt | Status |
+## Drei Wege eines Antrags
+
+| Eindeutig | Unvollständig | Widersprüchlich |
 |---|---|---|
-| 1 | System Design, Architektur, Datenschutzkonzept, ADRs | erledigt |
-| 2 | Lauffähiges Grundgerüst: Spring Boot, PostgreSQL/Flyway, Angular-Shell, CI, Compose | erledigt |
-| 3 | Knowledge Packs und Regel-Engine in Java, Parität zum Referenzstand (118 Fälle exakt gleich) | erledigt |
-| 4 | Arbeitskörbe und Fallakte (Postfach × Explorer, Dokumentleser, Vier-Augen-Freigabe, Löschung nach Rückgabe) | erledigt |
-| 5 | Rate Limiting, Metriken und Alarme, Kubernetes, Lasttest, TR-03161-Checkliste | erledigt |
+| ![Befundbericht im Leser](docs/screenshots/02-befundbericht.png) | ![Fehlende Angabe Modul 4](docs/screenshots/03-rueckfrage.png) | ![Merkzeichen aG angegeben, Ausweis zeigt G](docs/screenshots/05-widerspruch.png) |
+| Gerda Lehmann: 62,5 Punkte, Pflegegrad 3. Regel, Fassung und Quelle stehen am Ergebnis. | Werner Kowalski: Modul 4 fehlt. NormaCase fragt genau diesen Wert nach und bewertet dann neu. | Peter Hoffmann: Angabe und Ausweis passen nicht zusammen. Ein Mensch entscheidet. |
 
-Details: [Roadmap](docs/ROADMAP.md).
+| Angaben ergänzen | Vier-Augen-Freigabe | Nachweis ohne Fallinhalt |
+|---|---|---|
+| ![Rückfrageformular](docs/screenshots/04-angaben-ergaenzen.png) | ![Freigabe durch zweite Person](docs/screenshots/06-freigabe.png) | ![Entscheidungsnachweis](docs/screenshots/07-nachweis.png) |
+
+Die Screenshots entstehen bei jedem Build automatisch aus dem laufenden Stack (`frontend/e2e/zz-screenshots.spec.ts`).
 
 ## Lokal starten
 
@@ -57,6 +64,7 @@ Vertrag: [`openapi.yaml`](backend/src/main/resources/static/api/v1/openapi.yaml)
 - [Datenschutz und Datenhaltung](docs/03-datenschutz-und-datenhaltung.md) – Verarbeitung ohne Vorhaltung, Zuordnung zu SDM, BSI TR-03161, SGB V
 - [Qualität und Betrieb](docs/04-qualitaet-und-betrieb.md) – Auth, Sicherheit, Rate Limiting, Caching, Logs, Monitoring, Tests, Skalierung, Hosting, CI/CD
 - [Architekturentscheidungen (ADRs)](docs/adr/)
+- [Roadmap](docs/ROADMAP.md) – Phasen und Stand
 - [TR-03161-Checkliste](docs/sicherheit/tr-03161-checkliste.md)
 - [Betrieb: Kubernetes](ops/k8s/), [Monitoring](ops/monitoring/), [Lasttest](ops/load/)
 - [Entwicklungsregeln](AGENTS.md)
