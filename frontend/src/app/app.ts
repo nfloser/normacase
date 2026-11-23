@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from './auth/auth.service';
 import { de } from './de';
 import { SystemService, SystemState } from './system/system.service';
+import { ThemeStore } from './shared/theme';
 import { Workbench } from './workbench/workbench';
 
 @Component({
@@ -14,6 +15,8 @@ import { Workbench } from './workbench/workbench';
 export class App {
   protected readonly t = de;
   protected readonly auth = inject(AuthService);
+  /** Wendet Hell/Dunkel schon auf der Anmeldeseite an. */
+  protected readonly theme = inject(ThemeStore);
   protected readonly user = computed(() => {
     const state = this.auth.state();
     return state.status === 'authenticated' ? state.user : undefined;

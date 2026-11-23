@@ -19,8 +19,11 @@ describe('Workbench', () => {
     http.expectOne('/api/v1/knowledge/releases').flush([{ releaseId: 'demo-g-2026.1', fields: [{ id: 'request_complete', type: 'truth', required: true }], evidenceRequirements: ['supporting_document'] }]);
     http.expectOne('/api/v1/queues').flush([{ id: 'clarification', count: 1 }, { id: 'review', count: 2 }, { id: 'approval', count: 0 }, { id: 'done', count: 0 }]);
     await fixture.whenStable();
-    http.expectOne((r) => r.url === '/api/v1/processes' && r.params.get('queue') === 'review')
-      .flush([summary('a'), summary('b', { displayName: 'Andere Person', outcome: 'NOT_SUPPORTED' })]);
+    // Start ist „Alle Vorgänge“: alle vier Körbe werden geladen.
+    for (const r of http.match((req) => req.url === '/api/v1/processes')) {
+      r.flush(r.request.params.get('queue') === 'review'
+        ? [summary('a'), summary('b', { displayName: 'Andere Person', outcome: 'NOT_SUPPORTED' })] : []);
+    }
     await fixture.whenStable();
     fixture.detectChanges();
     http.expectOne('/api/v1/processes/a').flush(detailJson('a'));
@@ -43,7 +46,8 @@ describe('Workbench', () => {
       for (const r of open) {
         const url = r.request.url;
         if (url === '/api/v1/queues') r.flush([]);
-        else if (url === '/api/v1/processes') r.flush([summary('a'), summary('b')]);
+        else if (url === '/api/v1/processes') r.flush(r.request.params.get('queue') === 'review' ? [summary('a'), summary('b')] : []);
+        else if (url.includes('/documents/')) r.flush(new Blob(['x'], { type: 'image/png' }));
         else if (url.startsWith('/api/v1/processes/')) r.flush(detailJson(url.split('/').pop()!));
         else r.flush({});
       }
@@ -55,7 +59,10 @@ describe('Workbench', () => {
     const el = fixture.nativeElement as HTMLElement;
 
     expect(el.querySelector('.explorer')!.textContent).toContain('Zur Prüfung');
-    expect(el.querySelector('.nav-item[aria-current=true] .nav-count')!.textContent).toBe('2');
+    expect(el.querySelector('.nav-item[aria-current=true]')!.textContent).toContain('Alle Vorgänge');
+    expect(el.querySelector('.nav-item[aria-current=true] .nav-count')!.textContent).toBe('3');
+    expect(el.querySelector('tbody td.col-request')!.textContent).toContain('Pitch-Demo');
+    expect(el.querySelector('tbody td.col-next')!.textContent).toContain('Ergebnis prüfen');
     expect(el.querySelectorAll('.case-table tbody tr').length).toBe(2);
     expect(el.querySelector('.case-title')!.textContent).toContain('Synthetische Person a');
     expect(el.querySelector('.outcome-badge')!.textContent).toContain('Voraussetzungen erfüllt');
@@ -128,14 +135,14 @@ describe('Workbench', () => {
     toggle.click();
     fixture.detectChanges();
     expect(el.querySelector('.case-table')!.classList).not.toContain('row-colors');
-    expect(JSON.parse(localStorage.getItem('normacase.workbench.view.v1.gutachterin.a')!).rowColors).toBe(false);
+    expect(JSON.parse(localStorage.getItem('normacase.workbench.view.v2.gutachterin.a')!).rowColors).toBe(false);
   });
 
   it('passt Spalten über die Spaltenoptionen an', async () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
     const headers = () => Array.from(el.querySelectorAll('.case-table thead tr:first-child th')).map((th) => th.textContent!.trim()).filter(Boolean);
-    expect(headers()).toEqual(['Vorgang', 'Ergebnis', 'Vorgangsnummer', 'Bearbeitungsstand', 'Eingang', 'Dokumente']);
+    expect(headers()).toEqual(['Fall / Auftrag', 'Vorgangsnummer', 'Bearbeitungsstand', 'Prüfanlass', 'Nächster Schritt', 'Prüfergebnis', 'Dokumente']);
 
     Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.textContent!.includes('Spaltenoptionen'))!.click();
     fixture.detectChanges();
@@ -149,19 +156,18 @@ describe('Workbench', () => {
     el.querySelector<HTMLButtonElement>('.column-options button[type=submit]')!.click();
     fixture.detectChanges();
 
-    expect(headers()).toEqual(['Vorgang', 'Vorgangsnummer', 'Ergebnis', 'Bearbeitungsstand', 'Eingang', 'Regelwerk']);
+    expect(headers()).toEqual(['Vorgangsnummer', 'Fall / Auftrag', 'Bearbeitungsstand', 'Prüfanlass', 'Nächster Schritt', 'Prüfergebnis', 'Regelwerk']);
     expect(el.querySelector('tbody td.col-release')!.textContent).toContain('demo-g-2026.1');
   });
 
   it('filtert je Spalte und speichert die Ansicht als Abfrage ohne Namensfilter', async () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
-    Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.textContent!.includes('Filter'))!.click();
-    fixture.detectChanges();
-    const result = el.querySelector<HTMLSelectElement>('select[aria-label="Filter für Ergebnis"]')!;
+    // Die Filterzeile ist wie im bisherigen Fallexplorer von Anfang an sichtbar.
+    const result = el.querySelector<HTMLSelectElement>('select[aria-label="Filter für Prüfergebnis"]')!;
     result.value = 'Voraussetzungen nicht erfüllt';
     result.dispatchEvent(new Event('change'));
-    const name = el.querySelector<HTMLInputElement>('input[aria-label="Filter für Vorgang"]')!;
+    const name = el.querySelector<HTMLInputElement>('input[aria-label="Filter für Fall / Auftrag"]')!;
     name.value = 'andere';
     name.dispatchEvent(new Event('input'));
     fixture.detectChanges();
@@ -169,21 +175,43 @@ describe('Workbench', () => {
 
     fixture.componentInstance['saveQuery']('Nicht erfüllt');
     fixture.detectChanges();
-    const stored = JSON.parse(localStorage.getItem('normacase.workbench.view.v1.gutachterin.a')!);
-    expect(stored.queries[0]).toMatchObject({ name: 'Nicht erfüllt', queue: 'review', filters: { result: 'Voraussetzungen nicht erfüllt' } });
+    const stored = JSON.parse(localStorage.getItem('normacase.workbench.view.v2.gutachterin.a')!);
+    expect(stored.queries[0]).toMatchObject({ name: 'Nicht erfüllt', queue: 'all', filters: { result: 'Voraussetzungen nicht erfüllt' } });
     expect(JSON.stringify(stored)).not.toContain('andere');
     expect(el.querySelector('.explorer')!.textContent).toContain('Nicht erfüllt');
   });
 
-  it('blendet die Fallakte mit F4 aus und wieder ein', async () => {
+  it('blendet die Vorschau mit F4 aus, öffnet mit Doppelklick und kehrt zurück', async () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.list-and-pane')!.getAttribute('data-pane')).toBe('bottom');
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F4' }));
     fixture.detectChanges();
     expect(el.querySelector('.reading-pane')).toBeNull();
     expect(Array.from(el.querySelectorAll('.commandbar button')).some((b) => b.textContent!.includes('Details einblenden'))).toBe(true);
-    el.querySelector<HTMLElement>('tbody tr')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+    el.querySelector<HTMLElement>('tbody tr')!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+    await settle(fixture);
+    expect(el.querySelector('.opened-case .reading-pane')).not.toBeNull();
+    expect(el.querySelector('.case-table')).toBeNull();
+    expect(el.querySelector('.tab-panel.split .split-right')).not.toBeNull();
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', altKey: true }));
+    await settle(fixture);
+    expect(el.querySelector('.case-table')).not.toBeNull();
+  });
+
+  it('wählt mit Strg und Umschalt mehrere Vorgänge', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    const rows = () => el.querySelectorAll<HTMLElement>('.case-table tbody tr');
+    rows()[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    rows()[1].dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true }));
+    await settle(fixture);
+    expect(Array.from(rows()).every((r) => r.getAttribute('data-selected') === 'true')).toBe(true);
+    rows()[0].dispatchEvent(new MouseEvent('click', { bubbles: true, ctrlKey: true }));
     fixture.detectChanges();
-    expect(el.querySelector('.reading-pane')).not.toBeNull();
+    expect(rows()[0].getAttribute('data-selected')).toBe('false');
+    await settle(fixture);
   });
 });

@@ -2,19 +2,19 @@ import { Injectable } from '@angular/core';
 import { ProcessSummary } from './api';
 
 /** Spalten der Fallliste. Die Fachwerte kommen aus der API; hier wird nur angezeigt, sortiert und gefiltert. */
-export const COLUMN_IDS = ['subject', 'number', 'status', 'result', 'received', 'expires', 'missing', 'documents', 'confirmedBy', 'release', 'system'] as const;
+export const COLUMN_IDS = ['subject', 'number', 'status', 'request', 'next', 'result', 'received', 'expires', 'missing', 'documents', 'confirmedBy', 'release', 'system'] as const;
 export type ColumnId = (typeof COLUMN_IDS)[number];
 
 /** Breite je Spalte in Pixeln; der Vorgang bekommt den Rest, mindestens aber diese Breite. */
 export const COLUMN_WIDTHS: Readonly<Record<ColumnId, number>> = {
-  subject: 240, number: 150, status: 176, result: 212, received: 150, expires: 150,
-  missing: 128, documents: 96, confirmedBy: 150, release: 230, system: 150,
+  subject: 200, number: 130, status: 150, request: 180, next: 180, result: 230, received: 140, expires: 140,
+  missing: 120, documents: 90, confirmedBy: 140, release: 210, system: 140,
 };
 
-export const DEFAULT_COLUMNS: readonly ColumnId[] = ['subject', 'result', 'number', 'status', 'received', 'documents'];
+export const DEFAULT_COLUMNS: readonly ColumnId[] = ['subject', 'number', 'status', 'request', 'next', 'result', 'documents'];
 
 /** Spalten, deren Filter eine Auswahlliste statt Freitext anbietet. */
-export const SELECT_COLUMNS: ReadonlySet<ColumnId> = new Set<ColumnId>(['status', 'result', 'release', 'system']);
+export const SELECT_COLUMNS: ReadonlySet<ColumnId> = new Set<ColumnId>(['status', 'request', 'result', 'release', 'system']);
 
 /**
  * Filter auf diesen Spalten können Personennamen enthalten. Sie gelten nur in der laufenden Sitzung
@@ -33,12 +33,20 @@ export interface SavedQuery {
   readonly sort: SortState;
 }
 
+export type PreviewPosition = 'bottom' | 'right';
+export const PREVIEW_MIN = 25;
+export const PREVIEW_MAX = 75;
+
 export interface ViewSettings {
   readonly columns: readonly ColumnId[];
   readonly rowColors: boolean;
   readonly showFilters: boolean;
-  /** Fallakte rechts neben der Liste; ausgeblendet hat die Liste die volle Breite (F4). */
+  /** Vorschau der Fallakte neben der Liste; ausgeblendet hat die Liste den ganzen Platz (F4). */
   readonly showDetails: boolean;
+  /** Lage der Vorschau wie im bisherigen Fallexplorer: unten (Standard) oder rechts. */
+  readonly previewPosition: PreviewPosition;
+  /** Anteil der Vorschau am Arbeitsbereich in Prozent. */
+  readonly previewSize: number;
   readonly sort: SortState;
   readonly queries: readonly SavedQuery[];
 }
@@ -46,9 +54,11 @@ export interface ViewSettings {
 export const DEFAULT_VIEW: ViewSettings = {
   columns: DEFAULT_COLUMNS,
   rowColors: true,
-  showFilters: false,
+  showFilters: true,
   showDetails: true,
-  sort: { key: 'received', asc: true },
+  previewPosition: 'bottom',
+  previewSize: 45,
+  sort: { key: 'number', asc: true },
   queries: [],
 };
 
@@ -83,8 +93,13 @@ export class ViewStore {
   }
 
   private key(username: string): string {
-    return `normacase.workbench.view.v1.${username}`;
+    return `normacase.workbench.view.v2.${username}`;
   }
+}
+
+export function clampPreview(v: unknown): number {
+  const n = typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : DEFAULT_VIEW.previewSize;
+  return Math.min(PREVIEW_MAX, Math.max(PREVIEW_MIN, n));
 }
 
 const isColumn = (v: unknown): v is ColumnId => typeof v === 'string' && (COLUMN_IDS as readonly string[]).includes(v);
@@ -115,8 +130,10 @@ export function sanitize(v: unknown): ViewSettings {
   return {
     columns: columns(o['columns']),
     rowColors: o['rowColors'] !== false,
-    showFilters: o['showFilters'] === true,
+    showFilters: o['showFilters'] !== false,
     showDetails: o['showDetails'] !== false,
+    previewPosition: o['previewPosition'] === 'right' ? 'right' : 'bottom',
+    previewSize: clampPreview(o['previewSize']),
     sort: sort(o['sort']),
     queries: queries
       .filter((q): q is Record<string, unknown> => !!q && typeof q === 'object' && typeof q['name'] === 'string' && typeof q['queue'] === 'string')

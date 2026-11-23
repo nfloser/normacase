@@ -41,8 +41,16 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   test.setTimeout(180_000);
   await login(page, 'gutachterin.a', true);
 
+  await expect(page.locator('.case-table tbody tr').first()).toBeVisible();
+  await shot(page, 'alle-vorgaenge');
   let file = await open(page, /Zur Prüfung/, 'PG-2026-104233');
   await shot(page, 'pruefung-fallakte');
+  await page.locator('.case-table tbody tr').filter({ hasText: 'PG-2026-104233' }).dblclick();
+  await expect(page.locator('.opened-case')).toBeVisible();
+  await expect(page.locator('.split-right .sheet img').first()).toBeVisible();
+  await shot(page, 'vollansicht');
+  await page.getByRole('button', { name: /Zurück zur Liste/ }).click();
+  await expect(page.locator('.case-table')).toBeVisible();
   await documentTab(page, file, 'Befundbericht');
   await shot(page, 'pruefung-befundbericht');
   await file.locator('.file-item').filter({ hasText: 'Erhebungsbogen' }).click();
@@ -94,6 +102,12 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'liste-zeilenfaerbung');
   await page.keyboard.press('F4');
   await expect(page.getByRole('region', { name: 'Fallakte' })).toBeVisible();
+  await page.getByRole('button', { name: /Vorschau rechts/ }).click();
+  await shot(page, 'vorschau-rechts');
+  await page.getByRole('button', { name: /Vorschau unten/ }).click();
+  await page.getByLabel('Darstellung').selectOption('dark');
+  await shot(page, 'dunkel');
+  await page.getByLabel('Darstellung').selectOption('system');
 
   file = await open(page, /Zur Prüfung/, 'PG-2026-104233');
   await file.getByRole('button', { name: /Bestätigen/ }).click();
