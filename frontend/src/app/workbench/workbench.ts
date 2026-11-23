@@ -5,9 +5,11 @@ import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { AuthService, AuthUser } from '../auth/auth.service';
 import { de, germanDateTime, label } from '../de';
 import { SystemService } from '../system/system.service';
-import { Presentation, ProcessDetail, ProcessSummary, ReleaseSummary, WorkbenchApi } from './api';
+import { Folder, Mark, MarkCommand, Presentation, ProcessDetail, ProcessSummary, ReleaseSummary, WorkbenchApi, Workspace } from './api';
+import { AblageDialog, COLOR_PRESETS, DEFAULT_QUEUE_COLORS, FOLDER_PREFIX, folderTree, isPersonalView } from './ablage';
 import { CaseAction, CaseFile } from './case-file';
 import { ThemeChoice, ThemeStore } from '../shared/theme';
+import { exactJson } from '../shared/json';
 import {
   COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, PREVIEW_MAX, PREVIEW_MIN, SELECT_COLUMNS, SavedQuery, ViewSettings,
   ViewStore, DEFAULT_VIEW, DENSITIES, PLATFORM_SYSTEM, clampPreview, rowTone, storableFilters,
@@ -19,6 +21,7 @@ const WORK_LISTS = ['review', 'clarification', 'conflict', 'technical', 'documen
 const PERSONAL = ['approval', 'done'];
 const QUEUES = [...WORK_LISTS, ...PERSONAL];
 const ALL = 'all';
+const EMPTY_WORKSPACE: Workspace = { folders: [], marks: [], queueColors: {} };
 
 /**
  * Prüfwerkstatt nach dem bewährten Fallexplorer: Körbe wie Ordner, Vorgänge wie ein Postfach, darunter oder daneben
@@ -33,6 +36,7 @@ const ALL = 'all';
     '(document:keydown.f4)': 'toggleDetails($event)',
     '(document:keydown)': 'keys($event)',
     '(document:click)': 'closeMenus($event)',
+    '(window:resize)': 'closeContextMenus()',
     '[class.nav-collapsed]': '!view().showNav',
   },
 })
@@ -76,6 +80,16 @@ export class Workbench {
   protected readonly error = signal('');
   private readonly revision = signal(0);
 
+  /** Meine Ablage des Kontos: eigene Ordner, Markierungen, Arbeitslistenfarben (serverseitig je Konto). */
+  protected readonly workspace = signal<Workspace>(EMPTY_WORKSPACE);
+  protected readonly marks = computed(() => new Map(this.workspace().marks.map((m) => [m.processId, m] as const)));
+  protected readonly folders = computed(() => folderTree(this.workspace().folders));
+  protected readonly colorPresets = COLOR_PRESETS;
+  protected readonly contextMenu = signal<{ x: number; y: number; ids: string[] } | null>(null);
+  protected readonly navMenu = signal<{ x: number; y: number; kind: 'queue' | 'folder'; id: string } | null>(null);
+  protected readonly ablageDialog = signal<AblageDialog | null>(null);
+  private returnFocus: HTMLElement | null = null;
+
   protected readonly system = toSignal(inject(SystemService).state(), { initialValue: { status: 'loading' as const } });
   protected readonly list = signal<Load<ProcessSummary[]>>({ state: 'loading' });
   protected readonly detail = signal<Load<ProcessDetail> | null>(null);
@@ -107,7 +121,7 @@ export class Workbench {
   /** Vorgänge der gewählten Arbeitsliste (oder alle). */
   protected readonly inQueue = computed(() => {
     const q = this.queue();
-    return q === ALL ? this.scope() : this.scope().filter((p) => p.queue === q);
+    return this.scope().filter((p) => this.inView(p, q));
   });
   /** Auswahlwerte je Spalte aus den geladenen Vorgängen. */
   protected readonly options = computed(() => {
@@ -137,6 +151,8 @@ export class Workbench {
       untracked(() => { if (this.list().state !== 'ready') this.list.set({ state: 'loading' }); });
       const source = forkJoin(QUEUES.map((q) => this.api.processes(q).pipe(map((rows) => rows.map((r) => ({ ...r, queue: q }))))))
         .pipe(map((lists) => lists.flat()));
+      const ws = this.api.workspace().pipe(catchError(() => of(null))).subscribe((w) => { if (w) this.workspace.set(w); });
+      cleanup(() => ws.unsubscribe());
       const sub = this.guard(source).subscribe((l) => {
         this.list.set(l);
         if (l.state === 'ready') {
@@ -167,7 +183,36 @@ export class Workbench {
   }
 
   protected count(id: string): number {
-    return id === ALL ? this.scope().length : this.scope().filter((p) => p.queue === id).length;
+    return this.scope().filter((p) => this.inView(p, id)).length;
+  }
+
+  /**
+   * Zuordnung wie im bisherigen Fallexplorer: „Alle Vorgänge“ und „Ohne eigenen Ordner“ zeigen, was nicht in einem
+   * eigenen Ordner liegt; Arbeitslisten zeigen immer alles ihres Bearbeitungsstands.
+   */
+  private inView(p: ProcessSummary, view: string): boolean {
+    const mark = this.marks().get(p.processId);
+    if (view === ALL || view === 'unfiled') return !mark?.folderId;
+    if (view === 'bookmarks') return !!mark?.bookmark;
+    if (view.startsWith(FOLDER_PREFIX)) return mark?.folderId === view.slice(FOLDER_PREFIX.length);
+    return p.queue === view;
+  }
+
+  protected mark(id: string): Mark | undefined {
+    return this.marks().get(id);
+  }
+
+  protected queueColor(q: string): string | null {
+    return this.workspace().queueColors[q] ?? null;
+  }
+
+  /** Farbe am Zeilenrand: eigene Markierung vor eigener Arbeitslistenfarbe; sonst die Farbe des Bearbeitungsstands. */
+  protected caseColor(p: ProcessSummary): string | null {
+    return this.mark(p.processId)?.color ?? (p.queue ? this.queueColor(p.queue) : null);
+  }
+
+  protected folderView(f: Folder): string {
+    return FOLDER_PREFIX + f.id;
   }
 
   protected setIncludePlatform(on: boolean): void {
@@ -184,11 +229,19 @@ export class Workbench {
   }
 
   protected queueLabel(id: string): string {
-    return id === ALL ? de.wb.allCases : (de.queues[id] ?? id);
+    if (id === ALL) return de.wb.allCases;
+    if (id === 'bookmarks') return de.wb.ablage.bookmarks;
+    if (id === 'unfiled') return de.wb.ablage.unfiled;
+    if (id.startsWith(FOLDER_PREFIX)) return this.workspace().folders.find((f) => FOLDER_PREFIX + f.id === id)?.label ?? '';
+    return de.queues[id] ?? id;
   }
 
   protected queueHelp(id: string): string {
-    return id === ALL ? de.wb.allCasesHelp : (de.queueHelp[id] ?? '');
+    if (id === ALL) return de.wb.allCasesHelp;
+    if (id === 'bookmarks') return de.wb.ablage.bookmarksHelp;
+    if (id === 'unfiled') return de.wb.ablage.unfiledHelp;
+    if (id.startsWith(FOLDER_PREFIX)) return de.wb.ablage.folderHelp;
+    return de.queueHelp[id] ?? '';
   }
 
   /** Öffnet den Vorgang in voller Größe. */
@@ -317,7 +370,7 @@ export class Workbench {
     { id: 'file', items: ['open', 'copy-id', 'copy-result'] },
     { id: 'edit', items: ['select-all', 'clear'] },
     { id: 'view', items: ['detail', 'orientation', 'navigation', 'density', 'columns', 'filters', 'colors', 'reset', 'refresh'] },
-    { id: 'cases', items: ['confirm', 'save-query'] },
+    { id: 'cases', items: ['confirm', 'approve', 'new-folder', 'move', 'mark', 'bookmark', 'note', 'package', 'save-query'] },
   ];
 
   protected menuLabel(id: string): string {
@@ -333,6 +386,10 @@ export class Workbench {
       case 'select-all': return inList && this.visible().length > 0;
       case 'clear': return this.selection().size > 0;
       case 'confirm': return this.canBatchConfirm() && !this.busy();
+      case 'approve': return this.canApprove(this.targetIds()) && !this.busy();
+      case 'move': case 'mark': case 'bookmark': return this.targetIds().length > 0 && !this.busy();
+      case 'note': return this.targetIds().length === 1 && this.canNote(this.targetIds()) && !this.busy();
+      case 'package': return this.canPackage(this.targetIds()) && !this.busy();
       case 'detail': case 'orientation': case 'columns': case 'filters': case 'save-query': return inList;
       default: return true;
     }
@@ -365,6 +422,13 @@ export class Workbench {
         break;
       case 'refresh': this.refresh(); break;
       case 'confirm': this.confirmSelected(); break;
+      case 'approve': this.begin('approve', this.targetIds()); break;
+      case 'new-folder': this.begin('folder', []); break;
+      case 'move': this.begin('move', this.targetIds()); break;
+      case 'mark': this.begin('color', this.targetIds()); break;
+      case 'bookmark': this.toggleBookmark(this.targetIds()); break;
+      case 'note': this.begin('note', this.targetIds()); break;
+      case 'package': this.downloadPackage(this.targetIds()); break;
       case 'save-query': this.openQueryDialog(); break;
     }
   }
@@ -377,6 +441,7 @@ export class Workbench {
   }
 
   protected closeMenus(event: MouseEvent): void {
+    if (!(event.target instanceof Element && event.target.closest('.context-menu'))) this.closeContextMenus();
     if (event.target instanceof Element && event.target.closest('.menubar')) return;
     document.querySelectorAll<HTMLDetailsElement>('.menubar details[open]').forEach((d) => (d.open = false));
   }
@@ -428,6 +493,7 @@ export class Workbench {
       }
       document.querySelector<HTMLElement>(`tr[data-id="${target.processId}"]`)?.focus();
     };
+    if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) { this.rowContext(event, p); return; }
     switch (event.key) {
       case 'ArrowDown': event.preventDefault(); move(index + 1); break;
       case 'ArrowUp': event.preventDefault(); move(index - 1); break;
@@ -491,6 +557,10 @@ export class Workbench {
       case 'confirmedBy': return p.confirmedBy ?? '';
       case 'release': return p.knowledgeRelease ?? '–';
       case 'system': return p.externalReference.system;
+      case 'folder': {
+        const id = this.mark(p.processId)?.folderId;
+        return id ? (this.workspace().folders.find((f) => f.id === id)?.label ?? '') : '';
+      }
     }
   }
 
@@ -516,6 +586,7 @@ export class Workbench {
     const mod = event.ctrlKey || event.metaKey;
     if (mod && event.key.toLowerCase() === 'k') { event.preventDefault(); document.querySelector<HTMLInputElement>('.appbar input[type=search]')?.focus(); return; }
     if (event.key === 'F5' && !mod) { event.preventDefault(); this.refresh(); return; }
+    if (event.key === 'Escape' && (this.contextMenu() || this.navMenu())) { this.closeContextMenus(true); return; }
     if (dialog || editing) return;
     if (event.altKey && event.key === 'ArrowLeft' && this.opened()) { event.preventDefault(); this.back(); return; }
     if (mod && event.key.toLowerCase() === 'a' && !this.opened()) { event.preventDefault(); this.toggleVisible(true); return; }
@@ -602,13 +673,312 @@ export class Workbench {
   }
 
   protected openQuery(q: SavedQuery): void {
-    this.openQueue(q.queue === ALL || QUEUES.includes(q.queue) ? q.queue : ALL);
+    this.openQueue(q.queue === ALL || QUEUES.includes(q.queue) || isPersonalView(q.queue, this.workspace().folders) ? q.queue : ALL);
     this.updateView({ columns: q.columns, sort: q.sort, showFilters: this.view().showFilters || Object.keys(q.filters).length > 0 });
     this.filters.set({ ...q.filters });
   }
 
   protected deleteQuery(name: string): void {
     this.updateView({ queries: this.view().queries.filter((q) => q.name !== name) });
+  }
+
+  // ---- Meine Ablage: Kontextmenü, Ordner, Markierungen, Lesezeichen, Notizen, Freigabe, Versandpaket ----
+
+  /** Ziel von Aktionen: geöffneter Vorgang, sonst Auswahl, sonst die aktive Zeile. */
+  protected targetIds(): string[] {
+    const opened = this.opened();
+    if (opened) return [opened];
+    const selected = this.selectedVisible().map((p) => p.processId);
+    if (selected.length) return selected;
+    const active = this.active();
+    return active ? [active] : [];
+  }
+
+  private summaries(ids: readonly string[]): ProcessSummary[] {
+    const l = this.list();
+    if (l.state !== 'ready') return [];
+    const set = new Set(ids);
+    return l.value.filter((p) => set.has(p.processId));
+  }
+
+  protected canConfirm(ids: readonly string[]): boolean {
+    const items = this.summaries(ids);
+    return this.user().roles.includes('gutachter') && items.length > 0 && items.every((p) => p.state === 'IN_REVIEW');
+  }
+
+  protected canApprove(ids: readonly string[]): boolean {
+    const items = this.summaries(ids);
+    return this.user().roles.includes('freigabe') && items.length > 0
+      && items.every((p) => p.state === 'AWAITING_APPROVAL' && p.confirmedBy !== this.user().username);
+  }
+
+  protected canPackage(ids: readonly string[]): boolean {
+    const items = this.summaries(ids);
+    return items.length > 0 && items.every((p) => p.state === 'DISPATCHED');
+  }
+
+  protected canNote(ids: readonly string[]): boolean {
+    return this.summaries(ids).every((p) => p.state !== 'CLOSED');
+  }
+
+  protected allBookmarked(ids: readonly string[]): boolean {
+    return ids.length > 0 && ids.every((id) => this.mark(id)?.bookmark);
+  }
+
+  protected anyInFolder(ids: readonly string[]): boolean {
+    return ids.some((id) => !!this.mark(id)?.folderId);
+  }
+
+  /** Rechtsklick oder Umschalt+F10/Kontextmenütaste auf einer Zeile. */
+  protected rowContext(event: Event, p: ProcessSummary): void {
+    event.preventDefault();
+    if (!this.selection().has(p.processId)) {
+      this.selection.set(new Set([p.processId]));
+      this.anchor = p.processId;
+    }
+    this.active.set(p.processId);
+    this.returnFocus = event.currentTarget as HTMLElement;
+    const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const mouse = event instanceof MouseEvent && event.clientX > 0;
+    const x = mouse ? event.clientX : box.left + 24;
+    const y = mouse ? event.clientY : box.top + 20;
+    this.navMenu.set(null);
+    this.contextMenu.set({
+      x: Math.max(8, Math.min(x, window.innerWidth - 280)),
+      y: Math.max(8, Math.min(y, window.innerHeight - 420)),
+      ids: [...this.selection()],
+    });
+    setTimeout(() => document.querySelector<HTMLElement>('.context-menu [role=menuitem]:not(:disabled)')?.focus());
+  }
+
+  protected navContext(event: Event, kind: 'queue' | 'folder', id: string): void {
+    event.preventDefault();
+    this.returnFocus = event.currentTarget as HTMLElement;
+    const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.contextMenu.set(null);
+    this.navMenu.set({ x: Math.min(box.right - 40, window.innerWidth - 260), y: Math.min(box.top + 8, window.innerHeight - 120), kind, id });
+    setTimeout(() => document.querySelector<HTMLElement>('.context-menu [role=menuitem]')?.focus());
+  }
+
+  protected closeContextMenus(restoreFocus = false): void {
+    if (!this.contextMenu() && !this.navMenu()) return;
+    this.contextMenu.set(null);
+    this.navMenu.set(null);
+    if (restoreFocus) this.returnFocus?.focus();
+  }
+
+  /** Pfeiltasten im Kontextmenü wie in einem Desktop-Menü. */
+  protected menuKeys(event: KeyboardEvent): void {
+    if (event.key === 'Tab') { this.closeContextMenus(); return; }
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const root = event.currentTarget as HTMLElement;
+    const items = Array.from(root.querySelectorAll<HTMLElement>('button:not(:disabled), input'))
+      .filter((b) => b.offsetParent !== null);
+    const i = items.indexOf(document.activeElement as HTMLElement);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1
+      : (i + (event.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length;
+    items[next]?.focus();
+  }
+
+  protected begin(kind: AblageDialog['kind'], ids: string[], folder?: Folder, parentId: string | null = null): void {
+    this.closeContextMenus();
+    this.returnFocus ??= document.activeElement as HTMLElement | null;
+    const note = ids.length === 1 ? (this.mark(ids[0])?.note ?? '') : '';
+    const queue = kind === 'queueColor' && folder ? folder.id : '';
+    this.ablageDialog.set({
+      kind, ids,
+      folderId: folder?.id ?? (kind === 'move' ? (this.workspace().folders[0]?.id ?? '') : ''),
+      parentId: folder?.parentId ?? parentId,
+      label: kind === 'queueColor' ? '' : (folder?.label ?? ''),
+      color: kind === 'queueColor'
+        ? (this.queueColor(queue) ?? DEFAULT_QUEUE_COLORS[queue] ?? COLOR_PRESETS[0].hex)
+        : kind === 'color' ? (ids.length === 1 ? (this.mark(ids[0])?.color ?? COLOR_PRESETS[0].hex) : COLOR_PRESETS[0].hex)
+          : (folder?.color ?? COLOR_PRESETS[0].hex),
+      note,
+      queue,
+    });
+    setTimeout(() => ['input[type=text]', 'textarea', 'select', 'input', 'button[type=submit]']
+      .map((q) => document.querySelector<HTMLElement>(`.ablage-dialog ${q}`)).find((e) => !!e)?.focus());
+  }
+
+  protected editFolder(f: Folder): void {
+    this.begin('rename', [], f);
+  }
+
+  protected newSubfolder(f: Folder): void {
+    this.begin('folder', [], undefined, f.id);
+  }
+
+  protected editQueueColor(queue: string): void {
+    this.begin('queueColor', [], { id: queue, parentId: null, label: '', color: '' });
+  }
+
+  protected patchDialog(change: Partial<AblageDialog>): void {
+    this.ablageDialog.update((d) => (d ? { ...d, ...change } : d));
+  }
+
+  protected closeDialog(): void {
+    this.ablageDialog.set(null);
+    this.returnFocus?.focus();
+    this.returnFocus = null;
+  }
+
+  /** Mögliche übergeordnete Ordner: höchstens vierte Ebene, beim Bearbeiten nicht der Ordner selbst oder darunter. */
+  protected parentOptions(d: AblageDialog): { id: string; label: string }[] {
+    const tree = this.folders();
+    const excluded = new Set<string>();
+    if (d.kind === 'rename' && d.folderId) {
+      excluded.add(d.folderId);
+      for (const f of tree) if (f.parentId && excluded.has(f.parentId)) excluded.add(f.id);
+    }
+    return tree.filter((f) => f.depth < 4 && !excluded.has(f.id)).map((f) => ({ id: f.id, label: '— '.repeat(f.depth) + f.label }));
+  }
+
+  protected submitDialog(): void {
+    const d = this.ablageDialog();
+    if (!d || this.busy()) return;
+    const request = { label: d.label.trim(), color: d.color, parentId: d.parentId || null };
+    switch (d.kind) {
+      case 'folder': this.save(this.api.createFolder(request)); break;
+      case 'rename': this.save(this.api.updateFolder(d.folderId, request)); break;
+      case 'delete': this.save(this.api.deleteFolder(d.folderId), () => {
+        if (this.queue() === FOLDER_PREFIX + d.folderId) this.openQueue(ALL);
+      }); break;
+      case 'move': this.command(d.ids, { command: 'MOVE', folderId: d.folderId || null }); break;
+      case 'color': this.command(d.ids, { command: 'COLOR', color: d.color }); break;
+      case 'note': this.command(d.ids, { command: 'NOTE', note: d.note.trim() || null }); break;
+      case 'queueColor': this.save(this.api.queueColor(d.queue, d.color)); break;
+      case 'approve': this.approveAll(d.ids); break;
+    }
+  }
+
+  protected resetQueueColor(): void {
+    const d = this.ablageDialog();
+    if (d?.kind === 'queueColor') this.save(this.api.queueColor(d.queue, null));
+  }
+
+  protected command(ids: string[], command: MarkCommand): void {
+    if (!ids.length || this.busy()) return;
+    this.closeContextMenus();
+    this.busy.set(true);
+    this.api.mark(ids, command).pipe(takeUntilDestroyed(this.destroy)).subscribe({
+      next: (w) => {
+        this.busy.set(false);
+        this.workspace.set(w);
+        if (this.ablageDialog()) this.closeDialog();
+        // Was aus der aktuellen Ansicht verschwindet, ist nicht mehr ausgewählt.
+        const shown = new Set(this.visible().map((p) => p.processId));
+        this.selection.update((s) => new Set([...s].filter((id) => shown.has(id))));
+        this.flash(de.wb.ablage.saved);
+      },
+      error: () => { this.busy.set(false); this.error.set(de.wb.ablage.failed); },
+    });
+  }
+
+  protected toggleBookmark(ids: string[]): void {
+    this.command(ids, { command: 'BOOKMARK', bookmark: !this.allBookmarked(ids) });
+  }
+
+  protected setColor(ids: string[], color: string | null): void {
+    this.command(ids, { command: 'COLOR', color });
+  }
+
+  protected moveTo(ids: string[], folderId: string | null): void {
+    this.command(ids, { command: 'MOVE', folderId });
+  }
+
+  private save(call: Observable<unknown>, after?: () => void): void {
+    this.busy.set(true);
+    call.pipe(switchMap(() => this.api.workspace()), takeUntilDestroyed(this.destroy)).subscribe({
+      next: (w) => {
+        this.busy.set(false);
+        this.workspace.set(w);
+        this.closeDialog();
+        after?.();
+        this.flash(de.wb.ablage.saved);
+      },
+      error: (e: unknown) => {
+        this.busy.set(false);
+        this.error.set(e instanceof HttpErrorResponse && typeof e.error?.detail === 'string' ? e.error.detail : de.wb.ablage.failed);
+      },
+    });
+  }
+
+  protected confirmTargets(ids: string[]): void {
+    this.closeContextMenus();
+    if (!this.canConfirm(ids)) return;
+    this.selection.set(new Set(ids));
+    this.confirmSelected();
+  }
+
+  /** Freigabe je Vorgang einzeln, damit das Vier-Augen-Prinzip für jeden Vorgang geprüft und protokolliert wird. */
+  private approveAll(ids: string[]): void {
+    this.busy.set(true);
+    forkJoin(ids.map((id) => this.api.approve(id).pipe(map(() => true), catchError(() => of(false)))))
+      .pipe(takeUntilDestroyed(this.destroy)).subscribe((results) => {
+        this.busy.set(false);
+        this.closeDialog();
+        this.selection.set(new Set());
+        this.flash(de.wb.ablage.approveResult(results.filter(Boolean).length, results.length));
+        this.refresh();
+      });
+  }
+
+  /** Versandpaket wie im bisherigen Fallexplorer: das übergebene Ergebnis als JSON-Datei. */
+  protected downloadPackage(ids: string[]): void {
+    this.closeContextMenus();
+    if (!this.canPackage(ids)) return;
+    this.busy.set(true);
+    forkJoin(ids.map((id) => this.api.process(id))).pipe(takeUntilDestroyed(this.destroy)).subscribe({
+      next: (details) => {
+        this.busy.set(false);
+        const items = details.map((d) => ({
+          processId: d.processId, externalReference: d.externalReference, knowledgeRelease: d.knowledgeRelease,
+          outcome: d.outcome, evidenceId: d.evidenceId, confirmedBy: d.confirmedBy,
+          history: d.history, assessment: '__ASSESSMENT_' + d.processId + '__',
+        }));
+        // Bewertung als exakter JSON-Text: Dezimalzahlen bleiben unverändert.
+        let text = JSON.stringify({ format: 'normacase-versandpaket', version: 1, items }, null, 2);
+        for (const d of details) text = text.replace(`"__ASSESSMENT_${d.processId}__"`, () => exactJson(d.assessment));
+        const name = details.length === 1 ? details[0].externalReference.caseId : `${details.length}-vorgaenge`;
+        const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `normacase-versand-${name.replace(/[^A-Za-z0-9._-]/g, '_')}.json`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url));
+        this.flash(de.wb.ablage.packageSaved);
+      },
+      error: (e: unknown) => this.fail(e),
+    });
+  }
+
+  protected innerWidth(): number {
+    return globalThis.innerWidth ?? 1280;
+  }
+
+  protected dialogTitle(d: AblageDialog): string {
+    const a = de.wb.ablage;
+    switch (d.kind) {
+      case 'folder': return a.newFolder;
+      case 'rename': return a.editFolderTitle;
+      case 'delete': return a.deleteFolder;
+      case 'move': return d.ids.length > 1 ? `${a.move} (${d.ids.length})` : a.move;
+      case 'color': return a.mark;
+      case 'note': return a.note;
+      case 'queueColor': return a.queueColorTitle(de.queues[d.queue] ?? d.queue);
+      case 'approve': return a.approve;
+    }
+  }
+
+  protected dialogSubmit(d: AblageDialog): string {
+    switch (d.kind) {
+      case 'delete': return de.wb.ablage.deleteFolder;
+      case 'move': return de.wb.ablage.moveTo.replace(' nach', '');
+      case 'approve': return de.wb.ablage.approve;
+      default: return de.wb.save;
+    }
   }
 
   private updateView(change: Partial<ViewSettings>): void {
@@ -631,7 +1001,8 @@ export class Workbench {
   }
 
   private searchText(p: ProcessSummary): string {
-    return [p.displayName, p.externalReference.caseId, this.outcome(p.outcome), this.stateLabel(p.state), this.cellText(p, 'request')]
+    return [p.displayName, p.externalReference.caseId, this.outcome(p.outcome), this.stateLabel(p.state), this.cellText(p, 'request'),
+      this.mark(p.processId)?.note ?? '']
       .join(' ').toLocaleLowerCase('de-DE');
   }
 

@@ -3,11 +3,16 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { Workbench } from './workbench';
 import { detailJson, summary } from './fixtures';
+import { Workspace } from './api';
 
 describe('Workbench', () => {
   let http: HttpTestingController;
+  let workspace: Workspace;
 
-  beforeEach(() => globalThis.localStorage?.clear());
+  beforeEach(() => {
+    globalThis.localStorage?.clear();
+    workspace = { folders: [], marks: [], queueColors: {} };
+  });
 
   async function render(roles = ['gutachter']) {
     TestBed.configureTestingModule({ imports: [Workbench], providers: [provideHttpClient(), provideHttpClientTesting()] });
@@ -18,6 +23,7 @@ describe('Workbench', () => {
     http.expectOne('/api/v1/system').flush({ product: 'NormaCase', platformVersion: '0.1.0', retentionMode: 'zero-retention' });
     http.expectOne('/api/v1/knowledge/releases').flush([{ releaseId: 'demo-g-2026.1', fields: [{ id: 'request_complete', type: 'truth', required: true }], evidenceRequirements: ['supporting_document'] }]);
     await fixture.whenStable();
+    http.expectOne('/api/v1/workspace').flush(workspace);
     // Start ist „Alle Vorgänge“: alle vier Körbe werden geladen.
     for (const r of http.match((req) => req.url === '/api/v1/processes')) {
       const queue = r.request.params.get('queue');
@@ -51,6 +57,7 @@ describe('Workbench', () => {
         if (url === '/api/v1/processes') r.flush(r.request.params.get('queue') === 'review' ? [summary('a'), summary('b')] : []);
         else if (url.includes('/documents/')) r.flush(new Blob(['x'], { type: 'image/png' }));
         else if (url.startsWith('/api/v1/processes/')) r.flush(detailJson(url.split('/').pop()!));
+        else if (url === '/api/v1/workspace') r.flush(workspace);
         else r.flush({});
       }
     }
@@ -91,7 +98,7 @@ describe('Workbench', () => {
     const el = fixture.nativeElement as HTMLElement;
     el.querySelector<HTMLInputElement>('thead input[type=checkbox]')!.click();
     fixture.detectChanges();
-    const button = Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.textContent!.includes('Auswahl bestätigen'))!;
+    const button = Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.getAttribute('title') === 'Auswahl bestätigen')!;
     expect(button.disabled).toBe(false);
     button.click();
 
@@ -194,7 +201,7 @@ describe('Workbench', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F4' }));
     fixture.detectChanges();
     expect(el.querySelector('.reading-pane')).toBeNull();
-    expect(Array.from(el.querySelectorAll('.commandbar button')).some((b) => b.textContent!.includes('Details einblenden'))).toBe(true);
+    expect(Array.from(el.querySelectorAll('.commandbar button')).some((b) => b.getAttribute('title') === 'Details einblenden (F4)' && b.getAttribute('aria-pressed') === 'false')).toBe(true);
 
     el.querySelector<HTMLElement>('tbody tr')!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
     await settle(fixture);
@@ -255,6 +262,66 @@ describe('Workbench', () => {
     fixture.detectChanges();
     expect(technical().querySelector('.nav-count')!.textContent).toBe('1');
     expect(el.querySelector('.case-table')!.textContent).toContain('PF-2026-0001');
+    await settle(fixture);
+  });
+
+  it('führt Meine Ablage wie im bisherigen Fallexplorer: Ordner, Lesezeichen, Markierung, Notiz, Kontextmenü', async () => {
+    workspace = {
+      folders: [{ id: 'f1', parentId: null, label: 'Rückfragen', color: '#497ab7' }, { id: 'f2', parentId: 'f1', label: 'Diese Woche', color: '#24708f' }],
+      marks: [{ processId: 'b', folderId: 'f2', color: '#a54866', bookmark: true, note: 'Befund folgt' }],
+      queueColors: { review: '#287554' },
+    };
+    const fixture = await render();
+    const el: HTMLElement = fixture.nativeElement;
+    const nav = () => Array.from(el.querySelectorAll<HTMLButtonElement>('.explorer .nav-item'));
+    const navText = () => nav().map((b) => `${b.querySelector('.nav-label')?.textContent?.trim()} ${b.querySelector('.nav-count')?.textContent?.trim()}`);
+
+    // „Alle Vorgänge“ zeigt, was nicht in einem eigenen Ordner liegt; die Arbeitsliste zeigt alles.
+    expect(navText()).toContain('Alle Vorgänge 1');
+    expect(navText()).toContain('Zur Freigabe vorbereitet 2');
+    expect(navText()).toContain('Lesezeichen 1');
+    expect(navText()).toContain('Diese Woche 1');
+    expect(navText()).toContain('Ohne eigenen Ordner 1');
+    expect(el.querySelector<HTMLElement>('.explorer .nav-folder:nth-of-type(2)')?.style.paddingLeft).toBe('14px');
+    expect(el.querySelector<HTMLElement>('.nav-dot[data-queue="review"]')?.style.background).toContain('rgb(40, 117, 84)');
+
+    nav().find((b) => b.textContent?.includes('Diese Woche'))!.click();
+    fixture.detectChanges();
+    const row = el.querySelector<HTMLElement>('.case-table tbody tr')!;
+    expect(row.textContent).toContain('Andere Person');
+    expect(row.textContent).toContain('Befund folgt');
+    expect(row.querySelector('.bookmark')?.getAttribute('aria-label')).toBe('Mit Lesezeichen');
+    expect(row.querySelector('.mark-chip')).not.toBeNull();
+    await settle(fixture);
+
+    // Rechtsklick: Kontextmenü mit Untermenüs; „Aus Ordner entfernen“ schickt MOVE ohne Ordner.
+    row.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: 40, clientY: 40 }));
+    fixture.detectChanges();
+    const items = Array.from(el.querySelectorAll<HTMLButtonElement>('.context-menu [role=menuitem]')).map((b) => b.textContent?.trim());
+    expect(items).toEqual(expect.arrayContaining(['Öffnen', 'Lesezeichen entfernen', 'Aus Ordner entfernen', 'Notiz …', 'Bestätigen', 'Blau', 'Rückfragen']));
+    Array.from(el.querySelectorAll<HTMLButtonElement>('.context-menu [role=menuitem]')).find((b) => b.textContent?.trim() === 'Aus Ordner entfernen')!.click();
+    const move = http.expectOne('/api/v1/workspace/marks');
+    expect(move.request.body).toEqual({ processIds: ['b'], command: 'MOVE', folderId: null });
+    move.flush({ ...workspace, marks: [{ processId: 'b', folderId: null, color: '#a54866', bookmark: true, note: 'Befund folgt' }] });
+    fixture.detectChanges();
+    expect(el.querySelector('.context-menu')).toBeNull();
+    expect(el.querySelectorAll('.case-table tbody tr').length).toBe(0);
+
+    // Neuer Ordner über die Befehlsleiste; danach wird die Ablage neu geladen.
+    Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.getAttribute('aria-label') === 'Neuer Ordner')!.click();
+    fixture.detectChanges();
+    const name = el.querySelector<HTMLInputElement>('.ablage-dialog input[type=text]')!;
+    name.value = 'Gutachten zurück';
+    name.dispatchEvent(new Event('input'));
+    el.querySelector<HTMLButtonElement>('.ablage-dialog .preset:nth-child(3)')!.click();
+    fixture.detectChanges();
+    el.querySelector<HTMLFormElement>('.ablage-dialog form')!.dispatchEvent(new Event('submit'));
+    const create = http.expectOne('/api/v1/workspace/folders');
+    expect(create.request.body).toEqual({ label: 'Gutachten zurück', color: '#287554', parentId: null });
+    create.flush({ id: 'f3', parentId: null, label: 'Gutachten zurück', color: '#287554' });
+    http.expectOne('/api/v1/workspace').flush(workspace);
+    fixture.detectChanges();
+    expect(el.querySelector('.ablage-dialog')).toBeNull();
     await settle(fixture);
   });
 });

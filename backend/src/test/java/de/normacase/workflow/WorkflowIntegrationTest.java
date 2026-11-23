@@ -151,8 +151,18 @@ class WorkflowIntegrationTest {
         mvc.perform(post("/api/v1/outbound/" + message.get("messageId").stringValue() + "/acknowledgement")
                         .with(as("host-b", "integration")))
                 .andExpect(status().isNotFound());
+        mvc.perform(post("/api/v1/workspace/marks").with(ASSESSOR).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"processIds\": [\"" + id + "\"], \"command\": \"NOTE\", \"note\": \"Rückruf vereinbart\"}"))
+                .andExpect(status().isOk());
+        mvc.perform(post("/api/v1/workspace/marks").with(ASSESSOR).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"processIds\": [\"" + id + "\"], \"command\": \"BOOKMARK\", \"bookmark\": true}"))
+                .andExpect(status().isOk());
         mvc.perform(post("/api/v1/outbound/" + message.get("messageId").stringValue() + "/acknowledgement").with(HOST))
                 .andExpect(status().isNoContent());
+
+        // Notizen sind Freitext und gehen mit den Fallinhalten; das Lesezeichen bleibt.
+        assertThat(count("select count(*) from workflow.personal_mark where process_id = :id and note is not null", id)).isZero();
+        assertThat(count("select count(*) from workflow.personal_mark where process_id = :id and bookmark", id)).isOne();
 
         // Nach der Quittung: keine Fallinhalte, keine Identifikationsdaten, keine Dokumente mehr.
         var row = jdbc.sql("select state, case_input, assessment from workflow.process where process_id = :id")

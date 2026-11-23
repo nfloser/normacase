@@ -42,15 +42,23 @@
   }
   <button type="button" class="icon-button" (click)="refresh()" [attr.aria-label]="t.wb.refresh" [title]="t.wb.refresh">⟳</button>
   <span class="divider" aria-hidden="true"></span>
-  <button type="button" class="button ghost" [disabled]="!canBatchConfirm() || busy()" (click)="confirmSelected()">✓ {{ t.wb.confirmSelected }}@if (selectedVisible().length) { <span class="count">{{ selectedVisible().length }}</span> }</button>
+  <button type="button" class="button ghost" [disabled]="!canBatchConfirm() || busy()" (click)="confirmSelected()" [title]="t.wb.confirmSelected">✓ {{ t.wb.ablage.confirm }}@if (selectedVisible().length) { <span class="count">{{ selectedVisible().length }}</span> }</button>
+  @if (user().roles.includes('freigabe')) {
+    <button type="button" class="button ghost" [disabled]="!available('approve')" (click)="menu('approve')" [title]="t.wb.ablage.approve">✉ {{ t.wb.ablage.approveShort }}</button>
+  }
+  <span class="divider" aria-hidden="true"></span>
+  <button type="button" class="icon-button" (click)="begin('folder', [])" [attr.aria-label]="t.wb.ablage.newFolder" [title]="t.wb.ablage.newFolder"><span aria-hidden="true">＋</span></button>
+  <button type="button" class="button ghost" [disabled]="!available('move')" (click)="menu('move')" [title]="t.wb.ablage.move">▤ {{ t.wb.ablage.moveShort }}@if (targetIds().length > 1) { <span class="count">{{ targetIds().length }}</span> }</button>
+  <button type="button" class="button ghost" [disabled]="!available('mark')" (click)="menu('mark')">◆ {{ t.wb.ablage.mark }}</button>
+  <button type="button" class="button ghost" [disabled]="!available('bookmark')" [attr.aria-pressed]="allBookmarked(targetIds())" (click)="menu('bookmark')">★ {{ t.wb.ablage.bookmark }}</button>
   @if (!opened()) {
     <span class="divider" aria-hidden="true"></span>
     <button type="button" class="button ghost" [attr.aria-pressed]="view().showFilters" (click)="toggleFilters()">⚲ {{ t.wb.filters }}@if (activeFilters()) { <span class="count">{{ activeFilters() }}</span> }</button>
     <button type="button" class="button ghost" (click)="openColumnOptions()">☰ {{ t.wb.columnOptions }}</button>
-    <button type="button" class="button ghost" (click)="openQueryDialog()">☆ {{ t.wb.saveQuery }}</button>
+    <button type="button" class="icon-button" (click)="openQueryDialog()" [attr.aria-label]="t.wb.saveQuery" [title]="t.wb.saveQuery"><span aria-hidden="true">☆</span></button>
     <span class="divider" aria-hidden="true"></span>
-    <button type="button" class="button ghost" [disabled]="!view().showDetails" (click)="togglePreviewPosition()">{{ view().previewPosition === 'bottom' ? '◨ ' + t.wb.previewRight : '⬓ ' + t.wb.previewBottom }}</button>
-    <button type="button" class="button ghost" [attr.aria-pressed]="!view().showDetails" (click)="toggleDetails()">{{ view().showDetails ? t.wb.hideDetails : t.wb.showDetails }}</button>
+    <button type="button" class="icon-button" [disabled]="!view().showDetails" (click)="togglePreviewPosition()" [attr.aria-label]="view().previewPosition === 'bottom' ? t.wb.previewRight : t.wb.previewBottom" [title]="view().previewPosition === 'bottom' ? t.wb.previewRight : t.wb.previewBottom"><span aria-hidden="true">{{ view().previewPosition === 'bottom' ? '◨' : '⬓' }}</span></button>
+    <button type="button" class="button ghost" [attr.aria-pressed]="view().showDetails" (click)="toggleDetails()" [title]="view().showDetails ? t.wb.hideDetails : t.wb.showDetails">▭ {{ t.wb.detailsShort }}</button>
   }
   <span class="spacer"></span>
   <label class="toggle"><input type="checkbox" [checked]="view().rowColors" (change)="setRowColors($any($event.target).checked)"> {{ t.wb.rowColors }}</label>
@@ -63,14 +71,32 @@
       <span class="nav-icon" aria-hidden="true">☰</span><span class="nav-label">{{ t.wb.allCases }}</span><span class="nav-count">{{ count('all') }}</span></button>
     <h2 class="nav-heading">{{ t.queuesHeading }}</h2>
     @for (q of queueIds; track q) {
-      <button type="button" class="nav-item" [attr.aria-current]="queue() === q ? 'true' : null" (click)="openQueue(q)">
-        <span class="nav-dot" [attr.data-queue]="q" aria-hidden="true"></span><span class="nav-label">{{ t.queues[q] }}</span><span class="nav-count">{{ count(q) }}</span></button>
+      <button type="button" class="nav-item" [attr.aria-current]="queue() === q ? 'true' : null" (click)="openQueue(q)"
+        (contextmenu)="navContext($event, 'queue', q)" (keydown.shift.f10)="navContext($event, 'queue', q)">
+        <span class="nav-dot" [attr.data-queue]="q" [style.background]="queueColor(q)" aria-hidden="true"></span><span class="nav-label">{{ t.queues[q] }}</span><span class="nav-count">{{ count(q) }}</span></button>
     }
-    <h2 class="nav-heading">{{ t.personalHeading }}</h2>
+    <h2 class="nav-heading with-action">{{ t.personalHeading }}<button type="button" class="icon-button small" [attr.aria-label]="t.wb.ablage.newFolder" [title]="t.wb.ablage.newFolder" (click)="begin('folder', [])">＋</button></h2>
+    <button type="button" class="nav-item" [attr.aria-current]="queue() === 'bookmarks' ? 'true' : null" (click)="openQueue('bookmarks')">
+      <span class="nav-icon star" aria-hidden="true">★</span><span class="nav-label">{{ t.wb.ablage.bookmarks }}</span><span class="nav-count">{{ count('bookmarks') }}</span></button>
     @for (q of personalIds; track q) {
       <button type="button" class="nav-item" [attr.aria-current]="queue() === q ? 'true' : null" (click)="openQueue(q)">
         <span class="nav-icon" [class.ok]="q === 'approval'" aria-hidden="true">{{ q === 'approval' ? '✓' : '✉' }}</span><span class="nav-label">{{ t.queues[q] }}</span><span class="nav-count">{{ count(q) }}</span></button>
     }
+    @for (f of folders(); track f.id) {
+      <div class="nav-folder" [style.padding-left.px]="f.depth * 14">
+        <button type="button" class="nav-item" [attr.aria-current]="queue() === folderView(f) ? 'true' : null" (click)="openQueue(folderView(f))"
+          (contextmenu)="navContext($event, 'folder', f.id)" (keydown.shift.f10)="navContext($event, 'folder', f.id)">
+          <span class="nav-folder-icon" [style.color]="f.color" aria-hidden="true">▰</span><span class="nav-label">{{ f.label }}</span><span class="nav-count">{{ count(folderView(f)) }}</span></button>
+        <span class="folder-actions">
+          @if (f.depth < 4) {
+            <button type="button" class="icon-button small" [attr.aria-label]="t.wb.ablage.newFolderIn(f.label)" [title]="t.wb.ablage.newFolderIn(f.label)" (click)="newSubfolder(f)">＋</button>
+          }
+          <button type="button" class="icon-button small" [attr.aria-label]="t.wb.ablage.editFolder(f.label)" [title]="t.wb.ablage.editFolder(f.label)" (click)="editFolder(f)">⋯</button>
+        </span>
+      </div>
+    }
+    <button type="button" class="nav-item" [attr.aria-current]="queue() === 'unfiled' ? 'true' : null" (click)="openQueue('unfiled')">
+      <span class="nav-folder-icon muted" aria-hidden="true">▱</span><span class="nav-label">{{ t.wb.ablage.unfiled }}</span><span class="nav-count">{{ count('unfiled') }}</span></button>
     <p class="nav-help">{{ queueHelp(queue()) }}</p>
     <h2 class="nav-heading">{{ t.wb.myQueries }}</h2>
     @for (q of view().queries; track q.name) {
@@ -138,11 +164,12 @@
             @for (p of visible(); track p.processId) {
               <tr tabindex="0" [attr.data-id]="p.processId" [attr.data-tone]="rowTone(p)" [attr.data-selected]="selection().has(p.processId)" [attr.aria-selected]="selection().has(p.processId)" [class.active]="active() === p.processId"
                 [attr.aria-label]="(p.displayName ?? p.externalReference.caseId) + ', ' + outcome(p.outcome)"
-                (click)="rowClick($event, p)" (dblclick)="open(p.processId)" (keydown)="rowKeys($event, p)">
-                <td class="col-select"><input type="checkbox" [attr.aria-label]="t.wb.selectCase + ': ' + p.externalReference.caseId" [checked]="selection().has(p.processId)" (click)="$event.stopPropagation()" (change)="toggle(p.processId)"></td>
+                [style.--case-color]="caseColor(p)"
+                (click)="rowClick($event, p)" (dblclick)="open(p.processId)" (keydown)="rowKeys($event, p)" (contextmenu)="rowContext($event, p)">
+                <td class="col-select"><input type="checkbox" [attr.aria-label]="t.wb.selectCase + ': ' + p.externalReference.caseId" [checked]="selection().has(p.processId)" (click)="$event.stopPropagation()" (change)="toggle(p.processId)">@if (mark(p.processId)?.color; as c) {<span class="mark-chip" [style.background]="c" role="img" [attr.aria-label]="t.wb.ablage.ownMark" [title]="t.wb.ablage.ownMark"></span>}</td>
                 @for (c of columns(); track c) {
                   @switch (c) {
-                    @case ('subject') { <td class="col-subject" [title]="cellText(p, c)"><strong>{{ p.displayName ?? '–' }}</strong></td> }
+                    @case ('subject') { <td class="col-subject" [title]="cellText(p, c) + (mark(p.processId)?.note ? ' – ' + mark(p.processId)?.note : '')"><span class="bookmark-slot">@if (mark(p.processId)?.bookmark) {<span class="bookmark" role="img" [attr.aria-label]="t.wb.ablage.bookmarked">★</span>}</span><strong>{{ p.displayName ?? p.externalReference.caseId }}</strong>@if (mark(p.processId)?.note; as n) {<small class="case-note">{{ n }}</small>}</td> }
                     @case ('number') { <td class="col-number mono">{{ p.externalReference.caseId }}</td> }
                     @case ('status') { <td class="col-status"><span class="chip" [attr.data-queue]="t.stateQueue[p.state]">{{ stateLabel(p.state) }}</span></td> }
                     @case ('result') { <td class="col-result"><span class="result-pill ampel" [attr.data-outcome]="p.outcome" [title]="outcome(p.outcome)">{{ outcome(p.outcome) }}</span></td> }
@@ -237,6 +264,124 @@
         <span class="spacer"></span>
         <button type="button" class="button ghost" (click)="queryDialog.set(false)">{{ t.wb.cancel }}</button>
         <button type="submit" class="button primary">{{ t.wb.save }}</button>
+      </div>
+    </form>
+    </div>
+  </div>
+}
+
+@if (contextMenu(); as m) {
+  <div class="context-menu" tabindex="-1" role="menu" [attr.aria-label]="t.wb.ablage.caseActions" [style.left.px]="m.x" [style.top.px]="m.y"
+    [class.submenu-left]="m.x > 0 && m.x > innerWidth() - 520" (keydown)="menuKeys($event)" (click)="$event.stopPropagation()">
+    <button type="button" role="menuitem" (click)="closeContextMenus(); open(m.ids[0])">{{ t.wb.ablage.open }}</button>
+    <div class="submenu">
+      <button type="button" role="menuitem" aria-haspopup="true" [disabled]="busy()">{{ t.wb.ablage.mark }} <span aria-hidden="true">›</span></button>
+      <div class="submenu-panel" role="group" [attr.aria-label]="t.wb.ablage.markColor">
+        @for (c of colorPresets; track c.id) {
+          <button type="button" role="menuitem" (click)="setColor(m.ids, c.hex)"><span class="swatch" [style.background]="c.hex" aria-hidden="true"></span>{{ t.wb.ablage.colors[c.id] }}</button>
+        }
+        <button type="button" role="menuitem" (click)="begin('color', m.ids)">{{ t.wb.ablage.customColor }} …</button>
+        <button type="button" role="menuitem" (click)="setColor(m.ids, null)">{{ t.wb.ablage.clearColor }}</button>
+      </div>
+    </div>
+    <div class="submenu">
+      <button type="button" role="menuitem" aria-haspopup="true" [disabled]="busy()">{{ t.wb.ablage.moveTo }} <span aria-hidden="true">›</span></button>
+      <div class="submenu-panel" role="group" [attr.aria-label]="t.wb.ablage.targetFolder">
+        @for (f of folders(); track f.id) {
+          <button type="button" role="menuitem" (click)="moveTo(m.ids, f.id)"><span class="swatch" [style.background]="f.color" aria-hidden="true"></span>{{ '— '.repeat(f.depth) }}{{ f.label }}</button>
+        }
+        <button type="button" role="menuitem" (click)="begin('folder', [])">{{ t.wb.ablage.newFolder }} …</button>
+      </div>
+    </div>
+    <button type="button" role="menuitem" [disabled]="busy()" (click)="toggleBookmark(m.ids)">{{ allBookmarked(m.ids) ? t.wb.ablage.removeBookmark : t.wb.ablage.addBookmark }}</button>
+    <button type="button" role="menuitem" [disabled]="busy() || !anyInFolder(m.ids)" (click)="moveTo(m.ids, null)">{{ t.wb.ablage.removeFromFolder }}</button>
+    <button type="button" role="menuitem" [disabled]="busy() || m.ids.length !== 1 || !canNote(m.ids)" (click)="begin('note', m.ids)">{{ t.wb.ablage.note }} …</button>
+    <span class="menu-separator" aria-hidden="true"></span>
+    <button type="button" role="menuitem" [disabled]="busy() || !canConfirm(m.ids)" (click)="confirmTargets(m.ids)">{{ t.wb.ablage.confirm }}</button>
+    <button type="button" role="menuitem" [disabled]="busy() || !canApprove(m.ids)" (click)="begin('approve', m.ids)">{{ t.wb.ablage.approve }} …</button>
+    <button type="button" role="menuitem" [disabled]="busy() || !canPackage(m.ids)" (click)="downloadPackage(m.ids)">{{ t.wb.ablage.package }}</button>
+  </div>
+}
+
+@if (navMenu(); as n) {
+  <div class="context-menu" tabindex="-1" role="menu" [attr.aria-label]="t.wb.ablage.folderActions" [style.left.px]="n.x" [style.top.px]="n.y" (keydown)="menuKeys($event)" (click)="$event.stopPropagation()">
+    @if (n.kind === 'queue') {
+      <button type="button" role="menuitem" (click)="editQueueColor(n.id)">{{ t.wb.ablage.queueColor }} …</button>
+    } @else {
+      @for (f of folders(); track f.id) {
+        @if (f.id === n.id) {
+          <button type="button" role="menuitem" (click)="editFolder(f)">{{ t.wb.ablage.editFolderTitle }} …</button>
+          @if (f.depth < 4) { <button type="button" role="menuitem" (click)="newSubfolder(f)">{{ t.wb.ablage.newFolderIn(f.label) }} …</button> }
+          <button type="button" role="menuitem" (click)="begin('delete', [], f)">{{ t.wb.ablage.deleteFolder }} …</button>
+        }
+      }
+    }
+  </div>
+}
+
+@if (ablageDialog(); as d) {
+  <div class="dialog-backdrop">
+    <div class="dialog-card ablage-dialog" tabindex="-1" (keydown.escape)="closeDialog()" role="dialog" aria-modal="true" aria-labelledby="ablage-title">
+    <form class="dialog-form" (submit)="$event.preventDefault(); submitDialog()">
+      <h3 id="ablage-title">{{ dialogTitle(d) }}</h3>
+      @switch (d.kind) {
+        @case ('folder') {
+          <label class="field"><span>{{ t.wb.ablage.parent }}</span>
+            <select [value]="d.parentId ?? ''" (change)="patchDialog({ parentId: $any($event.target).value || null })">
+              <option value="" [selected]="!d.parentId">{{ t.wb.ablage.root }}</option>
+              @for (o of parentOptions(d); track o.id) { <option [value]="o.id" [selected]="d.parentId === o.id">{{ o.label }}</option> }
+            </select>
+          </label>
+        }
+        @case ('rename') {
+          <label class="field"><span>{{ t.wb.ablage.parent }}</span>
+            <select [value]="d.parentId ?? ''" (change)="patchDialog({ parentId: $any($event.target).value || null })">
+              <option value="" [selected]="!d.parentId">{{ t.wb.ablage.root }}</option>
+              @for (o of parentOptions(d); track o.id) { <option [value]="o.id" [selected]="d.parentId === o.id">{{ o.label }}</option> }
+            </select>
+          </label>
+        }
+        @case ('move') {
+          <label class="field"><span>{{ t.wb.ablage.targetFolder }}</span>
+            <select [value]="d.folderId" (change)="patchDialog({ folderId: $any($event.target).value })">
+              <option value="" [selected]="!d.folderId">{{ t.wb.ablage.unfiled }}</option>
+              @for (f of folders(); track f.id) { <option [value]="f.id" [selected]="d.folderId === f.id">{{ '— '.repeat(f.depth) }}{{ f.label }}</option> }
+            </select>
+          </label>
+          <p class="hint">{{ t.wb.ablage.folderHelp }}</p>
+        }
+        @case ('note') {
+          <label class="field"><span>{{ t.wb.ablage.note }}</span>
+            <textarea rows="5" maxlength="1000" [value]="d.note" (input)="patchDialog({ note: $any($event.target).value })"></textarea>
+          </label>
+          <p class="hint">{{ t.wb.ablage.noteHelp }}</p>
+        }
+        @case ('delete') { <p>{{ t.wb.ablage.deleteHelp }}</p> }
+        @case ('approve') { <p>{{ t.wb.ablage.approveHelp(d.ids.length) }}</p> }
+      }
+      @if (d.kind === 'folder' || d.kind === 'rename') {
+        <label class="field"><span>{{ t.wb.ablage.folderName }}</span>
+          <input type="text" required maxlength="80" autocomplete="off" [value]="d.label" (input)="patchDialog({ label: $any($event.target).value })">
+        </label>
+        <p class="hint">{{ t.wb.ablage.folderNameHint }}</p>
+      }
+      @if (d.kind === 'folder' || d.kind === 'rename' || d.kind === 'color' || d.kind === 'queueColor') {
+        <label class="field color-field"><span>{{ d.kind === 'folder' || d.kind === 'rename' ? t.wb.ablage.folderColor : t.wb.ablage.markColor }}</span>
+          <input type="color" [value]="d.color" (input)="patchDialog({ color: $any($event.target).value })">
+        </label>
+        <div class="color-presets" role="group" [attr.aria-label]="t.wb.ablage.colorPresets">
+          @for (c of colorPresets; track c.id) {
+            <button type="button" class="preset" [attr.aria-pressed]="d.color === c.hex" (click)="patchDialog({ color: c.hex })"><span class="swatch" [style.background]="c.hex" aria-hidden="true"></span>{{ t.wb.ablage.colors[c.id] }}</button>
+          }
+        </div>
+      }
+      <div class="dialog-actions">
+        @if (d.kind === 'rename') { <button type="button" class="button ghost danger" (click)="patchDialog({ kind: 'delete' })">{{ t.wb.ablage.deleteFolder }}</button> }
+        @if (d.kind === 'color') { <button type="button" class="button ghost" [disabled]="busy()" (click)="setColor(d.ids, null); closeDialog()">{{ t.wb.ablage.clearColor }}</button> }
+        @if (d.kind === 'queueColor') { <button type="button" class="button ghost" [disabled]="busy()" (click)="resetQueueColor()">{{ t.wb.ablage.resetQueueColor }}</button> }
+        <span class="spacer"></span>
+        <button type="button" class="button ghost" [disabled]="busy()" (click)="closeDialog()">{{ t.wb.cancel }}</button>
+        <button type="submit" class="button primary" [class.danger]="d.kind === 'delete'" [disabled]="busy()">{{ dialogSubmit(d) }}</button>
       </div>
     </form>
     </div>

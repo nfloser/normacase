@@ -69,6 +69,27 @@ export interface ReleaseSummary {
 
 export interface BatchResult { readonly processId: string; readonly result: string }
 
+/** Meine Ablage: eigene Ordner, Markierungen je Vorgang und Arbeitslistenfarben des angemeldeten Kontos. */
+export interface Folder { readonly id: string; readonly parentId: string | null; readonly label: string; readonly color: string }
+export interface Mark {
+  readonly processId: string;
+  readonly folderId: string | null;
+  readonly color: string | null;
+  readonly bookmark: boolean;
+  readonly note: string | null;
+}
+export interface Workspace {
+  readonly folders: Folder[];
+  readonly marks: Mark[];
+  readonly queueColors: Record<string, string>;
+}
+export type MarkCommand =
+  | { command: 'MOVE'; folderId: string | null }
+  | { command: 'COLOR'; color: string | null }
+  | { command: 'BOOKMARK'; bookmark: boolean }
+  | { command: 'NOTE'; note: string | null };
+export interface FolderRequest { readonly label: string; readonly color: string; readonly parentId: string | null }
+
 @Injectable({ providedIn: 'root' })
 export class WorkbenchApi {
   private readonly http = inject(HttpClient);
@@ -142,5 +163,29 @@ export class WorkbenchApi {
     return this.http.get(
       `/api/v1/processes/${encodeURIComponent(processId)}/documents/${encodeURIComponent(documentId)}/pages/${page}`,
       { responseType: 'blob' });
+  }
+
+  workspace(): Observable<Workspace> {
+    return this.http.get<Workspace>('/api/v1/workspace');
+  }
+
+  createFolder(request: FolderRequest): Observable<Folder> {
+    return this.http.post<Folder>('/api/v1/workspace/folders', request);
+  }
+
+  updateFolder(id: string, request: FolderRequest): Observable<Folder> {
+    return this.http.put<Folder>(`/api/v1/workspace/folders/${encodeURIComponent(id)}`, request);
+  }
+
+  deleteFolder(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/v1/workspace/folders/${encodeURIComponent(id)}`);
+  }
+
+  mark(processIds: string[], command: MarkCommand): Observable<Workspace> {
+    return this.http.post<Workspace>('/api/v1/workspace/marks', { processIds, ...command });
+  }
+
+  queueColor(queue: string, color: string | null): Observable<void> {
+    return this.http.put<void>(`/api/v1/workspace/queue-colors/${encodeURIComponent(queue)}`, { color });
   }
 }

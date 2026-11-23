@@ -69,6 +69,8 @@ Die Regel-Engine (`assessment`) hängt weder von Spring noch von der Datenbank a
 
 Angular mit Standalone-Komponenten, Signals für Oberflächenzustand und RxJS für HTTP und Ereignisströme. Gestaltung nach dem bewährten Konzept der Prüfwerkstatt: links Körbe wie Ordner, in der Mitte die Fallliste wie ein Postfach, rechts die Fallakte mit Kriterien, Belegen und PDF-Leser. Das Astryx-Theme (MIT) wird lokal eingebunden, nicht per CDN. Texte liegen in Übersetzungsressourcen (de-DE).
 
+„Meine Ablage“ ordnet Vorgänge je Konto wie im bisherigen Fallexplorer: eigene Ordner mit bis zu fünf Ebenen und Farben, Lesezeichen, Farbmarkierung, Notizen und eigene Arbeitslistenfarben; bedient über Befehlsleiste, Menü „Fälle“ und Rechtsklick (auch Umschalt+F10). „Alle Vorgänge“ zeigt, was nicht in einem eigenen Ordner liegt, die Arbeitslisten zeigen weiterhin alles ihres Bearbeitungsstands. Die Ablage liegt serverseitig (`/api/v1/workspace`, `WorkspaceController`), damit sie auf jedem Gerät gleich ist; sie ändert weder Bearbeitungsstand noch Ergebnis. Freigabe und Versandpaket laufen über dieselben Anwendungsfälle wie in der Fallakte.
+
 Aus `legacy/angular-pilot` übernommen sind das exakte Dezimal-Parsing, die Darstellung des Entscheidungspfads und das Stylesheet. Die Anmeldung läuft über einen eigenen PKCE-Ablauf ohne Fremdbibliothek; Tokens liegen nur im Arbeitsspeicher.
 
 ## 6. Datenhaltung
