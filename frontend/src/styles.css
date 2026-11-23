@@ -330,12 +330,6 @@ nc-case-file .verdict { display: none; }
 .cond[data-result='UNKNOWN'] .cond-mark { background: var(--nc-warn-bg); color: var(--nc-warn); }
 .cond-text { flex: 1; overflow-wrap: anywhere; font-size: .85rem; }
 .cond-result { flex: none; font-size: .72rem; color: var(--nc-text-2); }
-/* Ampel im Entscheidungspfad: jede Bedingung als farbig hinterlegte Zeile. */
-.tree .cond { padding: .3rem .5rem; border-left: 3px solid var(--nc-border); border-radius: 6px; margin: .15rem 0; }
-.tree .cond[data-result='MATCHED'] { border-left-color: light-dark(#2e8b57, #6fcf97); background: light-dark(#eaf6ee, #15291e); }
-.tree .cond[data-result='NOT_MATCHED'] { border-left-color: light-dark(#c0392b, #f08a80); background: light-dark(#fcecea, #2e1715); }
-.tree .cond[data-result='UNKNOWN'] { border-left-color: light-dark(#d4a017, #f0c75a); background: light-dark(#fdf6dd, #2d2610); }
-.tree .cond-result { font-weight: 600; color: var(--nc-text); }
 .app-shell .cond-detail { margin: .1rem 0 0 1.7rem; font-size: .78rem; color: var(--nc-text-2); }
 .app-shell .numeric-list { list-style: none; margin: .25rem 0 .1rem 1.7rem; padding: 0; font-size: .78rem; color: var(--nc-text-2); font-variant-numeric: tabular-nums; }
 .app-shell .numeric-list li { padding: .05rem 0; }
