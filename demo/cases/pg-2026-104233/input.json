@@ -1,0 +1,31 @@
+{
+  "formatVersion": 1,
+  "assessmentDate": "2026-11-04",
+  "facts": {
+    "module_1_sum": {
+      "kind": "NUMBER",
+      "number": 9
+    },
+    "module_2_sum": {
+      "kind": "NUMBER",
+      "number": 4
+    },
+    "module_3_sum": {
+      "kind": "NUMBER",
+      "number": 1
+    },
+    "module_4_sum": {
+      "kind": "NUMBER",
+      "number": 22
+    },
+    "module_5_sum": {
+      "kind": "NUMBER",
+      "number": 3
+    },
+    "module_6_sum": {
+      "kind": "NUMBER",
+      "number": 8
+    }
+  },
+  "evidence": {}
+}
