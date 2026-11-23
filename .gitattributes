@@ -16,3 +16,6 @@ legacy/** linguist-vendored
 legacy/examples/document-cases/**/*.json text eol=lf
 legacy/examples/document-cases/**/*.txt text eol=lf
 legacy/examples/document-cases/catalog.json text eol=lf
+
+# Windows PowerShell 5.1 braucht für Umlaute UTF-8 mit BOM; Zeilenenden wie unter Windows üblich.
+*.ps1 text eol=crlf

@@ -33,13 +33,22 @@ Die Screenshots entstehen bei jedem Build automatisch aus dem laufenden Stack (`
 
 ## Lokal starten
 
-Voraussetzung ist Docker (unter Windows Docker Desktop).
+Voraussetzung ist Docker (unter Windows Docker Desktop). Dann reicht ein Befehl:
 
-```bash
-docker compose up --build
-```
+| System | Befehl |
+|---|---|
+| Windows | Doppelklick auf `demo.cmd` oder in PowerShell `.\demo.ps1` |
+| macOS, Linux | `pwsh ./demo.ps1` oder `docker compose up --build` |
 
-`docker compose up --build` startet PostgreSQL, Keycloak, Backend, Oberfläche und ein synthetisches Fachsystem, das Beispielvorgänge einliefert. Danach ist die Prüfwerkstatt unter <http://localhost:4200> erreichbar. Alle synthetischen Konten stehen in [ops/keycloak](ops/keycloak/README.md), Passwort jeweils `demo`.
+Das Skript startet Docker Desktop bei Bedarf, baut und startet PostgreSQL, Keycloak, Backend, Oberfläche und eine Fachsystem-Attrappe, wartet, bis die zehn Demo-Vorgänge eingeliefert sind, und öffnet die Prüfwerkstatt unter <http://localhost:4200>. Der erste Start dauert einige Minuten.
+
+| Aufruf | Wirkung |
+|---|---|
+| `.\demo.ps1 -Reset` | alles auf Anfang, alle Vorgänge wieder unbearbeitet |
+| `.\demo.ps1 -Stop` | beenden, Stand bleibt erhalten |
+| `.\demo.ps1 -Monitoring` | zusätzlich Prometheus und Grafana |
+
+Konten: `gutachterin.a` (prüfen, bestätigen) und `freigabe.c` (freigeben), Passwort jeweils `demo`. Alle Konten stehen in [ops/keycloak](ops/keycloak/README.md).
 
 Vier-Augen-Ablauf ausprobieren:
 
@@ -47,7 +56,7 @@ Vier-Augen-Ablauf ausprobieren:
 2. Abmelden, als `freigabe.c` anmelden, im Korb „Zur Freigabe“ **Freigeben**.
 3. Fälle in „Rückfragen“ lassen sich über **Angaben ergänzen** vervollständigen; NormaCase bewertet dann neu.
 
-Wer den Stack schon vor dem 21.11.2026 gestartet hatte, setzt die Datenbank einmal zurück (`docker compose down -v`), damit das eingeschränkte Laufzeitkonto angelegt wird.
+Wer den Stack schon vor dem 21.11.2026 gestartet hatte, setzt die Datenbank einmal zurück (`.\demo.ps1 -Reset`), damit das eingeschränkte Laufzeitkonto angelegt wird.
 
 Mit `docker compose --profile monitoring up --build` kommen Prometheus (<http://localhost:9090>) und Grafana (<http://localhost:3000>, Dashboard „NormaCase – Betrieb“) dazu. Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
 
