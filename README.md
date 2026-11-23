@@ -64,6 +64,7 @@ Vertrag: [`openapi.yaml`](backend/src/main/resources/static/api/v1/openapi.yaml)
 - [Datenschutz und Datenhaltung](docs/03-datenschutz-und-datenhaltung.md) – Verarbeitung ohne Vorhaltung, Zuordnung zu SDM, BSI TR-03161, SGB V
 - [Qualität und Betrieb](docs/04-qualitaet-und-betrieb.md) – Auth, Sicherheit, Rate Limiting, Caching, Logs, Monitoring, Tests, Skalierung, Hosting, CI/CD
 - [Architekturentscheidungen (ADRs)](docs/adr/)
+- [Roadmap](docs/ROADMAP.md) – Phasen und Stand
 - [TR-03161-Checkliste](docs/sicherheit/tr-03161-checkliste.md)
 - [Betrieb: Kubernetes](ops/k8s/), [Monitoring](ops/monitoring/), [Lasttest](ops/load/)
 - [Entwicklungsregeln](AGENTS.md)
