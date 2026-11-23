@@ -29,6 +29,16 @@ System Design, Architektur, Datenschutz und Datenhaltung, Qualität und Betrieb,
 - Rate Limiting, Metriken, Dashboards, Alarme
 - Kubernetes-Manifeste, k6-Lasttest
 
+## Version 1.0.0 (erledigt: #397, #399)
+- Zehn realistische, frei erfundene Demo-Vorgänge mit Befunden und Belegen
+- Fallliste wie im bisherigen Fallexplorer: Zeilenfärbung, Spaltenoptionen, Filterzeile, gespeicherte Abfragen, Fallakte per F4 ausblenden
+- README und Screenshots aus dem laufenden System
+
+## Phase 6 – Abfragen wie in Azure DevOps (geplant)
+- Spaltenbreiten per Ziehen anpassen (#400)
+- Abfrage-Editor mit Bedingungen und Und/Oder (#401)
+- Abfragen serverseitig speichern und im Team teilen (#402)
+
 ## Danach
 
 - Verbindliche Schnittstellenbeschreibung eines Fachsystems einholen und den ersten echten Adapter hinter dem Eingangsvertrag bauen
