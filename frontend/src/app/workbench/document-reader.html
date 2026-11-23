@@ -17,7 +17,7 @@
     <div class="reader-toolbar" role="toolbar" [attr.aria-label]="t.title">
       @if (pageNumbers().length > 1) {
         <button type="button" class="icon-button" [disabled]="page() <= 1" (click)="go(-1)" [attr.aria-label]="t.previousPage" [title]="t.previousPage">‹</button>
-        <span class="muted">{{ t.page }} {{ page() }} {{ t.of }} {{ pageNumbers().length }}</span>
+        <span class="muted page-of">{{ t.page }} {{ page() }} {{ t.of }} {{ pageNumbers().length }}</span>
         <button type="button" class="icon-button" [disabled]="page() >= pageNumbers().length" (click)="go(1)" [attr.aria-label]="t.nextPage" [title]="t.nextPage">›</button>
         <span class="divider" aria-hidden="true"></span>
       }

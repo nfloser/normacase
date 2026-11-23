@@ -1,29 +1,32 @@
 import { Component, DestroyRef, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, Subject, catchError, of, startWith, switchMap } from 'rxjs';
+import { Observable, Subject, catchError, forkJoin, map, of, startWith, switchMap } from 'rxjs';
 import { AuthService, AuthUser } from '../auth/auth.service';
 import { de, germanDateTime, label } from '../de';
 import { SystemService } from '../system/system.service';
 import { Presentation, ProcessDetail, ProcessSummary, QueueCount, ReleaseSummary, WorkbenchApi } from './api';
 import { CaseAction, CaseFile } from './case-file';
+import { ThemeChoice, ThemeStore } from '../shared/theme';
 import {
-  COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, SELECT_COLUMNS, SavedQuery, ViewSettings, ViewStore,
-  rowTone, storableFilters,
+  COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, PREVIEW_MAX, PREVIEW_MIN, SELECT_COLUMNS, SavedQuery, ViewSettings,
+  ViewStore, clampPreview, rowTone, storableFilters,
 } from './case-view';
 
 type Load<T> = { state: 'loading' } | { state: 'ready'; value: T } | { state: 'error' };
 const QUEUES = ['clarification', 'review', 'approval', 'done'];
+const ALL = 'all';
 
 /**
- * Prüfwerkstatt nach dem bewährten Konzept: Körbe wie Ordner, Vorgänge wie ein Postfach, rechts die Fallakte.
+ * Prüfwerkstatt nach dem bewährten Fallexplorer: Körbe wie Ordner, Vorgänge wie ein Postfach, darunter oder daneben
+ * die Vorschau der Fallakte; Doppelklick öffnet den Vorgang in voller Größe.
  * Alle Daten kommen aus der API; die Oberfläche enthält keine Fachlogik.
  */
 @Component({
   selector: 'nc-workbench',
   imports: [CaseFile],
   templateUrl: './workbench.html',
-  host: { '(document:keydown.f4)': 'toggleDetails($event)' },
+  host: { '(document:keydown.f4)': 'toggleDetails($event)', '(document:keydown)': 'keys($event)' },
 })
 export class Workbench {
   readonly user = input.required<AuthUser>();
@@ -33,8 +36,15 @@ export class Workbench {
   private readonly destroy = inject(DestroyRef);
   private readonly reload$ = new Subject<void>();
   private readonly store = inject(ViewStore);
+  protected readonly theme = inject(ThemeStore);
+  protected readonly queueIds = QUEUES;
 
-  protected readonly queue = signal('review');
+  protected readonly queue = signal(ALL);
+  /** Vorgang in voller Größe (Doppelklick, Eingabe, „Vorgang öffnen“); sonst Liste mit Vorschau. */
+  protected readonly opened = signal<string | null>(null);
+  /** Prüfanlass je Wissensstand, aus den Darstellungsdaten des Knowledge Packs. */
+  private readonly requestNames = signal<ReadonlyMap<string, string>>(new Map());
+  private anchor: string | null = null;
   protected readonly query = signal('');
   /** Ansicht: Spalten, Färbung, Sortierung, gespeicherte Abfragen. Wird je Konto im Browser gehalten. */
   protected readonly view = signal<ViewSettings>(this.store.load(''));
@@ -113,10 +123,15 @@ export class Workbench {
       const queue = this.queue();
       this.revision();
       untracked(() => { if (this.list().state !== 'ready') this.list.set({ state: 'loading' }); });
-      const sub = this.guard(this.api.processes(queue)).subscribe((l) => {
+      const source = queue === ALL
+        ? forkJoin(QUEUES.map((q) => this.api.processes(q))).pipe(map((lists) => lists.flat()))
+        : this.api.processes(queue);
+      const sub = this.guard(source).subscribe((l) => {
         this.list.set(l);
-        if (l.state === 'ready' && !l.value.some((p) => p.processId === this.active())) {
-          this.active.set(l.value[0]?.processId ?? null);
+        if (l.state === 'ready') {
+          if (!l.value.some((p) => p.processId === this.active())) this.active.set(this.visible()[0]?.processId ?? null);
+          if (this.opened() && !l.value.some((p) => p.processId === this.opened())) this.opened.set(null);
+          this.loadRequestNames(l.value);
         }
       });
       cleanup(() => sub.unsubscribe());
@@ -141,6 +156,7 @@ export class Workbench {
   }
 
   protected count(id: string): number {
+    if (id === ALL) return this.queues().reduce((sum, q) => sum + q.count, 0);
     return this.queues().find((q) => q.id === id)?.count ?? 0;
   }
 
@@ -148,6 +164,117 @@ export class Workbench {
     this.queue.set(id);
     this.selection.set(new Set());
     this.active.set(null);
+    this.opened.set(null);
+    this.anchor = null;
+  }
+
+  protected queueLabel(id: string): string {
+    return id === ALL ? de.wb.allCases : (de.queues[id] ?? id);
+  }
+
+  protected queueHelp(id: string): string {
+    return id === ALL ? de.wb.allCasesHelp : (de.queueHelp[id] ?? '');
+  }
+
+  /** Öffnet den Vorgang in voller Größe. */
+  protected open(id: string | null): void {
+    if (!id) return;
+    this.active.set(id);
+    this.opened.set(id);
+    setTimeout(() => document.getElementById('case-title')?.focus());
+  }
+
+  protected back(): void {
+    const id = this.opened();
+    this.opened.set(null);
+    setTimeout(() => document.querySelector<HTMLElement>(`tr[data-id="${id}"]`)?.focus());
+  }
+
+  /** Klick wie im Explorer: einfach wählt aus, Strg ergänzt, Umschalt wählt einen Bereich. */
+  protected rowClick(event: MouseEvent, p: ProcessSummary): void {
+    if (event.target instanceof Element && event.target.closest('input, button, a')) return;
+    this.active.set(p.processId);
+    if (event.shiftKey && this.anchor) {
+      this.selectRange(this.anchor, p.processId);
+    } else if (event.ctrlKey || event.metaKey) {
+      this.toggle(p.processId);
+      this.anchor = p.processId;
+    } else {
+      this.selection.set(new Set([p.processId]));
+      this.anchor = p.processId;
+    }
+  }
+
+  private selectRange(from: string, to: string): void {
+    const ids = this.visible().map((r) => r.processId);
+    const a = ids.indexOf(from);
+    const b = ids.indexOf(to);
+    if (a < 0 || b < 0) return;
+    this.selection.set(new Set(ids.slice(Math.min(a, b), Math.max(a, b) + 1)));
+  }
+
+  protected setTheme(choice: string): void {
+    if (choice === 'system' || choice === 'light' || choice === 'dark') this.theme.set(choice as ThemeChoice);
+  }
+
+  protected togglePreviewPosition(): void {
+    this.updateView({ previewPosition: this.view().previewPosition === 'bottom' ? 'right' : 'bottom' });
+  }
+
+  private resizing = false;
+
+  protected splitterDown(event: PointerEvent): void {
+    this.resizing = true;
+    (event.target as HTMLElement).setPointerCapture?.(event.pointerId);
+  }
+
+  protected splitterMove(event: PointerEvent, container: HTMLElement): void {
+    if (!this.resizing) return;
+    const box = container.getBoundingClientRect();
+    const share = this.view().previewPosition === 'bottom'
+      ? (box.bottom - event.clientY) / Math.max(1, box.height)
+      : (box.right - event.clientX) / Math.max(1, box.width);
+    this.view.update((v) => ({ ...v, previewSize: clampPreview(share * 100) }));
+  }
+
+  protected splitterUp(): void {
+    if (!this.resizing) return;
+    this.resizing = false;
+    this.store.save(this.user().username, this.view());
+  }
+
+  protected splitterKeys(event: KeyboardEvent): void {
+    const grow = this.view().previewPosition === 'bottom' ? 'ArrowUp' : 'ArrowLeft';
+    const shrink = this.view().previewPosition === 'bottom' ? 'ArrowDown' : 'ArrowRight';
+    if (event.key !== grow && event.key !== shrink) return;
+    event.preventDefault();
+    this.updateView({ previewSize: clampPreview(this.view().previewSize + (event.key === grow ? 5 : -5)) });
+  }
+
+  protected readonly previewMin = PREVIEW_MIN;
+  protected readonly previewMax = PREVIEW_MAX;
+
+  protected nextStep(p: ProcessSummary): string {
+    const steps = de.wb.nextSteps;
+    const step = p.state === 'IN_CLARIFICATION' ? (p.outcome === 'HUMAN_REVIEW' ? steps['conflict'] : steps['clarify'])
+      : p.state === 'IN_REVIEW' ? steps['review']
+        : p.state === 'AWAITING_APPROVAL' ? steps['approval']
+          : p.state === 'DISPATCHED' ? steps['dispatched'] : steps['closed'];
+    return p.missingFieldCount > 0 ? `${step} · ${de.wb.openPoints(p.missingFieldCount)}` : step;
+  }
+
+  private loadRequestNames(list: readonly ProcessSummary[]): void {
+    const known = this.requestNames();
+    for (const release of new Set(list.map((p) => p.knowledgeRelease))) {
+      if (known.has(release)) continue;
+      this.api.presentation(release).pipe(catchError(() => of({} as Presentation)), takeUntilDestroyed(this.destroy))
+        .subscribe((pr) => this.requestNames.update((m) => new Map(m).set(release, pr.name ?? release)));
+    }
+  }
+
+  protected clearAllFilters(): void {
+    this.filters.set({});
+    this.query.set('');
   }
 
   protected refresh(): void {
@@ -184,6 +311,10 @@ export class Workbench {
       const target = rows[Math.min(Math.max(0, to), rows.length - 1)];
       if (!target) return;
       this.active.set(target.processId);
+      if (event.shiftKey) {
+        this.anchor ??= p.processId;
+        this.selectRange(this.anchor, target.processId);
+      }
       document.querySelector<HTMLElement>(`tr[data-id="${target.processId}"]`)?.focus();
     };
     switch (event.key) {
@@ -192,12 +323,7 @@ export class Workbench {
       case 'Home': event.preventDefault(); move(0); break;
       case 'End': event.preventDefault(); move(rows.length - 1); break;
       case ' ': event.preventDefault(); this.toggle(p.processId); break;
-      case 'Enter':
-        event.preventDefault();
-        this.active.set(p.processId);
-        if (!this.view().showDetails) this.updateView({ showDetails: true });
-        setTimeout(() => document.getElementById('case-title')?.focus());
-        break;
+      case 'Enter': event.preventDefault(); this.open(p.processId); break;
     }
   }
 
@@ -241,6 +367,8 @@ export class Workbench {
   protected cellText(p: ProcessSummary, id: ColumnId): string {
     switch (id) {
       case 'subject': return p.displayName ?? '';
+      case 'request': return this.requestNames().get(p.knowledgeRelease) ?? p.knowledgeRelease;
+      case 'next': return this.nextStep(p);
       case 'number': return p.externalReference.caseId;
       case 'status': return this.stateLabel(p.state);
       case 'result': return this.outcome(p.outcome);
@@ -266,7 +394,14 @@ export class Workbench {
 
   protected toggleDetails(event?: Event): void {
     event?.preventDefault();
+    if (this.opened()) return;
     this.updateView({ showDetails: !this.view().showDetails });
+  }
+
+  protected keys(event: KeyboardEvent): void {
+    const editing = event.target instanceof Element ? event.target.closest('input, textarea, select') : null;
+    if (event.altKey && event.key === 'ArrowLeft' && this.opened()) { event.preventDefault(); this.back(); }
+    if (event.key === 'Escape' && this.opened() && !editing && !document.querySelector('.dialog-backdrop')) this.back();
   }
 
   protected setRowColors(on: boolean): void {
@@ -346,7 +481,7 @@ export class Workbench {
   }
 
   protected openQuery(q: SavedQuery): void {
-    this.openQueue(QUEUES.includes(q.queue) ? q.queue : 'review');
+    this.openQueue(q.queue === ALL || QUEUES.includes(q.queue) ? q.queue : ALL);
     this.updateView({ columns: q.columns, sort: q.sort, showFilters: this.view().showFilters || Object.keys(q.filters).length > 0 });
     this.filters.set({ ...q.filters });
   }
@@ -375,7 +510,7 @@ export class Workbench {
   }
 
   private searchText(p: ProcessSummary): string {
-    return [p.displayName, p.externalReference.caseId, this.outcome(p.outcome), this.stateLabel(p.state)]
+    return [p.displayName, p.externalReference.caseId, this.outcome(p.outcome), this.stateLabel(p.state), this.cellText(p, 'request')]
       .join(' ').toLocaleLowerCase('de-DE');
   }
 

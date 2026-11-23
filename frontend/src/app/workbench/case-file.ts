@@ -1,4 +1,5 @@
 import { Component, computed, input, output, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { de, germanDate, germanDateTime, label } from '../de';
 import { readAssessmentDocument, displayValue, ValueView } from '../shared/assessment';
 import { DecisionTrace, OutputLabel } from '../shared/decision-trace';
@@ -20,7 +21,7 @@ interface FormEvidence { id: string; label: string; value: string }
 /** Fallakte: Ergebnis, Begründung, Angaben, Dokumente, Verlauf und Nachweis eines Vorgangs. */
 @Component({
   selector: 'nc-case-file',
-  imports: [DecisionTrace, DocumentReader],
+  imports: [DecisionTrace, DocumentReader, NgTemplateOutlet],
   templateUrl: './case-file.html',
   host: { class: 'case-detail-host', '(document:keydown.escape)': 'closeDialogs()' },
 })
@@ -30,6 +31,8 @@ export class CaseFile {
   readonly release = input<ReleaseSummary | null>(null);
   readonly username = input.required<string>();
   readonly busy = input(false);
+  /** Vollansicht: Begründung und Dokumente nebeneinander. */
+  readonly wide = input(false);
   readonly act = output<CaseAction>();
 
   protected readonly t = de.caseFile;
