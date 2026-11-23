@@ -24,7 +24,6 @@
   <span class="divider" aria-hidden="true"></span>
   <button type="button" class="button ghost" [attr.aria-pressed]="!view().showDetails" (click)="toggleDetails()">{{ view().showDetails ? t.wb.hideDetails : t.wb.showDetails }}</button>
   <span class="spacer"></span>
-  <span class="muted small shortcuts">{{ t.wb.shortcuts }}</span>
   <label class="toggle"><input type="checkbox" [checked]="view().rowColors" (change)="setRowColors($any($event.target).checked)"> {{ t.wb.rowColors }}</label>
 </div>
 </header>
@@ -127,7 +126,7 @@
 </div>
 
 <footer class="statusbar">
-  <span role="status">{{ visible().length }} {{ t.wb.ofCases }} {{ list().state === 'ready' ? $any(list()).value.length : 0 }} {{ t.wb.cases }} · {{ selectedVisible().length }} {{ t.wb.selected }}</span>
+  <span role="status">{{ visible().length }} {{ t.wb.ofCases }} {{ list().state === 'ready' ? $any(list()).value.length : 0 }} {{ t.wb.cases }} · {{ selectedVisible().length }} {{ t.wb.selected }}<span class="shortcuts"> · {{ t.wb.shortcuts }}</span></span>
   <span class="muted">@if (system(); as s) { @if (s.status === 'ok') { {{ t.system.platform }} {{ s.info.platformVersion }} · {{ t.system.retention[s.info.retentionMode] }} · } }{{ t.syntheticNotice }}</span>
 </footer>
 @if (notice()) { <p class="toast" role="status">{{ notice() }}</p> }
