@@ -54,7 +54,11 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
           <span class="cond-text">{{ describe(c) }}</span>
           <span class="cond-result">{{ conditionLabel(c.result) }}</span>
         </div>
-        @if (c.numeric) { <p class="cond-detail">{{ numericText(c.numeric) }}</p> }
+        @if (c.numeric) {
+          <ul class="numeric-list">@for (line of numericLines(c.numeric); track $index) {
+            <li [class.numeric-total]="$last">{{ line }}</li>
+          }</ul>
+        }
         @if (c.children.length) {
           <ul role="group">@for (child of c.children; track $index) {
             <ng-container *ngTemplateOutlet="node; context: { $implicit: child, level: level + 1 }" />
@@ -107,11 +111,22 @@ export class DecisionTrace {
         return c.field ? `${kind}: ${this.fieldLabel(c.field)}` : kind;
     }
   }
-  protected numericText(n: NumericView): string {
-    const parts = (node: NumericView): string => {
-      const own = `${label(demo.numericKinds, node.kind, node.kind)}${node.field ? ' ' + this.fieldLabel(node.field) : ''} = ${displayValue(node.value, demo.values)}`;
-      return node.children.length ? `${own} (${node.children.map(parts).join('; ')})` : own;
+  /** Zerlegt eine Berechnung in lesbare Zeilen: je Bestandteil eine Zeile, zuletzt das Ergebnis. */
+  protected numericLines(n: NumericView): string[] {
+    const v = (node: NumericView) => displayValue(node.value, demo.values);
+    const part = (node: NumericView): string => {
+      if (node.kind === 'field') return `${this.fieldLabel(node.field ?? '')}: ${v(node)}`;
+      if (node.kind === 'range_lookup' && node.children.length === 1 && node.children[0].kind === 'field') {
+        const f = node.children[0];
+        return `${this.fieldLabel(f.field ?? '')}: ${v(f)} Punkte → ${v(node)} gewichtet`;
+      }
+      if (node.kind === 'max') return `höherer Wert aus ${node.children.map(part).join(' bzw. ')} → ${v(node)}`;
+      const name = label(demo.numericKinds, node.kind, node.kind);
+      return node.children.length ? `${name} aus ${node.children.map(part).join('; ')} = ${v(node)}` : `${name} = ${v(node)}`;
     };
-    return parts(n);
+    if (n.kind === 'sum' && n.children.length) {
+      return [...n.children.map(part), `${label(demo.numericKinds, 'sum', 'Summe')}: ${v(n)}`];
+    }
+    return [part(n)];
   }
 }
