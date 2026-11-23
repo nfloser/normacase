@@ -10,7 +10,7 @@ import { CaseAction, CaseFile } from './case-file';
 import { ThemeChoice, ThemeStore } from '../shared/theme';
 import {
   COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, PREVIEW_MAX, PREVIEW_MIN, SELECT_COLUMNS, SavedQuery, ViewSettings,
-  ViewStore, clampPreview, rowTone, storableFilters,
+  ViewStore, DEFAULT_VIEW, DENSITIES, clampPreview, rowTone, storableFilters,
 } from './case-view';
 
 type Load<T> = { state: 'loading' } | { state: 'ready'; value: T } | { state: 'error' };
@@ -26,7 +26,12 @@ const ALL = 'all';
   selector: 'nc-workbench',
   imports: [CaseFile],
   templateUrl: './workbench.html',
-  host: { '(document:keydown.f4)': 'toggleDetails($event)', '(document:keydown)': 'keys($event)' },
+  host: {
+    '(document:keydown.f4)': 'toggleDetails($event)',
+    '(document:keydown)': 'keys($event)',
+    '(document:click)': 'closeMenus($event)',
+    '[class.nav-collapsed]': '!view().showNav',
+  },
 })
 export class Workbench {
   readonly user = input.required<AuthUser>();
@@ -291,7 +296,101 @@ export class Workbench {
   }
 
   protected toggleVisible(checked: boolean): void {
-    this.selection.set(checked ? new Set(this.visible().map((p) => p.processId)) : new Set());
+    this.selection.set(checked ? new Set(this.visible().slice(0, 100).map((p) => p.processId)) : new Set());
+    if (checked && this.visible().length > 100) this.flash(de.wb.selectionLimit);
+  }
+
+  /** Menüleiste wie im bisherigen Fallexplorer. */
+  protected readonly menus: readonly { id: string; items: readonly string[] }[] = [
+    { id: 'file', items: ['open', 'copy-id', 'copy-result'] },
+    { id: 'edit', items: ['select-all', 'clear'] },
+    { id: 'view', items: ['detail', 'orientation', 'navigation', 'density', 'columns', 'filters', 'colors', 'reset', 'refresh'] },
+    { id: 'cases', items: ['confirm', 'save-query'] },
+  ];
+
+  protected menuLabel(id: string): string {
+    return (de.wb.menu as unknown as Record<string, string>)[id] ?? id;
+  }
+
+  protected available(action: string): boolean {
+    const inList = !this.opened();
+    switch (action) {
+      case 'open': return inList && !!this.active();
+      case 'copy-id': return !!this.active();
+      case 'copy-result': return this.detail()?.state === 'ready';
+      case 'select-all': return inList && this.visible().length > 0;
+      case 'clear': return this.selection().size > 0;
+      case 'confirm': return this.canBatchConfirm() && !this.busy();
+      case 'detail': case 'orientation': case 'columns': case 'filters': case 'save-query': return inList;
+      default: return true;
+    }
+  }
+
+  protected menu(action: string, event?: Event): void {
+    (event?.target as HTMLElement | undefined)?.closest('details')?.removeAttribute('open');
+    if (!this.available(action)) return;
+    switch (action) {
+      case 'open': this.open(this.active()); break;
+      case 'copy-id': this.copyId(); break;
+      case 'copy-result': this.copyResult(); break;
+      case 'select-all': this.toggleVisible(true); break;
+      case 'clear': this.selection.set(new Set()); this.anchor = null; break;
+      case 'detail': this.toggleDetails(); break;
+      case 'orientation': this.togglePreviewPosition(); break;
+      case 'navigation': this.updateView({ showNav: !this.view().showNav }); break;
+      case 'density': {
+        const next = DENSITIES[(DENSITIES.indexOf(this.view().density) + 1) % DENSITIES.length];
+        this.updateView({ density: next });
+        break;
+      }
+      case 'columns': this.openColumnOptions(); break;
+      case 'filters': this.toggleFilters(); break;
+      case 'colors': this.setRowColors(!this.view().rowColors); break;
+      case 'reset':
+        this.updateView({ ...DEFAULT_VIEW, queries: this.view().queries });
+        this.clearAllFilters();
+        this.flash(de.wb.viewReset);
+        break;
+      case 'refresh': this.refresh(); break;
+      case 'confirm': this.confirmSelected(); break;
+      case 'save-query': this.openQueryDialog(); break;
+    }
+  }
+
+  /** Nur ein Menü gleichzeitig offen; Klick außerhalb schließt. */
+  protected menuToggled(event: Event): void {
+    const opened = event.target as HTMLDetailsElement;
+    if (!opened.open) return;
+    document.querySelectorAll<HTMLDetailsElement>('.menubar details[open]').forEach((d) => { if (d !== opened) d.open = false; });
+  }
+
+  protected closeMenus(event: MouseEvent): void {
+    if (event.target instanceof Element && event.target.closest('.menubar')) return;
+    document.querySelectorAll<HTMLDetailsElement>('.menubar details[open]').forEach((d) => (d.open = false));
+  }
+
+  private copyId(): void {
+    const p = this.list().state === 'ready' ? (this.list() as { value: ProcessSummary[] }).value.find((r) => r.processId === this.active()) : undefined;
+    if (p) this.copy(p.externalReference.caseId, de.wb.caseNumberCopied);
+  }
+
+  private copyResult(): void {
+    const d = this.detail();
+    if (d?.state !== 'ready') return;
+    const v = d.value;
+    const lines = [
+      `${v.displayName ?? v.externalReference.caseId} (${v.externalReference.caseId})`,
+      `${de.trace.result}: ${this.outcome(v.outcome)}`,
+      `${de.wb.columns['status']}: ${this.stateLabel(v.state)}`,
+      `${de.caseFile.release}: ${v.knowledgeRelease}`,
+    ];
+    this.copy(lines.join('\n'), de.wb.resultText);
+  }
+
+  private copy(text: string, what: string): void {
+    const clipboard = globalThis.navigator?.clipboard;
+    if (!clipboard) { this.flash(de.wb.copyFailed); return; }
+    clipboard.writeText(text).then(() => this.flash(de.wb.copied(what)), () => this.flash(de.wb.copyFailed));
   }
 
   protected sortBy(key: ColumnId): void {
@@ -400,8 +499,17 @@ export class Workbench {
 
   protected keys(event: KeyboardEvent): void {
     const editing = event.target instanceof Element ? event.target.closest('input, textarea, select') : null;
-    if (event.altKey && event.key === 'ArrowLeft' && this.opened()) { event.preventDefault(); this.back(); }
-    if (event.key === 'Escape' && this.opened() && !editing && !document.querySelector('.dialog-backdrop')) this.back();
+    const dialog = !!document.querySelector('.dialog-backdrop');
+    const mod = event.ctrlKey || event.metaKey;
+    if (mod && event.key.toLowerCase() === 'k') { event.preventDefault(); document.querySelector<HTMLInputElement>('.appbar input[type=search]')?.focus(); return; }
+    if (event.key === 'F5' && !mod) { event.preventDefault(); this.refresh(); return; }
+    if (dialog || editing) return;
+    if (event.altKey && event.key === 'ArrowLeft' && this.opened()) { event.preventDefault(); this.back(); return; }
+    if (mod && event.key.toLowerCase() === 'a' && !this.opened()) { event.preventDefault(); this.toggleVisible(true); return; }
+    if (event.key === 'Escape') {
+      if (this.opened()) this.back();
+      else { this.selection.set(new Set()); this.anchor = null; }
+    }
   }
 
   protected setRowColors(on: boolean): void {

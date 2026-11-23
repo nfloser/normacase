@@ -32,6 +32,7 @@ services:
       - "127.0.0.1:8081:8080"
     volumes:
       - ./ops/keycloak:/opt/keycloak/data/import:ro
+      - ./ops/keycloak-theme/normacase:/opt/keycloak/themes/normacase:ro
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
       interval: 5s

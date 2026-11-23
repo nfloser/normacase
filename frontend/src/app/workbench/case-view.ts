@@ -34,6 +34,8 @@ export interface SavedQuery {
 }
 
 export type PreviewPosition = 'bottom' | 'right';
+export type Density = 'normal' | 'compact' | 'comfortable';
+export const DENSITIES: readonly Density[] = ['normal', 'compact', 'comfortable'];
 export const PREVIEW_MIN = 25;
 export const PREVIEW_MAX = 75;
 
@@ -47,6 +49,10 @@ export interface ViewSettings {
   readonly previewPosition: PreviewPosition;
   /** Anteil der Vorschau am Arbeitsbereich in Prozent. */
   readonly previewSize: number;
+  /** Zeilendichte der Liste wie im bisherigen Fallexplorer. */
+  readonly density: Density;
+  /** Explorer (Körbe und Ablage) links ein- oder ausgeblendet. */
+  readonly showNav: boolean;
   readonly sort: SortState;
   readonly queries: readonly SavedQuery[];
 }
@@ -58,6 +64,8 @@ export const DEFAULT_VIEW: ViewSettings = {
   showDetails: true,
   previewPosition: 'bottom',
   previewSize: 45,
+  density: 'normal',
+  showNav: true,
   sort: { key: 'number', asc: true },
   queries: [],
 };
@@ -134,6 +142,8 @@ export function sanitize(v: unknown): ViewSettings {
     showDetails: o['showDetails'] !== false,
     previewPosition: o['previewPosition'] === 'right' ? 'right' : 'bottom',
     previewSize: clampPreview(o['previewSize']),
+    density: DENSITIES.includes(o['density'] as Density) ? (o['density'] as Density) : 'normal',
+    showNav: o['showNav'] !== false,
     sort: sort(o['sort']),
     queries: queries
       .filter((q): q is Record<string, unknown> => !!q && typeof q === 'object' && typeof q['name'] === 'string' && typeof q['queue'] === 'string')
