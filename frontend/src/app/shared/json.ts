@@ -39,3 +39,11 @@ export function germanDecimal(value: ExactNumber): string {
   if (!match || match[4] !== undefined) return value.text;
   return match[1] + match[2] + (match[3] !== undefined ? ',' + match[3] : '');
 }
+
+/** Writes JSON parsed with {@link parseExact} back to text; numbers keep their exact source text. */
+export function exactJson(value: unknown): string {
+  if (value instanceof ExactNumber) return value.text;
+  if (Array.isArray(value)) return '[' + value.map(exactJson).join(',') + ']';
+  if (isObject(value)) return '{' + Object.entries(value).map(([k, v]) => JSON.stringify(k) + ':' + exactJson(v)).join(',') + '}';
+  return JSON.stringify(value ?? null);
+}

@@ -214,6 +214,97 @@ paths:
       responses:
         '204': { description: Quittiert }
         '404': { $ref: '#/components/responses/Problem' }
+  /api/v1/workspace:
+    get:
+      summary: Meine Ablage des angemeldeten Kontos (Ordner, Markierungen, Arbeitslistenfarben)
+      responses:
+        '200':
+          description: Ablage
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Workspace' }
+  /api/v1/workspace/folders:
+    post:
+      summary: Eigenen Ordner anlegen (höchstens fünf Ebenen)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FolderRequest' }
+      responses:
+        '201':
+          description: Angelegt
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Folder' }
+        '400': { $ref: '#/components/responses/Problem' }
+  /api/v1/workspace/folders/{id}:
+    put:
+      summary: Ordner umbenennen, umfärben oder verschieben
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FolderRequest' }
+      responses:
+        '200':
+          description: Geändert
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Folder' }
+        '404': { $ref: '#/components/responses/Problem' }
+    delete:
+      summary: Ordner samt Unterordnern löschen; Vorgänge liegen danach ohne eigenen Ordner
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204': { description: Gelöscht }
+        '404': { $ref: '#/components/responses/Problem' }
+  /api/v1/workspace/marks:
+    post:
+      summary: Bis zu 100 Vorgänge verschieben, farbig markieren, mit Lesezeichen oder Notiz versehen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [processIds, command]
+              properties:
+                processIds: { type: array, minItems: 1, maxItems: 100, items: { type: string, format: uuid } }
+                command: { type: string, enum: [MOVE, COLOR, BOOKMARK, NOTE] }
+                folderId: { type: [string, 'null'], format: uuid }
+                color: { type: [string, 'null'], pattern: '^#[0-9a-fA-F]{6}$' }
+                bookmark: { type: boolean }
+                note: { type: [string, 'null'], maxLength: 1000 }
+      responses:
+        '200':
+          description: Ablage nach der Änderung
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Workspace' }
+        '404': { $ref: '#/components/responses/Problem' }
+        '409': { $ref: '#/components/responses/Problem' }
+  /api/v1/workspace/queue-colors/{queue}:
+    put:
+      summary: Eigene Farbe einer Arbeitsliste setzen oder (mit null) zurücksetzen
+      parameters:
+        - { name: queue, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                color: { type: [string, 'null'], pattern: '^#[0-9a-fA-F]{6}$' }
+      responses:
+        '204': { description: Gespeichert }
+        '404': { $ref: '#/components/responses/Problem' }
 components:
   securitySchemes:
     bearer: { type: http, scheme: bearer, bearerFormat: JWT }
@@ -224,6 +315,36 @@ components:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
   schemas:
+    Folder:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        parentId: { type: [string, 'null'], format: uuid }
+        label: { type: string, maxLength: 80 }
+        color: { type: string, pattern: '^#[0-9a-f]{6}$' }
+    FolderRequest:
+      type: object
+      additionalProperties: false
+      required: [label, color]
+      properties:
+        label: { type: string, minLength: 1, maxLength: 80 }
+        color: { type: string, pattern: '^#[0-9a-fA-F]{6}$' }
+        parentId: { type: [string, 'null'], format: uuid }
+    Workspace:
+      type: object
+      properties:
+        folders: { type: array, items: { $ref: '#/components/schemas/Folder' } }
+        marks:
+          type: array
+          items:
+            type: object
+            properties:
+              processId: { type: string, format: uuid }
+              folderId: { type: [string, 'null'], format: uuid }
+              color: { type: [string, 'null'] }
+              bookmark: { type: boolean }
+              note: { type: [string, 'null'] }
+        queueColors: { type: object, additionalProperties: { type: string } }
     SystemInfo:
       type: object
       properties:

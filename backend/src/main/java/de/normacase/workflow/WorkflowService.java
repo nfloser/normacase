@@ -202,6 +202,8 @@ public class WorkflowService {
         transition(row, ProcessState.CLOSED, "case_input = null, assessment = null, expires_at = :expires",
                 q -> q.param("expires", Timestamp.from(clock.instant().plus(closedRetention))));
         jdbc.sql("delete from workflow.process_subject where process_id = :id").param("id", row.processId()).update();
+        // Notizen in „Meine Ablage“ sind Freitext und gehen mit den Fallinhalten; Ordner, Farbe und Lesezeichen bleiben.
+        jdbc.sql("update workflow.personal_mark set note = null where process_id = :id").param("id", row.processId()).update();
         documents.deleteAll(row.processId());
         record(row.processId(), row.reference(), ProcessEvent.Action.ACKNOWLEDGED, event.acknowledgedBy(), row.outcome(), null);
     }

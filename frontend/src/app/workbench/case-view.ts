@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { ProcessSummary } from './api';
 
 /** Spalten der Fallliste. Die Fachwerte kommen aus der API; hier wird nur angezeigt, sortiert und gefiltert. */
-export const COLUMN_IDS = ['subject', 'number', 'status', 'request', 'next', 'result', 'received', 'expires', 'missing', 'documents', 'confirmedBy', 'release', 'system'] as const;
+export const COLUMN_IDS = ['subject', 'number', 'status', 'request', 'next', 'result', 'received', 'expires', 'missing', 'documents', 'confirmedBy', 'release', 'system', 'folder'] as const;
 export type ColumnId = (typeof COLUMN_IDS)[number];
 
 /** Breite je Spalte in Pixeln; der Vorgang bekommt den Rest, mindestens aber diese Breite. */
 export const COLUMN_WIDTHS: Readonly<Record<ColumnId, number>> = {
-  subject: 200, number: 130, status: 150, request: 180, next: 180, result: 230, received: 140, expires: 140,
-  missing: 120, documents: 90, confirmedBy: 140, release: 210, system: 140,
+  subject: 200, number: 130, status: 190, request: 180, next: 180, result: 230, received: 140, expires: 140,
+  missing: 120, documents: 90, confirmedBy: 140, release: 210, system: 140, folder: 160,
 };
 
 /** Kennung der Plattform-Testfälle (Massenfälle); wie „Plattformfälle einbeziehen“ im bisherigen Fallexplorer. */
@@ -17,7 +17,7 @@ export const PLATFORM_SYSTEM = 'plattform-demo';
 export const DEFAULT_COLUMNS: readonly ColumnId[] = ['subject', 'number', 'status', 'request', 'next', 'result', 'documents'];
 
 /** Spalten, deren Filter eine Auswahlliste statt Freitext anbietet. */
-export const SELECT_COLUMNS: ReadonlySet<ColumnId> = new Set<ColumnId>(['status', 'request', 'result', 'release', 'system']);
+export const SELECT_COLUMNS: ReadonlySet<ColumnId> = new Set<ColumnId>(['status', 'request', 'result', 'release', 'system', 'folder']);
 
 /**
  * Filter auf diesen Spalten können Personennamen enthalten. Sie gelten nur in der laufenden Sitzung

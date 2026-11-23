@@ -78,3 +78,47 @@ test('Freigabe durch eine zweite Person; das Fachsystem holt ab und NormaCase l�
   await expect(file).toContainText('gelöscht');
   await logout(page);
 });
+
+test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page }) => {
+  await login(page, 'gutachter.b');
+  const nav = page.getByRole('navigation', { name: 'Arbeitslisten und Ablage' });
+
+  await page.getByRole('button', { name: 'Neuer Ordner' }).first().click();
+  await page.getByLabel('Name', { exact: true }).fill('Rückfragen diese Woche');
+  await page.getByRole('button', { name: 'Grün' }).click();
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect(nav.getByRole('button', { name: /^Rückfragen diese Woche/ })).toBeVisible();
+
+  await nav.getByRole('button', { name: /Informationen nachfordern/ }).click();
+  const row = page.locator('.case-table tbody tr').first();
+  const number = (await row.locator('.col-number').textContent())!.trim();
+  await row.click({ button: 'right' });
+  const menu = page.getByRole('menu', { name: 'Vorgangsaktionen' });
+  await expect(menu).toBeVisible();
+  const results = await new AxeBuilder({ page }).include('.context-menu').analyze();
+  expect(results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+  await menu.getByRole('menuitem', { name: /Verschieben nach/ }).hover();
+  await menu.getByRole('menuitem', { name: 'Rückfragen diese Woche' }).click();
+  await expect(page.locator('.toast')).toContainText('Gespeichert');
+
+  // Die Arbeitsliste zeigt den Vorgang weiter; „Alle Vorgänge“ nicht mehr, der Ordner schon.
+  await expect(page.locator('.case-table tbody tr').filter({ hasText: number })).toHaveCount(1);
+  await nav.getByRole('button', { name: /^Rückfragen diese Woche/ }).click();
+  const filed = page.locator('.case-table tbody tr').filter({ hasText: number });
+  await expect(filed).toHaveCount(1);
+
+  await filed.click();
+  await filed.press('Shift+F10');
+  await menu.getByRole('menuitem', { name: 'Lesezeichen setzen' }).click();
+  await expect(filed.locator('.bookmark')).toBeVisible();
+  await filed.click({ button: 'right' });
+  await menu.getByRole('menuitem', { name: /Notiz/ }).click();
+  await page.getByLabel('Notiz', { exact: true }).fill('Rückruf Dienstag');
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect(filed.locator('.case-note')).toHaveText('Rückruf Dienstag');
+  await expect(nav.getByRole('button', { name: /^Lesezeichen/ })).toContainText('1');
+
+  await nav.getByRole('button', { name: /^Alle Vorgänge/ }).click();
+  await expect(page.locator('.case-table tbody tr').filter({ hasText: number })).toHaveCount(0);
+  await logout(page);
+});

@@ -106,6 +106,12 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await page.getByLabel('Darstellung').selectOption('dark');
   await shot(page, 'dunkel');
   await page.getByLabel('Darstellung').selectOption('system');
+  await page.getByRole('button', { name: /^Alle Vorgänge/ }).click();
+  await page.locator('.case-table tbody tr').first().click({ button: 'right' });
+  await page.getByRole('menu', { name: 'Vorgangsaktionen' }).getByRole('menuitem', { name: /Markieren/ }).hover();
+  await shot(page, 'kontextmenue');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.context-menu')).toHaveCount(0);
 
   file = await open(page, /Zur Freigabe vorbereitet/, 'PG-2026-104233');
   await file.getByRole('button', { name: /Bestätigen/ }).click();
