@@ -244,8 +244,9 @@ class WorkflowIntegrationTest {
         submit("demo-g-supported", "Q-1");
         mvc.perform(get("/api/v1/queues").with(ASSESSOR))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[1].id").value("review"))
-                .andExpect(jsonPath("$[1].count").isNumber());
+                .andExpect(jsonPath("$[*].id").value(org.hamcrest.Matchers.contains(
+                        "review", "clarification", "conflict", "technical", "documents", "approval", "done")))
+                .andExpect(jsonPath("$[0].count").isNumber());
         mvc.perform(get("/api/v1/processes").param("queue", "review").with(ASSESSOR))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.externalReference.caseId == 'Q-1')].displayName").value("Synthetische Person Q-1"));
@@ -268,5 +269,70 @@ class WorkflowIntegrationTest {
 
     int count(String sql, UUID id) {
         return jdbc.sql(sql).param("id", id).query(Integer.class).single();
+    }
+
+    @Test
+    void contradictoryEvidenceGoesToConflictReviewAndCanBeClarified() throws Exception {
+        UUID id = submit("demo-g-review", "CF-1");
+        JsonNode d = detail(id, ASSESSOR);
+        assertThat(d.get("state").stringValue()).isEqualTo("IN_CONFLICT_REVIEW");
+        assertThat(d.get("queue").stringValue()).isEqualTo("conflict");
+        assertThat(d.get("outcome").stringValue()).isEqualTo("HUMAN_REVIEW");
+        assertThat(d.get("actions").toString()).contains("clarify").doesNotContain("confirm");
+        mvc.perform(get("/api/v1/processes").param("queue", "conflict").with(ASSESSOR))
+                .andExpect(jsonPath("$[?(@.externalReference.caseId == 'CF-1')]").isNotEmpty());
+    }
+
+    @Test
+    void documentsWithoutRulesetGoToDocumentReviewWithoutAssessment() throws Exception {
+        String body = """
+                {"externalReference": {"system": "host-a", "caseId": "DOC-1"},
+                 "subject": {"displayName": "Synthetische Person DOC-1"},
+                 "documents": [{"id": "befund", "title": "Befundbericht", "mediaType": "application/pdf",
+                                "contentBase64": "%s", "pagesBase64": ["%s"]}]}"""
+                .formatted(Base64.getEncoder().encodeToString(PDF), Base64.getEncoder().encodeToString(PNG));
+        String response = mvc.perform(post("/api/v1/intake").with(HOST).header("Idempotency-Key", "intake-key-DOC-1")
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.state").value("DOCUMENT_REVIEW"))
+                .andExpect(jsonPath("$.outcome").value("NOT_ASSESSED"))
+                .andReturn().getResponse().getContentAsString();
+        UUID id = UUID.fromString(StrictJson.MAPPER.readTree(response).get("processId").stringValue());
+        JsonNode d = detail(id, ASSESSOR);
+        assertThat(d.get("queue").stringValue()).isEqualTo("documents");
+        assertThat(d.get("assessment").isNull()).isTrue();
+        assertThat(d.get("knowledgeRelease").isNull()).isTrue();
+        assertThat(d.get("actions")).isEmpty();
+        assertThat(d.get("documents")).hasSize(1);
+
+        // Falldaten ohne Regelwerk sind ein Widerspruch und werden abgelehnt.
+        mvc.perform(post("/api/v1/intake").with(HOST).header("Idempotency-Key", "intake-key-DOC-2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body.replace("\"documents\":", "\"case\": {}, \"documents\":").replace("DOC-1", "DOC-2")))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void lenientIntakeRoutesTechnicalProblemsToTechnicalClarification() throws Exception {
+        String body = intake("demo-g-supported", "TEC-1", PDF, "application/pdf").replace(RELEASE, "gibt-es-nicht-2026.1");
+        // Ohne Prefer bleibt es bei der Ablehnung.
+        int strict = mvc.perform(post("/api/v1/intake").with(HOST).header("Idempotency-Key", "intake-key-TEC-0")
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andReturn().getResponse().getStatus();
+        assertThat(strict).isBetween(400, 499);
+        String response = mvc.perform(post("/api/v1/intake").with(HOST).header("Idempotency-Key", "intake-key-TEC-1")
+                        .header("Prefer", "handling=lenient")
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.state").value("TECHNICAL_CLARIFICATION"))
+                .andExpect(jsonPath("$.outcome").value("NOT_ASSESSED"))
+                .andReturn().getResponse().getContentAsString();
+        UUID id = UUID.fromString(StrictJson.MAPPER.readTree(response).get("processId").stringValue());
+        JsonNode d = detail(id, ASSESSOR);
+        assertThat(d.get("queue").stringValue()).isEqualTo("technical");
+        assertThat(d.get("technicalError").stringValue()).isEqualTo("UNKNOWN_RELEASE");
+        assertThat(d.get("actions")).isEmpty();
+        assertThat(jdbc.sql("select count(*) from audit.decision_evidence where external_case_id = 'TEC-1'")
+                .query(Integer.class).single()).isZero();
     }
 }

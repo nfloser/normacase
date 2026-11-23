@@ -8,7 +8,7 @@ export interface QueueCount { readonly id: string; readonly count: number }
 export interface ProcessSummary {
   readonly processId: string;
   readonly externalReference: { system: string; caseId: string };
-  readonly knowledgeRelease: string;
+  readonly knowledgeRelease: string | null;
   readonly state: string;
   readonly outcome: string;
   readonly receivedAt: string;
@@ -35,9 +35,10 @@ export interface ProcessDetail {
   readonly processId: string;
   readonly externalReference: { system: string; caseId: string };
   readonly displayName: string | null;
-  readonly knowledgeRelease: string;
+  readonly knowledgeRelease: string | null;
   readonly state: string;
   readonly queue: string;
+  readonly technicalError?: string | null;
   readonly outcome: string;
   readonly evidenceId: string | null;
   readonly confirmedBy: string | null;

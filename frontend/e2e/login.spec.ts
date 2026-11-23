@@ -16,7 +16,7 @@ test('Anmeldung über Keycloak und Abmeldung', async ({ page }) => {
   await page.locator('#password').fill('demo');
   await page.locator('#kc-login').click();
 
-  await expect(page.getByRole('navigation', { name: 'Arbeitskörbe' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Arbeitslisten und Ablage' })).toBeVisible();
   await expect(page.locator('.appbar')).toContainText('Anna Seidel');
   await expect(page.locator('.appbar')).toContainText('Gutachter:in');
   expect(new URL(page.url()).search).toBe('');

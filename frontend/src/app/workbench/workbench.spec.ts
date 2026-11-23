@@ -54,11 +54,15 @@ describe('Workbench', () => {
     }
   }
 
-  it('zeigt Körbe mit Anzahl, Vorgänge wie ein Postfach und die Fallakte rechts', async () => {
+  it('zeigt Arbeitslisten und Ablage wie im bisherigen Fallexplorer, Vorgänge und die Fallakte', async () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
 
-    expect(el.querySelector('.explorer')!.textContent).toContain('Zur Prüfung');
+    const nav = el.querySelector('.explorer')!.textContent!;
+    for (const list of ['Zur Freigabe vorbereitet', 'Informationen nachfordern', 'Gegenprüfung erforderlich', 'Technische Klärung',
+      'Unterlagensichtung', 'Meine Ablage', 'Bestätigt', 'Versendet']) {
+      expect(nav).toContain(list);
+    }
     expect(el.querySelector('.nav-item[aria-current=true]')!.textContent).toContain('Alle Vorgänge');
     expect(el.querySelector('.nav-item[aria-current=true] .nav-count')!.textContent).toBe('3');
     expect(el.querySelector('tbody td.col-request')!.textContent).toContain('Pitch-Demo');

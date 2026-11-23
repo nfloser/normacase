@@ -10,7 +10,7 @@ async function login(page: Page, user: string) {
   await page.locator('#username').fill(user);
   await page.locator('#password').fill('demo');
   await page.locator('#kc-login').click();
-  const workbench = page.getByRole('navigation', { name: 'Arbeitskörbe' });
+  const workbench = page.getByRole('navigation', { name: 'Arbeitslisten und Ablage' });
   const problem = page.getByRole('alert');
   await expect(workbench.or(problem)).toBeVisible();
   if (await problem.isVisible()) throw new Error(`Anmeldung fehlgeschlagen: ${await problem.textContent()} (${page.url()})`);
@@ -25,7 +25,7 @@ let caseNumber = '';
 
 test('Gutachterin prüft eine Fallakte mit Dokumenten und bestätigt', async ({ page }) => {
   await login(page, 'gutachterin.a');
-  await page.getByRole('button', { name: /Zur Prüfung/ }).click();
+  await page.getByRole('button', { name: /Zur Freigabe vorbereitet/ }).click();
   const row = page.locator('.case-table tbody tr').filter({ hasText: 'Voraussetzungen erfüllt' }).first();
   await expect(row).toBeVisible();
   caseNumber = (await row.locator('.col-number').textContent())!.trim();
@@ -55,7 +55,7 @@ test('Gutachterin prüft eine Fallakte mit Dokumenten und bestätigt', async ({ 
 test('Freigabe durch eine zweite Person; das Fachsystem holt ab und NormaCase löscht', async ({ page, request }) => {
   expect(caseNumber).not.toBe('');
   await login(page, 'freigabe.c');
-  await page.getByRole('button', { name: /Zur Freigabe/ }).click();
+  await page.getByRole('button', { name: /^Bestätigt/ }).click();
   const row = page.locator('.case-table tbody tr').filter({ hasText: caseNumber });
   await row.click();
   const file = page.getByRole('region', { name: 'Fallakte' });
@@ -73,7 +73,7 @@ test('Freigabe durch eine zweite Person; das Fachsystem holt ab und NormaCase l�
   expect(message.result.confirmedBy).toBe('gutachterin.a');
   expect((await request.post(`/api/v1/outbound/${message.messageId}/acknowledgement`, { headers })).status()).toBe(204);
 
-  await page.getByRole('button', { name: /Erledigt/ }).click();
+  await page.getByRole('button', { name: /^Versendet/ }).click();
   await page.locator('.case-table tbody tr').filter({ hasText: caseNumber }).click();
   await expect(file).toContainText('gelöscht');
   await logout(page);

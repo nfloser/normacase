@@ -1,9 +1,15 @@
 package de.normacase.workflow;
 
-/** Arbeitskörbe der Prüfwerkstatt. */
+/**
+ * Arbeitslisten der Prüfwerkstatt wie im bisherigen Fallexplorer: eindeutig bewertet, Angaben fehlen, Gegenprüfung,
+ * technische Klärung und reine Unterlagensichtung; danach Freigabe und Erledigt.
+ */
 public enum Queue {
-    CLARIFICATION("clarification"),
     REVIEW("review"),
+    CLARIFICATION("clarification"),
+    CONFLICT("conflict"),
+    TECHNICAL("technical"),
+    DOCUMENTS("documents"),
     APPROVAL("approval"),
     DONE("done");
 

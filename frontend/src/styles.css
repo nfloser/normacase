@@ -183,6 +183,8 @@ th[aria-sort='descending'] .sort::after { content: ' ↓'; }
 .case-table.row-colors tbody tr[data-tone='ready'] { --row-bg: light-dark(#ddf2dd, #183e38); --case-color: light-dark(#4f9a4f, #5fbf8f); }
 .case-table.row-colors tbody tr[data-tone='missing'] { --row-bg: light-dark(#fff6cc, #403621); --case-color: light-dark(#c9a400, #e0c25a); }
 .case-table.row-colors tbody tr[data-tone='conflict'] { --row-bg: light-dark(#ffe3c7, #493126); --case-color: light-dark(#d9772b, #f0a265); }
+.case-table.row-colors tbody tr[data-tone='technical'] { --row-bg: light-dark(#fbd9d9, #462730); --case-color: light-dark(#c0392b, #f08a80); }
+.case-table.row-colors tbody tr[data-tone='documents'] { --row-bg: light-dark(#eadff5, #343048); --case-color: light-dark(#7956a3, #c4a8f0); }
 .case-table.row-colors tbody tr[data-tone='done'] { --row-bg: light-dark(#eceff3, #2a2f36); --case-color: light-dark(#8a94a3, #8a94a3); }
 .case-table.row-colors tbody tr[data-tone] { background: var(--row-bg); }
 .case-table.row-colors tbody tr[data-tone]:hover { background: color-mix(in srgb, var(--row-bg) 82%, var(--nc-text) 6%); }
@@ -198,12 +200,15 @@ th[aria-sort='descending'] .sort::after { content: ' ↓'; }
 .result-pill.ampel[data-outcome='INCOMPLETE'] { background: light-dark(#f5c542, #f5c542); color: #3a2a00; }
 .result-pill.ampel[data-outcome='HUMAN_REVIEW'] { background: light-dark(#a8480a, #f7b37a); color: light-dark(#ffffff, #3a1a00); }
 .result-pill.ampel::before { background: currentColor; opacity: .85; }
+.result-pill.ampel[data-outcome='NOT_ASSESSED'] { background: light-dark(#e4e1ec, #3a3646); color: light-dark(#3f3a4d, #d9d3ea); }
 .tone-legend { list-style: none; margin: 1rem .55rem 0; padding: .6rem 0 0; border-top: 1px solid var(--nc-border); display: grid; gap: .3rem; font-size: .75rem; color: var(--nc-text-2); }
 .tone-legend li { display: flex; align-items: center; gap: .45rem; }
 .tone-swatch { width: 14px; height: 10px; border-radius: 3px; flex: none; border: 1px solid var(--nc-border); }
 .tone-swatch[data-tone='ready'] { background: light-dark(#ddf2dd, #183e38); }
 .tone-swatch[data-tone='missing'] { background: light-dark(#fff6cc, #403621); }
 .tone-swatch[data-tone='conflict'] { background: light-dark(#ffe3c7, #493126); }
+.tone-swatch[data-tone='technical'] { background: light-dark(#fbd9d9, #462730); }
+.tone-swatch[data-tone='documents'] { background: light-dark(#eadff5, #343048); }
 .tone-swatch[data-tone='done'] { background: light-dark(#eceff3, #2a2f36); }
 .nav-query { display: flex; align-items: center; gap: .1rem; }
 .nav-query .icon-button { visibility: hidden; min-width: 26px; height: 26px; color: var(--nc-text-2); }
@@ -488,7 +493,7 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .sheet.simple { max-width: none; min-height: 6rem; }
 .sheet.simple img { position: static; transform-origin: center; width: 100%; height: auto; max-width: none; }
 .nav-dot[data-queue='clarification'] { background: var(--nc-warn); }
-.nav-dot[data-queue='review'] { background: light-dark(#8e2f5a, #f3a9c8); }
+.nav-dot[data-queue='review'] { background: light-dark(#24708f, #8fd6e4); }
 .nav-dot[data-queue='approval'] { background: light-dark(#13606f, #8fd6e4); }
 .nav-dot[data-queue='done'] { background: var(--nc-good); }
 .result-pill[data-outcome='NOT_APPLICABLE'] { background: var(--nc-muted-bg); }
@@ -518,3 +523,14 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 /* Zeilendichte */
 .case-table[data-density='compact'] tbody td { padding-top: .22rem; padding-bottom: .22rem; }
 .case-table[data-density='comfortable'] tbody td { padding-top: .8rem; padding-bottom: .8rem; }
+
+/* Arbeitslisten wie im bisherigen Fallexplorer */
+.nav-dot[data-queue='conflict'] { background: light-dark(#a54866, #f3a9c8); }
+.nav-dot[data-queue='technical'] { background: light-dark(#7956a3, #cdb6f2); }
+.nav-dot[data-queue='documents'] { background: light-dark(#497ab7, #9cc0ef); }
+.chip[data-queue='conflict'] { background: light-dark(#fbe3d4, #3f2a1e); color: light-dark(#8a3d0a, #f7b37a); }
+.next-step[data-step='technical'] { background: light-dark(#fbe7e7, #2e1a1c); }
+.next-step[data-step='documents'] { background: light-dark(#f1ebfa, #262236); }
+.notice-box { margin: 0; padding: .8rem 1rem; border-radius: var(--nc-radius); background: var(--nc-muted-bg); color: var(--nc-text); }
+.notice-box[data-state='TECHNICAL_CLARIFICATION'] { background: light-dark(#fbe7e7, #2e1a1c); }
+.notice-box[data-state='DOCUMENT_REVIEW'] { background: light-dark(#f1ebfa, #262236); }
