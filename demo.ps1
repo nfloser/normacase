@@ -36,11 +36,6 @@ function Stop-WithError([string]$Text) {
   Write-Host "FEHLER: $Text" -ForegroundColor Red
   exit 1
 }
-function Invoke-Docker {
-  # Ausgabe direkt anzeigen, damit nur der Exit-Code zurückkommt.
-  & docker @args | Out-Host
-  return $LASTEXITCODE
-}
 function Test-DockerRunning {
   & docker info *> $null
   return $LASTEXITCODE -eq 0
@@ -51,8 +46,11 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
   Stop-WithError 'Docker wurde nicht gefunden. Bitte Docker Desktop installieren: https://www.docker.com/products/docker-desktop/'
 }
 if (-not (Test-DockerRunning)) {
-  $desktop = if ($env:ProgramFiles) { Join-Path $env:ProgramFiles 'Docker\Docker\Docker Desktop.exe' } else { '' }
-  if ($desktop -and (Test-Path -LiteralPath $desktop)) {
+  $desktop = @(
+    $(if ($env:ProgramFiles) { Join-Path $env:ProgramFiles 'Docker\Docker\Docker Desktop.exe' }),
+    $(if ($env:LOCALAPPDATA) { Join-Path $env:LOCALAPPDATA 'Programs\Docker\Docker\Docker Desktop.exe' })
+  ) | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
+  if ($desktop) {
     Write-Step 'Docker Desktop läuft nicht, wird gestartet'
     Start-Process -FilePath $desktop | Out-Null
     $until = (Get-Date).AddMinutes(3)
@@ -75,18 +73,21 @@ if ($Monitoring) { $compose += @('--profile', 'monitoring') }
 # 2. Beenden oder zurücksetzen
 if ($Stop) {
   Write-Step 'Beende die Demo'
-  [void](Invoke-Docker @compose down)
+  & docker @compose down
   Write-Host 'Beendet. Starten mit .\demo.ps1' -ForegroundColor Green
   exit 0
 }
 if ($Reset) {
   Write-Step 'Setze die Demo zurück (alle Vorgänge wieder unbearbeitet)'
-  [void](Invoke-Docker @compose down -v)
+  & docker @compose down -v
 }
 
 # 3. Bauen und starten
 Write-Step 'Baue und starte NormaCase (der erste Start dauert einige Minuten)'
-if ((Invoke-Docker @compose up --build -d) -ne 0) {
+# Docker direkt aufrufen, ohne Umleitung: Der Build braucht das Konsolenfenster (sonst unter Windows
+# "failed to get console: Das Handle ist ungültig").
+& docker @compose up --build -d
+if ($LASTEXITCODE -ne 0) {
   Stop-WithError 'Der Start ist fehlgeschlagen. Details mit: docker compose logs'
 }
 
@@ -113,7 +114,7 @@ while ($true) {
   $state = (& docker compose ps -a --format '{{.State}} {{.ExitCode}}' demo-host 2>$null) -join ' '
   if ($state -match '^exited 0') { break }
   if ($state -match '^exited') {
-    [void](Invoke-Docker compose logs demo-host)
+    & docker compose logs demo-host
     Stop-WithError 'Die Demo-Vorgänge konnten nicht eingeliefert werden (Ausgabe oben).'
   }
   if ((Get-Date) -gt $deadline) { Stop-WithError 'Die Demo-Vorgänge wurden nicht rechtzeitig eingeliefert. Details mit: docker compose logs demo-host' }
