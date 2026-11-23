@@ -23,6 +23,8 @@ NormaCase ist als Baustein für ein führendes Fachsystem gedacht. Das Fachsyste
 | Ergebnis | Nachweis | im Zusammenhang mit Vorgangs-ID | wie oben |
 | Handelnde Person (technische ID), Rolle, Zeitpunkt | Vier-Augen-Nachweis | Beschäftigtendaten | nach Hausregel |
 
+Im Browser der Nutzerin oder des Nutzers (`localStorage`, je Konto) liegt nur die Ansicht der Prüfwerkstatt: gewählte Spalten und Reihenfolge, Zeilenfärbung an/aus, Sortierung und gespeicherte Abfragen mit Korb und Filtern. Filter auf die Spalte „Vorgang“ können Namen enthalten; sie gelten nur in der laufenden Sitzung und werden nicht gespeichert. Fallinhalte, Tokens und Dokumente landen nie im Browserspeicher. Löschregel: durch die Nutzerin oder den Nutzer (Abfrage löschen, Browserdaten löschen).
+
 Nicht gespeichert werden: Namen, Geburtsdaten, Versichertennummern, Freitexte, Befunde, Dokumente, konkrete Kriterienwerte. Eine Revision kann das Ergebnis trotzdem nachprüfen, indem das Fachsystem die Originaleingabe erneut einreicht: gleicher Hash, gleiches Release, gleicher Stichtag ergeben das gleiche Ergebnis.
 
 ## 3. Zuordnung zu Kriterien

@@ -16,8 +16,15 @@
   <button type="button" class="icon-button" (click)="refresh()" [attr.aria-label]="t.wb.refresh" [title]="t.wb.refresh">⟳</button>
   <span class="divider" aria-hidden="true"></span>
   <button type="button" class="button ghost" [disabled]="!canBatchConfirm() || busy()" (click)="confirmSelected()">✓ {{ t.wb.confirmSelected }}@if (selectedVisible().length) { <span class="count">{{ selectedVisible().length }}</span> }</button>
+  <span class="divider" aria-hidden="true"></span>
+  <button type="button" class="button ghost" [attr.aria-pressed]="view().showFilters" (click)="toggleFilters()">⚲ {{ t.wb.filters }}@if (activeFilters()) { <span class="count">{{ activeFilters() }}</span> }</button>
+  @if (activeFilters()) { <button type="button" class="button ghost" (click)="clearFilters()">{{ t.wb.clearFilters }}</button> }
+  <button type="button" class="button ghost" (click)="openColumnOptions()">☰ {{ t.wb.columnOptions }}</button>
+  <button type="button" class="button ghost" (click)="openQueryDialog()">☆ {{ t.wb.saveQuery }}</button>
+  <span class="divider" aria-hidden="true"></span>
+  <button type="button" class="button ghost" [attr.aria-pressed]="!view().showDetails" (click)="toggleDetails()">{{ view().showDetails ? t.wb.hideDetails : t.wb.showDetails }}</button>
   <span class="spacer"></span>
-  <span class="muted small">{{ t.wb.shortcuts }}</span>
+  <label class="toggle"><input type="checkbox" [checked]="view().rowColors" (change)="setRowColors($any($event.target).checked)"> {{ t.wb.rowColors }}</label>
 </div>
 </header>
 
@@ -29,36 +36,66 @@
         <span class="nav-dot" [attr.data-queue]="q" aria-hidden="true"></span><span class="nav-label">{{ t.queues[q] }}</span><span class="nav-count">{{ count(q) }}</span></button>
     }
     <p class="nav-help">{{ t.queueHelp[queue()] }}</p>
+    <h2 class="nav-heading">{{ t.wb.myQueries }}</h2>
+    @for (q of view().queries; track q.name) {
+      <div class="nav-query">
+        <button type="button" class="nav-item" (click)="openQuery(q)"><span class="nav-star" aria-hidden="true">☆</span><span class="nav-label">{{ q.name }}</span></button>
+        <button type="button" class="icon-button small" [attr.aria-label]="t.wb.deleteQuery(q.name)" [title]="t.wb.deleteQuery(q.name)" (click)="deleteQuery(q.name)">×</button>
+      </div>
+    } @empty { <p class="nav-help">{{ t.wb.noQueries }}</p> }
+    @if (view().rowColors) {
+      <ul class="tone-legend" [attr.aria-label]="t.wb.rowColors">
+        @for (tone of tones; track tone) { <li><span class="tone-swatch" [attr.data-tone]="tone" aria-hidden="true"></span>{{ t.wb.tones[tone] }}</li> }
+      </ul>
+    }
   </nav>
 
   <main class="workbench-main">
     @if (error()) { <p class="banner error" role="alert">{{ error() }} <button type="button" class="link" (click)="error.set('')" aria-label="Schließen">×</button></p> }
     <div class="list-and-pane" data-pane="right">
       <div class="list-scroll">
-        <table class="case-table" [attr.aria-label]="t.queues[queue()]">
+        <table class="case-table" [class.row-colors]="view().rowColors" [style.min-width.px]="tableMinWidth()" [attr.aria-label]="t.queues[queue()]">
           <thead>
             <tr>
               <th class="col-select"><input type="checkbox" [attr.aria-label]="t.wb.selectVisible" [checked]="allVisibleSelected()" [disabled]="!visible().length" (change)="toggleVisible($any($event.target).checked)"></th>
-              <th [attr.aria-sort]="ariaSort('subject')"><button type="button" class="sort" (click)="sortBy('subject')">{{ t.wb.subject }}</button></th>
-              <th class="col-number" [attr.aria-sort]="ariaSort('number')"><button type="button" class="sort" (click)="sortBy('number')">{{ t.wb.number }}</button></th>
-              <th class="col-status">{{ t.wb.status }}</th>
-              <th class="col-result" [attr.aria-sort]="ariaSort('result')"><button type="button" class="sort" (click)="sortBy('result')">{{ t.wb.result }}</button></th>
-              <th class="col-next" [attr.aria-sort]="ariaSort('received')"><button type="button" class="sort" (click)="sortBy('received')">{{ t.wb.received }}</button></th>
-              <th class="col-docs">{{ t.wb.documents }}</th>
+              @for (c of columns(); track c) {
+                <th [class]="'col-' + c" [style.width.px]="width(c)" [attr.aria-sort]="ariaSort(c)"><button type="button" class="sort" (click)="sortBy(c)">{{ columnLabel(c) }}</button></th>
+              }
             </tr>
+            @if (view().showFilters) {
+              <tr class="filter-row">
+                <th class="col-select"><span class="sr-only">{{ t.wb.filters }}</span></th>
+                @for (c of columns(); track c) {
+                  <th [class]="'col-' + c">
+                    @if (selectColumns.has(c)) {
+                      <select [attr.aria-label]="t.wb.filterFor(columnLabel(c))" [value]="filters()[c] ?? ''" (change)="setFilter(c, $any($event.target).value)">
+                        <option value="">{{ t.wb.all }}</option>
+                        @for (o of options()[c] ?? []; track o) { <option [value]="o" [selected]="filters()[c] === o">{{ o }}</option> }
+                      </select>
+                    } @else {
+                      <input type="text" [placeholder]="t.wb.contains" [attr.aria-label]="t.wb.filterFor(columnLabel(c))" [value]="filters()[c] ?? ''" (input)="setFilter(c, $any($event.target).value)" autocomplete="off" spellcheck="false">
+                    }
+                  </th>
+                }
+              </tr>
+            }
           </thead>
           <tbody>
             @for (p of visible(); track p.processId) {
-              <tr tabindex="0" [attr.data-id]="p.processId" [attr.data-selected]="selection().has(p.processId)" [class.active]="active() === p.processId"
+              <tr tabindex="0" [attr.data-id]="p.processId" [attr.data-tone]="rowTone(p)" [attr.data-selected]="selection().has(p.processId)" [class.active]="active() === p.processId"
                 [attr.aria-label]="(p.displayName ?? p.externalReference.caseId) + ', ' + outcome(p.outcome)"
                 (click)="active.set(p.processId)" (keydown)="rowKeys($event, p)">
                 <td class="col-select"><input type="checkbox" [attr.aria-label]="t.wb.selectCase + ': ' + p.externalReference.caseId" [checked]="selection().has(p.processId)" (click)="$event.stopPropagation()" (change)="toggle(p.processId)"></td>
-                <td class="col-subject"><div class="subject-line"><span class="case-open"><strong>{{ p.displayName ?? '–' }}</strong></span></div></td>
-                <td class="col-number mono">{{ p.externalReference.caseId }}</td>
-                <td class="col-status"><span class="chip" [attr.data-queue]="t.stateQueue[p.state]">{{ stateLabel(p.state) }}</span></td>
-                <td class="col-result"><span class="result-pill" [attr.data-outcome]="p.outcome">{{ outcome(p.outcome) }}</span></td>
-                <td class="col-next">{{ dateTime(p.receivedAt) }}</td>
-                <td class="col-docs">{{ p.documentCount }}</td>
+                @for (c of columns(); track c) {
+                  @switch (c) {
+                    @case ('subject') { <td class="col-subject" [title]="cellText(p, c)"><strong>{{ p.displayName ?? '–' }}</strong></td> }
+                    @case ('number') { <td class="col-number mono">{{ p.externalReference.caseId }}</td> }
+                    @case ('status') { <td class="col-status"><span class="chip" [attr.data-queue]="t.stateQueue[p.state]">{{ stateLabel(p.state) }}</span></td> }
+                    @case ('result') { <td class="col-result"><span class="result-pill" [attr.data-outcome]="p.outcome" [title]="outcome(p.outcome)">{{ outcome(p.outcome) }}</span></td> }
+                    @case ('release') { <td class="col-release mono" [title]="cellText(p, c)">{{ cellText(p, c) }}</td> }
+                    @default { <td [class]="'col-' + c" [title]="cellText(p, c)">{{ cellText(p, c) || '–' }}</td> }
+                  }
+                }
               </tr>
             }
           </tbody>
@@ -69,6 +106,7 @@
           @default { @if (!visible().length) { <p class="empty-state">{{ query() ? t.wb.noMatches : t.wb.noCases }}</p> } }
         }
       </div>
+      @if (view().showDetails) {
       <section class="reading-pane" [attr.aria-label]="t.wb.readingPane">
         @if (detail(); as d) {
           @switch (d.state) {
@@ -82,12 +120,65 @@
           }
         } @else { <p class="empty-state">{{ t.wb.emptyPane }}</p> }
       </section>
+      }
     </div>
   </main>
 </div>
 
 <footer class="statusbar">
-  <span role="status">{{ visible().length }} {{ t.wb.ofCases }} {{ list().state === 'ready' ? $any(list()).value.length : 0 }} {{ t.wb.cases }} · {{ selectedVisible().length }} {{ t.wb.selected }}</span>
+  <span role="status">{{ visible().length }} {{ t.wb.ofCases }} {{ list().state === 'ready' ? $any(list()).value.length : 0 }} {{ t.wb.cases }} · {{ selectedVisible().length }} {{ t.wb.selected }}</span><span class="shortcuts muted">{{ t.wb.shortcuts }}</span><span class="spacer"></span>
   <span class="muted">@if (system(); as s) { @if (s.status === 'ok') { {{ t.system.platform }} {{ s.info.platformVersion }} · {{ t.system.retention[s.info.retentionMode] }} · } }{{ t.syntheticNotice }}</span>
 </footer>
 @if (notice()) { <p class="toast" role="status">{{ notice() }}</p> }
+
+@if (columnDialog(); as draft) {
+  <div class="dialog-backdrop">
+    <div class="dialog-card column-options" tabindex="-1" (keydown.escape)="columnDialog.set(null)" role="dialog" aria-modal="true" aria-labelledby="columns-title">
+    <form class="dialog-form" (submit)="$event.preventDefault(); applyColumns()">
+      <h3 id="columns-title">{{ t.wb.columnOptions }}</h3>
+      <p class="hint">{{ t.wb.columnOptionsHelp }}</p>
+      <ol class="column-list">
+        @for (c of draft; track c; let i = $index, first = $first, last = $last) {
+          <li>
+            <span class="column-name">{{ columnLabel(c) }}</span>
+            <button type="button" class="icon-button small" [disabled]="first" [attr.aria-label]="t.wb.moveUp(columnLabel(c))" [title]="t.wb.moveUp(columnLabel(c))" (click)="moveColumn(i, -1)">↑</button>
+            <button type="button" class="icon-button small" [disabled]="last" [attr.aria-label]="t.wb.moveDown(columnLabel(c))" [title]="t.wb.moveDown(columnLabel(c))" (click)="moveColumn(i, 1)">↓</button>
+            <button type="button" class="icon-button small" [disabled]="draft.length === 1" [attr.aria-label]="t.wb.removeColumn(columnLabel(c))" [title]="t.wb.removeColumn(columnLabel(c))" (click)="removeColumn(c)">×</button>
+          </li>
+        }
+      </ol>
+      @if (availableColumns(draft).length) {
+        <label class="field"><span>{{ t.wb.addColumn }}</span>
+          <select #add (change)="addColumn(add.value); add.value = ''">
+            <option value="">{{ t.wb.chooseColumn }}</option>
+            @for (c of availableColumns(draft); track c) { <option [value]="c">{{ columnLabel(c) }}</option> }
+          </select>
+        </label>
+      }
+      <div class="dialog-actions">
+        <button type="button" class="button ghost" (click)="resetColumns()">{{ t.wb.resetColumns }}</button>
+        <span class="spacer"></span>
+        <button type="button" class="button ghost" (click)="columnDialog.set(null)">{{ t.wb.cancel }}</button>
+        <button type="submit" class="button primary">{{ t.wb.apply }}</button>
+      </div>
+    </form>
+    </div>
+  </div>
+}
+
+@if (queryDialog()) {
+  <div class="dialog-backdrop">
+    <div class="dialog-card" tabindex="-1" (keydown.escape)="queryDialog.set(false)" role="dialog" aria-modal="true" aria-labelledby="query-title">
+    <form class="dialog-form" (submit)="$event.preventDefault(); saveQuery(name.value)">
+      <h3 id="query-title">{{ t.wb.saveQuery }}</h3>
+      <p class="hint">{{ t.wb.saveQueryHelp }}</p>
+      <label class="field"><span>{{ t.wb.queryName }}</span><input #name id="query-name" type="text" maxlength="60" required autocomplete="off"></label>
+      <div class="dialog-actions">
+        <span class="spacer"></span>
+        <button type="button" class="button ghost" (click)="queryDialog.set(false)">{{ t.wb.cancel }}</button>
+        <button type="submit" class="button primary">{{ t.wb.save }}</button>
+      </div>
+    </form>
+    </div>
+  </div>
+}
