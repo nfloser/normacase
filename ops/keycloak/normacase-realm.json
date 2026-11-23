@@ -2,6 +2,7 @@
   "realm": "normacase",
   "enabled": true,
   "displayName": "NormaCase",
+  "loginTheme": "normacase",
   "sslRequired": "external",
   "bruteForceProtected": true,
   "failureFactor": 5,

@@ -464,7 +464,7 @@ nc-pdf-reader { flex: 1; min-height: 0; display: grid; grid-template-columns: 23
 /* ---------- Anmeldung ---------- */
 .user { display: inline-flex; gap: .4rem; align-items: baseline; }
 .login-shell { display: grid; grid-template-rows: auto 1fr auto; min-height: 100vh; }
-.login-page { display: grid; place-items: center; padding: 2rem; }
+.login-page { display: grid; place-items: center; padding: 2rem; background: light-dark(#e9ebee, #1f2226); }
 .login-card { display: grid; gap: .9rem; max-width: 26rem; padding: 2rem; border-radius: var(--nc-radius-lg); background: var(--nc-surface); border: 1px solid var(--nc-border); box-shadow: var(--nc-shadow); }
 .login-card h1 { font-size: 1.4rem; }
 .error { padding: .6rem .8rem; border-radius: var(--nc-radius); background: var(--nc-bad-bg); color: var(--nc-bad); }
@@ -501,3 +501,20 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .output-list .cond strong { font-weight: 600; }
 .reader-toolbar { flex-wrap: nowrap; overflow-x: auto; }
 .reader-toolbar .page-of { white-space: nowrap; }
+
+/* ---------- Menüleiste wie im bisherigen Fallexplorer ---------- */
+.menubar { display: flex; align-items: center; gap: .1rem; flex: none; }
+.menubar details { position: relative; }
+.menubar summary { list-style: none; cursor: pointer; padding: .3rem .6rem; border-radius: var(--nc-radius); font-size: .88rem; color: var(--nc-text); user-select: none; }
+.menubar summary::-webkit-details-marker { display: none; }
+.menubar summary:hover, .menubar details[open] > summary { background: var(--nc-hover); }
+.menubar summary:focus-visible { outline: 2px solid var(--nc-focus); outline-offset: 1px; }
+.menu-list { position: absolute; top: calc(100% + 4px); left: 0; z-index: 30; min-width: 260px; padding: .3rem; display: grid; border-radius: var(--nc-radius-lg); border: 1px solid var(--nc-border); background: var(--nc-popover, var(--nc-surface)); box-shadow: var(--nc-shadow-high); }
+.menu-list button { text-align: left; border: 0; background: none; padding: .45rem .6rem; border-radius: var(--nc-radius); font: inherit; font-size: .86rem; color: var(--nc-text); cursor: pointer; }
+.menu-list button:hover:not(:disabled), .menu-list button:focus-visible { background: var(--nc-hover); outline: none; }
+.menu-list button:disabled { color: var(--nc-text-2); opacity: .6; cursor: default; }
+.menu-help { width: 340px; padding: .7rem .8rem; gap: .4rem; font-size: .82rem; }
+.menu-help p { margin: 0; line-height: 1.45; }
+/* Zeilendichte */
+.case-table[data-density='compact'] tbody td { padding-top: .22rem; padding-bottom: .22rem; }
+.case-table[data-density='comfortable'] tbody td { padding-top: .8rem; padding-bottom: .8rem; }

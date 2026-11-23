@@ -214,4 +214,28 @@ describe('Workbench', () => {
     expect(rows()[0].getAttribute('data-selected')).toBe('false');
     await settle(fixture);
   });
+
+  it('bedient die Menüleiste wie im bisherigen Fallexplorer', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    const item = (label: string) => Array.from(el.querySelectorAll<HTMLButtonElement>('.menubar .menu-list button')).find((b) => b.textContent!.includes(label))!;
+    expect(Array.from(el.querySelectorAll('.menubar summary')).map((s) => s.textContent!.trim())).toEqual(['Datei', 'Bearbeiten', 'Ansicht', 'Fälle', 'Hilfe']);
+
+    item('Alle sichtbaren auswählen').click();
+    fixture.detectChanges();
+    expect(el.querySelectorAll('.case-table tbody tr[data-selected=true]').length).toBe(2);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    expect(el.querySelectorAll('.case-table tbody tr[data-selected=true]').length).toBe(0);
+
+    item('Zeilendichte').click();
+    item('Explorer ein/aus').click();
+    fixture.detectChanges();
+    expect(el.querySelector('.case-table')!.getAttribute('data-density')).toBe('compact');
+    expect(el.classList).toContain('nav-collapsed');
+    item('Ansicht zurücksetzen').click();
+    fixture.detectChanges();
+    expect(el.classList).not.toContain('nav-collapsed');
+    await settle(fixture);
+  });
 });

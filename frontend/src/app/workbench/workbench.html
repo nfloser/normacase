@@ -2,6 +2,22 @@
 <div class="appbar">
   <h1 class="sr-only">{{ t.product }} {{ t.workbench }}</h1>
   <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span></div>
+  <nav class="menubar" [attr.aria-label]="t.wb.menu.label">
+    @for (m of menus; track m.id) {
+      <details (toggle)="menuToggled($event)">
+        <summary>{{ menuLabel(m.id) }}</summary>
+        <div class="menu-list" role="menu">
+          @for (a of m.items; track a) {
+            <button type="button" role="menuitem" [disabled]="!available(a)" [title]="available(a) ? '' : t.wb.menu.unavailable" (click)="menu(a, $event)">{{ t.wb.menu.items[a] }}</button>
+          }
+        </div>
+      </details>
+    }
+    <details (toggle)="menuToggled($event)">
+      <summary>{{ t.wb.menu.help }}</summary>
+      <div class="menu-list menu-help"><strong>{{ t.wb.menu.shortcutsTitle }}</strong><p>{{ t.wb.menu.shortcuts }}</p><p class="muted">{{ t.wb.menu.notice }}</p></div>
+    </details>
+  </nav>
   <label class="search"><span class="sr-only">{{ t.wb.search }}</span><span class="search-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.75"/><path d="M10.5 10.5L14 14"/></svg></span>
     <input type="search" [placeholder]="t.wb.searchPlaceholder" [attr.aria-label]="t.wb.search" [value]="query()" (input)="query.set($any($event.target).value.slice(0, 100))" autocomplete="off" spellcheck="false">
   </label>
@@ -86,7 +102,7 @@
     } @else {
     <div #area class="list-and-pane" [attr.data-pane]="view().previewPosition" [style.--pane-size]="view().previewSize + '%'">
       <div class="list-scroll">
-        <table class="case-table" [class.row-colors]="view().rowColors" [style.min-width.px]="tableMinWidth()" [attr.aria-label]="queueLabel(queue())">
+        <table class="case-table" [attr.data-density]="view().density" [class.row-colors]="view().rowColors" [style.min-width.px]="tableMinWidth()" [attr.aria-label]="queueLabel(queue())">
           <thead>
             <tr>
               <th class="col-select"><input type="checkbox" [attr.aria-label]="t.wb.selectVisible" [checked]="allVisibleSelected()" [disabled]="!visible().length" (change)="toggleVisible($any($event.target).checked)"></th>
