@@ -1,16 +1,16 @@
 import { Component, DestroyRef, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, Subject, catchError, forkJoin, map, of, startWith, switchMap } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { AuthService, AuthUser } from '../auth/auth.service';
 import { de, germanDateTime, label } from '../de';
 import { SystemService } from '../system/system.service';
-import { Presentation, ProcessDetail, ProcessSummary, QueueCount, ReleaseSummary, WorkbenchApi } from './api';
+import { Presentation, ProcessDetail, ProcessSummary, ReleaseSummary, WorkbenchApi } from './api';
 import { CaseAction, CaseFile } from './case-file';
 import { ThemeChoice, ThemeStore } from '../shared/theme';
 import {
   COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, PREVIEW_MAX, PREVIEW_MIN, SELECT_COLUMNS, SavedQuery, ViewSettings,
-  ViewStore, DEFAULT_VIEW, DENSITIES, clampPreview, rowTone, storableFilters,
+  ViewStore, DEFAULT_VIEW, DENSITIES, PLATFORM_SYSTEM, clampPreview, rowTone, storableFilters,
 } from './case-view';
 
 type Load<T> = { state: 'loading' } | { state: 'ready'; value: T } | { state: 'error' };
@@ -42,7 +42,6 @@ export class Workbench {
   protected readonly auth = inject(AuthService);
   private readonly api = inject(WorkbenchApi);
   private readonly destroy = inject(DestroyRef);
-  private readonly reload$ = new Subject<void>();
   private readonly store = inject(ViewStore);
   protected readonly theme = inject(ThemeStore);
   protected readonly queueIds = WORK_LISTS;
@@ -78,7 +77,6 @@ export class Workbench {
   private readonly revision = signal(0);
 
   protected readonly system = toSignal(inject(SystemService).state(), { initialValue: { status: 'loading' as const } });
-  protected readonly queues = signal<QueueCount[]>([]);
   protected readonly list = signal<Load<ProcessSummary[]>>({ state: 'loading' });
   protected readonly detail = signal<Load<ProcessDetail> | null>(null);
   protected readonly presentation = signal<Presentation>({});
@@ -92,13 +90,24 @@ export class Workbench {
     const filters = Object.entries(this.filters())
       .filter((e): e is [ColumnId, string] => !!e[1]?.trim())
       .map(([id, v]) => [id, v.trim().toLocaleLowerCase('de-DE')] as const);
-    const filtered = l.value.filter((p) =>
+    const filtered = this.inQueue().filter((p) =>
       (!q || this.searchText(p).includes(q)) &&
       filters.every(([id, v]) => SELECT_COLUMNS.has(id)
         ? this.cellText(p, id).toLocaleLowerCase('de-DE') === v
         : this.cellText(p, id).toLocaleLowerCase('de-DE').includes(v)));
     const { key, asc } = this.sort();
     return [...filtered].sort((a, b) => this.compare(a, b, key) * (asc ? 1 : -1));
+  });
+  /** Vorgänge im Blick: Plattformfälle nur, wenn eingeblendet (wie im bisherigen Fallexplorer). */
+  protected readonly scope = computed(() => {
+    const l = this.list();
+    if (l.state !== 'ready') return [];
+    return this.view().includePlatform ? l.value : l.value.filter((p) => p.externalReference.system !== PLATFORM_SYSTEM);
+  });
+  /** Vorgänge der gewählten Arbeitsliste (oder alle). */
+  protected readonly inQueue = computed(() => {
+    const q = this.queue();
+    return q === ALL ? this.scope() : this.scope().filter((p) => p.queue === q);
   });
   /** Auswahlwerte je Spalte aus den geladenen Vorgängen. */
   protected readonly options = computed(() => {
@@ -122,19 +131,12 @@ export class Workbench {
       const name = this.user().username;
       untracked(() => this.view.set(this.store.load(name)));
     });
-    this.reload$.pipe(
-      startWith(undefined),
-      switchMap(() => this.guard(this.api.queues())),
-      takeUntilDestroyed(),
-    ).subscribe((q) => q.state === 'ready' && this.queues.set(q.value));
-
+    // Alle Arbeitslisten auf einmal laden: Zähler, „Alle Vorgänge“ und Plattformfälle entstehen in der Oberfläche.
     effect((cleanup) => {
-      const queue = this.queue();
       this.revision();
       untracked(() => { if (this.list().state !== 'ready') this.list.set({ state: 'loading' }); });
-      const source = queue === ALL
-        ? forkJoin(QUEUES.map((q) => this.api.processes(q))).pipe(map((lists) => lists.flat()))
-        : this.api.processes(queue);
+      const source = forkJoin(QUEUES.map((q) => this.api.processes(q).pipe(map((rows) => rows.map((r) => ({ ...r, queue: q }))))))
+        .pipe(map((lists) => lists.flat()));
       const sub = this.guard(source).subscribe((l) => {
         this.list.set(l);
         if (l.state === 'ready') {
@@ -165,12 +167,16 @@ export class Workbench {
   }
 
   protected count(id: string): number {
-    if (id === ALL) return this.queues().reduce((sum, q) => sum + q.count, 0);
-    return this.queues().find((q) => q.id === id)?.count ?? 0;
+    return id === ALL ? this.scope().length : this.scope().filter((p) => p.queue === id).length;
+  }
+
+  protected setIncludePlatform(on: boolean): void {
+    this.updateView({ includePlatform: on });
   }
 
   protected openQueue(id: string): void {
     this.queue.set(id);
+    setTimeout(() => this.active.set(this.visible()[0]?.processId ?? null));
     this.selection.set(new Set());
     this.active.set(null);
     this.opened.set(null);
@@ -290,7 +296,6 @@ export class Workbench {
   }
 
   protected refresh(): void {
-    this.reload$.next();
     this.revision.update((r) => r + 1);
   }
 

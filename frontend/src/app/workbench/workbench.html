@@ -79,6 +79,7 @@
         <button type="button" class="icon-button small" [attr.aria-label]="t.wb.deleteQuery(q.name)" [title]="t.wb.deleteQuery(q.name)" (click)="deleteQuery(q.name)">×</button>
       </div>
     } @empty { <p class="nav-help">{{ t.wb.noQueries }}</p> }
+    <label class="nav-toggle"><input type="checkbox" [checked]="view().includePlatform" (change)="setIncludePlatform($any($event.target).checked)"> {{ t.wb.includePlatform }}</label>
     @if (view().rowColors) {
       <ul class="tone-legend" [attr.aria-label]="t.wb.rowColors">
         @for (tone of tones; track tone) { <li><span class="tone-swatch" [attr.data-tone]="tone" aria-hidden="true"></span>{{ t.wb.tones[tone] }}</li> }
@@ -185,7 +186,7 @@
 </div>
 
 <footer class="statusbar">
-  <span role="status">{{ visible().length }} {{ t.wb.ofCases }} {{ list().state === 'ready' ? $any(list()).value.length : 0 }} {{ t.wb.cases }} · {{ selectedVisible().length }} {{ t.wb.selected }} · {{ activeFilters() || query() ? t.wb.filterActive : t.wb.noFilter }}</span>@if (activeFilters() || query()) { <button type="button" class="link" (click)="clearAllFilters()">{{ t.wb.resetFilters }}</button> }<span class="shortcuts muted">{{ t.wb.shortcuts }}</span><span class="spacer"></span>
+  <span role="status">{{ visible().length }} {{ t.wb.ofCases }} {{ inQueue().length }} {{ t.wb.cases }} · {{ selectedVisible().length }} {{ t.wb.selected }} · {{ activeFilters() || query() ? t.wb.filterActive : t.wb.noFilter }}</span>@if (activeFilters() || query()) { <button type="button" class="link" (click)="clearAllFilters()">{{ t.wb.resetFilters }}</button> }<span class="shortcuts muted">{{ t.wb.shortcuts }}</span><span class="spacer"></span>
   <span class="muted">@if (system(); as s) { @if (s.status === 'ok') { {{ t.system.platform }} {{ s.info.platformVersion }} · {{ t.system.retention[s.info.retentionMode] }} · } }{{ t.syntheticNotice }}</span>
 </footer>
 @if (notice()) { <p class="toast" role="status">{{ notice() }}</p> }

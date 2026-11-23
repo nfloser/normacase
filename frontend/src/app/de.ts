@@ -146,6 +146,7 @@ export const de = {
     } as Record<string, string>,
     rowColors: 'Zeilenfärbung',
     allCases: 'Alle Vorgänge',
+    includePlatform: 'Plattformfälle einbeziehen',
     allCasesHelp: 'Alle Vorgänge aus allen Arbeitskörben. Doppelklick oder Eingabe öffnet einen Vorgang.',
     open: 'Vorgang öffnen',
     back: 'Zurück zur Liste',

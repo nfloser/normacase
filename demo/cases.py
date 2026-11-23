@@ -133,7 +133,7 @@ CASES = [
     },
     {
         "id": "kt-2026-208157", "pack": KT, "date": "2026-11-04",
-        "person": ("Hoffmann", "Peter", "11.12.1950", "Grüner Weg 9, 33602 Bielefeld"),
+        "person": ("Hartmann", "Ulrich", "11.12.1950", "Grüner Weg 9, 33602 Bielefeld"),
         "title": "Krankenbeförderung · ambulante Behandlung",
         "facts": {"ambulatory_treatment": truth("YES"), "strict_medical_necessity": truth("YES"),
                   "disability_marker_ag": truth("YES"), "disability_marker_bl": truth("NO"), "disability_marker_h": truth("NO"),

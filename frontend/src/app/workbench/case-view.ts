@@ -11,6 +11,9 @@ export const COLUMN_WIDTHS: Readonly<Record<ColumnId, number>> = {
   missing: 120, documents: 90, confirmedBy: 140, release: 210, system: 140,
 };
 
+/** Kennung der Plattform-Testfälle (Massenfälle); wie „Plattformfälle einbeziehen“ im bisherigen Fallexplorer. */
+export const PLATFORM_SYSTEM = 'plattform-demo';
+
 export const DEFAULT_COLUMNS: readonly ColumnId[] = ['subject', 'number', 'status', 'request', 'next', 'result', 'documents'];
 
 /** Spalten, deren Filter eine Auswahlliste statt Freitext anbietet. */
@@ -53,6 +56,8 @@ export interface ViewSettings {
   readonly density: Density;
   /** Explorer (Körbe und Ablage) links ein- oder ausgeblendet. */
   readonly showNav: boolean;
+  /** Plattformfälle (Massen- und Technikfälle der Demo) einbeziehen. */
+  readonly includePlatform: boolean;
   readonly sort: SortState;
   readonly queries: readonly SavedQuery[];
 }
@@ -66,6 +71,7 @@ export const DEFAULT_VIEW: ViewSettings = {
   previewSize: 45,
   density: 'normal',
   showNav: true,
+  includePlatform: false,
   sort: { key: 'number', asc: true },
   queries: [],
 };
@@ -149,6 +155,7 @@ export function sanitize(v: unknown): ViewSettings {
     previewSize: clampPreview(o['previewSize']),
     density: DENSITIES.includes(o['density'] as Density) ? (o['density'] as Density) : 'normal',
     showNav: o['showNav'] !== false,
+    includePlatform: o['includePlatform'] === true,
     sort: sort(o['sort']),
     queries: queries
       .filter((q): q is Record<string, unknown> => !!q && typeof q === 'object' && typeof q['name'] === 'string' && typeof q['queue'] === 'string')

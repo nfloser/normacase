@@ -69,9 +69,11 @@ services:
       NORMACASE_API: http://backend:8080
       NORMACASE_TOKEN_URL: http://keycloak:8080/realms/normacase/protocol/openid-connect/token
       NORMACASE_CASES: /cases
+      NORMACASE_LEGACY_CASES: /legacy-cases
     volumes:
       - ./scripts/demo:/app:ro
       - ./demo/cases:/cases:ro
+      - ./legacy/examples/document-cases:/legacy-cases:ro
     depends_on:
       backend:
         condition: service_healthy

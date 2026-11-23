@@ -4,12 +4,12 @@
 
 .DESCRIPTION
   Prüft Docker, baut und startet alle Dienste (PostgreSQL, Keycloak, Backend, Oberfläche),
-  wartet, bis die zehn fiktiven Demo-Vorgänge eingeliefert sind, und öffnet die Prüfwerkstatt im Browser.
+  wartet, bis alle fiktiven Demo-Vorgänge eingeliefert sind, und öffnet die Prüfwerkstatt im Browser.
   Läuft unter Windows PowerShell 5.1 und PowerShell 7 (Windows, macOS, Linux).
 
 .EXAMPLE
   .\demo.ps1            # starten (Stand bleibt erhalten)
-  .\demo.ps1 -Reset     # alles auf Anfang: zehn unbearbeitete Vorgänge
+  .\demo.ps1 -Reset     # alles auf Anfang: alle Vorgänge unbearbeitet
   .\demo.ps1 -Stop      # beenden
 #>
 [CmdletBinding()]
