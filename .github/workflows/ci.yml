@@ -123,24 +123,32 @@ jobs:
       - name: Knowledge image builds separately from the platform
         run: docker build -t normacase-knowledge:ci knowledge
 
+  demo-script-windows:
+    # Windows PowerShell 5.1 liest Skripte anders (Kodierung, Syntax); das Demo-Skript muss dort fehlerfrei parsen.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse demo.ps1 with Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path .\demo.ps1), [ref]$null, [ref]$errors)
+          if ($errors) { $errors | ForEach-Object { Write-Error $_.Message }; exit 1 }
+          $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path .\demo.ps1))
+          if ($bytes[0] -ne 0xEF -or $bytes[1] -ne 0xBB -or $bytes[2] -ne 0xBF) { Write-Error 'demo.ps1 braucht UTF-8 mit BOM'; exit 1 }
+          $text = Get-Content -Raw -Encoding UTF8 .\demo.ps1
+          # Prüfwort ohne Umlaut im Quelltext dieses Schritts: GitHub legt ihn ohne BOM ab.
+          if (-not $text.Contains('Pr' + [char]0x00FC + 'fwerkstatt')) { Write-Error 'Umlaute werden falsch gelesen (BOM fehlt?)'; exit 1 }
+          Get-Help .\demo.ps1 | Out-String | Write-Host
+
   compose:
     runs-on: ubuntu-latest
     needs: [backend, frontend]
     steps:
       - uses: actions/checkout@v4
-      - name: Start stack
-        run: |
-          docker compose up --build -d
-          for i in $(seq 1 120); do
-            curl -fsS http://127.0.0.1:4200/api/v1/system >/dev/null 2>&1 && break
-            sleep 3
-          done
-          for i in $(seq 1 60); do
-            state=$(docker compose ps -a --format '{{.State}} {{.ExitCode}}' demo-host)
-            case "$state" in exited\ 0) break ;; exited*) echo "Seeder fehlgeschlagen: $state"; docker compose logs demo-host; exit 1 ;; esac
-            sleep 3
-          done
-          docker compose logs demo-host
+      - name: Start stack with the demo script
+        shell: pwsh
+        run: ./demo.ps1 -Reset -NoBrowser
       - name: Smoke test through the frontend proxy
         run: |
           curl -fsS http://127.0.0.1:4200/ | grep -q '<app-root'
