@@ -85,8 +85,8 @@ test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page 
 
   await page.getByRole('button', { name: 'Neuer Ordner' }).first().click();
   await page.getByLabel('Name', { exact: true }).fill('Rückfragen diese Woche');
-  await page.getByRole('button', { name: 'Grün' }).click();
-  await page.getByRole('button', { name: 'Speichern' }).click();
+  await page.getByRole('button', { name: 'Grün', exact: true }).click();
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await expect(nav.getByRole('button', { name: /^Rückfragen diese Woche/ })).toBeVisible();
 
   await nav.getByRole('button', { name: /Informationen nachfordern/ }).click();
@@ -114,7 +114,7 @@ test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page 
   await filed.click({ button: 'right' });
   await menu.getByRole('menuitem', { name: /Notiz/ }).click();
   await page.getByLabel('Notiz', { exact: true }).fill('Rückruf Dienstag');
-  await page.getByRole('button', { name: 'Speichern' }).click();
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await expect(filed.locator('.case-note')).toHaveText('Rückruf Dienstag');
   await expect(nav.getByRole('button', { name: /^Lesezeichen/ })).toContainText('1');
 
