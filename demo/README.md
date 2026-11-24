@@ -40,7 +40,7 @@ Jedes Dokument trägt in `case.json` seine Art (`ORDER`, `MEDICAL`, `CARE`, `PRO
 
 ### Bezug zu den Begutachtungs-Richtlinien (öffentliche Referenz)
 
-Zusammensetzung und Gliederung der Pflege-Akten orientieren sich an den öffentlich veröffentlichten Begutachtungs-Richtlinien Pflege (BRi, Fassung MD Bund vom Dezember 2023, [Download](https://medizinischerdienst.de/fileadmin/MD-zentraler-Ordner/Downloads/01_Pflegebegutachtung/231221_BRi_Pflege.pdf)). Das ist `PUBLIC_REFERENCE`, keine fachliche Freigabe; die seit 1. Oktober 2026 geltende Fassung ist für diese Zuordnung noch nicht abgeglichen.
+Maßgeblich sind die Begutachtungs-Richtlinien Pflege des MD Bund vom 26.08.2026, gültig seit 01.10.2026; auf diese Fassung bezieht sich auch das Regelwerk `pflege-adult-score`. Die Abschnittsnummern unten sind in der Fassung vom Dezember 2023 belegt; dass sie in der Fassung 2026 unverändert sind, ist noch nicht am Volltext geprüft. Neu in 2026 ist u. a. Abschnitt 3.2.1 mit den Auskunftspflichten der Vertragsärzte (§ 18 Abs. 4 SGB XI, § 276 Abs. 2 SGB V): fehlende Befunde fordert der MD dort an; in NormaCase erscheinen sie als „Fehlende Nachweise“. Das ist `PUBLIC_REFERENCE`, keine fachliche Freigabe.
 
 | BRi | Was dort steht | In der Demo-Akte |
 |---|---|---|
