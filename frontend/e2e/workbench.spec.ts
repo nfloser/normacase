@@ -24,7 +24,7 @@ async function logout(page: Page) {
 let caseNumber = '';
 
 test('Gutachterin prüft eine Fallakte mit Dokumenten und bestätigt', async ({ page }) => {
-  await login(page, 'gutachterin.a');
+  await login(page, 'tobias.flöser');
   await page.getByRole('button', { name: /Zur Freigabe vorbereitet/ }).click();
   const row = page.locator('.case-table tbody tr').filter({ hasText: 'Voraussetzungen erfüllt' }).first();
   await expect(row).toBeVisible();
@@ -53,7 +53,7 @@ test('Gutachterin prüft eine Fallakte mit Dokumenten und bestätigt', async ({ 
 });
 
 test('Fallakte: Fundstelle aus der Begründung, Formate, Großansicht und eigenes Fenster', async ({ page }) => {
-  await login(page, 'gutachterin.a');
+  await login(page, 'tobias.flöser');
   await page.getByRole('button', { name: /Gegenprüfung erforderlich/ }).click();
   await page.locator('.case-table tbody tr').filter({ hasText: 'KT-2026-208157' }).click();
   const file = page.getByRole('region', { name: 'Fallakte' });
@@ -97,7 +97,7 @@ test('Fallakte: Fundstelle aus der Begründung, Formate, Großansicht und eigene
 });
 
 test('Spaltenoptionen: Reihenfolge durch Ziehen', async ({ page }) => {
-  await login(page, 'gutachterin.a');
+  await login(page, 'tobias.flöser');
   await page.getByRole('button', { name: /Spaltenoptionen/ }).click();
   const names = page.locator('.column-list .column-name');
   await expect(names.first()).toHaveText('Fall / Auftrag');
@@ -135,7 +135,7 @@ test('Freigabe durch eine zweite Person; das Fachsystem holt ab und NormaCase l�
   const messages = await request.get('/api/v1/outbound', { headers }).then((r) => r.json());
   const message = messages.find((m: { externalReference: { caseId: string } }) => m.externalReference.caseId === caseNumber);
   expect(message.result.approvedBy).toBe('freigabe.c');
-  expect(message.result.confirmedBy).toBe('gutachterin.a');
+  expect(message.result.confirmedBy).toBe('tobias.flöser');
   expect((await request.post(`/api/v1/outbound/${message.messageId}/acknowledgement`, { headers })).status()).toBe(204);
 
   await page.getByRole('button', { name: /^Versendet/ }).click();
@@ -192,7 +192,7 @@ test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page 
 });
 
 test('Extras: Prüfwerkstatt mit Beispiel und Referenzfälle mit Abgleich', async ({ page }) => {
-  await login(page, 'gutachterin.a');
+  await login(page, 'tobias.flöser');
   const extras = async (name: string) => {
     await page.locator('.menubar summary', { hasText: 'Extras' }).click();
     await page.getByRole('menuitem', { name }).click();

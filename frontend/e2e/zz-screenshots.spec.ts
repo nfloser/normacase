@@ -39,7 +39,7 @@ async function documentTab(page: Page, file: ReturnType<Page['getByRole']>, titl
 
 test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   test.setTimeout(180_000);
-  await login(page, 'gutachterin.a', true);
+  await login(page, 'tobias.flöser', true);
 
   await expect(page.locator('.case-table tbody tr').first()).toBeVisible();
   await shot(page, 'alle-vorgaenge');
