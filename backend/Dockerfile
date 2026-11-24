@@ -7,7 +7,7 @@ COPY src src
 RUN mvn -B -ntp -DskipTests package && cp target/normacase-backend-*.jar /app.jar
 
 FROM eclipse-temurin:25-jre-alpine
-RUN addgroup -S normacase && adduser -S -G normacase -u 10001 normacase
+RUN apk upgrade --no-cache && addgroup -S normacase && adduser -S -G normacase -u 10001 normacase
 USER 10001
 COPY --from=build /app.jar /opt/normacase/app.jar
 EXPOSE 8080

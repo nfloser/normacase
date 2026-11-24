@@ -164,6 +164,8 @@ export const de = {
       technical: 'Technische Auffälligkeit klären',
       documents: 'Unterlagen sichten; fachliche Prüfung offen',
       review: 'Ergebnis prüfen und bestätigen',
+      reviewSupported: 'Ergebnis „erfüllt“ prüfen und bestätigen',
+      reviewNotSupported: 'Ergebnis „nicht erfüllt“ prüfen und bestätigen',
       approval: 'Freigabe durch zweite Person',
       dispatched: 'Abholung durch das Fachsystem',
       closed: 'Abgeschlossen',
@@ -217,7 +219,7 @@ export const de = {
     showDetails: 'Details einblenden (F4)',
     detailsShort: 'Details (F4)',
     tones: {
-      ready: 'Bereit zur Bearbeitung oder Freigabe',
+      ready: 'Entscheidungsreif (Ergebnis siehe Prüfergebnis)',
       missing: 'Angaben fehlen',
       conflict: 'Gegenprüfung erforderlich',
       technical: 'Technische Klärung',

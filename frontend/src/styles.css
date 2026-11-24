@@ -39,9 +39,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
   --nc-bad-bg: light-dark(#fbe7e5, #3a201f);
   --nc-info: light-dark(#33449a, #c3ccff);
   --nc-info-bg: light-dark(#e8ebfb, #232946);
-  /* Arbeitslisten-Farbfamilie: ein Ton je Bearbeitungsstand für Punkt, Zeilenfarbe, Rand und Chip.
+  /* Arbeitslisten-Farbfamilie: ein Ton je Bearbeitungsstand (Blau = entscheidungsreif, unabhängig vom Ergebnis;
+     Grün/Rot bleiben dem Prüfergebnis vorbehalten) für Punkt, Zeilenfarbe, Rand und Chip.
      Hell: zarte Tönung, kräftiger Rand (≥ 3:1 auf Weiß). Dunkel: gedämpfte Tönung über der Fläche, helle Akzente. */
-  --q-ready: light-dark(#3d8b52, #6cc58a);        --q-ready-bg: light-dark(#e3f3e4, #2e3d36);
+  --q-ready: light-dark(#3f6fb0, #7fa8e3);        --q-ready-bg: light-dark(#e4ecf7, #313844);
   --q-missing: light-dark(#a17d00, #e3c45a);      --q-missing-bg: light-dark(#fdf4cf, #413d2e);
   --q-conflict: light-dark(#c76a22, #eb9a5c);     --q-conflict-bg: light-dark(#fde6d3, #42362f);
   --q-technical: light-dark(#c0453a, #ec8a82);    --q-technical-bg: light-dark(#fadcdc, #423335);
