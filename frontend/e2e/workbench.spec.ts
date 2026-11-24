@@ -125,3 +125,32 @@ test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page 
   await expect(page.locator('.case-table tbody tr').filter({ hasText: number })).toHaveCount(0);
   await logout(page);
 });
+
+test('Extras: Prüfwerkstatt mit Beispiel und Referenzfälle mit Abgleich', async ({ page }) => {
+  await login(page, 'gutachterin.a');
+  const extras = async (name: string) => {
+    await page.locator('.menubar summary', { hasText: 'Extras' }).click();
+    await page.getByRole('menuitem', { name }).click();
+    await expect(page.getByRole('heading', { level: 2, name, exact: true })).toBeVisible();
+  };
+
+  await extras('Prüfwerkstatt');
+  await page.getByLabel('Regelwerk', { exact: true }).selectOption({ label: 'Pitch-Demo – Synthetische Fallprüfung' });
+  await page.getByLabel('Beispiel', { exact: true }).selectOption({ label: '3 · Vollständig – Voraussetzungen erfüllt' });
+  await page.getByRole('button', { name: 'Beispiel laden' }).click();
+  await page.getByRole('button', { name: 'Prüfen', exact: true }).click();
+  await expect(page.locator('.verdict')).toContainText('Voraussetzungen erfüllt');
+  await expect(page.getByRole('button', { name: /Snapshot exportieren/ })).toBeVisible();
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+
+  await extras('Referenzfälle');
+  await page.getByRole('button', { name: 'Alle prüfen' }).click();
+  await expect(page.getByText(/^13 von 13 Beispielen wie erwartet\.$/)).toBeVisible({ timeout: 30_000 });
+
+  await extras('Massenfälle');
+  await expect(page.getByText(/\d+ Plattformfälle/)).toBeVisible();
+  await page.getByRole('button', { name: 'Zurück zu den Arbeitslisten' }).click();
+  await expect(page.locator('.case-table')).toBeVisible();
+  await logout(page);
+});

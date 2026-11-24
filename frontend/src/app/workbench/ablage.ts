@@ -5,17 +5,18 @@ export const FOLDER_PREFIX = 'folder:';
 
 /** Farbvorlagen wie im bisherigen Fallexplorer. */
 export const COLOR_PRESETS: readonly { id: string; hex: string }[] = [
-  { id: 'blue', hex: '#497ab7' },
-  { id: 'teal', hex: '#24708f' },
-  { id: 'green', hex: '#287554' },
-  { id: 'amber', hex: '#b7791f' },
-  { id: 'purple', hex: '#7956a3' },
-  { id: 'rose', hex: '#a54866' },
+  // Mitteltöne mit mindestens 3:1 Kontrast auf hellen und dunklen Flächen, passend zur Arbeitslisten-Farbfamilie.
+  { id: 'blue', hex: '#4f7fc0' },
+  { id: 'teal', hex: '#2f8a99' },
+  { id: 'green', hex: '#3f8f5a' },
+  { id: 'amber', hex: '#b07a12' },
+  { id: 'purple', hex: '#8a6bc1' },
+  { id: 'rose', hex: '#c0577c' },
 ];
 
 /** Vorgabefarben der Arbeitslisten (wie die Punkte in der Navigation). */
 export const DEFAULT_QUEUE_COLORS: Readonly<Record<string, string>> = {
-  review: '#24708f', clarification: '#b7791f', conflict: '#a54866', technical: '#7956a3', documents: '#497ab7',
+  review: '#3d8b52', clarification: '#a17d00', conflict: '#c76a22', technical: '#c0453a', documents: '#7a5aa8',
 };
 
 export interface AblageDialog {

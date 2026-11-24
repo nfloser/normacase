@@ -232,7 +232,7 @@ describe('Workbench', () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
     const item = (label: string) => Array.from(el.querySelectorAll<HTMLButtonElement>('.menubar .menu-list button')).find((b) => b.textContent!.includes(label))!;
-    expect(Array.from(el.querySelectorAll('.menubar summary')).map((s) => s.textContent!.trim())).toEqual(['Datei', 'Bearbeiten', 'Ansicht', 'Fälle', 'Hilfe']);
+    expect(Array.from(el.querySelectorAll('.menubar summary')).map((s) => s.textContent!.trim())).toEqual(['Datei', 'Bearbeiten', 'Ansicht', 'Fälle', 'Extras', 'Hilfe']);
 
     item('Alle sichtbaren auswählen').click();
     fixture.detectChanges();
@@ -317,8 +317,8 @@ describe('Workbench', () => {
     fixture.detectChanges();
     el.querySelector<HTMLFormElement>('.ablage-dialog form')!.dispatchEvent(new Event('submit'));
     const create = http.expectOne('/api/v1/workspace/folders');
-    expect(create.request.body).toEqual({ label: 'Gutachten zurück', color: '#287554', parentId: null });
-    create.flush({ id: 'f3', parentId: null, label: 'Gutachten zurück', color: '#287554' });
+    expect(create.request.body).toEqual({ label: 'Gutachten zurück', color: '#3f8f5a', parentId: null });
+    create.flush({ id: 'f3', parentId: null, label: 'Gutachten zurück', color: '#3f8f5a' });
     http.expectOne('/api/v1/workspace').flush(workspace);
     fixture.detectChanges();
     expect(el.querySelector('.ablage-dialog')).toBeNull();

@@ -1,0 +1,10 @@
+{
+  "formatVersion": 1,
+  "assessmentDate": "2026-10-02",
+  "facts": {
+    "criterion_b": {
+      "kind": "TRUTH",
+      "truth": "YES"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "formatVersion": 1,
+  "assessmentDate": "2026-10-02",
+  "facts": {
+    "request_confirmed": {
+      "kind": "TRUTH",
+      "truth": "YES"
+    },
+    "measurement": {
+      "kind": "NUMBER",
+      "number": 15
+    }
+  },
+  "evidence": {
+    "verification": "PRESENT"
+  }
+}

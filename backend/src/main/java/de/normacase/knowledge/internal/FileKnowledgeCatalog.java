@@ -1,5 +1,7 @@
 package de.normacase.knowledge.internal;
 
+import de.normacase.knowledge.KnowledgeCatalog.Example;
+
 import de.normacase.knowledge.KnowledgeCatalog;
 import de.normacase.knowledge.KnowledgePack;
 import de.normacase.knowledge.KnowledgePackReader;
@@ -35,9 +37,11 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
     private static final Logger log = LoggerFactory.getLogger(FileKnowledgeCatalog.class);
 
     private final Map<String, KnowledgeRelease> releases;
+    private final Map<String, Map<String, String>> examples = new java.util.HashMap<>();
+    private final Map<String, List<Example>> exampleIndex = new java.util.HashMap<>();
 
     FileKnowledgeCatalog(@Value("${normacase.knowledge.directory}") Path directory, JdbcClient jdbc) {
-        this.releases = load(directory);
+        this.releases = load(directory, examples, exampleIndex);
         register(jdbc);
         log.info("Knowledge Releases geladen: {}", releases.keySet());
     }
@@ -52,7 +56,18 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
         return List.copyOf(releases.values());
     }
 
-    private static Map<String, KnowledgeRelease> load(Path directory) {
+    @Override
+    public Optional<String> example(String releaseId, String exampleId) {
+        return Optional.ofNullable(examples.getOrDefault(releaseId, Map.of()).get(exampleId));
+    }
+
+    @Override
+    public List<Example> examples(String releaseId) {
+        return exampleIndex.getOrDefault(releaseId, List.of());
+    }
+
+    private static Map<String, KnowledgeRelease> load(Path directory, Map<String, Map<String, String>> examples,
+            Map<String, List<Example>> index) {
         if (!Files.isDirectory(directory)) {
             throw new IllegalStateException("Knowledge-Verzeichnis fehlt: " + directory.toAbsolutePath());
         }
@@ -73,11 +88,58 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
                 if (result.putIfAbsent(release.releaseId(), release) != null) {
                     throw new IllegalStateException("Release-ID doppelt vorhanden: " + release.releaseId());
                 }
+                if (labels != null) {
+                    examples.put(release.releaseId(), readExamples(file.resolveSibling("examples"), labels));
+                    index.put(release.releaseId(), readIndex(file.resolveSibling("examples"), labels));
+                }
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
         return Map.copyOf(result);
+    }
+
+    /** Beispiele aus {@code examples/} neben dem Pack; nur einfache Dateinamen, jedes Beispiel muss vorhanden sein. */
+    private static Map<String, String> readExamples(Path folder, String presentationJson) throws IOException {
+        Map<String, String> found = new TreeMap<>();
+        var listed = de.normacase.common.StrictJson.parseObject(presentationJson).raw("examples");
+        if (listed == null || !listed.isArray()) {
+            return Map.of();
+        }
+        for (var entry : listed) {
+            String id = entry.path("id").isString() ? entry.path("id").stringValue() : "";
+            String file = entry.path("caseFile").isString() ? entry.path("caseFile").stringValue() : "";
+            if (id.isEmpty() || !file.matches("[A-Za-z0-9._-]+\\.json")) {
+                throw new IllegalStateException("Ungültiges Beispiel in " + folder.getParent() + ": " + id);
+            }
+            Path path = folder.resolve(file);
+            if (!Files.isRegularFile(path)) {
+                throw new IllegalStateException("Beispieldatei fehlt: " + path);
+            }
+            String json = Files.readString(path, StandardCharsets.UTF_8);
+            de.normacase.common.StrictJson.parseObject(json);
+            found.put(id, json);
+        }
+        return Map.copyOf(found);
+    }
+
+    /** Bezeichnung aus der Präsentation, dokumentiertes Ergebnis aus {@code expected-outcomes.json} (falls vorhanden). */
+    private static List<Example> readIndex(Path folder, String presentationJson) throws IOException {
+        var listed = de.normacase.common.StrictJson.parseObject(presentationJson).raw("examples");
+        if (listed == null || !listed.isArray()) {
+            return List.of();
+        }
+        Path expectedFile = folder.resolve("expected-outcomes.json");
+        var expected = Files.isRegularFile(expectedFile)
+                ? de.normacase.common.StrictJson.MAPPER.readTree(Files.readString(expectedFile, StandardCharsets.UTF_8)) : null;
+        List<Example> out = new java.util.ArrayList<>();
+        for (var entry : listed) {
+            String id = entry.path("id").stringValue();
+            String label = entry.path("label").isString() ? entry.path("label").stringValue() : id;
+            String outcome = expected != null && expected.path(id).isString() ? expected.path(id).stringValue() : null;
+            out.add(new Example(id, label, outcome));
+        }
+        return List.copyOf(out);
     }
 
     private void register(JdbcClient jdbc) {

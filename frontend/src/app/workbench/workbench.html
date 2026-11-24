@@ -86,7 +86,7 @@
       <div class="nav-folder" [style.padding-left.px]="f.depth * 14">
         <button type="button" class="nav-item" [attr.aria-current]="queue() === folderView(f) ? 'true' : null" (click)="openQueue(folderView(f))"
           (contextmenu)="navContext($event, 'folder', f.id)" (keydown.shift.f10)="navContext($event, 'folder', f.id)">
-          <span class="nav-folder-icon" [style.color]="f.color" aria-hidden="true">▰</span><span class="nav-label">{{ f.label }}</span><span class="nav-count">{{ count(folderView(f)) }}</span></button>
+          <span class="nav-folder-icon" [style.color]="f.color" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.25c0-.7.55-1.25 1.25-1.25h3.3l1.5 1.6h5.7c.7 0 1.25.55 1.25 1.25v6.4c0 .7-.55 1.25-1.25 1.25H2.75c-.7 0-1.25-.55-1.25-1.25z" fill="currentColor"/></svg></span><span class="nav-label">{{ f.label }}</span><span class="nav-count">{{ count(folderView(f)) }}</span></button>
         <span class="folder-actions">
           @if (f.depth < 4) {
             <button type="button" class="icon-button small" [attr.aria-label]="t.wb.ablage.newFolderIn(f.label)" [title]="t.wb.ablage.newFolderIn(f.label)" (click)="newSubfolder(f)">＋</button>
@@ -96,7 +96,7 @@
       </div>
     }
     <button type="button" class="nav-item" [attr.aria-current]="queue() === 'unfiled' ? 'true' : null" (click)="openQueue('unfiled')">
-      <span class="nav-folder-icon muted" aria-hidden="true">▱</span><span class="nav-label">{{ t.wb.ablage.unfiled }}</span><span class="nav-count">{{ count('unfiled') }}</span></button>
+      <span class="nav-folder-icon muted" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.25 4.25c0-.4.35-.75.75-.75h2.85l1.5 1.6h5.65c.4 0 .75.35.75.75v6.15c0 .4-.35.75-.75.75H3c-.4 0-.75-.35-.75-.75z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span><span class="nav-label">{{ t.wb.ablage.unfiled }}</span><span class="nav-count">{{ count('unfiled') }}</span></button>
     <p class="nav-help">{{ queueHelp(queue()) }}</p>
     <h2 class="nav-heading">{{ t.wb.myQueries }}</h2>
     @for (q of view().queries; track q.name) {
@@ -115,7 +115,21 @@
 
   <main class="workbench-main">
     @if (error()) { <p class="banner error" role="alert">{{ error() }} <button type="button" class="link" (click)="error.set('')" aria-label="Schließen">×</button></p> }
-    @if (opened()) {
+    @if (extras(); as v) {
+      <section class="tool-view" [attr.aria-labelledby]="'tool-title'">
+        <header class="tool-view-head">
+          <button type="button" class="button ghost" (click)="closeExtras()">← {{ t.extras.back }}</button>
+          <div><h2 id="tool-title" tabindex="-1">{{ t.extras.views[v] }}</h2><p class="muted">{{ t.extras.viewHelp[v] }}</p></div>
+        </header>
+        @if (!isAssessor() && v !== 'massenfaelle') { <p class="banner">{{ t.extras.needsAssessor }}</p> }
+        @switch (v) {
+          @case ('pruefwerkstatt') { <nc-pack-workbench [releases]="releaseList()" [canAssess]="isAssessor()" [request]="extrasRequest()" /> }
+          @case ('referenzfaelle') { <nc-reference-examples [releases]="releaseList()" [canAssess]="isAssessor()" (openExample)="openExtras('pruefwerkstatt', $event)" /> }
+          @case ('massenfaelle') { <nc-volume-overview [processes]="allProcesses()" (showInList)="showPlatformCases()" /> }
+          @case ('nachweise') { <nc-evidence-search [initial]="evidenceRequest()" /> }
+        }
+      </section>
+    } @else if (opened()) {
       <div class="opened-case">
       <section class="reading-pane full" [attr.aria-label]="t.wb.readingPane">
         @if (detail(); as d) {

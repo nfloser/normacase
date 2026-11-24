@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "assessmentDate": "2026-10-02",
+  "facts": {
+    "base_input": {
+      "kind": "NUMBER",
+      "number": 5
+    },
+    "option_a": {
+      "kind": "NUMBER",
+      "number": 3
+    },
+    "option_b": {
+      "kind": "NUMBER",
+      "number": 8
+    }
+  }
+}

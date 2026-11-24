@@ -10,6 +10,10 @@ import { AblageDialog, COLOR_PRESETS, DEFAULT_QUEUE_COLORS, FOLDER_PREFIX, folde
 import { CaseAction, CaseFile } from './case-file';
 import { ThemeChoice, ThemeStore } from '../shared/theme';
 import { exactJson } from '../shared/json';
+import { PackWorkbench } from '../extras/pack-workbench';
+import { ReferenceExamples } from '../extras/reference-examples';
+import { VolumeOverview } from '../extras/volume-overview';
+import { EvidenceSearch } from '../extras/evidence-search';
 import {
   COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, PREVIEW_MAX, PREVIEW_MIN, SELECT_COLUMNS, SavedQuery, ViewSettings,
   ViewStore, DEFAULT_VIEW, DENSITIES, PLATFORM_SYSTEM, clampPreview, rowTone, storableFilters,
@@ -30,7 +34,7 @@ const EMPTY_WORKSPACE: Workspace = { folders: [], marks: [], queueColors: {} };
  */
 @Component({
   selector: 'nc-workbench',
-  imports: [CaseFile],
+  imports: [CaseFile, PackWorkbench, ReferenceExamples, VolumeOverview, EvidenceSearch],
   templateUrl: './workbench.html',
   host: {
     '(document:keydown.f4)': 'toggleDetails($event)',
@@ -220,6 +224,7 @@ export class Workbench {
   }
 
   protected openQueue(id: string): void {
+    this.extras.set(null);
     this.queue.set(id);
     setTimeout(() => this.active.set(this.visible()[0]?.processId ?? null));
     this.selection.set(new Set());
@@ -371,6 +376,7 @@ export class Workbench {
     { id: 'edit', items: ['select-all', 'clear'] },
     { id: 'view', items: ['detail', 'orientation', 'navigation', 'density', 'columns', 'filters', 'colors', 'reset', 'refresh'] },
     { id: 'cases', items: ['confirm', 'approve', 'new-folder', 'move', 'mark', 'bookmark', 'note', 'package', 'save-query'] },
+    { id: 'extras', items: ['x-pruefwerkstatt', 'x-referenzfaelle', 'x-massenfaelle', 'x-nachweise'] },
   ];
 
   protected menuLabel(id: string): string {
@@ -430,6 +436,8 @@ export class Workbench {
       case 'note': this.begin('note', this.targetIds()); break;
       case 'package': this.downloadPackage(this.targetIds()); break;
       case 'save-query': this.openQueryDialog(); break;
+      case 'x-pruefwerkstatt': case 'x-referenzfaelle': case 'x-massenfaelle': case 'x-nachweise':
+        this.openExtras(action.slice(2)); break;
     }
   }
 
@@ -588,6 +596,7 @@ export class Workbench {
     if (event.key === 'F5' && !mod) { event.preventDefault(); this.refresh(); return; }
     if (event.key === 'Escape' && (this.contextMenu() || this.navMenu())) { this.closeContextMenus(true); return; }
     if (dialog || editing) return;
+    if (event.key === 'Escape' && this.extras()) { this.closeExtras(); return; }
     if (event.altKey && event.key === 'ArrowLeft' && this.opened()) { event.preventDefault(); this.back(); return; }
     if (mod && event.key.toLowerCase() === 'a' && !this.opened()) { event.preventDefault(); this.toggleVisible(true); return; }
     if (event.key === 'Escape') {
@@ -979,6 +988,48 @@ export class Workbench {
       case 'approve': return de.wb.ablage.approve;
       default: return de.wb.save;
     }
+  }
+
+  // ---- Extras: Prüfwerkstatt, Referenzfälle, Massenfälle, Nachweise ----
+
+  protected readonly extras = signal<string | null>(null);
+  protected readonly extrasRequest = signal<{ releaseId: string; exampleId: string } | null>(null);
+  protected readonly evidenceRequest = signal<{ system: string; caseId: string } | null>(null);
+  protected readonly releaseList = signal<ReleaseSummary[]>([]);
+  protected readonly allProcesses = computed(() => {
+    const l = this.list();
+    return l.state === 'ready' ? l.value : [];
+  });
+
+  protected isAssessor(): boolean {
+    return this.user().roles.includes('gutachter');
+  }
+
+  protected openExtras(view: string, request: { releaseId: string; exampleId: string } | null = null): void {
+    this.closeContextMenus();
+    this.opened.set(null);
+    this.extrasRequest.set(request);
+    if (view === 'nachweise') {
+      const active = this.summaries(this.active() ? [this.active()!] : [])[0];
+      this.evidenceRequest.set(active ? { system: active.externalReference.system, caseId: active.externalReference.caseId } : null);
+    }
+    if (!this.releaseList().length) {
+      this.api.releases().pipe(catchError(() => of([] as ReleaseSummary[])), takeUntilDestroyed(this.destroy))
+        .subscribe((r) => this.releaseList.set(r));
+    }
+    this.extras.set(view);
+    setTimeout(() => document.getElementById('tool-title')?.focus());
+  }
+
+  protected closeExtras(): void {
+    this.extras.set(null);
+    setTimeout(() => document.querySelector<HTMLElement>('.case-table tbody tr[tabindex="0"], .case-table tbody tr')?.focus());
+  }
+
+  protected showPlatformCases(): void {
+    if (!this.view().includePlatform) this.updateView({ includePlatform: true });
+    this.openQueue(ALL);
+    this.query.set('PF-');
   }
 
   private updateView(change: Partial<ViewSettings>): void {

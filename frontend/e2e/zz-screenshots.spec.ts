@@ -112,6 +112,23 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'kontextmenue');
   await page.keyboard.press('Escape');
   await expect(page.locator('.context-menu')).toHaveCount(0);
+  await page.locator('.menubar summary', { hasText: 'Extras' }).click();
+  await page.getByRole('menuitem', { name: 'Prüfwerkstatt' }).click();
+  await page.getByLabel('Regelwerk', { exact: true }).selectOption({ label: 'Pitch-Demo – Synthetische Fallprüfung' });
+  await page.getByLabel('Beispiel', { exact: true }).selectOption({ label: '2 · Nachweis fehlt – manuelle Prüfung' });
+  await page.getByRole('button', { name: 'Beispiel laden' }).click();
+  await page.getByRole('button', { name: 'Prüfen', exact: true }).click();
+  await expect(page.locator('.verdict')).toBeVisible();
+  await shot(page, 'pruefwerkstatt');
+  await page.locator('.menubar summary', { hasText: 'Extras' }).click();
+  await page.getByRole('menuitem', { name: 'Referenzfälle' }).click();
+  await page.getByRole('button', { name: 'Alle prüfen' }).click();
+  await expect(page.getByText(/^13 von 13/)).toBeVisible({ timeout: 30_000 });
+  await shot(page, 'referenzfaelle');
+  await page.locator('.menubar summary', { hasText: 'Extras' }).click();
+  await page.getByRole('menuitem', { name: 'Massenfälle' }).click();
+  await shot(page, 'massenfaelle');
+  await page.getByRole('button', { name: 'Zurück zu den Arbeitslisten' }).click();
 
   file = await open(page, /Zur Freigabe vorbereitet/, 'PG-2026-104233');
   await file.getByRole('button', { name: /Bestätigen/ }).click();

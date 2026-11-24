@@ -37,6 +37,23 @@ class KnowledgeController {
                         .body("{\"type\":\"https://normacase.local/problems/not-found\",\"title\":\"Nicht gefunden\",\"status\":404}"));
     }
 
+    /** Beispiele eines Releases mit dokumentiertem Ergebnis (Referenzfälle). */
+    @GetMapping(path = "/api/v1/knowledge/releases/{releaseId}/examples", produces = "application/json")
+    ResponseEntity<List<de.normacase.knowledge.KnowledgeCatalog.Example>> examples(
+            @org.springframework.web.bind.annotation.PathVariable String releaseId) {
+        return ResponseEntity.ok().cacheControl(CacheControl.maxAge(Duration.ofMinutes(5)).cachePrivate()).body(catalog.examples(releaseId));
+    }
+
+    /** Synthetisches Beispiel als Falleingabe, zum Laden in der Prüfwerkstatt und für die Referenzfälle. */
+    @GetMapping(path = "/api/v1/knowledge/releases/{releaseId}/examples/{exampleId}", produces = "application/json")
+    ResponseEntity<String> example(@org.springframework.web.bind.annotation.PathVariable String releaseId,
+            @org.springframework.web.bind.annotation.PathVariable String exampleId) {
+        return catalog.example(releaseId, exampleId)
+                .map(json -> ResponseEntity.ok().cacheControl(CacheControl.maxAge(Duration.ofMinutes(5)).cachePrivate()).body(json))
+                .orElseGet(() -> ResponseEntity.status(404).contentType(org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON)
+                        .body("{\"type\":\"https://normacase.local/problems/not-found\",\"title\":\"Nicht gefunden\",\"status\":404}"));
+    }
+
     record ReleaseSummary(String releaseId, String packId, String lifecycleStatus, String validationLevel,
             String entryRuleId, String contentSha256, List<FieldSummary> fields, List<String> evidenceRequirements) {
     }
