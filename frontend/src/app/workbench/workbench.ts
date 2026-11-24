@@ -447,6 +447,12 @@ export class Workbench {
     }, { once: true });
   }
 
+  protected switchHelpTab(page: 'usage' | 'shortcuts', event: KeyboardEvent): void {
+    event.preventDefault();
+    this.helpPage.set(page);
+    document.getElementById('help-' + page)?.focus();
+  }
+
   protected closeMenus(event: MouseEvent): void {
     if (!(event.target instanceof Element && event.target.closest('.context-menu'))) this.closeContextMenus();
     if (event.target instanceof Element && event.target.closest('.menubar')) return;

@@ -44,6 +44,10 @@ test('Prüfwerkstatt auf kleinem Bildschirm anordnen und bedienen', async ({ pag
   await help.click();
   await page.getByRole('menuitem', { name: 'Bedienung' }).click();
   await expect(page.getByRole('dialog', { name: 'Bedienung' })).toContainText('Wie schaffe ich Platz?');
+  await page.getByRole('tab', { name: 'Bedienung' }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('tab', { name: 'Tastenkürzel' })).toBeFocused();
+  await expect(page.getByRole('tabpanel', { name: 'Tastenkürzel' })).toContainText('Strg+K');
   await page.keyboard.press('Escape');
   await expect(help).toBeFocused();
   await help.click();

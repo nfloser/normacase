@@ -122,11 +122,15 @@ export const de = {
     resizeExplorer: 'Größe der Arbeitslisten ändern',
     positions: { top: 'Oben', right: 'Rechts', bottom: 'Unten', left: 'Links' },
     help: {
-      usage: 'Bedienung', close: 'Schließen',
+      usage: 'Bedienung', label: 'Hilfe', close: 'Schließen',
       questions: [
         { question: 'Wie finde und öffne ich einen Vorgang?', answer: 'Wähle eine Arbeitsliste oder suche oben nach einem Vorgang. Ein Klick auf die Zeile öffnet die Vorschau, ein Doppelklick die vollständige Fallakte. Die Vorgangsnummer kopierst du mit einem Klick auf die Nummer.' },
         { question: 'Wie schaffe ich Platz?', answer: 'Mit Menü klappst du die Aktionsleiste ein. Unter Ansicht und in der Fallakte kannst du Bereiche verschieben oder ausblenden. Ziehe die Trenner und die Spaltenränder, um die Breiten zu ändern.' },
         { question: 'Wo sind Dokumente und eigene Notizen?', answer: 'In der Fallakte zeigen Prüfung und Dokumente die Unterlagen. Fundstellen springen direkt zur passenden Seite. Im Tab Notizen speicherst du deine persönliche Notiz zu diesem Vorgang.' },
+        { question: 'Wie filtere oder sortiere ich die Liste?', answer: 'Klicke auf einen Spaltenkopf zum Sortieren oder nutze die Filterzeile. Unter Spaltenoptionen änderst du Reihenfolge und Auswahl. Mit dem Stern in der Aktionsleiste speicherst du die aktuelle Ansicht als Abfrage.' },
+        { question: 'Wie organisiere ich meine Vorgänge?', answer: 'Mit dem Rechtsklick-Menü kannst du Vorgänge markieren, mit Lesezeichen versehen oder in eigene Ordner verschieben. Mehrere Vorgänge wählst du über die Kontrollkästchen oder mit Strg und Umschalt aus.' },
+        { question: 'Was bedeuten Zeilenfarbe und Prüfergebnis?', answer: 'Die Zeilenfarbe zeigt den Bearbeitungsstand. Das Prüfergebnis steht in einer eigenen Spalte. Unter Prüfung lässt sich die Begründung aufklappen und bis zur Quelle verfolgen.' },
+        { question: 'Was finde ich unter Extras?', answer: 'In der Prüfwerkstatt kannst du ein Regelwerk an Beispielen ausprobieren. Referenzfälle zeigen den Abgleich mit erwarteten Ergebnissen. Massenfälle und Nachweise dienen zur Kontrolle der Verarbeitung.' },
         { question: 'Wie geht ein Vorgang weiter?', answer: 'Der nächste Schritt steht in der Fallakte. Bestätigte Vorgänge gehen an eine zweite Person zur Freigabe. Fehlende Angaben oder Widersprüche werden zur Klärung angezeigt.' },
       ],
     },
