@@ -236,16 +236,19 @@
     <div class="dialog-card column-options" tabindex="-1" (keydown.escape)="columnDialog.set(null)" role="dialog" aria-modal="true" aria-labelledby="columns-title">
     <form class="dialog-form" (submit)="$event.preventDefault(); applyColumns()">
       <h3 id="columns-title">{{ t.wb.columnOptions }}</h3>
-      <ol class="column-list">
-        @for (c of draft; track c; let i = $index, first = $first, last = $last) {
-          <li>
+      <p class="muted small" id="columns-hint">{{ t.wb.dragHint }}</p>
+      <ol class="column-list" aria-describedby="columns-hint">
+        @for (c of draft; track c; let i = $index) {
+          <li [class.dragging]="dragging() === c" [attr.data-column]="c" (pointerdown)="dragStart($event, c)" (pointermove)="dragMove($event)"
+            (pointerup)="dragEnd()" (pointercancel)="dragEnd()" (lostpointercapture)="dragEnd()">
+            <button type="button" class="grip" [attr.aria-label]="t.wb.dragColumn(columnLabel(c), i + 1, draft.length)" [title]="t.wb.dragTitle"
+              (keydown)="gripKeys($event, i)"><span aria-hidden="true">⠿</span></button>
             <span class="column-name">{{ columnLabel(c) }}</span>
-            <button type="button" class="icon-button small" [disabled]="first" [attr.aria-label]="t.wb.moveUp(columnLabel(c))" [title]="t.wb.moveUp(columnLabel(c))" (click)="moveColumn(i, -1)">↑</button>
-            <button type="button" class="icon-button small" [disabled]="last" [attr.aria-label]="t.wb.moveDown(columnLabel(c))" [title]="t.wb.moveDown(columnLabel(c))" (click)="moveColumn(i, 1)">↓</button>
             <button type="button" class="icon-button small" [disabled]="draft.length === 1" [attr.aria-label]="t.wb.removeColumn(columnLabel(c))" [title]="t.wb.removeColumn(columnLabel(c))" (click)="removeColumn(c)">×</button>
           </li>
         }
       </ol>
+      <p class="sr-only" role="status" aria-live="polite">{{ columnAnnouncement() }}</p>
       @if (availableColumns(draft).length) {
         <label class="field"><span>{{ t.wb.addColumn }}</span>
           <select #add (change)="addColumn(add.value); add.value = ''">

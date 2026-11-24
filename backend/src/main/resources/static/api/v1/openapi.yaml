@@ -422,9 +422,29 @@ components:
             properties:
               id: { type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$' }
               title: { type: string }
-              mediaType: { enum: [application/pdf, image/png, image/jpeg, text/plain] }
+              mediaType:
+                enum: [application/pdf, image/png, image/jpeg, image/tiff, text/plain]
+                description: Bei image/tiff erzeugt NormaCase die Seitenvorschauen selbst (höchstens 50 Seiten, 40 MP je Seite).
               contentBase64: { type: string, contentEncoding: base64 }
-              pagesBase64: { type: array, items: { type: string, contentEncoding: base64 } }
+              pagesBase64:
+                type: array
+                maxItems: 50
+                description: Optionale PNG-Seitenvorschauen, nur für PDF. Ohne Vorschau zeigt die Fallakte das Original im Browser.
+                items: { type: string, contentEncoding: base64 }
+              category:
+                enum: [ORDER, MEDICAL, CARE, PROOF, OTHER]
+                description: Auftrag/Antrag, ärztliche Unterlagen, Pflege, Bescheide und Nachweise, Sonstiges
+              issuedOn: { type: string, format: date, description: Ausstellungsdatum des Dokuments }
+              references:
+                type: array
+                description: Herkunft einzelner Angaben – Feld-ID des Regelwerks und Seite im Dokument
+                items:
+                  type: object
+                  additionalProperties: false
+                  required: [field, page]
+                  properties:
+                    field: { type: string, pattern: '^[a-z][a-z0-9_]{0,63}$' }
+                    page: { type: integer, minimum: 1 }
     CaseInput:
       type: object
       required: [formatVersion, assessmentDate, facts]

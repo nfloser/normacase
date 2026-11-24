@@ -54,8 +54,17 @@ class DemoCasesTest {
             var clarified = new RuleEngine().evaluate(pack, AssessmentJson.readCase(Files.readString(folder.resolve("clarification.json"))));
             assertThat(clarified.outcome().name()).isEqualTo(meta.get("expectedOutcomeAfterClarification").stringValue());
         }
+        JsonNode facts = StrictJson.MAPPER.readTree(Files.readString(folder.resolve("input.json"))).get("facts");
         for (JsonNode doc : meta.get("documents")) {
             assertThat(folder.resolve(doc.get("file").stringValue())).exists();
+            assertThat(doc.get("category").stringValue()).isIn("ORDER", "MEDICAL", "CARE", "PROOF", "OTHER");
+            assertThat(doc.get("issuedOn").stringValue()).as("ausgestellt vor der Begutachtung")
+                    .isLessThanOrEqualTo(meta.has("expectedOutcomeAfterClarification") ? "2026-11-13" : AssessmentJson
+                            .readCase(Files.readString(folder.resolve("input.json"))).assessmentDate().toString());
+            for (JsonNode ref : doc.get("references")) {
+                // Fundstellen zeigen nur auf Angaben, die der Vorgang tatsächlich enthält.
+                assertThat(facts.has(ref.get("field").stringValue())).as(ref.toString()).isTrue();
+            }
         }
     }
 }

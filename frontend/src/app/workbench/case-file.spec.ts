@@ -94,4 +94,26 @@ describe('CaseFile', () => {
     expect(el.querySelector('.notice-box')!.textContent).toContain('Regelwerk ist nicht bekannt');
     expect(el.querySelector('.outcome-badge')!.textContent).toContain('Keine Bewertung');
   });
+
+  it('springt aus der Begründung an die Fundstelle im Dokument und zeigt die Akte nach Dokumentart', () => {
+    const documents = [
+      { id: 'auftrag', title: 'Prüfauftrag', mediaType: 'application/pdf', sha256: 'sha256:x', sizeBytes: 2048, pageCount: 2,
+        category: 'ORDER', issuedOn: '2026-09-20', references: [{ field: 'request_complete', page: 2 }] },
+      { id: 'befund', title: 'Befundbericht', mediaType: 'image/tiff', sha256: 'sha256:y', sizeBytes: 4096, pageCount: 1,
+        category: 'MEDICAL', issuedOn: '2026-09-12', references: [] },
+    ];
+    const { fixture, el } = render(detail({ documents, caseInput: { formatVersion: 1, assessmentDate: '2026-10-02',
+      facts: { request_complete: { kind: 'TRUTH', truth: 'YES' } }, evidence: { supporting_document: 'MISSING' } } }));
+    const link = el.querySelector<HTMLButtonElement>('.source-link')!;
+    expect(link.textContent!.trim()).toBe('Prüfauftrag, S. 2');
+    link.click();
+    fixture.detectChanges();
+
+    expect(el.querySelector('[role=tab][aria-selected=true]')!.textContent).toContain('Dokumente');
+    expect(Array.from(el.querySelectorAll('.file-group h4')).map((h) => h.textContent)).toEqual(['Auftrag und Antrag', 'Ärztliche Unterlagen', 'Fehlende Nachweise']);
+    expect(el.querySelector('.file-item[aria-pressed=true]')!.textContent).toContain('in Bewertung verwendet');
+    expect(el.querySelector('.reader-toolbar .page-of')!.textContent).toContain('Seite 2 von 2');
+    expect(el.querySelector('.sheet.highlighted figcaption')!.textContent).toContain('Seite 2 · Fundstelle');
+    expect(el.querySelector('.missing-item')!.textContent).toContain('liegt nicht vor');
+  });
 });

@@ -2,10 +2,10 @@ import { Component, computed, effect, input, output, signal, untracked } from '@
 import { NgTemplateOutlet } from '@angular/common';
 import { de, germanDate, germanDateTime, label } from '../de';
 import { readAssessmentDocument, displayValue, ValueView } from '../shared/assessment';
-import { DecisionTrace, OutputLabel } from '../shared/decision-trace';
+import { DecisionTrace, OutputLabel, SourceRef } from '../shared/decision-trace';
 import { ExactNumber, germanDecimal, isObject } from '../shared/json';
 import { Presentation, ProcessDetail, ReleaseSummary } from './api';
-import { DocumentReader } from './document-reader';
+import { DocumentReader, MissingProof, ReaderTarget } from './document-reader';
 
 type Tab = 'review' | 'documents' | 'history' | 'evidence';
 export type CaseAction =
@@ -52,6 +52,24 @@ export class CaseFile {
   protected readonly evidenceLabels = computed(() => labels(this.presentation().evidenceRequirements));
   protected readonly outputLabels = computed(() => (this.presentation().outputs ?? {}) as Record<string, OutputLabel>);
 
+  /** Fundstellen je Angabe, wie das Fachsystem sie zu den Dokumenten mitgeliefert hat. */
+  protected readonly sources = computed(() => {
+    const out: Record<string, SourceRef[]> = {};
+    for (const doc of this.detail().documents) {
+      for (const ref of doc.references ?? []) {
+        if (!Object.hasOwn(out, ref.field)) out[ref.field] = [];
+        out[ref.field].push({ field: ref.field, documentId: doc.id, title: doc.title, page: ref.page });
+      }
+    }
+    return out;
+  });
+
+  /** Nachweise, die das Regelwerk verlangt und die laut Falleingabe fehlen oder sich widersprechen. */
+  protected readonly missingProofs = computed<MissingProof[]>(() =>
+    this.evidence().filter((e) => e.status === 'MISSING' || e.status === 'CONFLICTING'));
+
+  protected readonly readerTarget = signal<ReaderTarget | null>(null);
+
   protected readonly step = computed(() => {
     const d = this.detail();
     const can = (a: string) => d.actions.includes(a);
@@ -84,6 +102,7 @@ export class CaseFile {
       untracked(() => {
         if (d.processId === this.lastProcess) return;
         this.lastProcess = d.processId;
+        this.readerTarget.set(null);
         this.tab.set(d.state === 'DOCUMENT_REVIEW' && d.documents.length ? 'documents' : 'review');
       });
     });
@@ -111,7 +130,15 @@ export class CaseFile {
     this.clarifying.set(false);
   }
 
+  /** Verweis aus der Begründung: Dokument an der Fundstelle öffnen, nebenan oder im Reiter Dokumente. */
+  protected showSource(ref: SourceRef): void {
+    const split = this.wide() && this.tab() === 'review';
+    if (!split) this.tab.set('documents');
+    this.readerTarget.set({ documentId: ref.documentId, page: ref.page, seq: (this.readerTarget()?.seq ?? 0) + 1 });
+  }
+
   protected select(tab: Tab): void {
+    this.readerTarget.set(null);
     this.tab.set(tab);
   }
 
@@ -121,7 +148,7 @@ export class CaseFile {
     if (next === null) return;
     event.preventDefault();
     const tab = this.tabs[(next + this.tabs.length) % this.tabs.length];
-    this.tab.set(tab);
+    this.select(tab);
     document.getElementById('tab-' + tab)?.focus();
   }
 

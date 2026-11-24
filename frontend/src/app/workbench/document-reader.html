@@ -1,15 +1,35 @@
 <nav class="reader-files" [attr.aria-label]="t.files">
   <h3>{{ t.files }} <span class="count">{{ documents().length }}</span></h3>
-  <ul>
-    @for (doc of documents(); track doc.id) {
-      <li><button type="button" class="file-item" [attr.aria-pressed]="selectedId() === doc.id" (click)="select(doc.id)">
-        <span class="file-icon" [attr.data-kind]="doc.mediaType" aria-hidden="true">{{ icon(doc) }}</span>
-        <span class="file-text"><strong>{{ doc.title }}</strong><small>{{ meta(doc) }}</small></span>
-      </button></li>
-    } @empty {
-      <li class="muted small">{{ t.noDocuments }}</li>
-    }
-  </ul>
+  @for (g of groups(); track g.category) {
+    <section class="file-group" [attr.aria-label]="g.label">
+      <h4>{{ g.label }}</h4>
+      <ul>
+        @for (doc of g.docs; track doc.id) {
+          <li><button type="button" class="file-item" [attr.aria-pressed]="selectedId() === doc.id" (click)="select(doc.id)"
+            [title]="usedFor(doc) || doc.title">
+            <span class="file-icon" [attr.data-kind]="doc.mediaType" aria-hidden="true">{{ icon(doc) }}</span>
+            <span class="file-text">
+              <strong>{{ doc.title }}</strong>
+              <small>{{ meta(doc) }}</small>
+              @if (doc.references?.length) { <small class="used-badge">{{ t.used }}<span class="sr-only">: {{ usedFor(doc) }}</span></small> }
+            </span>
+          </button></li>
+        }
+      </ul>
+    </section>
+  } @empty {
+    <p class="muted small">{{ t.noDocuments }}</p>
+  }
+  @if (missing().length) {
+    <section class="file-group missing" [attr.aria-label]="t.missingProofs">
+      <h4>{{ t.missingProofs }}</h4>
+      <ul>
+        @for (m of missing(); track m.id) {
+          <li class="missing-item" [attr.data-status]="m.status"><span>{{ m.label }}</span><small>{{ missingLabel(m.status) }}</small></li>
+        }
+      </ul>
+    </section>
+  }
 </nav>
 
 <section class="reader-main" [attr.aria-label]="t.title">
@@ -21,33 +41,41 @@
         <button type="button" class="icon-button" [disabled]="page() >= pageNumbers().length" (click)="go(1)" [attr.aria-label]="t.nextPage" [title]="t.nextPage">›</button>
         <span class="divider" aria-hidden="true"></span>
       }
-      @if (doc.mediaType !== 'text/plain') {
+      @if (doc.mediaType !== 'text/plain' && pageNumbers().length) {
         <button type="button" class="icon-button" (click)="stepZoom(-1)" [attr.aria-label]="t.zoomOut" [title]="t.zoomOut">−</button>
-        <select [value]="zoom()" (change)="setZoom($any($event.target).value)" [attr.aria-label]="t.zoomIn">
+        <select [value]="zoom()" (change)="setZoom($any($event.target).value)" [attr.aria-label]="t.zoomLevel">
           <option value="width" [selected]="zoom() === 'width'">{{ t.fitWidth }}</option>
+          <option value="page" [selected]="zoom() === 'page'">{{ t.fitPage }}</option>
           @for (step of zoomSteps; track step) { <option [value]="step" [selected]="zoom() === step">{{ step }} %</option> }
         </select>
         <button type="button" class="icon-button" (click)="stepZoom(1)" [attr.aria-label]="t.zoomIn" [title]="t.zoomIn">+</button>
         <button type="button" class="icon-button" (click)="rotate()" [attr.aria-label]="t.rotate" [title]="t.rotate">⟳</button>
       }
       <span class="spacer"></span>
+      <button type="button" class="icon-button" (click)="toggleMaximized()" [attr.aria-pressed]="maximized()"
+        [attr.aria-label]="maximized() ? t.restore : t.maximize" [title]="maximized() ? t.restore : t.maximize">{{ maximized() ? '⤡' : '⤢' }}</button>
+      <button type="button" class="icon-button" (click)="openWindow()" [attr.aria-label]="t.newWindow" [title]="t.newWindow">⧉</button>
       <button type="button" class="icon-button" (click)="saveOriginal()" [attr.aria-label]="t.download" [title]="t.download">⤓</button>
     </div>
+    @if (notice(); as n) { <p class="reader-notice" role="status">{{ n }}</p> }
 
-    <div class="reader-stage" tabindex="0" (keydown)="keys($event)" [attr.aria-label]="doc.title + ' – ' + t.hint">
+    <div class="reader-stage" [class.fit-page]="zoom() === 'page'" tabindex="0" (keydown)="keys($event)" [attr.aria-label]="doc.title + ' – ' + t.hint">
       @if (doc.mediaType === 'text/plain') {
         @if (text() === null) { <p class="muted">{{ t.loading }}</p> } @else { <pre class="reader-text">{{ text() }}</pre> }
       } @else if (pageNumbers().length === 0) {
-        <p class="muted">{{ t.noPreview }}</p>
+        <div class="reader-empty">
+          <p class="muted">{{ t.noPreview }}</p>
+          @if (doc.mediaType === 'application/pdf') { <button type="button" class="button" (click)="openInBrowser()">{{ t.openInBrowser }}</button> }
+        </div>
       } @else {
         @for (n of pageNumbers(); track n) {
           @let p = pages()[n];
-          <figure class="sheet simple" [id]="pageAnchor(n)" [style.width]="imageWidth()">
+          <figure class="sheet simple" [id]="pageAnchor(n)" [style.width]="imageWidth()" [class.highlighted]="highlight() === n">
             @if (p?.failed) { <p class="error-text" role="alert">{{ t.failed }}</p> }
             @else if (p?.url) {
               <img [src]="p!.url" [alt]="doc.title + ', ' + t.page + ' ' + n" [style.transform]="'rotate(' + rotation() + 'deg)'">
             } @else { <p class="muted">{{ t.loading }}</p> }
-            <figcaption>{{ t.page }} {{ n }}</figcaption>
+            <figcaption>{{ t.page }} {{ n }}@if (highlight() === n) { · {{ t.source }} }</figcaption>
           </figure>
         }
       }

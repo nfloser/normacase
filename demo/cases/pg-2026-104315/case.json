@@ -6,10 +6,35 @@
   "expectedOutcome": "INCOMPLETE",
   "documents": [
     {
+      "id": "arztbrief",
+      "title": "Arztbrief Neurologie (Scan)",
+      "file": "arztbrief.pdf",
+      "mediaType": "application/pdf",
+      "category": "MEDICAL",
+      "issuedOn": "2026-07-14",
+      "references": [],
+      "pages": [
+        "arztbrief.page-1.png"
+      ]
+    },
+    {
+      "id": "antrag",
+      "title": "Antrag der versicherten Person (Foto)",
+      "file": "antrag.jpg",
+      "mediaType": "image/jpeg",
+      "category": "ORDER",
+      "issuedOn": "2026-10-10",
+      "references": [],
+      "pages": []
+    },
+    {
       "id": "auftrag",
       "title": "Auftrag der Pflegekasse",
       "file": "auftrag.pdf",
       "mediaType": "application/pdf",
+      "category": "ORDER",
+      "issuedOn": "2026-10-16",
+      "references": [],
       "pages": [
         "auftrag.page-1.png"
       ]
@@ -19,24 +44,77 @@
       "title": "Befundbericht Hausarztpraxis Dr. Behrens",
       "file": "befundbericht.pdf",
       "mediaType": "application/pdf",
+      "category": "MEDICAL",
+      "issuedOn": "2026-10-22",
+      "references": [],
       "pages": [
-        "befundbericht.page-1.png"
+        "befundbericht.page-1.png",
+        "befundbericht.page-2.png"
       ]
     },
     {
+      "id": "medikationsplan",
+      "title": "Medikationsplan",
+      "file": "medikationsplan.png",
+      "mediaType": "image/png",
+      "category": "MEDICAL",
+      "issuedOn": "2026-10-28",
+      "references": [],
+      "pages": []
+    },
+    {
       "id": "pflegetagebuch",
-      "title": "Pflegetagebuch der Angehörigen",
-      "file": "pflegetagebuch.pdf",
-      "mediaType": "application/pdf",
-      "pages": [
-        "pflegetagebuch.page-1.png"
-      ]
+      "title": "Pflegetagebuch der Angehörigen (Fax)",
+      "file": "pflegetagebuch.tiff",
+      "mediaType": "image/tiff",
+      "category": "CARE",
+      "issuedOn": "2026-11-01",
+      "references": [],
+      "pages": []
+    },
+    {
+      "id": "pflegedienst",
+      "title": "Stellungnahme Pflegedienst Nordsee mobil (Textexport)",
+      "file": "pflegedienst.txt",
+      "mediaType": "text/plain",
+      "category": "CARE",
+      "issuedOn": "2026-11-03",
+      "references": [],
+      "pages": []
     },
     {
       "id": "erhebung",
       "title": "Erhebungsbogen Module 1–6",
       "file": "erhebung.pdf",
       "mediaType": "application/pdf",
+      "category": "CARE",
+      "issuedOn": "2026-11-09",
+      "references": [
+        {
+          "field": "module_1_sum",
+          "page": 1
+        },
+        {
+          "field": "module_2_sum",
+          "page": 1
+        },
+        {
+          "field": "module_3_sum",
+          "page": 1
+        },
+        {
+          "field": "module_4_sum",
+          "page": 1
+        },
+        {
+          "field": "module_5_sum",
+          "page": 1
+        },
+        {
+          "field": "module_6_sum",
+          "page": 1
+        }
+      ],
       "pages": [
         "erhebung.page-1.png"
       ]
@@ -46,6 +124,14 @@
       "title": "Nachtrag Modul 4",
       "file": "nachtrag.pdf",
       "mediaType": "application/pdf",
+      "category": "CARE",
+      "issuedOn": "2026-11-13",
+      "references": [
+        {
+          "field": "module_4_sum",
+          "page": 1
+        }
+      ],
       "pages": [
         "nachtrag.page-1.png"
       ]

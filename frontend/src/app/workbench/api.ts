@@ -28,7 +28,14 @@ export interface DocumentMeta {
   readonly sha256: string;
   readonly sizeBytes: number;
   readonly pageCount: number;
+  /** Dokumentart laut Fachsystem: ORDER, MEDICAL, CARE, PROOF oder OTHER. */
+  readonly category?: string;
+  readonly issuedOn?: string | null;
+  /** Angaben der Falleingabe, die laut Fachsystem aus diesem Dokument stammen (Feld und Seite). */
+  readonly references?: readonly DocumentReference[];
 }
+
+export interface DocumentReference { readonly field: string; readonly page: number }
 
 export interface HistoryEntry { readonly at: string; readonly actor: string; readonly action: string; readonly reason: string | null }
 
