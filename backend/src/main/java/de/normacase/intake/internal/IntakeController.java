@@ -151,8 +151,8 @@ class IntakeController {
                 throw new InvalidDocumentException(path + ".issuedOn", "Datum als JJJJ-MM-TT erwartet");
             }
             List<Reference> references = d.has("references") ? d.list("references", (r, rp) -> {
-                Obj ref = Obj.of(r, rp).allow(Set.of("field", "page"));
-                return new Reference(ref.string("field"), ref.integer("page"));
+                Obj source = Obj.of(r, rp).allow(Set.of("field", "page"));
+                return new Reference(source.string("field"), source.integer("page"));
             }) : List.of();
             return new IncomingDocument(d.string("id"), d.string("title"), d.string("mediaType"),
                     base64(d.string("contentBase64"), path + ".contentBase64"),
