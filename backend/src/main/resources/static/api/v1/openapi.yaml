@@ -40,6 +40,24 @@ paths:
       responses:
         '200': { description: presentation.de-DE.json oder leeres Objekt }
         '404': { $ref: '#/components/responses/Problem' }
+  /api/v1/knowledge/releases/{releaseId}/examples:
+    get:
+      summary: Beispiele eines Releases mit dokumentiertem Ergebnis
+      parameters:
+        - { name: releaseId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Beispiele
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    label: { type: string }
+                    expectedOutcome: { type: [string, 'null'] }
   /api/v1/knowledge/releases/{releaseId}/examples/{exampleId}:
     get:
       summary: Synthetisches Beispiel eines Releases als Falleingabe (Prüfwerkstatt, Referenzfälle)

@@ -66,11 +66,13 @@ export class ReferenceExamples {
       const list = this.releases();
       untracked(() => {
         if (!list.length) return;
-        forkJoin(list.map((r) => this.workbench.presentation(r.releaseId).pipe(catchError(() => of({} as Presentation)),
-          map((p) => (p.examples ?? []).map((e) => ({
-            key: `${r.releaseId}/${e.id}`, releaseId: r.releaseId, releaseName: p.name ?? r.releaseId,
-            exampleId: e.id, label: e.label, expected: e.expectedOutcome ?? null,
-          }))))))
+        forkJoin(list.map((r) => forkJoin([
+          this.workbench.presentation(r.releaseId).pipe(catchError(() => of({} as Presentation))),
+          this.api.examples(r.releaseId).pipe(catchError(() => of([]))),
+        ]).pipe(map(([p, examples]) => examples.map((e) => ({
+          key: `${r.releaseId}/${e.id}`, releaseId: r.releaseId, releaseName: p.name ?? r.releaseId,
+          exampleId: e.id, label: e.label, expected: e.expectedOutcome,
+        }))))))
           .pipe(takeUntilDestroyed(this.destroy))
           .subscribe((groups) => this.rows.set(groups.flat()));
       });

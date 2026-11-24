@@ -17,4 +17,12 @@ public interface KnowledgeCatalog {
     default Optional<String> example(String releaseId, String exampleId) {
         return Optional.empty();
     }
+
+    /** Beispiele eines Releases mit Bezeichnung und dokumentiertem Ergebnis (aus {@code examples/expected-outcomes.json}). */
+    default List<Example> examples(String releaseId) {
+        return List.of();
+    }
+
+    record Example(String id, String label, String expectedOutcome) {
+    }
 }

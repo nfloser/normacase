@@ -619,3 +619,4 @@ details.raw pre { margin: 0; max-height: 340px; overflow: auto; padding: .7rem; 
 .matrix td.num { position: relative; min-width: 64px; }
 .matrix .bar { position: absolute; inset: 6px auto 6px 8px; width: calc((100% - 16px) * var(--share, 0)); border-radius: 4px; background: var(--nc-accent-soft); z-index: 0; }
 .matrix td.num strong { position: relative; z-index: 1; }
+.match, .plain-table .link { white-space: nowrap; }

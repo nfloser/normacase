@@ -1,0 +1,6 @@
+{
+  "incomplete": "INCOMPLETE",
+  "review": "HUMAN_REVIEW",
+  "supported": "SUPPORTED",
+  "not-supported": "NOT_SUPPORTED"
+}

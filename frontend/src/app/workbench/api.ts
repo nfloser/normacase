@@ -54,7 +54,7 @@ export interface ProcessDetail {
 }
 
 export interface Labels { readonly label: string; readonly helpText?: string }
-export interface PresentationExample { readonly id: string; readonly label: string; readonly caseFile?: string; readonly expectedOutcome?: string }
+export interface PresentationExample { readonly id: string; readonly label: string; readonly caseFile?: string }
 export interface Presentation {
   readonly name?: string;
   readonly description?: string;

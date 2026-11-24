@@ -1,5 +1,7 @@
 package de.normacase.knowledge.internal;
 
+import de.normacase.knowledge.KnowledgeCatalog.Example;
+
 import de.normacase.knowledge.KnowledgeCatalog;
 import de.normacase.knowledge.KnowledgePack;
 import de.normacase.knowledge.KnowledgePackReader;
@@ -36,9 +38,10 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
 
     private final Map<String, KnowledgeRelease> releases;
     private final Map<String, Map<String, String>> examples = new java.util.HashMap<>();
+    private final Map<String, List<Example>> exampleIndex = new java.util.HashMap<>();
 
     FileKnowledgeCatalog(@Value("${normacase.knowledge.directory}") Path directory, JdbcClient jdbc) {
-        this.releases = load(directory, examples);
+        this.releases = load(directory, examples, exampleIndex);
         register(jdbc);
         log.info("Knowledge Releases geladen: {}", releases.keySet());
     }
@@ -58,7 +61,13 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
         return Optional.ofNullable(examples.getOrDefault(releaseId, Map.of()).get(exampleId));
     }
 
-    private static Map<String, KnowledgeRelease> load(Path directory, Map<String, Map<String, String>> examples) {
+    @Override
+    public List<Example> examples(String releaseId) {
+        return exampleIndex.getOrDefault(releaseId, List.of());
+    }
+
+    private static Map<String, KnowledgeRelease> load(Path directory, Map<String, Map<String, String>> examples,
+            Map<String, List<Example>> index) {
         if (!Files.isDirectory(directory)) {
             throw new IllegalStateException("Knowledge-Verzeichnis fehlt: " + directory.toAbsolutePath());
         }
@@ -81,6 +90,7 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
                 }
                 if (labels != null) {
                     examples.put(release.releaseId(), readExamples(file.resolveSibling("examples"), labels));
+                    index.put(release.releaseId(), readIndex(file.resolveSibling("examples"), labels));
                 }
             }
         } catch (IOException e) {
@@ -111,6 +121,25 @@ class FileKnowledgeCatalog implements KnowledgeCatalog {
             found.put(id, json);
         }
         return Map.copyOf(found);
+    }
+
+    /** Bezeichnung aus der Präsentation, dokumentiertes Ergebnis aus {@code expected-outcomes.json} (falls vorhanden). */
+    private static List<Example> readIndex(Path folder, String presentationJson) throws IOException {
+        var listed = de.normacase.common.StrictJson.parseObject(presentationJson).raw("examples");
+        if (listed == null || !listed.isArray()) {
+            return List.of();
+        }
+        Path expectedFile = folder.resolve("expected-outcomes.json");
+        var expected = Files.isRegularFile(expectedFile)
+                ? de.normacase.common.StrictJson.MAPPER.readTree(Files.readString(expectedFile, StandardCharsets.UTF_8)) : null;
+        List<Example> out = new java.util.ArrayList<>();
+        for (var entry : listed) {
+            String id = entry.path("id").stringValue();
+            String label = entry.path("label").isString() ? entry.path("label").stringValue() : id;
+            String outcome = expected != null && expected.path(id).isString() ? expected.path(id).stringValue() : null;
+            out.add(new Example(id, label, outcome));
+        }
+        return List.copyOf(out);
     }
 
     private void register(JdbcClient jdbc) {

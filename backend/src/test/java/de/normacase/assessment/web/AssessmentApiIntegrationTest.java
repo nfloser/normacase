@@ -85,6 +85,10 @@ class AssessmentApiIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         assertThat(example).isEqualTo(caseFile("demo-g-supported"));
         mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .get("/api/v1/knowledge/releases/demo-g-2026.1/examples").with(as("gutachter", "g.a")))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$[2].id").value("supported"))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$[2].expectedOutcome").value("SUPPORTED"));
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
                         .get("/api/v1/knowledge/releases/demo-g-2026.1/examples/unbekannt").with(as("gutachter", "g.a")))
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isNotFound());
     }

@@ -42,6 +42,11 @@ export interface EvidenceRecord {
 export class ExtrasApi {
   private readonly http = inject(HttpClient);
 
+  examples(releaseId: string): Observable<{ id: string; label: string; expectedOutcome: string | null }[]> {
+    return this.http.get<{ id: string; label: string; expectedOutcome: string | null }[]>(
+      `/api/v1/knowledge/releases/${encodeURIComponent(releaseId)}/examples`);
+  }
+
   /** Beispiel als JSON-Text; Dezimalzahlen bleiben exakt. */
   example(releaseId: string, exampleId: string): Observable<string> {
     return this.http.get(`/api/v1/knowledge/releases/${encodeURIComponent(releaseId)}/examples/${encodeURIComponent(exampleId)}`,

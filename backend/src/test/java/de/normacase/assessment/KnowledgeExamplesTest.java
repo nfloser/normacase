@@ -22,12 +22,17 @@ class KnowledgeExamplesTest {
         try (Stream<Path> files = Files.walk(Path.of("../knowledge"))) {
             for (Path presentation : files.filter(p -> p.getFileName().toString().equals("presentation.de-DE.json")).sorted().toList()) {
                 JsonNode root = StrictJson.MAPPER.readTree(Files.readString(presentation));
+                Path expectedFile = presentation.resolveSibling("examples").resolve("expected-outcomes.json");
+                if (!Files.exists(expectedFile)) {
+                    continue;
+                }
+                JsonNode expected = StrictJson.MAPPER.readTree(Files.readString(expectedFile));
                 String release = StrictJson.MAPPER.readTree(Files.readString(presentation.resolveSibling("pack.json")))
                         .at("/manifest/releaseId").stringValue();
                 for (JsonNode e : root.path("examples")) {
                     out.add(Arguments.of(release + " · " + e.get("id").stringValue(), release,
                             presentation.resolveSibling("examples").resolve(e.get("caseFile").stringValue()),
-                            e.get("expectedOutcome").stringValue()));
+                            expected.get(e.get("id").stringValue()).stringValue()));
                 }
             }
         }

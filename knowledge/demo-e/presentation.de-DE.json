@@ -68,12 +68,12 @@
     {
       "id": "mixed",
       "label": "Bekannte und unbekannte Ausgaben",
-      "caseFile": "demo-e-mixed.json", "expectedOutcome": "SUPPORTED"
+      "caseFile": "demo-e-mixed.json"
     },
     {
       "id": "partial",
       "label": "Teilweise Angaben",
-      "caseFile": "demo-e-partial.json", "expectedOutcome": "SUPPORTED"
+      "caseFile": "demo-e-partial.json"
     }
   ]
 }

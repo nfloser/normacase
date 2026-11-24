@@ -14,7 +14,7 @@
   },
   "outputs": {},
   "examples": [
-    { "id": "supported", "label": "Evidenz vorhanden", "caseFile": "demo-c-supported.json", "expectedOutcome": "SUPPORTED" },
-    { "id": "review", "label": "Manuelle Prüfung erforderlich", "caseFile": "demo-c-review.json", "expectedOutcome": "HUMAN_REVIEW" }
+    { "id": "supported", "label": "Evidenz vorhanden", "caseFile": "demo-c-supported.json" },
+    { "id": "review", "label": "Manuelle Prüfung erforderlich", "caseFile": "demo-c-review.json" }
   ]
 }
