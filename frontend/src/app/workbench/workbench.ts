@@ -226,7 +226,8 @@ export class Workbench {
   protected openQueue(id: string): void {
     this.extras.set(null);
     this.queue.set(id);
-    document.querySelector('.list-scroll')?.scrollTo({ left: 0, top: 0 });
+    const list = document.querySelector('.list-scroll');
+    if (list) { list.scrollLeft = 0; list.scrollTop = 0; }
     setTimeout(() => this.active.set(this.visible()[0]?.processId ?? null));
     this.selection.set(new Set());
     this.active.set(null);
