@@ -30,7 +30,7 @@ Fachsystem ──(Fall, strukturiert)──▶ NormaCase ──(Ergebnis + Entsc
 
 | Rolle | Aufgabe | Typische Rechte |
 |---|---|---|
-| Gutachter:in | Fälle prüfen, Rückfragen klären, Ergebnis bestätigen | Fälle des eigenen Korbs lesen, prüfen, bestätigen |
+| Gutachter | Fälle prüfen, Rückfragen klären, Ergebnis bestätigen | Fälle des eigenen Korbs lesen, prüfen, bestätigen |
 | Freigabe (Vier-Augen) | Bestätigte Ergebnisse freigeben, wo die Hausregel das verlangt | Freigeben, zurückweisen; nie eigene Prüfung freigeben |
 | Fachredaktion Regelwerk | Knowledge Packs pflegen, Quellen und Tests hinterlegen | Entwürfe anlegen, Review anfordern |
 | Fachliche Freigabe Regelwerk | Knowledge Release aktivieren | Aktivieren; nie eigene Änderung |
@@ -43,7 +43,7 @@ Trennung der Pflichten ist eine Regel, keine Empfehlung: Wer prüft, gibt nicht 
 ## 4. Anwendungsfälle
 
 1. **Fall einliefern (headless).** Das Fachsystem übergibt einen Fall über die API. NormaCase prüft Schema und Vollständigkeit, bewertet und antwortet mit Ergebnis und Entscheidungspfad. Der Fallinhalt wird danach verworfen.
-2. **Fall mit Klärungsbedarf.** Ergebnis `INCOMPLETE` oder `HUMAN_REVIEW`: Der Fall landet für die Dauer der Bearbeitung im Arbeitskorb. Gutachter:in sieht in der Prüfwerkstatt genau die offenen Kriterien und die zugehörigen Belege.
+2. **Fall mit Klärungsbedarf.** Ergebnis `INCOMPLETE` oder `HUMAN_REVIEW`: Der Fall landet für die Dauer der Bearbeitung im Arbeitskorb. Gutachter sieht in der Prüfwerkstatt genau die offenen Kriterien und die zugehörigen Belege.
 3. **Bestätigen und freigeben.** Eindeutige Fälle können gesammelt bestätigt werden, soweit die Hausregel das erlaubt. Freigabe erfolgt durch eine zweite Person.
 4. **Ergebnis zurückgeben.** Das freigegebene Ergebnis geht über den Ausgangsadapter zurück. Danach bleibt nur der Nachweis (siehe Datenhaltung).
 5. **Bewertung nachvollziehen.** Revision fragt: Warum kam bei Vorgang X am Tag Y dieses Ergebnis heraus? NormaCase belegt es über Eingabe-Hash, Plattformversion, Regelwerksversion und Entscheidungspfad, ohne den Fallinhalt zu speichern.

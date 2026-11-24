@@ -26,7 +26,7 @@ export const de = {
     },
   },
   roles: {
-    gutachter: 'Gutachter:in',
+    gutachter: 'Gutachter',
     freigabe: 'Freigabe',
     'regelwerk-redaktion': 'Regelwerk-Redaktion',
     'regelwerk-freigabe': 'Regelwerk-Freigabe',
@@ -391,7 +391,7 @@ export const de = {
       massenfaelle: 'Massenfälle',
       nachweise: 'Nachweise prüfen',
     } as Record<string, string>,
-    needsAssessor: 'Diese Ansicht steht der Rolle Gutachter:in zur Verfügung.',
+    needsAssessor: 'Diese Ansicht steht der Rolle Gutachter zur Verfügung.',
     release: 'Regelwerk',
     example: 'Beispiel',
     noExample: 'Eigene Angaben',
