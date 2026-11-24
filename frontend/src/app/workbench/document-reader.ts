@@ -226,8 +226,11 @@ export class DocumentReader implements OnDestroy {
     if (!doc || doc.mediaType !== 'application/pdf') return;
     this.api.documentBlob(this.processId(), doc.id).subscribe((blob) => {
       const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
-      const win = window.open(url, '_blank', 'noopener');
-      if (!win) this.notice.set(this.t.popupBlocked);
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.click();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     });
   }

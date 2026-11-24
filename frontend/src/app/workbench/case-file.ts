@@ -138,6 +138,7 @@ export class CaseFile {
   }
 
   protected select(tab: Tab): void {
+    this.readerTarget.set(null);
     this.tab.set(tab);
   }
 
@@ -147,7 +148,7 @@ export class CaseFile {
     if (next === null) return;
     event.preventDefault();
     const tab = this.tabs[(next + this.tabs.length) % this.tabs.length];
-    this.tab.set(tab);
+    this.select(tab);
     document.getElementById('tab-' + tab)?.focus();
   }
 
