@@ -226,6 +226,7 @@ export class Workbench {
   protected openQueue(id: string): void {
     this.extras.set(null);
     this.queue.set(id);
+    document.querySelector('.list-scroll')?.scrollTo({ left: 0, top: 0 });
     setTimeout(() => this.active.set(this.visible()[0]?.processId ?? null));
     this.selection.set(new Set());
     this.active.set(null);
@@ -253,7 +254,7 @@ export class Workbench {
   protected back(): void {
     const id = this.opened();
     this.opened.set(null);
-    setTimeout(() => document.querySelector<HTMLElement>(`tr[data-id="${id}"]`)?.focus());
+    setTimeout(() => focusRow(document.querySelector<HTMLElement>(`tr[data-id="${id}"]`)));
   }
 
   /** Klick wie im Explorer: einfach wählt aus, Strg ergänzt, Umschalt wählt einen Bereich. */
@@ -492,7 +493,7 @@ export class Workbench {
         this.anchor ??= p.processId;
         this.selectRange(this.anchor, target.processId);
       }
-      document.querySelector<HTMLElement>(`tr[data-id="${target.processId}"]`)?.focus();
+      focusRow(document.querySelector<HTMLElement>(`tr[data-id="${target.processId}"]`));
     };
     if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) { this.rowContext(event, p); return; }
     switch (event.key) {
@@ -766,7 +767,7 @@ export class Workbench {
     if (!this.contextMenu() && !this.navMenu()) return;
     this.contextMenu.set(null);
     this.navMenu.set(null);
-    if (restoreFocus) this.returnFocus?.focus();
+    if (restoreFocus) focusRow(this.returnFocus);
   }
 
   /** Pfeiltasten im Kontextmenü wie in einem Desktop-Menü. */
@@ -822,7 +823,7 @@ export class Workbench {
 
   protected closeDialog(): void {
     this.ablageDialog.set(null);
-    this.returnFocus?.focus();
+    focusRow(this.returnFocus);
     this.returnFocus = null;
   }
 
@@ -1069,4 +1070,14 @@ export class Workbench {
     this.notice.set(message);
     setTimeout(() => this.notice.set(''), 4000);
   }
+}
+
+/** Fokus auf eine Zeile ohne seitliches Mitscrollen: breite Zeilen würden sonst die erste Spalte aus dem Bild schieben. */
+function focusRow(el: HTMLElement | null): void {
+  if (!el) return;
+  const scroller = el.closest<HTMLElement>('.list-scroll');
+  const left = scroller?.scrollLeft ?? 0;
+  el.focus({ preventScroll: true });
+  el.scrollIntoView({ block: 'nearest' });
+  if (scroller) scroller.scrollLeft = left;
 }
