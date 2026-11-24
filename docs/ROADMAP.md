@@ -36,7 +36,7 @@ System Design, Architektur, Datenschutz und Datenhaltung, Qualität und Betrieb,
 
 ## Version 1.0.0 – Funktionsumfang des bisherigen NormaCase (erledigt: #405–#417)
 - Menüleiste, Arbeitslisten mit den bisherigen Namen und Farben, Vorschau unten/rechts, Vollansicht per Doppelklick
-- 132 fiktive Vorgänge: eigene Demo-Fälle, alle Referenz- und Massenfälle der bisherigen Demo, technische Klärung und Unterlagensichtung
+- 135 fiktive Vorgänge: eigene Demo-Fälle, alle Referenz- und Massenfälle der bisherigen Demo, technische Klärung und Unterlagensichtung
 - Meine Ablage: Ordner mit Unterordnern, Lesezeichen, Farbmarkierung, Notizen, Arbeitslistenfarben, Rechtsklick-Menü, Versandpaket
 - Extras: Prüfwerkstatt mit Snapshot-Nachprüfung, Referenzfälle mit Abgleich, Massenfälle, Nachweise
 - Hell/dunkel mit abgestimmter Farbfamilie, graue Anmeldeseite, Start mit einem Befehl (`demo.ps1`)

@@ -93,7 +93,7 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'rueckfrage-nachtrag');
   await file.getByRole('tab', { name: 'Prüfung' }).click();
   await file.getByRole('button', { name: 'Angaben ergänzen' }).click();
-  await page.locator('#f-module_4_sum').fill('12');
+  await page.locator('#f-kf_4_4').fill('2');
   await shot(page, 'rueckfrage-formular');
   await page.getByRole('button', { name: 'Neu bewerten' }).click();
   await expect(page.locator('.toast')).toBeVisible();
@@ -121,9 +121,9 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'liste-zeilenfaerbung');
   await page.keyboard.press('F4');
   await expect(page.getByRole('region', { name: 'Fallakte' })).toBeVisible();
-  await page.getByRole('button', { name: /Vorschau rechts/ }).click();
+  await page.getByLabel('Fallvorschau').selectOption('right');
   await shot(page, 'vorschau-rechts');
-  await page.getByRole('button', { name: /Vorschau unten/ }).click();
+  await page.getByLabel('Fallvorschau').selectOption('bottom');
   await page.getByLabel('Darstellung').selectOption('dark');
   await shot(page, 'dunkel');
   await page.getByLabel('Darstellung').selectOption('system');

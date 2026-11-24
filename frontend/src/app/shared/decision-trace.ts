@@ -65,6 +65,20 @@ interface ShownSource { readonly ref: SourceRef; readonly title: string; readonl
       </div>
     }
 
+    <ng-template #num let-n let-depth="depth">
+      @let kids = numericChildren(n);
+      <li [class.numeric-total]="depth === 0">
+        @if (kids.length) {
+          <details [open]="depth === 0">
+            <summary>{{ numericText(n) }}</summary>
+            <ul>@for (k of kids; track $index) { <ng-container *ngTemplateOutlet="num; context: { $implicit: k, depth: depth + 1 }" /> }</ul>
+          </details>
+        } @else {
+          <span>{{ numericText(n) }}</span>
+        }
+      </li>
+    </ng-template>
+
     <ng-template #node let-c let-level="level" let-path="path">
       @let expandable = !!c.children.length || !!c.numeric;
       @let open = expandable && isOpen(c, level);
@@ -93,7 +107,9 @@ interface ShownSource { readonly ref: SourceRef; readonly title: string; readonl
         }
         @if (open) {
           <div [id]="'tc-' + path">
-            @if (c.numeric) {
+            @if (c.numeric && named(c.numeric)) {
+              <ul class="numeric-tree"><ng-container *ngTemplateOutlet="num; context: { $implicit: c.numeric, depth: 0 }" /></ul>
+            } @else if (c.numeric) {
               <ul class="numeric-list">@for (line of numericLines(c.numeric); track $index) {
                 <li [class.numeric-total]="$last">{{ line }}</li>
               }</ul>
@@ -116,6 +132,8 @@ export class DecisionTrace {
   readonly outputLabels = input<Record<string, OutputLabel>>({});
   /** Fundstellen je Feld-ID; ohne Eintrag zeigt die Begründung keinen Verweis. */
   readonly sources = input<Record<string, readonly SourceRef[]>>({});
+  /** Beschriftungen benannter Zwischenwerte (Präsentation „numerics“), z. B. Module. */
+  readonly numericLabels = input<Record<string, string>>({});
   readonly openSource = output<SourceRef>();
   protected readonly text = de.trace;
 
@@ -235,5 +253,39 @@ export class DecisionTrace {
       return [...node.children.flatMap(lines), `${name}: ${v(node)}`];
     };
     return lines(n);
+  }
+
+  /** Regelwerke mit benannten Zwischenwerten werden als aufklappbarer Rechenweg gezeigt. */
+  protected named(n: NumericView): boolean {
+    return !!n.id || n.children.some((c) => this.named(c));
+  }
+
+  /** Kinder im Rechenweg: Summen mit Einzelpunkten werden übersprungen, Kriterien sind Blätter. */
+  protected numericChildren(n: NumericView): NumericView[] {
+    if (n.kind === 'field') return [];
+    if ((n.kind === 'range_lookup' || n.kind === 'scale') && n.children[0]?.kind === 'field') return [];
+    const only = n.children.length === 1 ? n.children[0] : null;
+    if (n.kind === 'range_lookup' && only && only.kind === 'sum') return only.children;
+    return n.children;
+  }
+
+  protected numericText(n: NumericView): string {
+    const fmt = (node: NumericView | undefined) => (node ? displayValue(node.value, demo.values) : '');
+    const own = n.id && Object.hasOwn(this.numericLabels(), n.id) ? this.numericLabels()[n.id] : null;
+    const input = n.children[0];
+    if (n.kind === 'field') return `${this.fieldLabel(n.field ?? '')}: ${fmt(n)}`;
+    if (n.kind === 'range_lookup' && input?.kind === 'field') {
+      const raw = fmt(input);
+      return raw === fmt(n) ? `${this.fieldLabel(input.field ?? '')}: ${raw}` : `${this.fieldLabel(input.field ?? '')}: ${raw} → ${fmt(n)} ${demo.pointsWord}`;
+    }
+    if (n.kind === 'scale') {
+      const dec = (text: string) => germanDecimal(new ExactNumber(text));
+      const op = n.factor ? `× ${dec(n.factor)}` : `÷ ${dec(n.divisor ?? '')}`;
+      const name = input?.kind === 'field' ? this.fieldLabel(input.field ?? '') : own ?? '';
+      return `${name}: ${fmt(input)} ${op} = ${fmt(n)}`;
+    }
+    if (n.kind === 'range_lookup') return `${own ?? label(demo.numericKinds, n.kind, n.kind)}: ${fmt(input)} → ${fmt(n)}`;
+    if (n.kind === 'max') return `${own ?? demo.higherValue}: ${fmt(n)}`;
+    return `${own ?? label(demo.numericKinds, n.kind, n.kind)}: ${fmt(n)}`;
   }
 }
