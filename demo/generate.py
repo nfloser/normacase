@@ -82,14 +82,14 @@ def person_block(c):
 
 
 def previews(pdf_path, folder, stem):
-    """Seitenbilder für die Vorschau; Palette mit 64 Farben hält das Repository klein."""
-    subprocess.run(["pdftoppm", "-png", "-r", "100", str(pdf_path), str(folder / stem)], check=True)
+    """Seitenbilder für die Vorschau; Palette mit 48 Farben hält das Repository klein."""
+    subprocess.run(["pdftoppm", "-png", "-r", "144", str(pdf_path), str(folder / stem)], check=True)
     pages = sorted(folder.glob(f"{stem}-*.png"))
     renamed = []
     for i, p in enumerate(pages, start=1):
         target = folder / f"{stem}.page-{i}.png"
         with Image.open(p) as img:
-            img.convert("RGB").quantize(64).save(target, optimize=True)
+            img.convert("RGB").quantize(48).save(target, optimize=True)
         p.unlink()
         renamed.append(target.name)
     return renamed

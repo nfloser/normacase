@@ -645,13 +645,63 @@ export class Workbench {
     this.columnDialog.update((d) => (d && d.length > 1 ? d.filter((c) => c !== id) : d));
   }
 
-  protected moveColumn(index: number, delta: -1 | 1): void {
-    this.columnDialog.update((d) => {
-      if (!d || index + delta < 0 || index + delta >= d.length) return d;
-      const next = [...d];
-      [next[index], next[index + delta]] = [next[index + delta], next[index]];
-      return next;
+  /** Reihenfolge per Ziehen: die Zeile folgt dem Zeiger (Maus, Stift, Touch) und rückt an die Stelle darunter. */
+  protected readonly dragging = signal<ColumnId | null>(null);
+  protected readonly columnAnnouncement = signal('');
+
+  protected dragStart(event: PointerEvent, id: ColumnId): void {
+    if (event.button !== 0 || (event.target as HTMLElement).closest('.icon-button')) return;
+    event.preventDefault();
+    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+    this.dragging.set(id);
+  }
+
+  protected dragMove(event: PointerEvent): void {
+    const id = this.dragging();
+    const draft = this.columnDialog();
+    if (!id || !draft) return;
+    const rows = [...((event.currentTarget as HTMLElement).parentElement?.children ?? [])] as HTMLElement[];
+    const over = rows.findIndex((row) => {
+      const r = row.getBoundingClientRect();
+      return event.clientY >= r.top && event.clientY < r.bottom;
     });
+    const from = draft.indexOf(id);
+    if (over >= 0 && over !== from) this.moveColumnTo(from, over);
+  }
+
+  protected dragEnd(): void {
+    const id = this.dragging();
+    if (!id) return;
+    this.dragging.set(null);
+    this.announcePosition(id);
+  }
+
+  /** Tastatur am Griff: Pfeil hoch/runter, Pos1/Ende. */
+  protected gripKeys(event: KeyboardEvent, index: number): void {
+    const draft = this.columnDialog();
+    if (!draft) return;
+    const target = { ArrowUp: index - 1, ArrowDown: index + 1, Home: 0, End: draft.length - 1 }[event.key];
+    if (target === undefined) return;
+    event.preventDefault();
+    const id = draft[index];
+    if (!this.moveColumnTo(index, target)) return;
+    this.announcePosition(id);
+    setTimeout(() => document.querySelector<HTMLElement>(`.column-list li[data-column="${id}"] .grip`)?.focus());
+  }
+
+  private moveColumnTo(from: number, to: number): boolean {
+    const d = this.columnDialog();
+    if (!d || from === to || to < 0 || to >= d.length) return false;
+    const next = [...d];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    this.columnDialog.set(next);
+    return true;
+  }
+
+  private announcePosition(id: ColumnId): void {
+    const draft = this.columnDialog() ?? [];
+    this.columnAnnouncement.set(this.t.wb.columnMoved(this.columnLabel(id), draft.indexOf(id) + 1, draft.length));
   }
 
   protected resetColumns(): void {

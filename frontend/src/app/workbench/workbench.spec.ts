@@ -159,7 +159,11 @@ describe('Workbench', () => {
 
     Array.from(el.querySelectorAll<HTMLButtonElement>('.commandbar button')).find((b) => b.textContent!.includes('Spaltenoptionen'))!.click();
     fixture.detectChanges();
-    el.querySelector<HTMLButtonElement>('[aria-label="Vorgangsnummer nach oben"]')!.click();
+    // Ziehen geht auch per Tastatur: Griff fokussieren, Pfeil hoch.
+    el.querySelector<HTMLButtonElement>('[aria-label="Vorgangsnummer verschieben, Position 2 von 7"]')!
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    fixture.detectChanges();
+    expect(el.querySelector('.column-options [role=status]')!.textContent).toContain('Vorgangsnummer steht jetzt an Position 1 von 7');
     el.querySelector<HTMLButtonElement>('[aria-label="Dokumente entfernen"]')!.click();
     fixture.detectChanges();
     const add = el.querySelector<HTMLSelectElement>('.column-options select')!;

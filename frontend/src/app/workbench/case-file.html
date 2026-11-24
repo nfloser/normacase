@@ -37,15 +37,17 @@
       @if (assessment(); as a) {
         @if (split) { <div class="split-left">
           <section class="block">
-            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" />
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()"
+              [sources]="sources()" (openSource)="showSource($event)" />
           </section>
           <ng-container *ngTemplateOutlet="factsBlock" />
         </div>
-        <aside class="split-right" [attr.aria-label]="t.tabs['documents']"><nc-pdf-reader [processId]="d.processId" [documents]="d.documents" /></aside>
+        <aside class="split-right" [attr.aria-label]="t.tabs['documents']"><nc-pdf-reader [processId]="d.processId" [documents]="d.documents" [fieldLabels]="fieldLabels()" [missing]="missingProofs()" [target]="readerTarget()" /></aside>
         } @else {
         <div class="overview-grid">
           <section class="block">
-            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" />
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()"
+              [sources]="sources()" (openSource)="showSource($event)" />
           </section>
           <ng-container *ngTemplateOutlet="factsBlock" />
         </div>
@@ -72,7 +74,7 @@
       }
     }
     @case ('documents') {
-      <nc-pdf-reader [processId]="d.processId" [documents]="d.documents" />
+      <nc-pdf-reader [processId]="d.processId" [documents]="d.documents" [fieldLabels]="fieldLabels()" [missing]="missingProofs()" [target]="readerTarget()" />
     }
     @case ('history') {
       <ol class="history">

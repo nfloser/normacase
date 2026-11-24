@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, effect, input, output, signal, untracked } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { de, label } from '../de';
 
@@ -6,6 +6,9 @@ const demo = de.trace;
 import { AssessmentView, ConditionView, displayValue, NumericView, ValueView } from './assessment';
 import { germanDecimal, ExactNumber } from './json';
 export interface OutputLabel { label: string; choices: Record<string, string> }
+/** Fundstelle einer Angabe in der Fallakte (Dokument und Seite laut Fachsystem). */
+export interface SourceRef { readonly field: string; readonly documentId: string; readonly title: string; readonly page: number }
+interface ShownSource { readonly ref: SourceRef; readonly title: string; readonly page: number; readonly fields: string }
 
 /** Read-only rendering of the recorded decision trace: input → condition → rule → source → outcome. */
 @Component({
@@ -23,9 +26,15 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
       </div>
     }
     @if (a.rule; as r) {
-      <div class="trace-block"><h3>{{ text.reasoning }}</h3>
-        <ul class="tree" role="tree" [attr.aria-label]="text.reasoning">
-          <ng-container *ngTemplateOutlet="node; context: { $implicit: r.condition, level: 1 }" />
+      <div class="trace-block">
+        <div class="trace-head">
+          <h3>{{ text.reasoning }}</h3>
+          <span class="spacer"></span>
+          <button type="button" class="link small" (click)="expandAll(true)">{{ text.expandAll }}</button>
+          <button type="button" class="link small" (click)="expandAll(false)">{{ text.collapseAll }}</button>
+        </div>
+        <ul class="tree">
+          <ng-container *ngTemplateOutlet="node; context: { $implicit: r.condition, level: 1, path: 'r' }" />
         </ul>
       </div>
       <dl class="facts compact">
@@ -37,32 +46,64 @@ export interface OutputLabel { label: string; choices: Record<string, string> }
     }
     @if (a.outputs.length) {
       <div class="trace-block"><h3>{{ text.outputs }}</h3>
-        <ul class="output-list">@for (o of a.outputs; track o.outputId) {
-          <li class="cond" [attr.data-result]="o.conditionResult">
-            <span class="cond-mark" aria-hidden="true">{{ o.conditionResult === 'MATCHED' ? '✓' : o.conditionResult === 'NOT_MATCHED' ? '✕' : '?' }}</span>
-            <span class="cond-text">{{ outputName(o.outputId) }}</span>
-            <span class="cond-result"><strong>{{ outputValue(o.outputId, o.value) }}</strong></span>
+        <ul class="tree output-tree">@for (o of a.outputs; track o.outputId; let i = $index) {
+          @let open = isOpen(o.condition, 0);
+          <li>
+            <div class="cond" [attr.data-result]="o.conditionResult">
+              <button type="button" class="tree-toggle" [attr.aria-expanded]="open" [attr.aria-controls]="'tc-o' + i"
+                [attr.aria-label]="(open ? text.collapse : text.expand) + ': ' + outputName(o.outputId)" (click)="toggle(o.condition, 0)">
+                <span class="cond-mark" aria-hidden="true">{{ mark(o.conditionResult) }}</span>
+              </button>
+              <span class="cond-text">{{ outputName(o.outputId) }}</span>
+              <span class="cond-result"><strong>{{ outputValue(o.outputId, o.value) }}</strong></span>
+            </div>
+            @if (open) {
+              <ul class="tree" [id]="'tc-o' + i"><ng-container *ngTemplateOutlet="node; context: { $implicit: o.condition, level: 2, path: 'o' + i }" /></ul>
+            }
           </li>
         }</ul>
       </div>
     }
 
-    <ng-template #node let-c let-level="level">
-      <li role="treeitem" aria-selected="false" [attr.aria-level]="level" [attr.aria-expanded]="c.children.length ? true : null">
+    <ng-template #node let-c let-level="level" let-path="path">
+      @let expandable = !!c.children.length || !!c.numeric;
+      @let open = expandable && isOpen(c, level);
+      <li>
         <div class="cond" [attr.data-result]="c.result">
-          <span class="cond-mark" aria-hidden="true">{{ c.result === 'MATCHED' ? '✓' : c.result === 'NOT_MATCHED' ? '✕' : '?' }}</span>
+          @if (expandable) {
+            <button type="button" class="tree-toggle" [attr.aria-expanded]="open" [attr.aria-controls]="'tc-' + path"
+              [attr.aria-label]="(open ? text.collapse : text.expand) + ': ' + describe(c)" (click)="toggle(c, level)">
+              <span class="chevron" aria-hidden="true"></span>
+            </button>
+          } @else { <span class="tree-toggle-space" aria-hidden="true"></span> }
+          <span class="cond-mark" aria-hidden="true">{{ mark(c.result) }}</span>
           <span class="cond-text">{{ describe(c) }}</span>
           <span class="cond-result">{{ conditionLabel(c.result) }}</span>
         </div>
-        @if (c.numeric) {
-          <ul class="numeric-list">@for (line of numericLines(c.numeric); track $index) {
-            <li [class.numeric-total]="$last">{{ line }}</li>
-          }</ul>
+        @let refs = sourcesOf(c);
+        @if (refs.length) {
+          <div class="cond-sources">
+            <span class="muted">{{ text.from }}</span>
+            @for (s of refs; track s.ref.documentId + '#' + s.page) {
+              <button type="button" class="source-link" (click)="openSource.emit(s.ref)" [title]="text.openSource + ' · ' + s.fields">
+                {{ s.title }}, {{ text.page }} {{ s.page }}
+              </button>
+            }
+          </div>
         }
-        @if (c.children.length) {
-          <ul role="group">@for (child of c.children; track $index) {
-            <ng-container *ngTemplateOutlet="node; context: { $implicit: child, level: level + 1 }" />
-          }</ul>
+        @if (open) {
+          <div [id]="'tc-' + path">
+            @if (c.numeric) {
+              <ul class="numeric-list">@for (line of numericLines(c.numeric); track $index) {
+                <li [class.numeric-total]="$last">{{ line }}</li>
+              }</ul>
+            }
+            @if (c.children.length) {
+              <ul>@for (child of c.children; track $index) {
+                <ng-container *ngTemplateOutlet="node; context: { $implicit: child, level: level + 1, path: path + '-' + $index }" />
+              }</ul>
+            }
+          </div>
         }
       </li>
     </ng-template>
@@ -73,7 +114,71 @@ export class DecisionTrace {
   readonly fieldLabels = input<Record<string, string>>({});
   readonly evidenceLabels = input<Record<string, string>>({});
   readonly outputLabels = input<Record<string, OutputLabel>>({});
+  /** Fundstellen je Feld-ID; ohne Eintrag zeigt die Begründung keinen Verweis. */
+  readonly sources = input<Record<string, readonly SourceRef[]>>({});
+  readonly openSource = output<SourceRef>();
   protected readonly text = de.trace;
+
+  /** Auf- und Zuklappen: Voreinstellung zeigt den Weg zu allem, was nicht erfüllt oder offen ist. */
+  private readonly mode = signal<'default' | 'all' | 'none'>('default');
+  private readonly overrides = signal(new Map<ConditionView, boolean>());
+
+  constructor() {
+    effect(() => {
+      this.assessment();
+      untracked(() => {
+        this.mode.set('default');
+        this.overrides.set(new Map());
+      });
+    });
+  }
+
+  protected isOpen(c: ConditionView, level: number): boolean {
+    const own = this.overrides().get(c);
+    if (own !== undefined) return own;
+    const mode = this.mode();
+    if (mode !== 'default') return mode === 'all';
+    if (level === 0) return false; // Teilbewertungen: erst auf Wunsch
+    return level === 1 || !!c.numeric || c.result !== 'MATCHED';
+  }
+
+  protected toggle(c: ConditionView, level: number): void {
+    const next = !this.isOpen(c, level);
+    this.overrides.update((m) => new Map(m).set(c, next));
+  }
+
+  protected expandAll(open: boolean): void {
+    this.overrides.set(new Map());
+    this.mode.set(open ? 'all' : 'none');
+  }
+
+  protected mark(result: string): string {
+    return result === 'MATCHED' ? '✓' : result === 'NOT_MATCHED' ? '✕' : '?';
+  }
+
+  /** Fundstellen aller Felder dieser Bedingung, auch der Felder in einer Berechnung. */
+  protected sourcesOf(c: ConditionView): ShownSource[] {
+    const fields = new Set<string>();
+    if (c.field) fields.add(c.field);
+    const walk = (n: NumericView | null): void => {
+      if (!n) return;
+      if (n.field) fields.add(n.field);
+      n.children.forEach(walk);
+    };
+    walk(c.numeric);
+    // Mehrere Felder aus derselben Seite (z. B. alle Module eines Erhebungsbogens) ergeben einen Verweis.
+    const all = this.sources();
+    const byPage = new Map<string, { ref: SourceRef; labels: string[] }>();
+    for (const f of fields) {
+      for (const ref of Object.hasOwn(all, f) ? all[f] : []) {
+        const key = `${ref.documentId}#${ref.page}`;
+        const entry = byPage.get(key) ?? { ref, labels: [] };
+        entry.labels.push(this.fieldLabel(f));
+        byPage.set(key, entry);
+      }
+    }
+    return [...byPage.values()].map(({ ref, labels }) => ({ ref, title: ref.title, page: ref.page, fields: labels.join(', ') }));
+  }
 
   protected outcomeLabel(outcome: string | null): string { return label(de.outcomes, outcome, de.unknown); }
   protected tone(outcome: string | null): string { return outcome !== null && Object.hasOwn(de.outcomes, outcome) ? outcome : 'NONE'; }

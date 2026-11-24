@@ -52,6 +52,71 @@ test('Gutachterin prüft eine Fallakte mit Dokumenten und bestätigt', async ({ 
   await logout(page);
 });
 
+test('Fallakte: Fundstelle aus der Begründung, Formate, Großansicht und eigenes Fenster', async ({ page }) => {
+  await login(page, 'gutachterin.a');
+  await page.getByRole('button', { name: /Gegenprüfung erforderlich/ }).click();
+  await page.locator('.case-table tbody tr').filter({ hasText: 'KT-2026-208157' }).click();
+  const file = page.getByRole('region', { name: 'Fallakte' });
+  await expect(file.locator('.case-meta-line')).toContainText('KT-2026-208157');
+
+  // Merkzeichen aG: Verordnung und Ausweis sind Fundstellen; der Ausweis öffnet sich an seiner Seite.
+  await file.getByRole('button', { name: 'Alle aufklappen' }).click();
+  await file.locator('.source-link').filter({ hasText: 'Schwerbehindertenausweis' }).first().click();
+  await expect(file.getByRole('tab', { name: /Dokumente/ })).toHaveAttribute('aria-selected', 'true');
+  await expect(file.locator('.file-item[aria-pressed=true]')).toContainText('Schwerbehindertenausweis');
+  await expect(file.locator('.sheet.highlighted img')).toBeVisible();
+  await expect(file.locator('.file-group h4')).toContainText(['Auftrag und Antrag', 'Ärztliche Unterlagen', 'Bescheide und Nachweise', 'Sonstige Unterlagen']);
+
+  // Fax als TIFF: Seiten erzeugt der Server; Foto als JPEG; Textexport als Text.
+  await file.locator('.file-item').filter({ hasText: 'Fax' }).click();
+  const fax = file.locator('.sheet img').first();
+  await expect(fax).toBeVisible();
+  expect(await fax.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+  await file.locator('.file-item').filter({ hasText: 'Foto' }).click();
+  await expect(file.locator('.sheet img').first()).toBeVisible();
+  await file.locator('.file-item').filter({ hasText: 'Textexport' }).click();
+  await expect(file.locator('.reader-text')).toContainText('Terminübersicht');
+
+  const results = await new AxeBuilder({ page }).analyze();
+  const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
+  expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
+
+  await file.locator('.file-item').filter({ hasText: 'Verordnung' }).click();
+  await file.getByRole('button', { name: 'Großansicht', exact: true }).click();
+  await expect(page.locator('nc-pdf-reader.reader-max')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('nc-pdf-reader.reader-max')).toHaveCount(0);
+
+  const [popup] = await Promise.all([page.waitForEvent('popup'), file.getByRole('button', { name: 'In neuem Fenster öffnen' }).click()]);
+  await expect(popup.locator('.sheet img')).toBeVisible();
+  expect(await popup.title()).toContain('Verordnung');
+  // Mit dem Vorgang schließt auch das Fenster.
+  await page.locator('.case-table tbody tr').filter({ hasNotText: 'KT-2026-208157' }).first().click();
+  await expect.poll(() => popup.isClosed()).toBe(true);
+  await logout(page);
+});
+
+test('Spaltenoptionen: Reihenfolge durch Ziehen', async ({ page }) => {
+  await login(page, 'gutachterin.a');
+  await page.getByRole('button', { name: /Spaltenoptionen/ }).click();
+  const names = page.locator('.column-list .column-name');
+  await expect(names.first()).toHaveText('Fall / Auftrag');
+  const source = await page.locator('.column-list li[data-column=number]').boundingBox();
+  const target = await page.locator('.column-list li').first().boundingBox();
+  await page.mouse.move(source!.x + source!.width / 2, source!.y + source!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(target!.x + target!.width / 2, target!.y + target!.height / 2, { steps: 8 });
+  await page.mouse.up();
+  await expect(names.first()).toHaveText('Vorgangsnummer');
+  await page.getByRole('button', { name: 'Übernehmen' }).click();
+  await expect(page.locator('.case-table thead tr:first-child th').nth(1)).toContainText('Vorgangsnummer');
+  // zurücksetzen, damit die folgenden Abläufe die Standardansicht sehen
+  await page.getByRole('button', { name: /Spaltenoptionen/ }).click();
+  await page.getByRole('button', { name: 'Standard wiederherstellen' }).click();
+  await page.getByRole('button', { name: 'Übernehmen' }).click();
+  await logout(page);
+});
+
 test('Freigabe durch eine zweite Person; das Fachsystem holt ab und NormaCase löscht', async ({ page, request }) => {
   expect(caseNumber).not.toBe('');
   await login(page, 'freigabe.c');

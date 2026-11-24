@@ -110,10 +110,12 @@ class DocumentIntakeIntegrationTest {
             "[{\"id\": \"a\", \"title\": \"A\", \"mediaType\": \"image/tiff\", \"contentBase64\": \"%s\", \"pagesBase64\": [\"%s\"]}]".formatted(
                     scan, Base64.getEncoder().encodeToString(WorkflowIntegrationTest.PNG)),
         };
+        // Formfehler im JSON: 400; unzulässiger Inhalt eines Dokuments (wie bei PDF und PNG): 422.
+        int[] expected = {422, 400, 422, 422, 422, 422};
         for (int i = 0; i < invalid.length; i++) {
             mvc.perform(post("/api/v1/intake").with(WorkflowIntegrationTest.HOST).header("Idempotency-Key", "doc-bad-" + i)
                             .contentType(MediaType.APPLICATION_JSON).content(body("DOC-BAD-" + i, invalid[i])))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().is(expected[i]));
         }
     }
 }

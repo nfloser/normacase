@@ -38,4 +38,17 @@ Jedes Dokument trägt in `case.json` seine Art (`ORDER`, `MEDICAL`, `CARE`, `PRO
 | KT-2026-208203 | Krankenfahrt, Notwendigkeit nicht angekreuzt | unvollständig | Pflichtangabe fehlt |
 | KT-2026-208226 | Krankenfahrt, Merkzeichen Bl | erfüllt | Nachweis über Schwerbehindertenausweis |
 
+### Bezug zu den Begutachtungs-Richtlinien (öffentliche Referenz)
+
+Zusammensetzung und Gliederung der Pflege-Akten orientieren sich an den öffentlich veröffentlichten Begutachtungs-Richtlinien Pflege (BRi, Fassung MD Bund vom Dezember 2023, [Download](https://medizinischerdienst.de/fileadmin/MD-zentraler-Ordner/Downloads/01_Pflegebegutachtung/231221_BRi_Pflege.pdf)). Das ist `PUBLIC_REFERENCE`, keine fachliche Freigabe; die seit 1. Oktober 2026 geltende Fassung ist für diese Zuordnung noch nicht abgeglichen.
+
+| BRi | Was dort steht | In der Demo-Akte |
+|---|---|---|
+| 3.1 Nr. 1 | Antragsinformationen der Pflegekasse für die Beauftragung | Auftrag der Pflegekasse |
+| 3.1 Nr. 2 | eingereichte Unterlagen wie Arztbriefe, Entlassungsberichte, Pflegedokumentation; Selbstauskünfte; Hinweise auf Schwerbehinderung | Antrag (Foto), Arztbrief/Entlassungsbericht (Scan), Befundbericht, Medikationsplan, Stellungnahme des Pflegedienstes, Pflegetagebuch (Fax) |
+| F 1.1 | pflegerelevante Fremdbefunde | Dokumentart „Ärztliche Unterlagen“ |
+| F 4 | Module des Begutachtungsinstruments | Erhebungsbogen Module 1–6 (Fundstelle der Modulsummen) |
+
+Welche Nachweise ein Regelwerk verlangt, steht im Knowledge Pack (`evidenceRequirements`); fehlt einer, zeigt die Fallakte ihn unter „Fehlende Nachweise“.
+
 `DemoCasesTest` prüft jedes Ergebnis in der CI. Neu erzeugen: `python demo/generate.py` (braucht reportlab, Pillow, pdftoppm). Die Ausgabe ist byte-genau reproduzierbar; Rauschen und Verzerrung der Scans sind fest geseedet.
