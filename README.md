@@ -1,6 +1,7 @@
 # NormaCase
 
 [![CI](https://github.com/nfloser/normacase/actions/workflows/ci.yml/badge.svg)](https://github.com/nfloser/normacase/actions/workflows/ci.yml)
+[![Security](https://github.com/nfloser/normacase/actions/workflows/security.yml/badge.svg)](https://github.com/nfloser/normacase/actions/workflows/security.yml)
 [![Release](https://img.shields.io/github/v/release/nfloser/normacase?label=Version)](https://github.com/nfloser/normacase/releases)
 [![Lizenz](https://img.shields.io/badge/Lizenz-alle%20Rechte%20vorbehalten-lightgrey)](#lizenz)
 
@@ -114,7 +115,7 @@ Vertrag: [`openapi.yaml`](backend/src/main/resources/static/api/v1/openapi.yaml)
 
 ## Entwicklung
 
-Jede Änderung läuft über Issue, Branch, Tests, Pull Request, CI und Review, bevor sie nach `main` kommt. Die CI baut Backend und Oberfläche, prüft die Regel-Engine gegen die alte .NET-Engine, startet den kompletten Stack mit Docker Compose, spielt die Demo im Browser durch und validiert die Kubernetes-Manifeste. Regeln und Architekturvorgaben stehen in [AGENTS.md](AGENTS.md); Einstieg ohne Container über [backend/](backend/README.md) und [frontend/](frontend/README.md).
+Jede Änderung läuft über Issue, Branch, Tests, Pull Request, CI und Review, bevor sie nach `main` kommt. Die CI baut Backend und Oberfläche, prüft die Regel-Engine gegen die alte .NET-Engine, startet den kompletten Stack mit Docker Compose, spielt die Demo im Browser durch und validiert die Kubernetes-Manifeste. Jeder Pull Request durchläuft außerdem CodeQL und Trivy. Ein Release-Tag baut die Images für amd64 und arm64, scannt sie, veröffentlicht sie mit SBOM und signiertem Herkunftsnachweis in der GitHub Container Registry und hängt die Kubernetes-Manifeste mit festen Digests ans Release. Regeln und Architekturvorgaben stehen in [AGENTS.md](AGENTS.md); Einstieg ohne Container über [backend/](backend/README.md) und [frontend/](frontend/README.md).
 
 ## Lizenz
 

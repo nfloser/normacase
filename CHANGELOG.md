@@ -23,3 +23,5 @@ Erste vollständige Fassung auf dem Pflicht-Stack (Angular, Spring Boot, Postgre
 **Betrieb**
 - Start mit einem Befehl (`demo.ps1` / `demo.cmd`), Docker Compose, Kubernetes-Manifeste
 - Prometheus und Grafana optional, k6-Lasttest in der CI
+- Auslieferung per Release-Tag: Images für amd64/arm64 in der GitHub Container Registry, mit SBOM und signiertem Herkunftsnachweis; Kubernetes-Manifeste mit festen Digests am Release
+- CodeQL und Trivy bei jedem Pull Request; fremde Actions auf Commit-SHAs festgelegt

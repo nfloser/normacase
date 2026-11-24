@@ -75,7 +75,7 @@ describe('Workbench', () => {
     expect(el.querySelector('.nav-item[aria-current=true]')!.textContent).toContain('Alle Vorgänge');
     expect(el.querySelector('.nav-item[aria-current=true] .nav-count')!.textContent).toBe('2');
     expect(el.querySelector('tbody td.col-request')!.textContent).toContain('Pitch-Demo');
-    expect(el.querySelector('tbody td.col-next')!.textContent).toContain('Ergebnis prüfen');
+    expect(el.querySelector('tbody td.col-next')!.textContent).toContain('Ergebnis „erfüllt“ prüfen');
     expect(el.querySelectorAll('.case-table tbody tr').length).toBe(2);
     expect(el.querySelector('.case-title')!.textContent).toContain('Synthetische Person a');
     expect(el.querySelector('.outcome-badge')!.textContent).toContain('Voraussetzungen erfüllt');

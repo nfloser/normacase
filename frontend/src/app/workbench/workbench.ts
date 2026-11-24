@@ -333,7 +333,7 @@ export class Workbench {
       : p.state === 'IN_CONFLICT_REVIEW' ? steps['conflict']
         : p.state === 'TECHNICAL_CLARIFICATION' ? steps['technical']
           : p.state === 'DOCUMENT_REVIEW' ? steps['documents']
-            : p.state === 'IN_REVIEW' ? steps['review']
+            : p.state === 'IN_REVIEW' ? (p.outcome === 'NOT_SUPPORTED' ? steps['reviewNotSupported'] : p.outcome === 'SUPPORTED' ? steps['reviewSupported'] : steps['review'])
         : p.state === 'AWAITING_APPROVAL' ? steps['approval']
           : p.state === 'DISPATCHED' ? steps['dispatched'] : steps['closed'];
     return p.missingFieldCount > 0 ? `${step} · ${de.wb.openPoints(p.missingFieldCount)}` : step;

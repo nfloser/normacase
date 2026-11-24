@@ -1,0 +1,206 @@
+name: Release
+
+# Auslieferung: Ein Tag vX.Y.Z (z. B. beim Anlegen des GitHub-Releases) baut die drei Images,
+# prüft sie auf Schwachstellen, veröffentlicht sie in der GitHub Container Registry mit SBOM und
+# signiertem Herkunftsnachweis und hängt die Kubernetes-Manifeste mit festen Image-Digests ans Release.
+# Fremde Actions sind auf Commit-SHAs festgelegt (Lehre aus der Kompromittierung von trivy-action 2026).
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Vorhandenes Tag, z. B. v1.0.0
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  OWNER: nfloser
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      tag: ${{ steps.v.outputs.tag }}
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - id: v
+        name: Tag muss zur Version in pom.xml und package.json passen
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          pom=$(python3 -c "import xml.etree.ElementTree as E; n={'m':'http://maven.apache.org/POM/4.0.0'}; print(E.parse('backend/pom.xml').getroot().find('m:version', n).text)")
+          npm=$(node -p "require('./frontend/package.json').version")
+          echo "Tag $version · pom $pom · package.json $npm"
+          test "$version" = "$pom" && test "$version" = "$npm"
+          grep -q "^## $version " CHANGELOG.md || { echo "CHANGELOG.md hat keinen Abschnitt $version"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  images:
+    needs: version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+      security-events: write
+    strategy:
+      fail-fast: true
+      matrix:
+        image: [backend, frontend, knowledge]
+    env:
+      IMAGE: ghcr.io/nfloser/normacase-${{ matrix.image }}
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          ref: ${{ needs.version.outputs.tag }}
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Image lokal bauen
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.image }}
+          load: true
+          tags: ${{ env.IMAGE }}:scan
+      - name: Schwachstellen prüfen (kritische mit verfügbarer Korrektur brechen ab)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}:scan
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          trivyignores: .trivyignore
+      - name: Bericht für GitHub Security
+        if: always()
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}:scan
+          severity: CRITICAL,HIGH
+          format: sarif
+          output: trivy-${{ matrix.image }}.sarif
+          skip-setup-trivy: true
+      - if: always()
+        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        with:
+          sarif_file: trivy-${{ matrix.image }}.sarif
+          category: trivy-image-${{ matrix.image }}
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ needs.version.outputs.tag }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.version.outputs.tag }}
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=normacase-${{ matrix.image }}
+            org.opencontainers.image.licenses=LicenseRef-Proprietary
+      - id: push
+        name: Veröffentlichen mit SBOM und Provenance
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.image }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          sbom: true
+          provenance: mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Herkunftsnachweis signieren
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+      - name: Digest für die Manifeste merken
+        env:
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: mkdir -p digests && echo "$DIGEST" > digests/${{ matrix.image }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: digest-${{ matrix.image }}
+          path: digests/${{ matrix.image }}
+          retention-days: 1
+
+  publish:
+    needs: [version, images]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        with:
+          ref: ${{ needs.version.outputs.tag }}
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: digest-*
+          path: digests
+          merge-multiple: true
+      - name: Kubernetes-Manifeste mit festen Digests rendern
+        run: |
+          BACKEND=$(cat digests/backend); FRONTEND=$(cat digests/frontend); KNOWLEDGE=$(cat digests/knowledge)
+          mkdir -p dist
+          cp -r ops/k8s dist/k8s
+          cd dist/k8s/overlays/demo
+          for pair in "backend:$BACKEND" "frontend:$FRONTEND" "knowledge:$KNOWLEDGE"; do
+            name=${pair%%:*}; digest=${pair#*:}
+            test -n "$digest"
+            # newTag + digest: lesbare Version und unveränderliches Image
+            python3 - "$name" "$digest" "$VERSION" <<'PY'
+          import re, sys
+          name, digest, version = sys.argv[1:]
+          p = 'kustomization.yaml'
+          s = open(p).read()
+          s, n = re.subn(rf'(- name: ghcr.io/nfloser/normacase-{name}\n    newTag: )"[^"]*"', rf'\g<1>"{version}"\n    digest: {digest}', s)
+          assert n == 1, name
+          open(p, 'w').write(s)
+          PY
+          done
+          cd -
+          kubectl kustomize dist/k8s/overlays/demo > dist/normacase-${VERSION}-kubernetes.yaml
+          grep -c "@sha256:" dist/normacase-${VERSION}-kubernetes.yaml
+      - name: Release-Text aus CHANGELOG.md
+        run: |
+          awk -v v="$VERSION" '$0 ~ "^## " v " " {on=1; next} /^## / && on {exit} on' CHANGELOG.md > dist/notes.md
+          {
+            echo
+            echo "**Images** (linux/amd64, linux/arm64, mit SBOM und signiertem Herkunftsnachweis)"
+            echo
+            echo '```'
+            echo "ghcr.io/nfloser/normacase-backend:${VERSION}"
+            echo "ghcr.io/nfloser/normacase-frontend:${VERSION}"
+            echo "ghcr.io/nfloser/normacase-knowledge:${VERSION}"
+            echo '```'
+            echo
+            echo "Herkunft prüfen: \`gh attestation verify oci://ghcr.io/nfloser/normacase-backend:${VERSION} --owner nfloser\`"
+          } >> dist/notes.md
+      - name: GitHub-Release anlegen oder ergänzen
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          tag_name: ${{ needs.version.outputs.tag }}
+          name: NormaCase ${{ env.VERSION }}
+          body_path: dist/notes.md
+          files: dist/normacase-${{ env.VERSION }}-kubernetes.yaml
+          fail_on_unmatched_files: true
