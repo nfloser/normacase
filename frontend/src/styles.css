@@ -148,7 +148,7 @@ nc-workbench.nav-collapsed .explorer { visibility: hidden; }
 .nav-icon.star { color: #d4a017; }
 .nav-icon.ok { color: var(--nc-good); }
 .nav-folder { display: flex; align-items: center; position: relative; }
-.nav-folder .folder-actions { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); display: flex; opacity: 0; pointer-events: none; background: var(--nc-hover); border-radius: var(--nc-radius); }
+.nav-folder .folder-actions { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); display: flex; gap: 2px; padding: 1px; opacity: 0; pointer-events: none; background: var(--nc-surface); border: 1px solid var(--nc-border); border-radius: var(--nc-radius); box-shadow: var(--nc-shadow); }
 .nav-folder:hover .folder-actions, .nav-folder:focus-within .folder-actions { opacity: 1; pointer-events: auto; }
 .app-shell .nav-help { margin: .35rem .55rem 0; font-size: .75rem; color: var(--nc-text-2); line-height: 1.35; }
 .nav-toggle { display: flex; gap: .45rem; align-items: center; margin: 1rem .55rem 0; font-size: .8rem; color: var(--nc-text-2); }
@@ -172,8 +172,9 @@ nc-workbench.nav-collapsed .explorer { visibility: hidden; }
 
 /* ---------- case list (mail list × explorer table) ---------- */
 .case-table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
-.case-table thead th { position: sticky; top: 0; z-index: 2; background: var(--nc-surface); text-align: left; font-size: .75rem; font-weight: 600; color: var(--nc-text-2); padding: .45rem .5rem; border-bottom: 1px solid var(--nc-border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.case-table thead tr.filter-row th { top: 33px; padding-top: .25rem; padding-bottom: .4rem; }
+.case-table thead { position: sticky; top: 0; z-index: 2; background: var(--nc-surface); box-shadow: 0 -4px 0 var(--nc-surface); }
+.case-table thead th { background: var(--nc-surface); text-align: left; font-size: .75rem; font-weight: 600; color: var(--nc-text-2); padding: .45rem .5rem; box-shadow: inset 0 -1px 0 var(--nc-border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.case-table thead tr.filter-row th { padding-top: .25rem; padding-bottom: .4rem; }
 .app-shell .case-table thead .filter-row input, .app-shell .case-table thead .filter-row select { width: 100%; min-height: 28px; font-size: .8rem; }
 .sort { border: none; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
 th[aria-sort='ascending'] .sort::after { content: ' ↑'; }
@@ -621,3 +622,4 @@ details.raw pre { margin: 0; max-height: 340px; overflow: auto; padding: .7rem; 
 .matrix .bar { position: absolute; inset: 6px auto 6px 8px; width: calc((100% - 16px) * var(--share, 0)); border-radius: 4px; background: var(--nc-accent-soft); z-index: 0; }
 .matrix td.num strong { position: relative; z-index: 1; }
 .match, .plain-table .link { white-space: nowrap; }
+.case-table thead tr:first-child th { box-shadow: inset 0 -1px 0 var(--nc-border), 0 -8px 0 var(--nc-surface); }

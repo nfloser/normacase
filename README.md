@@ -49,6 +49,10 @@ NormaCase ist ein Neuaufbau: Die erste Fassung (.NET/React) liegt eingefroren un
 |---|---|
 | ![Kontextmenü mit Markieren, Verschieben, Lesezeichen, Notiz, Bestätigen](docs/screenshots/10-ablage-kontextmenue.png) | ![Fallliste im Dunkelmodus](docs/screenshots/13-dunkel.png) |
 
+| Eigene Ordner, Lesezeichen, Notiz | Nachweise eines Vorgangs |
+|---|---|
+| ![Meine Ablage mit Unterordner, Lesezeichen, Farbmarkierung und Notiz](docs/screenshots/14-meine-ablage.png) | ![Entscheidungsnachweise ohne Fallinhalt](docs/screenshots/15-nachweise.png) |
+
 ## Extras
 
 | Prüfwerkstatt | Referenzfälle |
@@ -90,6 +94,16 @@ Vier-Augen-Ablauf ausprobieren:
 Wer den Stack schon vor dem 21.11.2026 gestartet hatte, setzt die Datenbank einmal zurück (`.\demo.ps1 -Reset`), damit das eingeschränkte Laufzeitkonto angelegt wird.
 
 Mit `docker compose --profile monitoring up --build` kommen Prometheus (<http://localhost:9090>) und Grafana (<http://localhost:3000>, Dashboard „NormaCase – Betrieb“) dazu. Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
+
+## Fertige Images
+
+Jedes Release veröffentlicht Backend, Frontend und Knowledge als Images für amd64 und arm64 in der GitHub Container Registry, jeweils mit SBOM und signiertem Herkunftsnachweis:
+
+```bash
+docker pull ghcr.io/nfloser/normacase-backend:1.0.0
+gh attestation verify oci://ghcr.io/nfloser/normacase-backend:1.0.0 --owner nfloser
+kubectl apply -f normacase-1.0.0-kubernetes.yaml   # liegt am Release, Images mit festem Digest
+```
 
 ## So arbeitet NormaCase
 
