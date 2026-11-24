@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ProcessSummary } from './api';
+import { PANE_POSITIONS, PanePosition, clampPane } from './pane-resize';
 
 /** Spalten der Fallliste. Die Fachwerte kommen aus der API; hier wird nur angezeigt, sortiert und gefiltert. */
 export const COLUMN_IDS = ['subject', 'number', 'status', 'request', 'next', 'result', 'received', 'expires', 'missing', 'documents', 'confirmedBy', 'release', 'system', 'folder'] as const;
@@ -47,11 +48,8 @@ export interface SavedQuery {
   readonly sort: SortState;
 }
 
-export type PreviewPosition = 'bottom' | 'right';
 export type Density = 'normal' | 'compact' | 'comfortable';
 export const DENSITIES: readonly Density[] = ['normal', 'compact', 'comfortable'];
-export const PREVIEW_MIN = 25;
-export const PREVIEW_MAX = 75;
 
 export interface ViewSettings {
   readonly columns: readonly ColumnId[];
@@ -61,13 +59,22 @@ export interface ViewSettings {
   /** Vorschau der Fallakte neben der Liste; ausgeblendet hat die Liste den ganzen Platz (F4). */
   readonly showDetails: boolean;
   /** Lage der Vorschau wie im bisherigen Fallexplorer: unten (Standard) oder rechts. */
-  readonly previewPosition: PreviewPosition;
+  readonly previewPosition: PanePosition;
   /** Anteil der Vorschau am Arbeitsbereich in Prozent. */
   readonly previewSize: number;
   /** Zeilendichte der Liste wie im bisherigen Fallexplorer. */
   readonly density: Density;
   /** Explorer (Körbe und Ablage) links ein- oder ausgeblendet. */
   readonly showNav: boolean;
+  readonly navPosition: PanePosition;
+  readonly navSize: number;
+  readonly documentPosition: PanePosition;
+  readonly documentSize: number;
+  readonly filesPosition: PanePosition;
+  readonly filesSize: number;
+  readonly showDocuments: boolean;
+  readonly showFiles: boolean;
+  readonly showDocumentPreview: boolean;
   /** Plattformfälle (Massen- und Technikfälle der Demo) einbeziehen. */
   readonly includePlatform: boolean;
   readonly sort: SortState;
@@ -84,6 +91,9 @@ export const DEFAULT_VIEW: ViewSettings = {
   previewSize: 45,
   density: 'normal',
   showNav: true,
+  navPosition: 'left', navSize: 20,
+  documentPosition: 'right', documentSize: 55, showDocuments: true,
+  filesPosition: 'left', filesSize: 32, showFiles: true, showDocumentPreview: true,
   includePlatform: false,
   sort: { key: 'number', asc: true },
   queries: [],
@@ -130,9 +140,12 @@ export class ViewStore {
   }
 }
 
-export function clampPreview(v: unknown): number {
-  const n = typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : DEFAULT_VIEW.previewSize;
-  return Math.min(PREVIEW_MAX, Math.max(PREVIEW_MIN, n));
+function paneSize(v: unknown, fallback: number): number {
+  return typeof v === 'number' && Number.isFinite(v) ? clampPane(v) : fallback;
+}
+
+function panePosition(v: unknown, fallback: PanePosition): PanePosition {
+  return PANE_POSITIONS.find((p) => p === v) ?? fallback;
 }
 
 const isColumn = (v: unknown): v is ColumnId => typeof v === 'string' && (COLUMN_IDS as readonly string[]).includes(v);
@@ -175,10 +188,19 @@ export function sanitize(v: unknown): ViewSettings {
     rowColors: o['rowColors'] !== false,
     showFilters: o['showFilters'] !== false,
     showDetails: o['showDetails'] !== false,
-    previewPosition: o['previewPosition'] === 'right' ? 'right' : 'bottom',
-    previewSize: clampPreview(o['previewSize']),
+    previewPosition: panePosition(o['previewPosition'], DEFAULT_VIEW.previewPosition),
+    previewSize: paneSize(o['previewSize'], DEFAULT_VIEW.previewSize),
     density: DENSITIES.includes(o['density'] as Density) ? (o['density'] as Density) : 'normal',
     showNav: o['showNav'] !== false,
+    navPosition: panePosition(o['navPosition'], DEFAULT_VIEW.navPosition),
+    navSize: paneSize(o['navSize'], DEFAULT_VIEW.navSize),
+    documentPosition: panePosition(o['documentPosition'], DEFAULT_VIEW.documentPosition),
+    documentSize: paneSize(o['documentSize'], DEFAULT_VIEW.documentSize),
+    filesPosition: panePosition(o['filesPosition'], DEFAULT_VIEW.filesPosition),
+    filesSize: paneSize(o['filesSize'], DEFAULT_VIEW.filesSize),
+    showDocuments: o['showDocuments'] !== false,
+    showFiles: o['showFiles'] !== false,
+    showDocumentPreview: o['showDocumentPreview'] !== false,
     includePlatform: o['includePlatform'] === true,
     sort: sort(o['sort']),
     queries: queries

@@ -15,10 +15,12 @@ import { ReferenceExamples } from '../extras/reference-examples';
 import { VolumeOverview } from '../extras/volume-overview';
 import { EvidenceSearch } from '../extras/evidence-search';
 import {
-  COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, PREVIEW_MAX, PREVIEW_MIN, SELECT_COLUMNS, SavedQuery, ViewSettings,
-  ViewStore, DEFAULT_VIEW, DENSITIES, PLATFORM_SYSTEM, clampPreview, rowTone, storableFilters,
+  COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, SELECT_COLUMNS, SavedQuery, ViewSettings,
+  ViewStore, DEFAULT_VIEW, DENSITIES, PLATFORM_SYSTEM, rowTone, storableFilters,
   MAX_COLUMN_WIDTH, minColumnWidth, clampColumnWidth,
 } from './case-view';
+
+import { PANE_POSITIONS, PanePosition, PaneResize } from './pane-resize';
 
 type Load<T> = { state: 'loading' } | { state: 'ready'; value: T } | { state: 'error' };
 /** Arbeitslisten wie im bisherigen Fallexplorer; Bestätigt und Versendet stehen unter „Meine Ablage“. */
@@ -35,14 +37,13 @@ const EMPTY_WORKSPACE: Workspace = { folders: [], marks: [], queueColors: {} };
  */
 @Component({
   selector: 'nc-workbench',
-  imports: [CaseFile, PackWorkbench, ReferenceExamples, VolumeOverview, EvidenceSearch],
+  imports: [CaseFile, PackWorkbench, ReferenceExamples, VolumeOverview, EvidenceSearch, PaneResize],
   templateUrl: './workbench.html',
   host: {
     '(document:keydown.f4)': 'toggleDetails($event)',
     '(document:keydown)': 'keys($event)',
     '(document:click)': 'closeMenus($event)',
     '(window:resize)': 'closeContextMenus()',
-    '[class.nav-collapsed]': '!view().showNav',
   },
 })
 export class Workbench {
@@ -57,6 +58,8 @@ export class Workbench {
   protected readonly personalIds = PERSONAL;
 
   protected readonly menuExpanded = signal(!globalThis.matchMedia?.('(max-width: 860px)').matches);
+  protected readonly panePositions = PANE_POSITIONS;
+  protected readonly helpPage = signal<'usage' | 'shortcuts' | null>(null);
   protected readonly queue = signal(ALL);
   /** Vorgang in voller Größe (Doppelklick, Eingabe, „Vorgang öffnen“); sonst Liste mit Vorschau. */
   protected readonly opened = signal<string | null>(null);
@@ -156,7 +159,11 @@ export class Workbench {
   constructor() {
     effect(() => {
       const name = this.user().username;
-      untracked(() => this.view.set(this.store.load(name)));
+      untracked(() => {
+        const saved = this.store.load(name);
+        const narrow = globalThis.matchMedia?.('(max-width: 600px)').matches;
+        this.view.set(narrow && saved === DEFAULT_VIEW ? { ...saved, showNav: false, navPosition: 'top', navSize: 30, documentPosition: 'bottom', filesPosition: 'top' } : saved);
+      });
     });
     // Alle Arbeitslisten auf einmal laden: Zähler, „Alle Vorgänge“ und Plattformfälle entstehen in der Oberfläche.
     effect((cleanup) => {
@@ -295,41 +302,18 @@ export class Workbench {
   }
 
   protected togglePreviewPosition(): void {
-    this.updateView({ previewPosition: this.view().previewPosition === 'bottom' ? 'right' : 'bottom' });
+    const index = PANE_POSITIONS.indexOf(this.view().previewPosition);
+    this.updateView({ previewPosition: PANE_POSITIONS[(index + 1) % PANE_POSITIONS.length] });
   }
 
-  private resizing = false;
-
-  protected splitterDown(event: PointerEvent): void {
-    this.resizing = true;
-    (event.target as HTMLElement).setPointerCapture?.(event.pointerId);
+  protected setDock(kind: 'previewPosition' | 'navPosition', value: string): void {
+    const position = PANE_POSITIONS.find((p): p is PanePosition => p === value);
+    if (position) this.updateView({ [kind]: position });
   }
 
-  protected splitterMove(event: PointerEvent, container: HTMLElement): void {
-    if (!this.resizing) return;
-    const box = container.getBoundingClientRect();
-    const share = this.view().previewPosition === 'bottom'
-      ? (box.bottom - event.clientY) / Math.max(1, box.height)
-      : (box.right - event.clientX) / Math.max(1, box.width);
-    this.view.update((v) => ({ ...v, previewSize: clampPreview(share * 100) }));
+  protected setPaneSize(kind: 'previewSize' | 'navSize', size: number): void {
+    this.updateView({ [kind]: size });
   }
-
-  protected splitterUp(): void {
-    if (!this.resizing) return;
-    this.resizing = false;
-    this.store.save(this.user().username, this.view());
-  }
-
-  protected splitterKeys(event: KeyboardEvent): void {
-    const grow = this.view().previewPosition === 'bottom' ? 'ArrowUp' : 'ArrowLeft';
-    const shrink = this.view().previewPosition === 'bottom' ? 'ArrowDown' : 'ArrowRight';
-    if (event.key !== grow && event.key !== shrink) return;
-    event.preventDefault();
-    this.updateView({ previewSize: clampPreview(this.view().previewSize + (event.key === grow ? 5 : -5)) });
-  }
-
-  protected readonly previewMin = PREVIEW_MIN;
-  protected readonly previewMax = PREVIEW_MAX;
 
   protected nextStep(p: ProcessSummary): string {
     const steps = de.wb.nextSteps;
@@ -452,14 +436,32 @@ export class Workbench {
     document.querySelectorAll<HTMLDetailsElement>('.menubar details[open]').forEach((d) => { if (d !== opened) d.open = false; });
   }
 
+  protected openHelp(page: 'usage' | 'shortcuts', origin: HTMLElement, dialog: HTMLDialogElement): void {
+    this.helpPage.set(page);
+    const details = origin.closest('details');
+    details?.removeAttribute('open');
+    requestAnimationFrame(() => { if (dialog.isConnected && !dialog.open) dialog.showModal(); });
+    dialog.addEventListener('close', () => {
+      this.helpPage.set(null);
+      details?.querySelector('summary')?.focus();
+    }, { once: true });
+  }
+
+  protected switchHelpTab(page: 'usage' | 'shortcuts', event: KeyboardEvent): void {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    this.helpPage.set(page);
+    document.getElementById('help-' + page)?.focus();
+  }
+
   protected closeMenus(event: MouseEvent): void {
     if (!(event.target instanceof Element && event.target.closest('.context-menu'))) this.closeContextMenus();
     if (event.target instanceof Element && event.target.closest('.menubar')) return;
     document.querySelectorAll<HTMLDetailsElement>('.menubar details[open]').forEach((d) => (d.open = false));
   }
 
-  protected copyNumber(id: string, event: MouseEvent): void {
-    event.stopPropagation();
+  protected copyNumber(id: string, event?: MouseEvent): void {
+    event?.stopPropagation();
     this.copy(id, de.wb.caseNumberCopied);
   }
 
@@ -640,7 +642,7 @@ export class Workbench {
 
   protected keys(event: KeyboardEvent): void {
     const editing = event.target instanceof Element ? event.target.closest('input, textarea, select') : null;
-    const dialog = !!document.querySelector('.dialog-backdrop');
+    const dialog = !!document.querySelector('.dialog-backdrop, dialog[open]');
     const mod = event.ctrlKey || event.metaKey;
     if (mod && event.key.toLowerCase() === 'k') { event.preventDefault(); document.querySelector<HTMLInputElement>('.appbar input[type=search]')?.focus(); return; }
     if (event.key === 'F5' && !mod) { event.preventDefault(); this.refresh(); return; }
@@ -1132,7 +1134,7 @@ export class Workbench {
     this.query.set('PF-');
   }
 
-  private updateView(change: Partial<ViewSettings>): void {
+  protected updateView(change: Partial<ViewSettings>): void {
     this.view.update((v) => ({ ...v, ...change }));
     this.store.save(this.user().username, this.view());
   }

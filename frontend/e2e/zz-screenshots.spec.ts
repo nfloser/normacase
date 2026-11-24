@@ -121,9 +121,9 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'liste-zeilenfaerbung');
   await page.keyboard.press('F4');
   await expect(page.getByRole('region', { name: 'Fallakte' })).toBeVisible();
-  await page.getByRole('button', { name: /Vorschau rechts/ }).click();
+  await page.getByLabel('Fallvorschau').selectOption('right');
   await shot(page, 'vorschau-rechts');
-  await page.getByRole('button', { name: /Vorschau unten/ }).click();
+  await page.getByLabel('Fallvorschau').selectOption('bottom');
   await page.getByLabel('Darstellung').selectOption('dark');
   await shot(page, 'dunkel');
   await page.getByLabel('Darstellung').selectOption('system');

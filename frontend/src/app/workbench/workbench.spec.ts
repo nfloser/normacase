@@ -93,6 +93,23 @@ describe('Workbench', () => {
     expect(handle.getAttribute('aria-valuenow')).toBe('130');
   });
 
+  it('platziert die Fallvorschau oben und vergrößert sie mit der Tastatur', async () => {
+    const fixture = await render();
+    const el = fixture.nativeElement as HTMLElement;
+    const label = [...el.querySelectorAll<HTMLLabelElement>('.dock-select')].find((item) => item.textContent?.includes('Fallvorschau'))!;
+    const position = label.querySelector('select')!;
+    position.value = 'top';
+    position.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    const layout = el.querySelector('.list-and-pane')!;
+    expect(layout.getAttribute('data-pane')).toBe('top');
+    const separator = layout.querySelector(':scope > [role=separator]')!;
+    separator.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    expect(separator.getAttribute('aria-orientation')).toBe('horizontal');
+    expect(separator.getAttribute('aria-valuenow')).toBe('50');
+  });
+
   it('kopiert die Vorgangsnummer der angeklickten Zeile', async () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
@@ -299,10 +316,10 @@ describe('Workbench', () => {
     item('Explorer ein/aus').click();
     fixture.detectChanges();
     expect(el.querySelector('.case-table')!.getAttribute('data-density')).toBe('compact');
-    expect(el.classList).toContain('nav-collapsed');
+    expect(el.querySelector<HTMLElement>('.explorer')!.hidden).toBe(true);
     item('Ansicht zurücksetzen').click();
     fixture.detectChanges();
-    expect(el.classList).not.toContain('nav-collapsed');
+    expect(el.querySelector<HTMLElement>('.explorer')!.hidden).toBe(false);
     await settle(fixture);
   });
 
