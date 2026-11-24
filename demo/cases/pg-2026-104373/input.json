@@ -6,6 +6,10 @@
       "kind": "TRUTH",
       "truth": "NO"
     },
+    "alter_monate": {
+      "kind": "NUMBER",
+      "number": 90
+    },
     "kf_1_1": {
       "kind": "NUMBER",
       "number": 0
@@ -56,7 +60,7 @@
     },
     "kf_2_8": {
       "kind": "NUMBER",
-      "number": 2
+      "number": 3
     },
     "kf_2_9": {
       "kind": "NUMBER",
@@ -136,7 +140,7 @@
     },
     "kf_4_4": {
       "kind": "NUMBER",
-      "number": 2
+      "number": 3
     },
     "kf_4_5": {
       "kind": "NUMBER",
@@ -148,7 +152,7 @@
     },
     "kf_4_7": {
       "kind": "NUMBER",
-      "number": 1
+      "number": 2
     },
     "kf_4_8": {
       "kind": "NUMBER",

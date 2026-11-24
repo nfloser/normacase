@@ -3,75 +3,79 @@
   "locale": "de-DE",
   "packId": "public-reference.md-bund-pflege-2026-kinder",
   "name": "Öffentliche Referenz – Pflege 2026: Kinder und Jugendliche ab 19 Monaten",
-  "description": "Wie Erwachsene, zusätzlich Frühförderung (5.K); unter 11 Jahren Einzelpunkte aus dem Altersvergleich (BRi 6.5). Öffentliche Referenz, fachlich nicht freigegeben.",
+  "description": "Wie Erwachsene, zusätzlich Frühförderung (5.K); unter 11 Jahren Berechnung der Einzelpunkte mit Altersvergleich (BRi 6.5). Öffentliche Referenz, fachlich nicht freigegeben.",
   "fields": {
     "kf_1_b": {
       "label": "F 4.1.B Besondere Bedarfskonstellation: Gebrauchsunfähigkeit beider Arme und beider Beine",
       "hint": "Vollständiger Verlust der Greif-, Steh- und Gehfunktionen, nicht durch Hilfsmittel kompensierbar (BRi F 4.1.B)."
     },
+    "alter_monate": {
+      "label": "Alter am Begutachtungstag in vollendeten Monaten",
+      "hint": "Ganze Monate, 18 bis 215. Dieses Pack gilt nach dem letzten Tag der Säuglingsregel bis zum 18. Geburtstag (BRi Kapitel 6)."
+    },
     "kf_1_1": {
       "label": "1.1 Positionswechsel im Bett",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_1_2": {
       "label": "1.2 Halten einer stabilen Sitzposition",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_1_3": {
       "label": "1.3 Umsetzen",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_1_4": {
       "label": "1.4 Fortbewegen innerhalb des Wohnbereichs",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_1_5": {
       "label": "1.5 Treppensteigen",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_1": {
       "label": "2.1 Erkennen von Personen aus dem näheren Umfeld",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_2": {
       "label": "2.2 Örtliche Orientierung",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_3": {
       "label": "2.3 Zeitliche Orientierung",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_4": {
       "label": "2.4 Erinnern an wesentliche Ereignisse oder Beobachtungen",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_5": {
       "label": "2.5 Steuern von mehrschrittigen Alltagshandlungen",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_6": {
       "label": "2.6 Treffen von Entscheidungen im Alltag",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_7": {
       "label": "2.7 Verstehen von Sachverhalten und Informationen",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_8": {
       "label": "2.8 Erkennen von Risiken und Gefahren",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_9": {
       "label": "2.9 Mitteilen von elementaren Bedürfnissen",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_10": {
       "label": "2.10 Verstehen von Aufforderungen",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_2_11": {
       "label": "2.11 Beteiligen an einem Gespräch",
-      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_3_1": {
       "label": "3.1 Motorisch geprägte Verhaltensauffälligkeiten",
@@ -127,51 +131,51 @@
     },
     "kf_4_1": {
       "label": "4.1 Waschen des vorderen Oberkörpers",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_2": {
       "label": "4.2 Körperpflege im Bereich des Kopfes",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_3": {
       "label": "4.3 Waschen des Intimbereichs",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_4": {
       "label": "4.4 Duschen und Baden einschließlich Waschen der Haare",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_5": {
       "label": "4.5 An- und Auskleiden des Oberkörpers",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_6": {
       "label": "4.6 An- und Auskleiden des Unterkörpers",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_7": {
       "label": "4.7 Mundgerechtes Zubereiten der Nahrung und Eingießen von Getränken",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_8": {
       "label": "4.8 Essen",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Dreifach gewichtet. Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Dreifach gewichtet. Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_9": {
       "label": "4.9 Trinken",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Doppelt gewichtet. Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Doppelt gewichtet. Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_10": {
       "label": "4.10 Benutzen einer Toilette oder eines Toilettenstuhls",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Doppelt gewichtet. Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Doppelt gewichtet. Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_11": {
       "label": "4.11 Bewältigen der Folgen einer Harninkontinenz und Umgang mit Dauerkatheter und Urostoma",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Nur bei überwiegender oder kompletter Inkontinenz bzw. künstlicher Ableitung zu bewerten, sonst 0. Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Nur bei überwiegender oder kompletter Inkontinenz bzw. künstlicher Ableitung zu bewerten, sonst 0. Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_12": {
       "label": "4.12 Bewältigen der Folgen einer Stuhlinkontinenz und Umgang mit Stoma",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Nur bei überwiegender oder kompletter Inkontinenz bzw. künstlicher Ableitung zu bewerten, sonst 0. Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Nur bei überwiegender oder kompletter Inkontinenz bzw. künstlicher Ableitung zu bewerten, sonst 0. Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_4_13": {
       "label": "4.13 Ernährung parenteral oder über Sonde",
@@ -359,27 +363,27 @@
     },
     "kf_6_1": {
       "label": "6.1 Gestaltung des Tagesablaufs und Anpassung an Veränderungen",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_6_2": {
       "label": "6.2 Ruhen und Schlafen",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_6_3": {
       "label": "6.3 Sichbeschäftigen",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_6_4": {
       "label": "6.4 Vornehmen von in die Zukunft gerichteten Planungen",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_6_5": {
       "label": "6.5 Interaktion mit Personen im direkten Kontakt",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     },
     "kf_6_6": {
       "label": "6.6 Kontaktpflege zu Personen außerhalb des direkten Umfelds",
-      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+      "hint": "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
     }
   },
   "evidenceRequirements": {},
@@ -393,9 +397,9 @@
     "modul_5": "Modul 5: Krankheits- oder therapiebedingte Anforderungen",
     "modul_6": "Modul 6: Gestaltung des Alltagslebens und sozialer Kontakte",
     "modul_5_a": "5.1–5.7 (Häufigkeit pro Tag → Punkte)",
-    "modul_5_a_haeufigkeit": "5.1–5.7 Häufigkeit pro Tag",
+    "modul_5_a_haeufigkeit": "5.1–5.7 Anzahl pro 210 Rechentage",
     "modul_5_b": "5.8–5.11 (Häufigkeit pro Tag → Punkte)",
-    "modul_5_b_haeufigkeit": "5.8–5.11 Häufigkeit pro Tag",
+    "modul_5_b_haeufigkeit": "5.8–5.11 Anzahl pro 210 Rechentage",
     "modul_5_c": "5.12–5.15 (Zeitaufwand → Punkte)",
     "modul_5_c_punkte": "5.12–5.15 Summe",
     "modul_4_einzelpunkte": "Einzelpunkte",
@@ -420,6 +424,40 @@
     "kf_5_14": "5.14 Besuch anderer medizinischer oder therapeutischer Einrichtungen (bis zu drei Stunden)",
     "kf_5_15": "5.15 Zeitlich ausgedehnte Besuche medizinischer oder therapeutischer Einrichtungen (länger als drei Stunden)",
     "kf_5_k": "5.k Besuche von Einrichtungen zur Frühförderung bei Kindern",
+    "kf_1_1_vergleich": "Positionswechsel im Bett: Punkte nach Altersvergleich",
+    "kf_1_2_vergleich": "Halten einer stabilen Sitzposition: Punkte nach Altersvergleich",
+    "kf_1_3_vergleich": "Umsetzen: Punkte nach Altersvergleich",
+    "kf_1_4_vergleich": "Fortbewegen innerhalb des Wohnbereichs: Punkte nach Altersvergleich",
+    "kf_1_5_vergleich": "Treppensteigen: Punkte nach Altersvergleich",
+    "kf_2_1_vergleich": "Erkennen von Personen aus dem näheren Umfeld: Punkte nach Altersvergleich",
+    "kf_2_2_vergleich": "Örtliche Orientierung: Punkte nach Altersvergleich",
+    "kf_2_3_vergleich": "Zeitliche Orientierung: Punkte nach Altersvergleich",
+    "kf_2_4_vergleich": "Erinnern an wesentliche Ereignisse oder Beobachtungen: Punkte nach Altersvergleich",
+    "kf_2_5_vergleich": "Steuern von mehrschrittigen Alltagshandlungen: Punkte nach Altersvergleich",
+    "kf_2_6_vergleich": "Treffen von Entscheidungen im Alltag: Punkte nach Altersvergleich",
+    "kf_2_7_vergleich": "Verstehen von Sachverhalten und Informationen: Punkte nach Altersvergleich",
+    "kf_2_8_vergleich": "Erkennen von Risiken und Gefahren: Punkte nach Altersvergleich",
+    "kf_2_9_vergleich": "Mitteilen von elementaren Bedürfnissen: Punkte nach Altersvergleich",
+    "kf_2_10_vergleich": "Verstehen von Aufforderungen: Punkte nach Altersvergleich",
+    "kf_2_11_vergleich": "Beteiligen an einem Gespräch: Punkte nach Altersvergleich",
+    "kf_6_1_vergleich": "Gestaltung des Tagesablaufs und Anpassung an Veränderungen: Punkte nach Altersvergleich",
+    "kf_6_2_vergleich": "Ruhen und Schlafen: Punkte nach Altersvergleich",
+    "kf_6_3_vergleich": "Sichbeschäftigen: Punkte nach Altersvergleich",
+    "kf_6_4_vergleich": "Vornehmen von in die Zukunft gerichteten Planungen: Punkte nach Altersvergleich",
+    "kf_6_5_vergleich": "Interaktion mit Personen im direkten Kontakt: Punkte nach Altersvergleich",
+    "kf_6_6_vergleich": "Kontaktpflege zu Personen außerhalb des direkten Umfelds: Punkte nach Altersvergleich",
+    "kf_4_1_vergleich": "Waschen des vorderen Oberkörpers: Punkte nach Altersvergleich",
+    "kf_4_2_vergleich": "Körperpflege im Bereich des Kopfes: Punkte nach Altersvergleich",
+    "kf_4_3_vergleich": "Waschen des Intimbereichs: Punkte nach Altersvergleich",
+    "kf_4_4_vergleich": "Duschen und Baden einschließlich Waschen der Haare: Punkte nach Altersvergleich",
+    "kf_4_5_vergleich": "An- und Auskleiden des Oberkörpers: Punkte nach Altersvergleich",
+    "kf_4_6_vergleich": "An- und Auskleiden des Unterkörpers: Punkte nach Altersvergleich",
+    "kf_4_7_vergleich": "Mundgerechtes Zubereiten der Nahrung und Eingießen von Getränken: Punkte nach Altersvergleich",
+    "kf_4_8_vergleich": "Essen: Punkte nach Altersvergleich",
+    "kf_4_9_vergleich": "Trinken: Punkte nach Altersvergleich",
+    "kf_4_10_vergleich": "Benutzen einer Toilette oder eines Toilettenstuhls: Punkte nach Altersvergleich",
+    "kf_4_11_vergleich": "Bewältigen der Folgen einer Harninkontinenz und Umgang mit Dauerkatheter und Urostoma: Punkte nach Altersvergleich",
+    "kf_4_12_vergleich": "Bewältigen der Folgen einer Stuhlinkontinenz und Umgang mit Stoma: Punkte nach Altersvergleich",
     "pflegegrad": "Pflegegrad nach Gesamtpunkten"
   },
   "outputs": {

@@ -72,6 +72,19 @@ WEIGHTS = {
     5: [(0, 0, 0), (1, 1, 5), (2, 3, 10), (4, 5, 15), (6, 15, 20)],
     6: [(0, 0, 0), (1, 3, 3.75), (4, 6, 7.5), (7, 11, 11.25), (12, 18, 15)],
 }
+# Altersgrenzen in vollendeten Monaten: Übergänge zu Stufe 2, 1 und 0 (BRi 6.5, Tabellen zu Modulen 1, 2, 4 und 6).
+# Frühere Grenzen unter 18 Monaten werden im Kinder-Pack nicht erreicht. Bei 4.11/4.12 gibt es erst ab 60 Monaten eine Wertung.
+CHILD_AGE = {
+    "1_1": (1, 3, 9), "1_2": (6, 8, 9), "1_3": (8, 9, 11), "1_4": (12, 13, 18), "1_5": (15, 18, 30),
+    "2_1": (1, 9, 15), "2_2": (13, 18, 72), "2_3": (30, 60, 84), "2_4": (9, 36, 66),
+    "2_5": (5, 12, 15), "2_6": (18, 30, 54), "2_7": (48, 60, 72), "2_8": (30, 78, 120),
+    "2_9": (3, 13, 48), "2_10": (16, 18, 30), "2_11": (15, 24, 48),
+    "4_1": (24, 48, 72), "4_2": (18, 42, 60), "4_3": (24, 48, 72), "4_4": (42, 48, 96),
+    "4_5": (18, 42, 72), "4_6": (18, 42, 72), "4_7": (24, 66, 96), "4_8": (7, 20, 30),
+    "4_9": (8, 11, 24), "4_10": (18, 42, 72), "4_11": (60, 60, 60), "4_12": (60, 60, 60),
+    "6_1": (30, 60, 84), "6_2": (6, 60, 132), "6_3": (6, 36, 60),
+    "6_4": (30, 36, 60), "6_5": (1, 9, 12), "6_6": (12, 36, 60),
+}
 MAX = 1000000  # obere Grenze für Häufigkeiten; größere Werte gelten als unplausibel und führen zu HUMAN_REVIEW
 
 
@@ -115,17 +128,28 @@ def level(fid, points=(0, 1, 2, 3)):
     return lookup(field(fid), [(i, i, p) for i, p in enumerate(points)])
 
 
-def freq_per_day(c):
-    """Durchschnittliche Häufigkeit pro Tag: Woche ÷ 7, Monat ÷ 30, auf vier Nachkommastellen (BRi 5.10.1)."""
-    return total([field(f"kf_{c}_tag"), scale(field(f"kf_{c}_woche"), divisor=7, decimals=4),
-                  scale(field(f"kf_{c}_monat"), divisor=30, decimals=4)], f"kf_{c}")
+def child_level(c, multiplier=1):
+    """Einzelpunkte aus beobachteter Stufe und altersüblicher Stufe, analog zur Matrix in BRi 6.5."""
+    first, second, third = CHILD_AGE[c]
+    limits = (0, first, second, third, 216)
+    age_bands = [(max(18, a), b - 1, -3 + i)
+                 for i, (a, b) in enumerate(zip(limits, limits[1:])) if max(18, a) < b]
+    baseline = lookup(field("alter_monate"), age_bands)
+    comparison = total([level(f"kf_{c}"), baseline])
+    return lookup(comparison, [(i, i, max(0, i) * multiplier) for i in range(-3, 4)], f"kf_{c}_vergleich")
+
+
+def freq_per_210_days(c):
+    """Exakte Summe im gemeinsamen Bezugszeitraum: 210 Tage = 30 Wochen = 7 Rechenmonate."""
+    return total([scale(field(f"kf_{c}_tag"), factor=210), scale(field(f"kf_{c}_woche"), factor=30),
+                  scale(field(f"kf_{c}_monat"), factor=7)], f"kf_{c}")
 
 
 def module5(children):
-    group_a = lookup(total([freq_per_day(c) for c, _ in M5_A], "modul_5_a_haeufigkeit"),
-                     [(0, 0.9999, 0), (1, 3, 1), (3.0001, 8, 2), (8.0001, MAX, 3)], "modul_5_a")
-    group_b = lookup(total([freq_per_day(c) for c, _ in M5_B], "modul_5_b_haeufigkeit"),
-                     [(0, 0.1428, 0), (0.1429, 0.9999, 1), (1, 2.9999, 2), (3, MAX, 3)], "modul_5_b")
+    group_a = lookup(total([freq_per_210_days(c) for c, _ in M5_A], "modul_5_a_haeufigkeit"),
+                     [(0, 209, 0), (210, 630, 1), (631, 1680, 2), (1681, MAX, 3)], "modul_5_a")
+    group_b = lookup(total([freq_per_210_days(c) for c, _ in M5_B], "modul_5_b_haeufigkeit"),
+                     [(0, 29, 0), (30, 209, 1), (210, 629, 2), (630, MAX, 3)], "modul_5_b")
     parts = []
     for c, _, daily, weekly, monthly in M5_C + ([M5_K] if children else []):
         terms = []
@@ -144,20 +168,26 @@ def frequency(fid):
     return lookup(field(fid), [(p, p, p) for p in (0, 1, 3, 5)])
 
 
-def module(n, criteria, eid=None):
-    item = frequency if n == 3 else level
-    return lookup(total([item(f"kf_{c}") for c, _ in criteria], f"modul_{n}_einzelpunkte"), WEIGHTS[n], eid or f"modul_{n}")
+def module(n, criteria, children=False):
+    if n == 3:
+        items = [frequency(f"kf_{c}") for c, _ in criteria]
+    elif children:
+        items = [child_level(c) for c, _ in criteria]
+    else:
+        items = [level(f"kf_{c}") for c, _ in criteria]
+    return lookup(total(items, f"modul_{n}_einzelpunkte"), WEIGHTS[n], f"modul_{n}")
 
 
-def module4():
-    parts = [level(f"kf_{c}", tuple(i * w for i in range(4))) for c, _, w in M4]
+def module4(children):
+    parts = [child_level(c, w) if children else level(f"kf_{c}", tuple(i * w for i in range(4))) for c, _, w in M4]
     parts.append(lookup(field(f"kf_{M4_13[0]}"), [(0, 0, 0), (1, 1, 6), (2, 2, 3)]))
     return lookup(total(parts, "modul_4_einzelpunkte"), WEIGHTS[4], "modul_4")
 
 
 def score_regular(children):
-    return total([module(1, M1), {"kind": "max", "id": "modul_2_3", "operands": [module(2, M2), module(3, M3)]},
-                  module4(), module5(children), module(6, M6)], "gesamtpunkte")
+    return total([module(1, M1, children),
+                  {"kind": "max", "id": "modul_2_3", "operands": [module(2, M2, children), module(3, M3)]},
+                  module4(children), module5(children), module(6, M6, children)], "gesamtpunkte")
 
 
 def score_infant():
@@ -190,6 +220,8 @@ def fields(kind):
     out = [{"id": "kf_1_b", "type": "truth", "required": True}]
     def nums(ids):
         out.extend({"id": i, "type": "number", "required": True} for i in ids)
+    if kind == "kind":
+        nums(["alter_monate"])
     if kind != "saeugling":
         nums(f"kf_{c}" for c, _ in M1)
         nums(f"kf_{c}" for c, _ in M2)
@@ -212,7 +244,7 @@ def fields(kind):
 SCALE_LEVEL = "0 = selbständig, 1 = überwiegend selbständig, 2 = überwiegend unselbständig, 3 = unselbständig"
 SCALE_M2 = "0 = vorhanden/unbeeinträchtigt, 1 = größtenteils vorhanden, 2 = in geringem Maße vorhanden, 3 = nicht vorhanden"
 SCALE_M3 = "0 = nie oder sehr selten, 1 = selten, 3 = häufig, 5 = täglich (Einzelpunkte)"
-CHILD_NOTE = " Bei Kindern unter 11 Jahren: Einzelpunkte aus dem Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5)."
+CHILD_NOTE = " Beobachtete Stufe angeben. Die Altersmatrix berechnet die Einzelpunkte. Falls altersbedingt kein Kriterium erhoben wird, 0 angeben."
 
 
 def presentation(kind, pack_id, name, description):
@@ -221,6 +253,9 @@ def presentation(kind, pack_id, name, description):
     child = CHILD_NOTE if kind == "kind" else ""
     def put(fid, label, hint):
         f[fid] = {"label": label, "hint": hint}
+    if kind == "kind":
+        put("alter_monate", "Alter am Begutachtungstag in vollendeten Monaten",
+            "Ganze Monate, 18 bis 215. Dieses Pack gilt nach dem letzten Tag der Säuglingsregel bis zum 18. Geburtstag (BRi Kapitel 6).")
     if kind != "saeugling":
         for c, t in M1:
             put(f"kf_{c}", f"{c.replace('_', '.')} {t}", SCALE_LEVEL + child)
@@ -254,8 +289,8 @@ def presentation(kind, pack_id, name, description):
                 "modul_3": "Modul 3: Verhaltensweisen und psychische Problemlagen", "modul_2_3": "Modul 2 oder 3 (höherer Wert zählt)",
                 "modul_4": "Modul 4: Selbstversorgung", "modul_5": "Modul 5: Krankheits- oder therapiebedingte Anforderungen",
                 "modul_6": "Modul 6: Gestaltung des Alltagslebens und sozialer Kontakte",
-                "modul_5_a": "5.1–5.7 (Häufigkeit pro Tag → Punkte)", "modul_5_a_haeufigkeit": "5.1–5.7 Häufigkeit pro Tag",
-                "modul_5_b": "5.8–5.11 (Häufigkeit pro Tag → Punkte)", "modul_5_b_haeufigkeit": "5.8–5.11 Häufigkeit pro Tag",
+                "modul_5_a": "5.1–5.7 (Häufigkeit pro Tag → Punkte)", "modul_5_a_haeufigkeit": "5.1–5.7 Anzahl pro 210 Rechentage",
+                "modul_5_b": "5.8–5.11 (Häufigkeit pro Tag → Punkte)", "modul_5_b_haeufigkeit": "5.8–5.11 Anzahl pro 210 Rechentage",
                 "modul_5_c": "5.12–5.15 (Zeitaufwand → Punkte)", "modul_5_c_punkte": "5.12–5.15 Summe",
                 "modul_4_einzelpunkte": "Einzelpunkte", "modul_5_einzelpunkte": "Einzelpunkte"}
     for n in (1, 2, 3, 6):
@@ -269,6 +304,9 @@ def presentation(kind, pack_id, name, description):
                "pflegegrad_5_besondere_bedarfskonstellation": {
                    "label": "Pflegegrad 5 wegen besonderer Bedarfskonstellation (F 4.1.B)",
                    "choices": {"REACHED": "Zutreffend", "NOT_REACHED": "Nicht zutreffend"}}}
+    if kind == "kind":
+        for c, label in [(c, t) for c, t in M1 + M2 + M6] + [(c, t) for c, t, _ in M4]:
+            numerics[f"kf_{c}_vergleich"] = f"{label}: Punkte nach Altersvergleich"
     numerics["pflegegrad"] = "Pflegegrad nach Gesamtpunkten"
     return {"formatVersion": 1, "locale": "de-DE", "packId": pack_id, "name": name, "description": description,
             "fields": f, "evidenceRequirements": {}, "numerics": numerics,
@@ -307,7 +345,7 @@ def main():
     pack("kind", "pflege-2026-kinder", "public-reference.md-bund-pflege-2026-kinder",
          "pflege-2026-kinder-2026-10-01-public-reference.1", "MD-BUND-PFLEGE-2026-KINDER",
          "Öffentliche Referenz – Pflege 2026: Kinder und Jugendliche ab 19 Monaten",
-         "Wie Erwachsene, zusätzlich Frühförderung (5.K); unter 11 Jahren Einzelpunkte aus dem Altersvergleich (BRi 6.5). "
+         "Wie Erwachsene, zusätzlich Frühförderung (5.K); unter 11 Jahren Berechnung der Einzelpunkte mit Altersvergleich (BRi 6.5). "
          "Öffentliche Referenz, fachlich nicht freigegeben.")
     pack("saeugling", "pflege-2026-saeuglinge", "public-reference.md-bund-pflege-2026-saeuglinge",
          "pflege-2026-saeuglinge-2026-10-01-public-reference.1", "MD-BUND-PFLEGE-2026-SAEUGLINGE",

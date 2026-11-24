@@ -825,8 +825,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_1_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_1_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -834,8 +838,7 @@
                 "kind": "field",
                 "field": "kf_5_1_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -843,8 +846,7 @@
                 "kind": "field",
                 "field": "kf_5_1_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_1"
@@ -853,8 +855,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_2_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_2_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -862,8 +868,7 @@
                 "kind": "field",
                 "field": "kf_5_2_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -871,8 +876,7 @@
                 "kind": "field",
                 "field": "kf_5_2_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_2"
@@ -881,8 +885,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_3_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_3_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -890,8 +898,7 @@
                 "kind": "field",
                 "field": "kf_5_3_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -899,8 +906,7 @@
                 "kind": "field",
                 "field": "kf_5_3_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_3"
@@ -909,8 +915,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_4_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_4_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -918,8 +928,7 @@
                 "kind": "field",
                 "field": "kf_5_4_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -927,8 +936,7 @@
                 "kind": "field",
                 "field": "kf_5_4_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_4"
@@ -937,8 +945,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_5_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_5_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -946,8 +958,7 @@
                 "kind": "field",
                 "field": "kf_5_5_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -955,8 +966,7 @@
                 "kind": "field",
                 "field": "kf_5_5_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_5"
@@ -965,8 +975,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_6_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_6_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -974,8 +988,7 @@
                 "kind": "field",
                 "field": "kf_5_6_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -983,8 +996,7 @@
                 "kind": "field",
                 "field": "kf_5_6_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_6"
@@ -993,8 +1005,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_7_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_7_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -1002,8 +1018,7 @@
                 "kind": "field",
                 "field": "kf_5_7_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -1011,8 +1026,7 @@
                 "kind": "field",
                 "field": "kf_5_7_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_7"
@@ -1023,21 +1037,21 @@
           "bands": [
            {
             "minimum": 0,
-            "maximum": 0.9999,
+            "maximum": 209,
             "value": 0
            },
            {
-            "minimum": 1,
-            "maximum": 3,
+            "minimum": 210,
+            "maximum": 630,
             "value": 1
            },
            {
-            "minimum": 3.0001,
-            "maximum": 8,
+            "minimum": 631,
+            "maximum": 1680,
             "value": 2
            },
            {
-            "minimum": 8.0001,
+            "minimum": 1681,
             "maximum": 1000000,
             "value": 3
            }
@@ -1053,8 +1067,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_8_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_8_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -1062,8 +1080,7 @@
                 "kind": "field",
                 "field": "kf_5_8_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -1071,8 +1088,7 @@
                 "kind": "field",
                 "field": "kf_5_8_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_8"
@@ -1081,8 +1097,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_9_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_9_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -1090,8 +1110,7 @@
                 "kind": "field",
                 "field": "kf_5_9_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -1099,8 +1118,7 @@
                 "kind": "field",
                 "field": "kf_5_9_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_9"
@@ -1109,8 +1127,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_10_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_10_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -1118,8 +1140,7 @@
                 "kind": "field",
                 "field": "kf_5_10_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -1127,8 +1148,7 @@
                 "kind": "field",
                 "field": "kf_5_10_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_10"
@@ -1137,8 +1157,12 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "field",
-               "field": "kf_5_11_tag"
+               "kind": "scale",
+               "input": {
+                "kind": "field",
+                "field": "kf_5_11_tag"
+               },
+               "factor": 210
               },
               {
                "kind": "scale",
@@ -1146,8 +1170,7 @@
                 "kind": "field",
                 "field": "kf_5_11_woche"
                },
-               "divisor": 7,
-               "decimals": 4
+               "factor": 30
               },
               {
                "kind": "scale",
@@ -1155,8 +1178,7 @@
                 "kind": "field",
                 "field": "kf_5_11_monat"
                },
-               "divisor": 30,
-               "decimals": 4
+               "factor": 7
               }
              ],
              "id": "kf_5_11"
@@ -1167,21 +1189,21 @@
           "bands": [
            {
             "minimum": 0,
-            "maximum": 0.1428,
+            "maximum": 29,
             "value": 0
            },
            {
-            "minimum": 0.1429,
-            "maximum": 0.9999,
+            "minimum": 30,
+            "maximum": 209,
             "value": 1
            },
            {
-            "minimum": 1,
-            "maximum": 2.9999,
+            "minimum": 210,
+            "maximum": 629,
             "value": 2
            },
            {
-            "minimum": 3,
+            "minimum": 630,
             "maximum": 1000000,
             "value": 3
            }
@@ -1963,8 +1985,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_1_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_1_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -1972,8 +1998,7 @@
                   "kind": "field",
                   "field": "kf_5_1_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -1981,8 +2006,7 @@
                   "kind": "field",
                   "field": "kf_5_1_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_1"
@@ -1991,8 +2015,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_2_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_2_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2000,8 +2028,7 @@
                   "kind": "field",
                   "field": "kf_5_2_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2009,8 +2036,7 @@
                   "kind": "field",
                   "field": "kf_5_2_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_2"
@@ -2019,8 +2045,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_3_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_3_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2028,8 +2058,7 @@
                   "kind": "field",
                   "field": "kf_5_3_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2037,8 +2066,7 @@
                   "kind": "field",
                   "field": "kf_5_3_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_3"
@@ -2047,8 +2075,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_4_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_4_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2056,8 +2088,7 @@
                   "kind": "field",
                   "field": "kf_5_4_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2065,8 +2096,7 @@
                   "kind": "field",
                   "field": "kf_5_4_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_4"
@@ -2075,8 +2105,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_5_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_5_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2084,8 +2118,7 @@
                   "kind": "field",
                   "field": "kf_5_5_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2093,8 +2126,7 @@
                   "kind": "field",
                   "field": "kf_5_5_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_5"
@@ -2103,8 +2135,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_6_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_6_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2112,8 +2148,7 @@
                   "kind": "field",
                   "field": "kf_5_6_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2121,8 +2156,7 @@
                   "kind": "field",
                   "field": "kf_5_6_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_6"
@@ -2131,8 +2165,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_7_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_7_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2140,8 +2178,7 @@
                   "kind": "field",
                   "field": "kf_5_7_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2149,8 +2186,7 @@
                   "kind": "field",
                   "field": "kf_5_7_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_7"
@@ -2161,21 +2197,21 @@
             "bands": [
              {
               "minimum": 0,
-              "maximum": 0.9999,
+              "maximum": 209,
               "value": 0
              },
              {
-              "minimum": 1,
-              "maximum": 3,
+              "minimum": 210,
+              "maximum": 630,
               "value": 1
              },
              {
-              "minimum": 3.0001,
-              "maximum": 8,
+              "minimum": 631,
+              "maximum": 1680,
               "value": 2
              },
              {
-              "minimum": 8.0001,
+              "minimum": 1681,
               "maximum": 1000000,
               "value": 3
              }
@@ -2191,8 +2227,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_8_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_8_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2200,8 +2240,7 @@
                   "kind": "field",
                   "field": "kf_5_8_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2209,8 +2248,7 @@
                   "kind": "field",
                   "field": "kf_5_8_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_8"
@@ -2219,8 +2257,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_9_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_9_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2228,8 +2270,7 @@
                   "kind": "field",
                   "field": "kf_5_9_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2237,8 +2278,7 @@
                   "kind": "field",
                   "field": "kf_5_9_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_9"
@@ -2247,8 +2287,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_10_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_10_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2256,8 +2300,7 @@
                   "kind": "field",
                   "field": "kf_5_10_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2265,8 +2308,7 @@
                   "kind": "field",
                   "field": "kf_5_10_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_10"
@@ -2275,8 +2317,12 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "field",
-                 "field": "kf_5_11_tag"
+                 "kind": "scale",
+                 "input": {
+                  "kind": "field",
+                  "field": "kf_5_11_tag"
+                 },
+                 "factor": 210
                 },
                 {
                  "kind": "scale",
@@ -2284,8 +2330,7 @@
                   "kind": "field",
                   "field": "kf_5_11_woche"
                  },
-                 "divisor": 7,
-                 "decimals": 4
+                 "factor": 30
                 },
                 {
                  "kind": "scale",
@@ -2293,8 +2338,7 @@
                   "kind": "field",
                   "field": "kf_5_11_monat"
                  },
-                 "divisor": 30,
-                 "decimals": 4
+                 "factor": 7
                 }
                ],
                "id": "kf_5_11"
@@ -2305,21 +2349,21 @@
             "bands": [
              {
               "minimum": 0,
-              "maximum": 0.1428,
+              "maximum": 29,
               "value": 0
              },
              {
-              "minimum": 0.1429,
-              "maximum": 0.9999,
+              "minimum": 30,
+              "maximum": 209,
               "value": 1
              },
              {
-              "minimum": 1,
-              "maximum": 2.9999,
+              "minimum": 210,
+              "maximum": 629,
               "value": 2
              },
              {
-              "minimum": 3,
+              "minimum": 630,
               "maximum": 1000000,
               "value": 3
              }
