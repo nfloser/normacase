@@ -13,7 +13,6 @@ import { EvidenceRecord, ExtrasApi } from './extras-api';
         <label class="field"><span>{{ x.caseNumber }}</span><input type="text" required [attr.aria-label]="x.caseNumber" [value]="caseId()" (input)="caseId.set($any($event.target).value)"></label>
         <button type="submit" class="button primary" [disabled]="busy() || !system().trim() || !caseId().trim()">{{ x.search }}</button>
       </form>
-      <p class="muted">{{ x.retentionNote }}</p>
       @if (error()) { <p class="banner error" role="alert">{{ error() }}</p> }
       @if (records(); as list) {
         @if (list.length) {

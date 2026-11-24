@@ -241,13 +241,6 @@ export class Workbench {
     return de.queues[id] ?? id;
   }
 
-  protected queueHelp(id: string): string {
-    if (id === ALL) return de.wb.allCasesHelp;
-    if (id === 'bookmarks') return de.wb.ablage.bookmarksHelp;
-    if (id === 'unfiled') return de.wb.ablage.unfiledHelp;
-    if (id.startsWith(FOLDER_PREFIX)) return de.wb.ablage.folderHelp;
-    return de.queueHelp[id] ?? '';
-  }
 
   /** Öffnet den Vorgang in voller Größe. */
   protected open(id: string | null): void {
