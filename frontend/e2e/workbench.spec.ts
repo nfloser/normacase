@@ -34,7 +34,7 @@ test('Gutachterin prüft eine Fallakte mit Dokumenten und bestätigt', async ({ 
   const file = page.getByRole('region', { name: 'Fallakte' });
   await expect(file.locator('.case-title')).toBeVisible();
   await expect(file.locator('.outcome-badge')).toContainText('Voraussetzungen erfüllt');
-  await expect(file.locator('.tree')).toBeVisible();
+  await expect(file.locator('.tree').first()).toBeVisible();
   await expect(file).not.toContainText('SUPPORTED');
 
   await file.getByRole('tab', { name: /Dokumente/ }).click();

@@ -73,7 +73,7 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await file.locator('.file-item').filter({ hasText: 'Foto' }).click();
   await expect(file.locator('.sheet img').first()).toBeVisible();
   await shot(page, 'dokument-foto');
-  await file.locator('.file-item').filter({ hasText: 'Arztbrief' }).click();
+  await file.locator('.file-item').filter({ hasText: '(Scan)' }).click();
   await expect(file.locator('.sheet img').first()).toBeVisible();
   await shot(page, 'dokument-scan');
   await file.getByRole('tab', { name: 'Verlauf' }).click();
