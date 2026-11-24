@@ -41,9 +41,18 @@ export function germanDecimal(value: ExactNumber): string {
 }
 
 /** Writes JSON parsed with {@link parseExact} back to text; numbers keep their exact source text. */
-export function exactJson(value: unknown): string {
+export function exactJson(value: unknown, indent = 0, depth = 0): string {
   if (value instanceof ExactNumber) return value.text;
-  if (Array.isArray(value)) return '[' + value.map(exactJson).join(',') + ']';
-  if (isObject(value)) return '{' + Object.entries(value).map(([k, v]) => JSON.stringify(k) + ':' + exactJson(v)).join(',') + '}';
+  const pad = indent ? '\n' + ' '.repeat(indent * (depth + 1)) : '';
+  const end = indent ? '\n' + ' '.repeat(indent * depth) : '';
+  const sep = indent ? ': ' : ':';
+  if (Array.isArray(value)) {
+    return value.length ? '[' + value.map((v) => pad + exactJson(v, indent, depth + 1)).join(',') + end + ']' : '[]';
+  }
+  if (isObject(value)) {
+    const entries = Object.entries(value);
+    return entries.length
+      ? '{' + entries.map(([k, v]) => pad + JSON.stringify(k) + sep + exactJson(v, indent, depth + 1)).join(',') + end + '}' : '{}';
+  }
   return JSON.stringify(value ?? null);
 }

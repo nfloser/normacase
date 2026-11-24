@@ -12,7 +12,7 @@
   "evidenceRequirements": {},
   "outputs": {},
   "examples": [
-    { "id": "supported", "label": "Voraussetzungen erfüllt", "caseFile": "demo-a-supported.json" },
-    { "id": "incomplete", "label": "Angaben unvollständig", "caseFile": "demo-a-incomplete.json" }
+    { "id": "supported", "label": "Voraussetzungen erfüllt", "caseFile": "demo-a-supported.json", "expectedOutcome": "SUPPORTED" },
+    { "id": "incomplete", "label": "Angaben unvollständig", "caseFile": "demo-a-incomplete.json", "expectedOutcome": "INCOMPLETE" }
   ]
 }

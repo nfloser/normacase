@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "assessmentDate": "2026-10-02",
+  "facts": {
+    "gate_primary": {
+      "kind": "TRUTH",
+      "truth": "YES"
+    },
+    "metric": {
+      "kind": "NUMBER",
+      "number": 7
+    },
+    "segment_alpha_ready": {
+      "kind": "TRUTH",
+      "truth": "YES"
+    }
+  }
+}

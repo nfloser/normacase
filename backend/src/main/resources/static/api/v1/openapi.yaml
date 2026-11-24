@@ -40,6 +40,19 @@ paths:
       responses:
         '200': { description: presentation.de-DE.json oder leeres Objekt }
         '404': { $ref: '#/components/responses/Problem' }
+  /api/v1/knowledge/releases/{releaseId}/examples/{exampleId}:
+    get:
+      summary: Synthetisches Beispiel eines Releases als Falleingabe (Prüfwerkstatt, Referenzfälle)
+      parameters:
+        - { name: releaseId, in: path, required: true, schema: { type: string } }
+        - { name: exampleId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Falleingabe
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CaseInput' }
+        '404': { $ref: '#/components/responses/Problem' }
   /api/v1/assessments:
     post:
       summary: Fall bewerten (headless)

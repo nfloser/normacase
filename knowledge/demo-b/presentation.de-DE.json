@@ -11,6 +11,6 @@
   "evidenceRequirements": {},
   "outputs": {},
   "examples": [
-    { "id": "supported", "label": "Numerisches Beispiel", "caseFile": "demo-b-supported.json" }
+    { "id": "supported", "label": "Numerisches Beispiel", "caseFile": "demo-b-supported.json", "expectedOutcome": "SUPPORTED" }
   ]
 }

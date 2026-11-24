@@ -25,22 +25,22 @@
     {
       "id": "incomplete",
       "label": "1 · Pflichtangabe fehlt",
-      "caseFile": "demo-g-incomplete.json"
+      "caseFile": "demo-g-incomplete.json", "expectedOutcome": "INCOMPLETE"
     },
     {
       "id": "review",
       "label": "2 · Nachweis fehlt – manuelle Prüfung",
-      "caseFile": "demo-g-review.json"
+      "caseFile": "demo-g-review.json", "expectedOutcome": "HUMAN_REVIEW"
     },
     {
       "id": "supported",
       "label": "3 · Vollständig – Voraussetzungen erfüllt",
-      "caseFile": "demo-g-supported.json"
+      "caseFile": "demo-g-supported.json", "expectedOutcome": "SUPPORTED"
     },
     {
       "id": "not-supported",
       "label": "4 · Kriterium ausdrücklich nicht erfüllt",
-      "caseFile": "demo-g-not-supported.json"
+      "caseFile": "demo-g-not-supported.json", "expectedOutcome": "NOT_SUPPORTED"
     }
   ]
 }

@@ -1,0 +1,13 @@
+{
+  "formatVersion": 1,
+  "assessmentDate": "2026-10-03",
+  "facts": {
+    "criteria_confirmed": {
+      "kind": "TRUTH",
+      "truth": "YES"
+    }
+  },
+  "evidence": {
+    "supporting_document": "PRESENT"
+  }
+}

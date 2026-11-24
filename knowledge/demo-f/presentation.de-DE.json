@@ -16,7 +16,7 @@
     {
       "id": "ready",
       "label": "Voraussetzung erfüllt",
-      "caseFile": "demo-f-ready.json"
+      "caseFile": "demo-f-ready.json", "expectedOutcome": "SUPPORTED"
     }
   ],
   "workflows": [

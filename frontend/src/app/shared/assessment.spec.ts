@@ -48,3 +48,12 @@ describe('assessment presentation', () => {
     expect(germanDecimal(new ExactNumber('1e3'))).toBe('1e3');
   });
 });
+
+import { exactJson } from './json';
+describe('exactJson', () => {
+  it('schreibt exakt geparste Dokumente unverändert zurück, kompakt oder eingerückt', () => {
+    const text = '{"a":1.50,"b":[true,null,"x"],"c":{}}';
+    expect(exactJson(parseExact(text))).toBe(text);
+    expect(exactJson(parseExact(text), 2)).toBe('{\n  "a": 1.50,\n  "b": [\n    true,\n    null,\n    "x"\n  ],\n  "c": {}\n}');
+  });
+});
