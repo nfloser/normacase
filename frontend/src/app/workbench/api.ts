@@ -69,8 +69,6 @@ export interface Presentation {
   readonly fields?: Record<string, Labels>;
   readonly evidenceRequirements?: Record<string, Labels>;
   readonly outputs?: Record<string, { label: string; choices: Record<string, string> }>;
-  /** Beschriftungen benannter Zwischenwerte eines Rechenwegs (z. B. Module). */
-  readonly numerics?: Record<string, string>;
 }
 
 export interface ReleaseSummary {

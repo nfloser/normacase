@@ -49,21 +49,11 @@ public record KnowledgePack(
         }
     }
 
-    /**
-     * Teilbewertung. {@code choice}: Bedingung → {@code onMatch}/{@code onNoMatch}. {@code number}: Wert des
-     * Zahlenausdrucks, nur gültig, wenn er unter {@code choices} steht (sonst UNKNOWN).
-     */
     public record Output(String id, int version, LocalDate validFrom, LocalDate validUntil, String sourceId,
-            String type, List<String> choices, Condition condition, String onMatch, String onNoMatch,
-            NumericExpression numericExpression) {
+            String type, List<String> choices, Condition condition, String onMatch, String onNoMatch) {
 
         public Output {
             choices = List.copyOf(choices);
-        }
-
-        public Output(String id, int version, LocalDate validFrom, LocalDate validUntil, String sourceId,
-                String type, List<String> choices, Condition condition, String onMatch, String onNoMatch) {
-            this(id, version, validFrom, validUntil, sourceId, type, choices, condition, onMatch, onNoMatch, null);
         }
 
         public boolean validOn(LocalDate date) {
@@ -81,22 +71,12 @@ public record KnowledgePack(
         }
     }
 
-    /**
-     * Zahlenausdruck. {@code id} benennt einen Zwischenwert (z. B. ein Modul), damit die Begründung ihn beschriften
-     * kann; {@code scale} multipliziert mit {@code factor} oder teilt durch {@code divisor}, optional gerundet auf
-     * {@code decimals} Nachkommastellen (kaufmännisch).
-     */
     public record NumericExpression(String kind, String field, NumericExpression input, List<NumericExpression> operands,
-            List<RangeBand> bands, String id, BigDecimal factor, BigDecimal divisor, Integer decimals) {
+            List<RangeBand> bands) {
 
         public NumericExpression {
             operands = List.copyOf(operands);
             bands = List.copyOf(bands);
-        }
-
-        public NumericExpression(String kind, String field, NumericExpression input, List<NumericExpression> operands,
-                List<RangeBand> bands) {
-            this(kind, field, input, operands, bands, null, null, null, null);
         }
     }
 

@@ -87,19 +87,12 @@ public final class RuleEngine {
                 throw new IllegalStateException("Multiple active versions of domain output " + group.getKey());
             }
             Output output = active.getFirst();
-            ConditionTrace condition;
-            String value;
-            if ("number".equals(output.type())) {
-                condition = numberOutput(output, facts);
-                value = condition.result() == ConditionResult.MATCHED ? ((CaseValue.Number) condition.actual()).value().toPlainString() : null;
-            } else {
-                condition = condition(output.condition(), facts, evidence);
-                value = switch (condition.result()) {
-                    case MATCHED -> output.onMatch();
-                    case NOT_MATCHED -> output.onNoMatch();
-                    case UNKNOWN -> null;
-                };
-            }
+            ConditionTrace condition = condition(output.condition(), facts, evidence);
+            String value = switch (condition.result()) {
+                case MATCHED -> output.onMatch();
+                case NOT_MATCHED -> output.onNoMatch();
+                case UNKNOWN -> null;
+            };
             traces.add(new OutputTrace(output.id(), output.version(), value, condition.result(), condition,
                     source(pack, output.sourceId())));
         }
@@ -132,20 +125,6 @@ public final class RuleEngine {
                 : ConditionResult.NOT_MATCHED;
         return new ConditionTrace(c.kind(), result, c.field(), CaseValue.truth(c.expected()), actual, null, null,
                 List.of(), null, null, null);
-    }
-
-    /** Zahlenausgabe: gültig nur mit bekanntem Wert, der unter den deklarierten Werten steht (fail-closed). */
-    private static ConditionTrace numberOutput(Output output, Map<String, CaseValue> facts) {
-        NumericTrace expression = numeric(output.numericExpression(), facts);
-        boolean declared = expression.value() instanceof CaseValue.Number n
-                && output.choices().stream().anyMatch(choice -> new BigDecimal(choice).compareTo(n.value()) == 0);
-        CaseValue actual = declared
-                ? CaseValue.number(new BigDecimal(output.choices().stream()
-                        .filter(choice -> new BigDecimal(choice).compareTo(((CaseValue.Number) expression.value()).value()) == 0)
-                        .findFirst().orElseThrow()))
-                : expression.value();
-        return new ConditionTrace("number_output", declared ? ConditionResult.MATCHED : ConditionResult.UNKNOWN, null, null,
-                actual, null, null, List.of(), null, null, expression);
     }
 
     private static ConditionTrace numberGte(Condition c, Map<String, CaseValue> facts) {
@@ -204,30 +183,13 @@ public final class RuleEngine {
     }
 
     private static NumericTrace numeric(NumericExpression e, Map<String, CaseValue> facts) {
-        NumericTrace trace = switch (e.kind()) {
+        return switch (e.kind()) {
             case "field" -> new NumericTrace(e.kind(), facts.getOrDefault(e.field(), CaseValue.UNKNOWN), e.field(),
                     null, null, null, List.of());
             case "range_lookup" -> rangeLookup(e, facts);
             case "sum", "max" -> aggregate(e, facts);
-            case "scale" -> scale(e, facts);
             default -> throw new IllegalStateException("Validation should reject numeric kind " + e.kind());
         };
-        return trace.withId(e.id());
-    }
-
-    /** Multipliziert oder teilt exakt (BigDecimal); bei {@code decimals} kaufmännisch gerundet. */
-    private static NumericTrace scale(NumericExpression e, Map<String, CaseValue> facts) {
-        NumericTrace input = numeric(e.input(), facts);
-        CaseValue value = CaseValue.UNKNOWN;
-        if (input.value() instanceof CaseValue.Number n) {
-            BigDecimal result = e.factor() != null
-                    ? n.value().multiply(e.factor())
-                    : n.value().divide(e.divisor(), e.decimals(), java.math.RoundingMode.HALF_UP);
-            if (e.decimals() != null) result = result.setScale(e.decimals(), java.math.RoundingMode.HALF_UP);
-            result = result.stripTrailingZeros();
-            value = CaseValue.number(result.scale() < 0 ? result.setScale(0) : result);
-        }
-        return new NumericTrace(e.kind(), value, null, null, null, null, List.of(input), null, e.factor(), e.divisor());
     }
 
     private static NumericTrace rangeLookup(NumericExpression e, Map<String, CaseValue> facts) {
