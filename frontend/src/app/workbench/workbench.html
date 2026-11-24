@@ -2,7 +2,11 @@
 <div class="appbar">
   <h1 class="sr-only">{{ t.product }} {{ t.workbench }}</h1>
   <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span></div>
-  <nav class="menubar" [attr.aria-label]="t.wb.menu.label">
+  <button type="button" class="button ghost menu-toggle" [attr.aria-expanded]="menuExpanded()" aria-controls="workbench-menus workbench-commands" (click)="menuExpanded.set(!menuExpanded())">{{ t.wb.menuToggle }}</button>
+  @if (opened() && !menuExpanded()) {
+    <button type="button" class="button ghost" (click)="back()">← {{ t.wb.back }}</button>
+  }
+  <nav id="workbench-menus" class="menubar" [hidden]="!menuExpanded()" [attr.aria-label]="t.wb.menu.label">
     @for (m of menus; track m.id) {
       <details (toggle)="menuToggled($event)">
         <summary>{{ menuLabel(m.id) }}</summary>
@@ -33,7 +37,7 @@
   </div>
 </div>
 
-<div class="commandbar" role="toolbar" [attr.aria-label]="t.wb.caseActions">
+<div id="workbench-commands" class="commandbar" [hidden]="!menuExpanded()" role="toolbar" [attr.aria-label]="t.wb.caseActions">
   @if (opened()) {
     <button type="button" class="button ghost" (click)="back()">← {{ t.wb.back }}</button>
     <span class="divider" aria-hidden="true"></span>
@@ -147,12 +151,20 @@
     } @else {
     <div #area class="list-and-pane" [attr.data-pane]="view().previewPosition" [style.--pane-size]="view().previewSize + '%'">
       <div class="list-scroll">
-        <table class="case-table" [attr.data-density]="view().density" [class.row-colors]="view().rowColors" [style.min-width.px]="tableMinWidth()" [attr.aria-label]="queueLabel(queue())">
+        <table class="case-table" [attr.data-density]="view().density" [class.row-colors]="view().rowColors" [style.min-width.px]="tableMinWidth()" [style.width.px]="fixedWidths() ? tableMinWidth() : null" [attr.aria-label]="queueLabel(queue())">
           <thead>
             <tr>
               <th class="col-select"><input type="checkbox" [attr.aria-label]="t.wb.selectVisible" [checked]="allVisibleSelected()" [disabled]="!visible().length" (change)="toggleVisible($any($event.target).checked)"></th>
               @for (c of columns(); track c) {
-                <th [class]="'col-' + c" [style.width.px]="width(c)" [attr.aria-sort]="ariaSort(c)"><button type="button" class="sort" (click)="sortBy(c)">{{ columnLabel(c) }}</button></th>
+                <th class="resizable-column" [class]="'col-' + c" [style.width.px]="width(c)" [attr.aria-sort]="ariaSort(c)">
+                  <button type="button" class="sort" (click)="sortBy(c)">{{ columnLabel(c) }}</button>
+                  <span class="column-resizer" role="separator" tabindex="0" aria-orientation="vertical"
+                    [attr.aria-label]="t.wb.resizeColumn(columnLabel(c))" [attr.aria-valuemin]="columnMin(c)"
+                    [attr.aria-valuemax]="columnMax" [attr.aria-valuenow]="columnSize(c)"
+                    (pointerdown)="columnDown($event)" (pointermove)="columnMove($event, c)"
+                    (pointerup)="columnUp($event)" (pointercancel)="columnUp($event)" (lostpointercapture)="columnUp($event)"
+                    (keydown)="columnKeys($event, c)" (dblclick)="resetColumnSize(c)"></span>
+                </th>
               }
             </tr>
             @if (view().showFilters) {
@@ -183,7 +195,7 @@
                 @for (c of columns(); track c) {
                   @switch (c) {
                     @case ('subject') { <td class="col-subject" [title]="cellText(p, c) + (mark(p.processId)?.note ? ' – ' + mark(p.processId)?.note : '')"><span class="bookmark-slot">@if (mark(p.processId)?.bookmark) {<span class="bookmark" role="img" [attr.aria-label]="t.wb.ablage.bookmarked">★</span>}</span><strong>{{ p.displayName ?? p.externalReference.caseId }}</strong>@if (mark(p.processId)?.note; as n) {<small class="case-note">{{ n }}</small>}</td> }
-                    @case ('number') { <td class="col-number mono">{{ p.externalReference.caseId }}</td> }
+                    @case ('number') { <td class="col-number mono"><button type="button" class="link copy-number" [attr.aria-label]="t.wb.copyNumber(p.externalReference.caseId)" [title]="t.wb.copyNumber(p.externalReference.caseId)" (click)="copyNumber(p.externalReference.caseId, $event)" (dblclick)="$event.stopPropagation()">{{ p.externalReference.caseId }}</button></td> }
                     @case ('status') { <td class="col-status"><span class="chip" [attr.data-queue]="t.stateQueue[p.state]">{{ stateLabel(p.state) }}</span></td> }
                     @case ('result') { <td class="col-result"><span class="result-pill ampel" [attr.data-outcome]="p.outcome" [title]="outcome(p.outcome)">{{ outcome(p.outcome) }}</span></td> }
                     @case ('release') { <td class="col-release mono" [title]="cellText(p, c)">{{ cellText(p, c) }}</td> }

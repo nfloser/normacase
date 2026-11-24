@@ -27,11 +27,22 @@ export const SESSION_ONLY_FILTERS: ReadonlySet<ColumnId> = new Set<ColumnId>(['s
 
 export interface SortState { readonly key: ColumnId; readonly asc: boolean }
 export type Filters = Partial<Record<ColumnId, string>>;
+export type ColumnSizes = Partial<Record<ColumnId, number>>;
+export const MAX_COLUMN_WIDTH = 900;
+
+export function minColumnWidth(c: ColumnId): number {
+  return Math.min(COLUMN_WIDTHS[c], 80);
+}
+
+export function clampColumnWidth(c: ColumnId, width: number): number {
+  return Math.min(MAX_COLUMN_WIDTH, Math.max(minColumnWidth(c), Math.round(width)));
+}
 
 export interface SavedQuery {
   readonly name: string;
   readonly queue: string;
   readonly columns: readonly ColumnId[];
+  readonly columnSizes: ColumnSizes;
   readonly filters: Filters;
   readonly sort: SortState;
 }
@@ -44,6 +55,7 @@ export const PREVIEW_MAX = 75;
 
 export interface ViewSettings {
   readonly columns: readonly ColumnId[];
+  readonly columnSizes: ColumnSizes;
   readonly rowColors: boolean;
   readonly showFilters: boolean;
   /** Vorschau der Fallakte neben der Liste; ausgeblendet hat die Liste den ganzen Platz (F4). */
@@ -64,6 +76,7 @@ export interface ViewSettings {
 
 export const DEFAULT_VIEW: ViewSettings = {
   columns: DEFAULT_COLUMNS,
+  columnSizes: {},
   rowColors: true,
   showFilters: true,
   showDetails: true,
@@ -78,14 +91,15 @@ export const DEFAULT_VIEW: ViewSettings = {
 
 /**
  * Farbton einer Zeile nach Bearbeitungsstand, wie im bisherigen Fallexplorer:
- * grün bereit, gelb Angaben fehlen, orange Gegenprüfung, rot technische Klärung, lila Unterlagensichtung, grau erledigt.
+ * Cyan entscheidungsreif, Gelb fehlende Angaben, Kupfer Gegenprüfung, Rot technische Klärung, Petal Unterlagensichtung, Mint versendet.
  */
-export function rowTone(p: Pick<ProcessSummary, 'state' | 'outcome'>): 'ready' | 'missing' | 'conflict' | 'technical' | 'documents' | 'done' {
+export function rowTone(p: Pick<ProcessSummary, 'state' | 'outcome'>): 'ready' | 'missing' | 'conflict' | 'technical' | 'documents' | 'approval' | 'done' {
   switch (p.state) {
     case 'IN_CLARIFICATION': return p.outcome === 'HUMAN_REVIEW' ? 'conflict' : 'missing';
     case 'IN_CONFLICT_REVIEW': return 'conflict';
     case 'TECHNICAL_CLARIFICATION': return 'technical';
     case 'DOCUMENT_REVIEW': return 'documents';
+    case 'AWAITING_APPROVAL': return 'approval';
     case 'DISPATCHED': case 'CLOSED': return 'done';
     default: return 'ready';
   }
@@ -143,11 +157,21 @@ export function storableFilters(v: unknown): Filters {
   return out;
 }
 
+function columnSizes(v: unknown): ColumnSizes {
+  const sizes: ColumnSizes = {};
+  if (!v || typeof v !== 'object') return sizes;
+  for (const [key, value] of Object.entries(v)) {
+    if (isColumn(key) && typeof value === 'number' && Number.isFinite(value)) sizes[key] = clampColumnWidth(key, value);
+  }
+  return sizes;
+}
+
 export function sanitize(v: unknown): ViewSettings {
   const o = (v && typeof v === 'object' ? v : {}) as Record<string, unknown>;
   const queries = Array.isArray(o['queries']) ? o['queries'] : [];
   return {
     columns: columns(o['columns']),
+    columnSizes: columnSizes(o['columnSizes']),
     rowColors: o['rowColors'] !== false,
     showFilters: o['showFilters'] !== false,
     showDetails: o['showDetails'] !== false,
@@ -164,6 +188,7 @@ export function sanitize(v: unknown): ViewSettings {
         name: String(q['name']).slice(0, 60),
         queue: String(q['queue']),
         columns: columns(q['columns']),
+        columnSizes: columnSizes(q['columnSizes']),
         filters: storableFilters(q['filters']),
         sort: sort(q['sort']),
       })),

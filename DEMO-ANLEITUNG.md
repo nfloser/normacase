@@ -47,3 +47,5 @@ Expand-Archive normacase.zip -DestinationPath . ; cd normacase-main
 | Port belegt | Anderes Programm auf 4200, 8080 oder 8081 beenden |
 | Hängt beim ersten Start | Internet nötig für den Download; Details mit `docker compose logs` |
 | Anmeldung lädt nicht | 1 Minute warten (Anmeldedienst startet zuletzt), Seite neu laden |
+
+In der Prüfwerkstatt klappt **Menü** die Menü- und Aktionsleiste ein oder aus. Am rechten Rand der Spaltenköpfe lässt sich die Breite ziehen, mit den Pfeiltasten ändern oder per Doppelklick zurücksetzen. Breiten gehören zur aktuellen Ansicht und zu gespeicherten Abfragen. Ein Klick auf eine Vorgangsnummer kopiert sie.
