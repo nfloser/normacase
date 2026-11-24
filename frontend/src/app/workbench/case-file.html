@@ -37,7 +37,7 @@
       @if (assessment(); as a) {
         @if (split) { <div class="split-left">
           <section class="block">
-            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()"
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" [numericLabels]="numericLabels()"
               [sources]="sources()" (openSource)="showSource($event)" />
           </section>
           <ng-container *ngTemplateOutlet="factsBlock" />
@@ -46,7 +46,7 @@
         } @else {
         <div class="overview-grid">
           <section class="block">
-            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()"
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" [numericLabels]="numericLabels()"
               [sources]="sources()" (openSource)="showSource($event)" />
           </section>
           <ng-container *ngTemplateOutlet="factsBlock" />

@@ -51,6 +51,7 @@ export class CaseFile {
   protected readonly fieldLabels = computed(() => labels(this.presentation().fields));
   protected readonly evidenceLabels = computed(() => labels(this.presentation().evidenceRequirements));
   protected readonly outputLabels = computed(() => (this.presentation().outputs ?? {}) as Record<string, OutputLabel>);
+  protected readonly numericLabels = computed(() => this.presentation().numerics ?? {});
 
   /** Fundstellen je Angabe, wie das Fachsystem sie zu den Dokumenten mitgeliefert hat. */
   protected readonly sources = computed(() => {

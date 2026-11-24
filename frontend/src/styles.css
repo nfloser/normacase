@@ -371,6 +371,11 @@ nc-case-file .verdict { display: none; }
 .tree ul { margin-left: .6rem; padding-left: .75rem; border-left: 1px solid var(--nc-border); }
 .tree li { margin: .3rem 0; }
 .cond { display: flex; gap: .5rem; align-items: baseline; }
+.numeric-tree, .numeric-tree ul { list-style: none; margin: .2rem 0 0; padding-left: 1.1rem; font-size: .82rem; }
+.numeric-tree { padding-left: 1.7rem; }
+.numeric-tree li { margin: .1rem 0; }
+.numeric-tree summary { cursor: pointer; }
+.numeric-tree .numeric-total > details > summary { font-weight: 600; }
 .trace-head { display: flex; align-items: baseline; gap: .6rem; }
 .app-shell .trace-head h3 { margin-bottom: .4rem; }
 .tree-toggle { flex: none; display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; margin: 0 -.2rem 0 -.35rem; padding: 0; border: 0; border-radius: 4px;

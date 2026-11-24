@@ -461,8 +461,11 @@ export const de = {
     conditionKinds: {
       all: 'Alle folgenden Bedingungen', any: 'Mindestens eine Bedingung', not: 'Darf nicht erfüllt sein',
       requires_evidence: 'Nachweis erforderlich', field_equals: 'Angabe', number_gte: 'Zahlenwert', number_in_range: 'Zahlenwert im Bereich',
+      number_output: 'Berechnung',
     } as Record<string, string>,
-    numericKinds: { field: 'Wert', range_lookup: 'Bereichszuordnung', sum: 'Summe', max: 'Maximum' } as Record<string, string>,
+    numericKinds: { field: 'Wert', range_lookup: 'Bereichszuordnung', sum: 'Summe', max: 'Maximum', scale: 'Umrechnung' } as Record<string, string>,
+    pointsWord: 'Punkte',
+    higherValue: 'Höherer Wert',
     values: { yes: 'Ja', no: 'Nein', na: 'Nicht anwendbar', unknown: 'Unbekannt', unrecorded: 'nicht erfasst' },
     expandAll: 'Alle aufklappen', collapseAll: 'Alle zuklappen', expand: 'Aufklappen', collapse: 'Zuklappen',
     from: 'Belegt durch', page: 'S.', openSource: 'Im Dokument zeigen',
