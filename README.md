@@ -3,7 +3,7 @@
 **Nachvollziehbare Entscheidungsunterstützung für die sozialmedizinische Begutachtung.**
 NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem Ergebnis den vollständigen Entscheidungspfad. Fehlen Angaben, entsteht eine gezielte Rückfrage; widersprechen sich Belege, entscheidet ein Mensch.
 
-![Prüfwerkstatt mit Fallakte: Arbeitskörbe, Vorgänge und Begründung Modul für Modul](docs/screenshots/01-pruefung.png)
+![Prüfwerkstatt mit Fallakte: Arbeitslisten, Vorgänge und Begründung Modul für Modul](docs/screenshots/01-pruefung.png)
 
 > Alle Personen, Befunde und Vorgänge in diesem Repository sind frei erfunden. Die Regeln bilden öffentliche Vorgaben vereinfacht nach und sind kein geprüftes Regelwerk eines Medizinischen Dienstes.
 
@@ -25,9 +25,29 @@ NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem E
 |---|---|---|
 | ![Rückfrageformular](docs/screenshots/04-angaben-ergaenzen.png) | ![Freigabe durch zweite Person](docs/screenshots/06-freigabe.png) | ![Entscheidungsnachweis](docs/screenshots/07-nachweis.png) |
 
+## Arbeiten wie im Fallexplorer
+
 ![Fallliste mit Zeilenfärbung nach Bearbeitungsstand, Fallakte ausgeblendet](docs/screenshots/09-fallliste.png)
 
-Die Fallliste lässt sich wie eine Abfrage in Azure DevOps anpassen: Zeilenfärbung nach Bearbeitungsstand (abschaltbar), Spaltenoptionen, Filter je Spalte und gespeicherte Abfragen unter „Meine Abfragen“. Mit F4 wird die Fallakte aus- und eingeblendet.
+- **Arbeitslisten** nach Bearbeitungsstand: Zur Freigabe vorbereitet, Informationen nachfordern, Gegenprüfung erforderlich, Technische Klärung, Unterlagensichtung; dazu Bestätigt und Versendet.
+- **Fallliste wie eine Abfrage in Azure DevOps**: Zeilenfärbung (abschaltbar), Spaltenoptionen, Filter je Spalte, Sortierung, gespeicherte Abfragen. Vorschau unten oder rechts, Größe per Trenner, Fallakte per F4 aus- und einblenden, Doppelklick öffnet die Vollansicht.
+- **Meine Ablage** je Konto: eigene Ordner mit Unterordnern und Farben, Lesezeichen, Farbmarkierung, Notizen, eigene Arbeitslistenfarben. Alles auch per Rechtsklick (oder Umschalt+F10).
+- **Hell, dunkel oder wie das System**, mit einer gemeinsamen Farbfamilie für Arbeitslisten und Markierungen.
+
+| Rechtsklick-Menü und Meine Ablage | Dunkelmodus |
+|---|---|
+| ![Kontextmenü mit Markieren, Verschieben, Lesezeichen, Notiz, Bestätigen](docs/screenshots/10-ablage-kontextmenue.png) | ![Fallliste im Dunkelmodus](docs/screenshots/13-dunkel.png) |
+
+## Extras
+
+| Prüfwerkstatt | Referenzfälle |
+|---|---|
+| ![Regelwerk ausprobieren mit Entscheidungsweg](docs/screenshots/11-pruefwerkstatt.png) | ![13 von 13 Beispielen wie erwartet](docs/screenshots/12-referenzfaelle.png) |
+
+- **Prüfwerkstatt**: Regelwerk wählen, Beispiel laden, Angaben ändern, prüfen; Ergebnis und Snapshot exportieren, Snapshot später gegen den gespeicherten Nachweis nachprüfen.
+- **Referenzfälle**: alle Beispiele der Regelwerke neu bewerten und mit dem dokumentierten Ergebnis abgleichen.
+- **Massenfälle**: Plattformfälle nach Arbeitsliste und Ergebnis.
+- **Nachweise prüfen**: Entscheidungsnachweise eines Vorgangs, ohne Fallinhalt.
 
 Die Screenshots entstehen bei jedem Build automatisch aus dem laufenden Stack (`frontend/e2e/zz-screenshots.spec.ts`).
 
@@ -52,9 +72,9 @@ Konten: `gutachterin.a` (prüfen, bestätigen) und `freigabe.c` (freigeben), Pas
 
 Vier-Augen-Ablauf ausprobieren:
 
-1. Als `gutachterin.a` anmelden, im Korb „Zur Prüfung“ einen Vorgang öffnen, Begründung und Dokumente ansehen, **Bestätigen**.
-2. Abmelden, als `freigabe.c` anmelden, im Korb „Zur Freigabe“ **Freigeben**.
-3. Fälle in „Rückfragen“ lassen sich über **Angaben ergänzen** vervollständigen; NormaCase bewertet dann neu.
+1. Als `gutachterin.a` anmelden, in „Zur Freigabe vorbereitet“ einen Vorgang per Doppelklick öffnen, Begründung und Dokumente ansehen, **Bestätigen**.
+2. Abmelden, als `freigabe.c` anmelden, unter „Bestätigt“ **Freigeben**. Wer bestätigt hat, kann nicht selbst freigeben.
+3. Fälle in „Informationen nachfordern“ lassen sich über **Angaben ergänzen** vervollständigen; NormaCase bewertet dann neu. Widersprüche landen in „Gegenprüfung erforderlich“, Vorgänge ohne Regelwerk in „Unterlagensichtung“.
 
 Wer den Stack schon vor dem 21.11.2026 gestartet hatte, setzt die Datenbank einmal zurück (`.\demo.ps1 -Reset`), damit das eingeschränkte Laufzeitkonto angelegt wird.
 
@@ -64,7 +84,7 @@ Mit `docker compose --profile monitoring up --build` kommen Prometheus (<http://
 
 1. Ein Fachsystem liefert einen Vorgang über `POST /api/v1/intake` ein (oder bewertet nur, ohne Vorgang, über `POST /api/v1/assessments`).
 2. Die Regel-Engine bewertet deterministisch gegen das angegebene Knowledge Release und schreibt einen Nachweis ohne Fallinhalt.
-3. Unvollständige oder unklare Fälle landen in „Rückfragen“, eindeutige in „Zur Prüfung“.
+3. Unvollständige Fälle landen in „Informationen nachfordern“, widersprüchliche in „Gegenprüfung erforderlich“, eindeutige in „Zur Freigabe vorbereitet“.
 4. Eine Gutachterin bestätigt, eine zweite Person gibt frei.
 5. Das Fachsystem holt das Ergebnis ab und quittiert; NormaCase löscht Fall, Identifikationsdaten und Dokumente sofort.
 
