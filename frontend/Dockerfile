@@ -1,4 +1,5 @@
-FROM node:26-alpine AS build
+# Build-Stufe läuft auf der Plattform des Builders: das Ergebnis sind statische Dateien.
+FROM --platform=$BUILDPLATFORM node:26-alpine AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund

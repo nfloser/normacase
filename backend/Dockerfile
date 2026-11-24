@@ -1,4 +1,5 @@
-FROM maven:3.9-eclipse-temurin-25 AS build
+# Build-Stufe läuft auf der Plattform des Builders: das JAR ist plattformunabhängig.
+FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /src
 COPY pom.xml .
 RUN mvn -B -ntp dependency:go-offline

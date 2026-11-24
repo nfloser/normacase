@@ -128,6 +128,56 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await page.locator('.menubar summary', { hasText: 'Extras' }).click();
   await page.getByRole('menuitem', { name: 'Massenfälle' }).click();
   await shot(page, 'massenfaelle');
+  await page.getByLabel('Darstellung').selectOption('dark');
+  await shot(page, 'massenfaelle-dunkel');
+  await page.locator('.menubar summary', { hasText: 'Extras' }).click();
+  await page.getByRole('menuitem', { name: 'Prüfwerkstatt' }).click();
+  await page.getByLabel('Regelwerk', { exact: true }).selectOption({ label: 'Pitch-Demo – Synthetische Fallprüfung' });
+  await page.getByLabel('Beispiel', { exact: true }).selectOption({ label: '3 · Vollständig – Voraussetzungen erfüllt' });
+  await page.getByRole('button', { name: 'Beispiel laden' }).click();
+  await page.getByRole('button', { name: 'Prüfen', exact: true }).click();
+  await expect(page.locator('.verdict')).toBeVisible();
+  await shot(page, 'pruefwerkstatt-dunkel');
+  await page.getByLabel('Darstellung').selectOption('system');
+  await page.getByRole('button', { name: 'Zurück zu den Arbeitslisten' }).click();
+
+  // Meine Ablage: eigener Ordner mit Unterordner, Vorgang darin, Lesezeichen, Markierung und Notiz.
+  const nav = page.getByRole('navigation', { name: 'Arbeitslisten und Ablage' });
+  await page.getByRole('button', { name: 'Neuer Ordner' }).first().click();
+  await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Rückfragen KW 48');
+  await page.getByRole('button', { name: 'Bernstein', exact: true }).click();
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await nav.getByRole('button', { name: /^Rückfragen KW 48/ }).hover();
+  await page.getByRole('button', { name: 'Unterordner in Rückfragen KW 48 anlegen' }).click();
+  await page.getByRole('textbox', { name: 'Name', exact: true }).fill('Arztbrief angefordert');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await nav.getByRole('button', { name: /Informationen nachfordern/ }).click();
+  await expect(nav.getByRole('button', { name: /Informationen nachfordern/ })).toHaveAttribute('aria-current', 'true');
+  const pending = page.locator('.case-table tbody tr').first();
+  await expect(pending.locator('.col-status')).toHaveText('Informationen nachfordern');
+  const menu = page.getByRole('menu', { name: 'Vorgangsaktionen' });
+  await pending.click({ button: 'right' });
+  await menu.getByRole('menuitem', { name: 'Lesezeichen setzen' }).click();
+  await pending.click({ button: 'right' });
+  await menu.getByRole('menuitem', { name: /^Markieren/ }).hover();
+  await menu.getByRole('menuitem', { name: 'Rosé' }).click();
+  await pending.click({ button: 'right' });
+  await menu.getByRole('menuitem', { name: /Notiz/ }).click();
+  await page.getByRole('textbox', { name: 'Notiz', exact: true }).fill('Arztbrief bis Freitag angefordert');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await pending.click({ button: 'right' });
+  await menu.getByRole('menuitem', { name: /Verschieben nach/ }).hover();
+  await menu.getByRole('menuitem', { name: /Arztbrief angefordert/ }).click();
+  await nav.getByRole('button', { name: /^Arztbrief angefordert/ }).click();
+  await expect(page.locator('.case-table tbody tr .case-note')).toHaveText('Arztbrief bis Freitag angefordert');
+  await shot(page, 'meine-ablage');
+
+  // Nachweise des aktiven Vorgangs: nur Prüfsummen, Versionen, Regel und Ergebnis.
+  await page.locator('.case-table tbody tr').first().click();
+  await page.locator('.menubar summary', { hasText: 'Extras' }).click();
+  await page.getByRole('menuitem', { name: 'Nachweise prüfen' }).click();
+  await expect(page.locator('.plain-table tbody tr').first()).toBeVisible();
+  await shot(page, 'nachweise');
   await page.getByRole('button', { name: 'Zurück zu den Arbeitslisten' }).click();
 
   file = await open(page, /Zur Freigabe vorbereitet/, 'PG-2026-104233');

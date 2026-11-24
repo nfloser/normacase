@@ -78,5 +78,9 @@ Abdeckung mit JaCoCo; ein Mindestwert gilt für `assessment` und `knowledge`, ni
 
 - Ablauf je Änderung: Issue → Branch → Pull Request → CI → Review → Squash-Merge nach `main`.
 - CI (GitHub Actions): Dokumentation, Paritäts-Orakel, Backend (Tests mit Testcontainers, Architekturtests, JaCoCo-Grenze, SBOM), Frontend (ESLint, Vitest, Build, SBOM, keine externen Quellen), Kubernetes-Validierung, Compose-Stack mit Smoke-Test, Playwright und k6. Dependabot hält Abhängigkeiten aktuell.
-- Versionen nach SemVer; Plattformversion und Knowledge-Release-Version sind getrennt.
-- Lieferung: Container-Images als Release-Artefakt; Infrastruktur als Code im Repository.
+- Das Startskript `demo.ps1` wird unter Windows PowerShell 5.1 geparst und startet im Compose-Job mit PowerShell 7 den Stack.
+- Sicherheit (`.github/workflows/security.yml`, bei jedem Pull Request, auf `main` und wöchentlich): CodeQL für Java, TypeScript und die Workflows selbst; Trivy für Abhängigkeiten, Dockerfiles, Kubernetes-Manifeste, Geheimnisse und die gebauten Images. Kritische Funde, für die es eine Korrektur gibt, brechen den Build ab; alle Funde stehen unter Security → Code scanning. Akzeptierte Ausnahmen nur mit Begründung und Prüfdatum in `.trivyignore`.
+- Auslieferung (`.github/workflows/release.yml`): Ein Tag `vX.Y.Z` – auch beim Anlegen eines GitHub-Releases – prüft zuerst, dass Tag, `pom.xml`, `package.json` und `CHANGELOG.md` zusammenpassen. Dann werden Backend, Frontend und Knowledge für linux/amd64 und linux/arm64 gebaut, mit Trivy geprüft und in der GitHub Container Registry veröffentlicht, jeweils mit SBOM und signiertem Herkunftsnachweis (SLSA-Provenance, prüfbar mit `gh attestation verify`). Das Release bekommt den Text aus dem Changelog und die Kubernetes-Manifeste mit festen Image-Digests.
+- Fremde GitHub Actions sind in den Sicherheits- und Release-Workflows auf Commit-SHAs festgelegt, damit ein umgeschriebenes Tag nichts einschleusen kann.
+- Versionen nach SemVer; Plattformversion und Knowledge-Release-Version sind getrennt (die Release-IDs der Regelwerke stehen im Pack, das Knowledge-Image trägt die Plattformversion des Releases).
+- Infrastruktur als Code im Repository; Bereitstellung in einem Cluster per `kubectl apply -f normacase-X.Y.Z-kubernetes.yaml` oder über das Overlay `ops/k8s/overlays/demo`.

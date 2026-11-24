@@ -5,11 +5,11 @@ resources:
   - ../../base
 images:
   - name: ghcr.io/nfloser/normacase-backend
-    newTag: "0.1.0"
+    newTag: "1.0.0"
   - name: ghcr.io/nfloser/normacase-frontend
-    newTag: "0.1.0"
+    newTag: "1.0.0"
   - name: ghcr.io/nfloser/normacase-knowledge
-    newTag: "2026.11"
+    newTag: "1.0.0"
 patches:
   - target: { kind: Deployment, name: backend }
     patch: |-
