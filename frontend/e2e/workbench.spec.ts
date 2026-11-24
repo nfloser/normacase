@@ -131,7 +131,7 @@ test('Extras: Prüfwerkstatt mit Beispiel und Referenzfälle mit Abgleich', asyn
   const extras = async (name: string) => {
     await page.locator('.menubar summary', { hasText: 'Extras' }).click();
     await page.getByRole('menuitem', { name }).click();
-    await expect(page.getByRole('heading', { level: 1, name })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name, exact: true })).toBeVisible();
   };
 
   await extras('Prüfwerkstatt');

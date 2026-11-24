@@ -577,13 +577,13 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 /* ---------- Extras: Prüfwerkstatt, Referenzfälle, Massenfälle, Nachweise ---------- */
 .tool-view { grid-column: 1 / -1; display: grid; align-content: start; gap: 1rem; padding: 1rem 1.25rem 1.5rem; overflow: auto; min-height: 0; }
 .tool-view-head { display: flex; gap: 1rem; align-items: flex-start; }
-.tool-view-head h1 { font-size: 1.25rem; outline: none; }
+.tool-view-head h2 { font-size: 1.25rem; outline: none; }
 .tool-view-head p { margin-top: .2rem; max-width: 72ch; }
 .tool-view > .banner { margin: 0; background: var(--nc-info-bg); color: var(--nc-info); }
 .tool-grid { display: grid; grid-template-columns: minmax(320px, 5fr) minmax(360px, 7fr); gap: 1rem; align-items: start; }
 @media (max-width: 1100px) { .tool-grid { grid-template-columns: 1fr; } }
 .tool-card { display: grid; gap: .75rem; align-content: start; padding: 1rem 1.1rem; border: 1px solid var(--nc-border); border-radius: var(--nc-radius-lg); background: var(--nc-surface); box-shadow: var(--nc-shadow); min-width: 0; }
-.tool-card h2 { font-size: 1rem; }
+.tool-card h3 { font-size: 1rem; }
 .tool-head { display: flex; gap: .75rem; align-items: flex-start; }
 .tool-head .step { display: inline-grid; place-items: center; min-width: 32px; height: 32px; border-radius: 999px; background: var(--nc-accent-soft); color: var(--nc-accent); font-weight: 600; font-size: .8rem; }
 .tool-form { display: grid; gap: .7rem; }

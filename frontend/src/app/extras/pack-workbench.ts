@@ -23,7 +23,7 @@ const MAX_SNAPSHOT = 1024 * 1024;
   template: `
     <div class="tool-grid">
       <section class="tool-card" [attr.aria-label]="x.facts">
-        <header class="tool-head"><span class="step">01</span><div><h2>{{ x.release }}</h2><p class="muted">{{ presentation().description ?? '' }}</p></div></header>
+        <header class="tool-head"><span class="step">01</span><div><h3>{{ x.release }}</h3><p class="muted">{{ presentation().description ?? '' }}</p></div></header>
         <form class="tool-form" (submit)="$event.preventDefault(); check()">
           <label class="field"><span>{{ x.release }}</span>
             <select [attr.aria-label]="x.release" [value]="releaseId()" (change)="selectRelease($any($event.target).value)">
@@ -40,7 +40,7 @@ const MAX_SNAPSHOT = 1024 * 1024;
             <button type="button" class="button" [disabled]="!exampleId() || busy()" (click)="loadExample()">{{ x.loadExample }}</button>
           </div>
           <label class="field"><span>{{ x.date }}</span><input type="date" required [attr.aria-label]="x.date" [value]="form().date" (input)="patch({ date: $any($event.target).value })"></label>
-          <h3 class="tool-subhead">{{ x.facts }}</h3>
+          <h4 class="tool-subhead">{{ x.facts }}</h4>
           @for (f of form().fields; track f.id) {
             <div class="field">
               <span [id]="'pw-l-' + f.id">{{ fieldLabel(f.id) }} <small class="muted">{{ f.required ? x.required : x.optional }}</small></span>
@@ -63,7 +63,7 @@ const MAX_SNAPSHOT = 1024 * 1024;
             </div>
           }
           @if (form().evidence.length) {
-            <h3 class="tool-subhead">{{ x.evidence }}</h3>
+            <h4 class="tool-subhead">{{ x.evidence }}</h4>
             @for (e of form().evidence; track e.id) {
               <label class="field"><span>{{ evidenceLabel(e.id) }}</span>
                 <select [attr.aria-label]="evidenceLabel(e.id)" [value]="e.value" (change)="setEvidence(e.id, $any($event.target).value)">
@@ -82,7 +82,7 @@ const MAX_SNAPSHOT = 1024 * 1024;
       </section>
 
       <section class="tool-card" aria-live="polite" [attr.aria-label]="x.resultHeading">
-        <header class="tool-head"><span class="step">02</span><div><h2>{{ x.resultHeading }}</h2><p class="muted">{{ releaseName(releaseId()) }}</p></div></header>
+        <header class="tool-head"><span class="step">02</span><div><h3>{{ x.resultHeading }}</h3><p class="muted">{{ releaseName(releaseId()) }}</p></div></header>
         @if (result(); as r) {
           @if (view(); as a) {
             <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" />
@@ -99,13 +99,13 @@ const MAX_SNAPSHOT = 1024 * 1024;
             <button type="button" class="button" (click)="exportSnapshot()">⤓ {{ x.exportSnapshot }}</button>
           </div>
         } @else {
-          <div class="tool-empty"><span aria-hidden="true">✓</span><h3>{{ x.noResult }}</h3><p class="muted">{{ x.noResultText }}</p></div>
+          <div class="tool-empty"><span aria-hidden="true">✓</span><h4>{{ x.noResult }}</h4><p class="muted">{{ x.noResultText }}</p></div>
         }
       </section>
     </div>
 
     <section class="tool-card snapshot" aria-live="polite" [attr.aria-label]="x.snapshotHeading">
-      <h2>{{ x.snapshotHeading }}</h2>
+      <h3>{{ x.snapshotHeading }}</h3>
       <p class="muted">{{ x.snapshotHelp }}</p>
       <input #file type="file" class="sr-only" accept=".json,application/json" [attr.aria-label]="x.chooseFile" (change)="verifySnapshot($any($event.target))">
       <button type="button" class="button" [disabled]="busy() || !canAssess()" (click)="file.click()">{{ x.chooseFile }}</button>

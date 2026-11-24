@@ -119,7 +119,7 @@
       <section class="tool-view" [attr.aria-labelledby]="'tool-title'">
         <header class="tool-view-head">
           <button type="button" class="button ghost" (click)="closeExtras()">← {{ t.extras.back }}</button>
-          <div><h1 id="tool-title" tabindex="-1">{{ t.extras.views[v] }}</h1><p class="muted">{{ t.extras.viewHelp[v] }}</p></div>
+          <div><h2 id="tool-title" tabindex="-1">{{ t.extras.views[v] }}</h2><p class="muted">{{ t.extras.viewHelp[v] }}</p></div>
         </header>
         @if (!isAssessor() && v !== 'massenfaelle') { <p class="banner">{{ t.extras.needsAssessor }}</p> }
         @switch (v) {
