@@ -177,6 +177,12 @@ test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page 
 
   await filed.click();
   await filed.press('Shift+F10');
+  // Ein voriger Versuch kann das Lesezeichen bereits gesetzt haben.
+  if (await filed.locator('.bookmark').isVisible()) {
+    await menu.getByRole('menuitem', { name: 'Lesezeichen entfernen' }).click();
+    await expect(filed.locator('.bookmark')).toHaveCount(0);
+    await filed.press('Shift+F10');
+  }
   await menu.getByRole('menuitem', { name: 'Lesezeichen setzen' }).click();
   await expect(filed.locator('.bookmark')).toBeVisible();
   await filed.click({ button: 'right' });
@@ -184,7 +190,7 @@ test('Meine Ablage: Ordner, Kontextmenü, Lesezeichen und Notiz', async ({ page 
   await page.getByRole('textbox', { name: 'Notiz', exact: true }).fill('Rückruf Dienstag');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await expect(filed.locator('.case-note')).toHaveText('Rückruf Dienstag');
-  await expect(nav.getByRole('button', { name: /^Lesezeichen/ })).toContainText('1');
+  await expect(nav.getByRole('button', { name: /^Lesezeichen/ }).locator('.nav-count')).toHaveText(/^[1-9]\d*$/);
 
   await nav.getByRole('button', { name: /^Alle Vorgänge/ }).click();
   await expect(page.locator('.case-table tbody tr').filter({ hasText: number })).toHaveCount(0);
