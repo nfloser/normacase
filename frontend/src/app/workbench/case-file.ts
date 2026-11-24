@@ -15,7 +15,7 @@ export type CaseAction =
   | { kind: 'clarify'; caseInputJson: string };
 
 interface FactRow { id: string; label: string; value: string; kind: string }
-interface FormField { id: string; label: string; type: 'truth' | 'number'; required: boolean; value: string; error?: string }
+interface FormField { id: string; label: string; hint?: string; type: 'truth' | 'number'; required: boolean; value: string; open?: boolean; error?: string }
 interface FormEvidence { id: string; label: string; value: string }
 
 /** Fallakte: Ergebnis, Begründung, Angaben, Dokumente, Verlauf und Nachweis eines Vorgangs. */
@@ -43,6 +43,9 @@ export class CaseFile {
   protected readonly rejectReason = signal('CRITERIA_UNCLEAR');
   protected readonly clarifying = signal(false);
   protected readonly form = signal<FormField[]>([]);
+  /** Offene Angaben zuerst; bei großen Regelwerken (z. B. Einzelkriterien) stehen die übrigen eingeklappt darunter. */
+  protected readonly openFields = computed(() => this.form().filter((f) => f.open));
+  protected readonly otherFields = computed(() => this.form().filter((f) => !f.open));
   protected readonly formEvidence = signal<FormEvidence[]>([]);
   protected readonly hasNumberField = computed(() => this.form().some((f) => f.type === 'number'));
   protected readonly reasons = Object.keys(de.rejectionReasons);
@@ -182,10 +185,13 @@ export class CaseFile {
     const input = this.detail().caseInput;
     const facts = isObject(input) && isObject(input['facts']) ? input['facts'] : {};
     const evidence = isObject(input) && isObject(input['evidence']) ? input['evidence'] : {};
-    this.form.set((release?.fields ?? []).map((f) => ({
-      id: f.id, label: label(this.fieldLabels(), f.id, f.id), type: f.type, required: f.required,
-      value: formValue(facts[f.id]),
-    })));
+    const hints = this.presentation().fields ?? {};
+    this.form.set((release?.fields ?? []).map((f) => {
+      const value = formValue(facts[f.id]);
+      const hint = Object.hasOwn(hints, f.id) ? (hints[f.id] as { hint?: string }).hint : undefined;
+      return { id: f.id, label: label(this.fieldLabels(), f.id, f.id), hint, type: f.type, required: f.required, value,
+        open: !value || value === 'UNKNOWN' };
+    }));
     this.formEvidence.set((release?.evidenceRequirements ?? []).map((id) => ({
       id, label: label(this.evidenceLabels(), id, id), value: typeof evidence[id] === 'string' ? (evidence[id] as string) : 'MISSING',
     })));

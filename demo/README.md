@@ -1,6 +1,6 @@
 # Vorführfälle
 
-Die Demo liefert 132 fiktive Vorgänge ein (`scripts/demo/seed.py`): die zehn hier ausgearbeiteten Vorgänge und alle Fälle der bisherigen NormaCase-Demo aus `legacy/examples/document-cases`.
+Die Demo liefert 135 fiktive Vorgänge ein (`scripts/demo/seed.py`): die dreizehn hier ausgearbeiteten Vorgänge und alle Fälle der bisherigen NormaCase-Demo aus `legacy/examples/document-cases`.
 
 | Herkunft | Anzahl | Arbeitslisten |
 |---|---|---|
@@ -10,7 +10,7 @@ Die Demo liefert 132 fiktive Vorgänge ein (`scripts/demo/seed.py`): die zehn hi
 | Technischer Eingang (NC-2026-4190, unbekannte Angabe, `Prefer: handling=lenient`) | 1 | Technische Klärung |
 | Plattformfälle (Massenfälle PF-2026-…, nur mit „Plattformfälle einbeziehen“) | 99 | alle Listen, 4 davon technische Klärung |
 
-Ausgearbeitet sind zehn Vorgänge für Vorführung, Screenshots und Case Study: fünf Pflegebegutachtungen und fünf Anträge auf Krankenbeförderung. Jede Fallakte enthält fünf bis neun Dokumente in den Formaten, die in der Begutachtung tatsächlich ankommen:
+Ausgearbeitet sind dreizehn Vorgänge für Vorführung, Screenshots und Case Study: acht Pflegebegutachtungen (Erwachsene, ein Kind, ein Säugling) und fünf Anträge auf Krankenbeförderung. Jede Fallakte enthält fünf bis neun Dokumente in den Formaten, die in der Begutachtung tatsächlich ankommen:
 
 | Format | Beispiel in der Akte | Was es zeigt |
 |---|---|---|
@@ -30,8 +30,11 @@ Jedes Dokument trägt in `case.json` seine Art (`ORDER`, `MEDICAL`, `CARE`, `PRO
 | PG-2026-104233 | Pflegegrad, Erstantrag nach Hirninfarkt | erfüllt (Pflegegrad 3) | eindeutiger Fall, Bestätigung, Vier-Augen-Freigabe |
 | PG-2026-104271 | Höherstufung bei Alzheimer-Demenz | erfüllt (Pflegegrad 4) | Maximum aus Modul 2 und 3 |
 | PG-2026-104308 | Erstantrag bei COPD | nicht erfüllt | Schwelle 12,5 nicht erreicht |
-| PG-2026-104315 | Erstantrag bei Parkinson, Modul 4 offen | unvollständig → nach Rückfrage erfüllt (Pflegegrad 2) | Rückfrage mit Nachtrag in den Unterlagen |
-| PG-2026-104342 | Höherstufung nach Querschnittlähmung | erfüllt (Pflegegrad 4) | hohe Punktwerte, mehrere Module |
+| PG-2026-104315 | Erstantrag bei Parkinson, Kriterium 4.4 offen | unvollständig → nach Rückfrage erfüllt (Pflegegrad 2) | Rückfrage mit Nachtrag in den Unterlagen |
+| PG-2026-104342 | Höherstufung nach Querschnittlähmung | erfüllt (Pflegegrad 4) | genau 70 Punkte, Modul 5 mit Katheter und Wundversorgung |
+| PG-2026-104366 | Kind, 9 Monate, Sondenernährung | erfüllt (Pflegegrad 3) | bis 18 Monate: KF 4.4.0 und Einstufung eine Stufe höher |
+| PG-2026-104373 | Kind, 7 Jahre, Autismus | erfüllt (Pflegegrad 3) | Einzelpunkte aus dem Altersvergleich, Frühförderung/Therapie in Modul 5 |
+| PG-2026-104380 | Höherstufung bei ALS | erfüllt (Pflegegrad 5) | 67,5 Punkte, Pflegegrad 5 über die besondere Bedarfskonstellation F 4.1.B |
 | KT-2026-208114 | Krankenfahrt, Pflegegrad 4 | erfüllt | Nachweis über Pflegegradbescheid |
 | KT-2026-208157 | Krankenfahrt, Merkzeichen aG laut Verordnung | manuelle Prüfung | Ausweis zeigt nur G: widersprüchlicher Nachweis, nichts wird geraten |
 | KT-2026-208190 | Krankenfahrt, Pflegegrad 2 | nicht erfüllt | alle Ausnahmewege geprüft |
@@ -47,7 +50,7 @@ Maßgeblich sind die Begutachtungs-Richtlinien Pflege des MD Bund vom 26.08.2026
 | 3.1 Nr. 1 | Antragsinformationen der Pflegekasse für die Beauftragung | Auftrag der Pflegekasse |
 | 3.1 Nr. 2 | eingereichte Unterlagen wie Arztbriefe, Entlassungsberichte, Pflegedokumentation; Selbstauskünfte; Hinweise auf Schwerbehinderung | Antrag (Foto), Arztbrief/Entlassungsbericht (Scan), Befundbericht, Medikationsplan, Stellungnahme des Pflegedienstes, Pflegetagebuch (Fax) |
 | F 1.1 | pflegerelevante Fremdbefunde | Dokumentart „Ärztliche Unterlagen“ |
-| F 4 | Module des Begutachtungsinstruments | Erhebungsbogen Module 1–6 (Fundstelle der Modulsummen) |
+| F 4 | Module des Begutachtungsinstruments | Erhebungsbogen mit allen Einzelkriterien und den Häufigkeiten in Modul 5 (Fundstelle je Kriterium) |
 
 Welche Nachweise ein Regelwerk verlangt, steht im Knowledge Pack (`evidenceRequirements`); fehlt einer, zeigt die Fallakte ihn unter „Fehlende Nachweise“.
 

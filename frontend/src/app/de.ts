@@ -327,6 +327,8 @@ export const de = {
     rejectReason: 'Grund',
     cancel: 'Abbrechen',
     clarifyTitle: 'Angaben ergänzen',
+    openFields: 'Offene Angaben',
+    moreFields: (n: number) => `Alle weiteren Angaben (${n})`,
     clarifySubmit: 'Neu bewerten',
     truth: { YES: 'Ja', NO: 'Nein', NOT_APPLICABLE: 'Nicht anwendbar', UNKNOWN: 'Unbekannt' } as Record<string, string>,
     numberHint: 'Zahl, z. B. 12,5; leer lassen für unbekannt',

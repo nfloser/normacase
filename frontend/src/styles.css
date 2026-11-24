@@ -562,6 +562,9 @@ body.reader-window .reader-toolbar { position: sticky; top: 0; z-index: 1; gap: 
 nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .app-shell input, .app-shell select, .app-shell textarea { min-height: 32px; padding: 0 .55rem; border-radius: var(--nc-radius); border: 1px solid var(--nc-border); background: var(--nc-surface); }
 .clarify-form { display: grid; gap: .6rem; }
+.field-hint { display: block; font-size: .72rem; color: var(--nc-text-2); font-weight: 400; }
+.clarify-more { margin: .5rem 0; }
+.clarify-more > summary { cursor: pointer; font-weight: 600; margin-bottom: .4rem; }
 .clarify-form .field-row { display: grid; grid-template-columns: minmax(0, 1fr) 12rem; gap: .75rem; align-items: center; }
 .clarify-form .hint { font-size: .8rem; color: var(--nc-text-2); }
 .dialog-backdrop { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: rgb(0 0 0 / 35%); }
