@@ -44,7 +44,6 @@ CASES = [
                     "Mediastromgebiet rechts. Systemische Lyse ohne Komplikationen. Bei Entlassung persistierende "
                     "armbetonte Hemiparese links (Kraftgrad 3/5), Gang mit Rollator über kurze Strecken möglich, "
                     "Transfers nur mit Hilfe. Leichte Aufmerksamkeitsstörung, Orientierung erhalten.",
-        "medication": ["ASS 100 mg 1-0-0", "Atorvastatin 40 mg 0-0-1", "Ramipril 5 mg 1-0-0", "Metformin 1000 mg 1-0-1"],
         "diary": [("Morgens", "Aufstehen, Waschen am Waschbecken mit Hilfe der Tochter, Ankleiden Oberkörper übernommen"),
                   ("Mittags", "Mahlzeit vorbereitet und zerkleinert, Essen selbstständig mit Hilfsmitteln"),
                   ("Nachmittags", "Begleitung zur Physiotherapie, Toilettengänge mit Hilfe beim Transfer"),
@@ -61,7 +60,6 @@ CASES = [
         "findings": "Deutliche Progredienz seit der Vorbegutachtung. MMST 14/30 (Vorjahr 19/30). Zeitlich und örtlich "
                     "desorientiert, erkennt nahe Angehörige meist. Nächtliche Unruhe mit Weglauftendenz, abends "
                     "zeitweise abwehrend bei der Körperpflege. Gangbild kleinschrittig, Sturz im September 2026.",
-        "medication": ["Donepezil 10 mg 0-0-1", "Apixaban 5 mg 1-0-1", "Melperon 25 mg 0-0-1"],
         "diary": [("Nachts", "Zwei- bis dreimal wach, Begleitung zur Toilette, Beruhigung"),
                   ("Morgens", "Körperpflege vollständig übernommen, Ankleiden mit Anleitung"),
                   ("Tagsüber", "Ständige Beaufsichtigung, Tagespflege dienstags und donnerstags"),
@@ -78,7 +76,6 @@ CASES = [
         "findings": "Belastungsdyspnoe ab etwa 200 m Gehstrecke, Treppensteigen eine Etage mit Pause. Kein "
                     "Sauerstoffbedarf in Ruhe. Selbstversorgung im Wesentlichen selbstständig, Hilfe beim Duschen "
                     "(Rückenwäsche) und beim Einkauf schwerer Gegenstände.",
-        "medication": ["Tiotropium/Olodaterol 2 Hübe 1-0-0", "Salbutamol bei Bedarf", "Candesartan 8 mg 1-0-0"],
         "diary": [("Morgens", "Duschen selbstständig, Hilfe beim Waschen des Rückens"),
                   ("Tagsüber", "Haushalt mit Pausen, schwere Einkäufe übernimmt der Sohn"),
                   ("Abends", "Keine Unterstützung erforderlich")],
@@ -96,7 +93,6 @@ CASES = [
                     "Wohnung mit Gehstock, Treppen nur mit Festhalten. Feinmotorik deutlich eingeschränkt. Die "
                     "Erhebung zur Selbstversorgung (Modul 4) konnte beim Hausbesuch nicht abgeschlossen werden, "
                     "weil der Versicherte sich in einer Off-Phase befand; Nachbesuch vereinbart.",
-        "medication": ["Levodopa/Benserazid 100/25 mg 1-1-1-1", "Pramipexol 0,7 mg 1-0-1", "Tamsulosin 0,4 mg 0-0-1"],
         "diary": [("Morgens", "Ankleiden dauert über 30 Minuten, Hilfe bei Knöpfen und Schuhen"),
                   ("Mittags", "Essen mit Besteck mühsam, Getränke in Bechern mit Deckel"),
                   ("Abends", "Hilfe beim Duschen zweimal wöchentlich durch die Ehefrau")],
@@ -112,7 +108,6 @@ CASES = [
         "findings": "Komplette Querschnittlähmung sub Th6 nach Verkehrsunfall 2025. Rollstuhlmobilisation, "
                     "sämtliche Transfers mit Lifter und zwei Pflegepersonen. Intermittierender Selbstkatheterismus "
                     "nicht möglich, Fremdkatheterisierung fünfmal täglich. Wundversorgung sakral täglich.",
-        "medication": ["Baclofen 10 mg 1-1-1", "Enoxaparin 40 mg s.c. 0-0-1", "Macrogol 1 Beutel 1-0-0"],
         "diary": [("Rund um die Uhr", "Lagerungswechsel alle drei Stunden, auch nachts"),
                   ("Morgens", "Ganzkörperpflege im Bett, Ankleiden, Transfer in den Rollstuhl mit Lifter"),
                   ("Mehrmals täglich", "Katheterisierung, Darmmanagement, Wundversorgung")],
@@ -187,3 +182,114 @@ CASES = [
         "practice": ("Netzhautzentrum Emden", "Dr. med. Lena Fokken"),
     },
 ]
+
+
+# ------------------------------------------------------------------ Angaben für die Fallakte
+# Ergänzt die Vorgänge um das, was in einer echten Akte zusätzlich vorliegt. Alles frei erfunden.
+
+FILE = {
+    "pg-2026-104233": {
+        "carer": "Tochter Sabine Lehmann (wohnt im Haus)",
+        "service": ("Ambulanter Pflegedienst Weserblick", "Seit dem 20.10.2026 täglich morgens Unterstützung bei der Grundpflege "
+                    "(Waschen am Waschbecken, Ankleiden, Kompressionsstrümpfe). Transfer Bett–Rollstuhl mit Hilfe einer Person. "
+                    "Blutzuckermessung zweimal täglich durch den Dienst. Keine Druckstellen."),
+        "function": "Feinmotorik der linken Hand aufgehoben, Greifen nur mit rechts. Stehen ohne Halt wenige Sekunden. "
+                    "Treppensteigen nicht möglich. Medikamente werden von der Tochter gerichtet.",
+        "aids": ["Rollator", "Toilettensitzerhöhung", "Duschhocker", "Greifzange"],
+        "prognosis": "Unter ambulanter Physio- und Ergotherapie leichte Besserung möglich; dauerhafte Hilfe bei der "
+                     "Selbstversorgung über mindestens sechs Monate zu erwarten.",
+        "letter": ("Entlassungsbericht", "Stationäre Behandlung vom 02.10. bis 16.10.2026 auf der Stroke Unit. Unter Lyse rasche "
+                   "Rückbildung der Sprachstörung, Hemiparese links persistierend.",
+                   "Anschlussheilbehandlung beantragt, Fortsetzung der Sekundärprophylaxe.", "2026-10-16"),
+        "medication": [("ASS", "100 mg", "1-0-0-0", "zum Frühstück"), ("Atorvastatin", "40 mg", "0-0-1-0", ""),
+                       ("Ramipril", "5 mg", "1-0-0-0", ""), ("Metformin", "1000 mg", "1-0-1-0", "zu den Mahlzeiten")],
+    },
+    "pg-2026-104271": {
+        "carer": "Ehefrau Renate Brandt, unterstützt durch den Sohn",
+        "service": ("Tagespflege Am Klüt", "Besuch dienstags und donnerstags von 8 bis 16 Uhr. Herr Brandt benötigt "
+                    "ständige Begleitung, verlässt unbeaufsichtigt die Gruppe. Essen wird angereicht, Toilettengänge "
+                    "nach Plan. Zunehmende Unruhe am Nachmittag."),
+        "function": "Kann Handlungen nicht mehr planen, braucht für jede Verrichtung Anleitung und meist Übernahme. "
+                    "Gefahren werden nicht erkannt (Herd, Straßenverkehr).",
+        "aids": ["Gehstock", "Hausnotruf", "Bettgitter (nachts)"],
+        "prognosis": "Fortschreitende Erkrankung; weitere Zunahme des Hilfebedarfs zu erwarten.",
+        "letter": ("Arztbrief Gedächtnisambulanz", "Verlaufskontrolle. MMST von 19 auf 14 Punkte gefallen, "
+                   "Verhaltensauffälligkeiten am Abend deutlich zugenommen.",
+                   "Fortführung Donepezil, Melperon abends; Entlastung der Ehefrau dringend empfohlen.", "2026-09-22"),
+        "previous": ("2025-03-11", 3),
+        "medication": [("Donepezil", "10 mg", "0-0-1-0", ""), ("Apixaban", "5 mg", "1-0-1-0", "Blutverdünner"),
+                       ("Melperon", "25 mg", "0-0-1-0", "bei Unruhe")],
+    },
+    "pg-2026-104308": {
+        "carer": "Sohn Emre Yilmaz (wohnt in der Nähe)",
+        "function": "Gehstrecke etwa 200 m, Treppe eine Etage mit Pause. Selbstversorgung selbstständig, "
+                    "Hilfe nur beim Rückenwaschen und bei schweren Einkäufen.",
+        "aids": ["Inhalationsgerät"],
+        "prognosis": "Unter leitliniengerechter Therapie stabil; keine wesentliche Zunahme des Hilfebedarfs erwartet.",
+        "letter": ("Befund Lungenfunktion", "Spirometrie: FEV1 61 % des Sollwerts, Tiffeneau-Index 58 %. "
+                   "Blutgase in Ruhe unauffällig.", "Fortführung der Inhalationstherapie, Lungensport empfohlen.", "2026-08-27"),
+        "medication": [("Tiotropium/Olodaterol", "2,5/2,5 µg", "2-0-0-0", "Hübe"), ("Salbutamol", "100 µg", "0-0-0-0", "bei Bedarf"),
+                       ("Candesartan", "8 mg", "1-0-0-0", "")],
+    },
+    "pg-2026-104315": {
+        "carer": "Ehefrau Brigitte Kowalski",
+        "service": ("Pflegedienst Nordsee mobil", "Zweimal wöchentlich Unterstützung beim Duschen. Ausgeprägte "
+                    "On-Off-Schwankungen: in der Off-Phase kaum Eigenbewegung, in der On-Phase Ankleiden mit Hilfe bei "
+                    "Knöpfen möglich. Sturz im Bad am 28.10.2026 ohne Verletzung."),
+        "function": "Feinmotorik beidseits deutlich eingeschränkt, Schreiben kaum möglich. Freezing an Türschwellen. "
+                    "Leistungsfähigkeit schwankt stark mit der Medikamentenwirkung.",
+        "aids": ["Gehstock", "Haltegriffe im Bad", "Trinkbecher mit Deckel"],
+        "prognosis": "Langsam fortschreitend; Anpassung der Medikation zur Glättung der Wirkschwankungen geplant.",
+        "letter": ("Arztbrief Neurologie", "Ambulante Vorstellung. Zunehmende Wirkfluktuationen unter Levodopa, "
+                   "Off-Phasen bis zu zwei Stunden täglich.", "Pramipexol eindosiert, Kontrolle in drei Monaten.", "2026-07-14"),
+        "medication": [("Levodopa/Benserazid", "100/25 mg", "1-1-1-1", "30 Min. vor dem Essen"), ("Pramipexol", "0,7 mg", "1-0-1-0", ""),
+                       ("Tamsulosin", "0,4 mg", "0-0-1-0", "")],
+    },
+    "pg-2026-104342": {
+        "carer": "Ehemann Thomas Schulte und Pflegedienst",
+        "service": ("Intensivpflege Hasetal", "Dreimal täglich Einsatz, Fremdkatheterisierung fünfmal täglich (zweimal durch "
+                    "den Ehemann). Wundversorgung sakral täglich, Wunde 2 x 1,5 cm, sauber granulierend. Lagerung nachts "
+                    "durch den Ehemann."),
+        "function": "Keine Eigenbewegung unterhalb Th6. Oberkörper und Arme frei beweglich; Rollstuhl wird selbst "
+                    "angetrieben. Alle Transfers mit Lifter.",
+        "aids": ["Aktivrollstuhl", "Deckenlifter", "Wechseldruckmatratze", "Duschrollstuhl"],
+        "prognosis": "Lähmung dauerhaft; Dekubitus in Abheilung, weiterer Pflegebedarf auf Dauer.",
+        "letter": ("Entlassungsbericht", "Stationäre Behandlung des Dekubitus sakral vom 01.09. bis 29.09.2026 mit "
+                   "plastischer Deckung.", "Konsequente Druckentlastung, Lagerung alle drei Stunden.", "2026-09-29"),
+        "previous": ("2025-11-20", 3),
+        "medication": [("Baclofen", "10 mg", "1-1-1-0", ""), ("Enoxaparin", "40 mg", "0-0-1-0", "s.c."),
+                       ("Macrogol", "13,1 g", "1-0-0-0", "1 Beutel")],
+    },
+    "kt-2026-208114": {
+        "letter": "Chronisches Ulcus cruris venosum rechts, 4 x 3 cm. Kompressionstherapie, Wundkontrolle zweimal wöchentlich. "
+                  "Patientin wegen Gangunsicherheit nicht in der Lage, öffentliche Verkehrsmittel zu nutzen.",
+        "appointments": [("2026-11-10", "09:30"), ("2026-11-13", "09:30"), ("2026-11-17", "09:30"), ("2026-11-20", "09:30")],
+        "care_grade_since": "2024-06-03",
+    },
+    "kt-2026-208157": {
+        "letter": "Zustand nach Chemotherapie bei Kolonkarzinom. Onkologische Kontrolle mit Blutbild alle drei Wochen. "
+                  "Gehstrecke unter 100 m, Polyneuropathie beider Füße.",
+        "appointments": [("2026-11-11", "11:00"), ("2026-12-02", "11:00"), ("2026-12-23", "10:30")],
+        "care_grade_since": "2025-08-19",
+    },
+    "kt-2026-208190": {
+        "letter": "Katarakt-Operation links am 22.10.2026 komplikationslos. Kontrolle des Augeninnendrucks und des Visus. "
+                  "Patientin gehfähig, fährt nicht selbst Auto.",
+        "appointments": [("2026-11-12", "14:15"), ("2026-11-26", "14:15")],
+        "care_grade_since": "2017-01-01",
+    },
+    "kt-2026-208203": {
+        "letter": "Suprapubischer Dauerkatheter bei Harnverhalt. Wechsel alle vier Wochen in der Praxis. "
+                  "Patient nach Schlaganfall auf Rollstuhl angewiesen.",
+        "appointments": [("2026-11-14", "08:45"), ("2026-12-12", "08:45")],
+        "care_grade_since": "2023-04-17",
+    },
+    "kt-2026-208226": {
+        "letter": "Feuchte altersbedingte Makuladegeneration beidseits, Visus 0,05. Intravitreale Injektionen monatlich. "
+                  "Patientin hochgradig sehbehindert (Merkzeichen Bl).",
+        "appointments": [("2026-11-18", "13:00"), ("2026-12-16", "13:00"), ("2027-01-13", "13:00")],
+    },
+}
+
+for _case in CASES:
+    _case.update(FILE[_case["id"]])

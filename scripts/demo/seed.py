@@ -67,18 +67,42 @@ def own_cases():
         yield {
             "number": meta["caseNumber"], "system": SYSTEM, "displayName": meta["displayName"],
             "release": meta["knowledgeRelease"], "case": json.loads((folder / "input.json").read_text(encoding="utf-8")),
-            "documents": [(d["id"], d["title"], d["mediaType"], folder / d["file"], [folder / p for p in d["pages"]])
+            "documents": [document(d["id"], d["title"], d["mediaType"], folder / d["file"], [folder / p for p in d["pages"]],
+                                   d.get("category"), d.get("issuedOn"), d.get("references"))
                           for d in meta["documents"]],
             "expected": (meta["expectedOutcome"], None), "lenient": False,
         }
 
 
-def legacy_documents(folder: Path, docs: list) -> list:
-    out = []
-    for d in docs:
-        pages = [folder / p["filename"] for p in d.get("previews", [])]
-        out.append((d["id"], d["title"], d["mediaType"], folder / d["filename"], pages))
+def document(doc_id, title, media_type, file, pages, category=None, issued_on=None, references=None) -> dict:
+    out = {"id": doc_id, "title": title, "mediaType": media_type, "contentBase64": b64(file)}
+    if pages:
+        out["pagesBase64"] = [b64(p) for p in pages]
+    if category:
+        out["category"] = category
+    if issued_on:
+        out["issuedOn"] = issued_on
+    if references:
+        out["references"] = references
     return out
+
+
+# Die bisherige Demo kennt keine Dokumentart; der Titel genügt für eine grobe Zuordnung in der Fallakte.
+LEGACY_CATEGORIES = (("ORDER", ("auftrag", "antrag", "verordnung")),
+                     ("PROOF", ("bescheid", "ausweis", "nachweis", "bestätigung")),
+                     ("CARE", ("pflege",)),
+                     ("MEDICAL", ("befund", "arzt", "bericht", "diagnose", "medikation", "therapie", "gutachten")))
+
+
+def legacy_category(title: str) -> str:
+    lower = title.lower()
+    return next((cat for cat, words in LEGACY_CATEGORIES if any(w in lower for w in words)), "OTHER")
+
+
+def legacy_documents(folder: Path, docs: list) -> list:
+    return [document(d["id"], d["title"], d["mediaType"], folder / d["filename"],
+                     [folder / p["filename"] for p in d.get("previews", [])], legacy_category(d["title"]))
+            for d in docs]
 
 
 def legacy_cases():
@@ -133,8 +157,7 @@ def submit(access: str, item: dict):
     request = {
         "externalReference": {"system": item["system"], "caseId": item["number"]},
         "subject": {"displayName": item["displayName"]},
-        "documents": [{"id": i, "title": t, "mediaType": m, "contentBase64": b64(f), "pagesBase64": [b64(p) for p in pages]}
-                      for i, t, m, f, pages in item["documents"]],
+        "documents": item["documents"],
     }
     if item["release"]:
         request["knowledgeRelease"] = item["release"]

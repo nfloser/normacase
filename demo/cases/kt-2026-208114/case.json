@@ -6,21 +6,103 @@
   "expectedOutcome": "SUPPORTED",
   "documents": [
     {
+      "id": "pflegegradbescheid",
+      "title": "Pflegegradbescheid",
+      "file": "pflegegradbescheid.pdf",
+      "mediaType": "application/pdf",
+      "category": "PROOF",
+      "issuedOn": "2024-06-03",
+      "references": [
+        {
+          "field": "care_grade",
+          "page": 1
+        }
+      ],
+      "pages": [
+        "pflegegradbescheid.page-1.png"
+      ]
+    },
+    {
       "id": "verordnung",
       "title": "Verordnung einer Krankenbeförderung",
       "file": "verordnung.pdf",
       "mediaType": "application/pdf",
+      "category": "ORDER",
+      "issuedOn": "2026-10-25",
+      "references": [
+        {
+          "field": "ambulatory_treatment",
+          "page": 1
+        },
+        {
+          "field": "strict_medical_necessity",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_ag",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_bl",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_h",
+          "page": 1
+        },
+        {
+          "field": "care_grade",
+          "page": 1
+        },
+        {
+          "field": "care_grade_3_permanent_mobility_transport_need",
+          "page": 1
+        }
+      ],
       "pages": [
         "verordnung.page-1.png"
       ]
     },
     {
-      "id": "pflegegradbescheid",
-      "title": "Pflegegradbescheid",
-      "file": "pflegegradbescheid.pdf",
+      "id": "antrag",
+      "title": "Antrag auf Fahrkostenübernahme (Foto)",
+      "file": "antrag.jpg",
+      "mediaType": "image/jpeg",
+      "category": "ORDER",
+      "issuedOn": "2026-10-27",
+      "references": [],
+      "pages": []
+    },
+    {
+      "id": "arztbrief",
+      "title": "Arztbrief der verordnenden Praxis (Fax)",
+      "file": "arztbrief.tiff",
+      "mediaType": "image/tiff",
+      "category": "MEDICAL",
+      "issuedOn": "2026-10-29",
+      "references": [],
+      "pages": []
+    },
+    {
+      "id": "termine",
+      "title": "Terminübersicht der Praxis (Textexport)",
+      "file": "termine.txt",
+      "mediaType": "text/plain",
+      "category": "OTHER",
+      "issuedOn": "2026-10-30",
+      "references": [],
+      "pages": []
+    },
+    {
+      "id": "auftrag",
+      "title": "Prüfauftrag der Krankenkasse",
+      "file": "auftrag.pdf",
       "mediaType": "application/pdf",
+      "category": "ORDER",
+      "issuedOn": "2026-10-31",
+      "references": [],
       "pages": [
-        "pflegegradbescheid.page-1.png"
+        "auftrag.page-1.png"
       ]
     }
   ]

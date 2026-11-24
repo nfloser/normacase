@@ -6,20 +6,110 @@
   "expectedOutcome": "SUPPORTED",
   "documents": [
     {
+      "id": "schwerbehindertenausweis",
+      "title": "Schwerbehindertenausweis (Scan)",
+      "file": "schwerbehindertenausweis.png",
+      "mediaType": "image/png",
+      "category": "PROOF",
+      "issuedOn": "2023-02-01",
+      "references": [
+        {
+          "field": "disability_marker_ag",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_bl",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_h",
+          "page": 1
+        }
+      ],
+      "pages": []
+    },
+    {
       "id": "verordnung",
       "title": "Verordnung einer Krankenbeförderung",
       "file": "verordnung.pdf",
       "mediaType": "application/pdf",
+      "category": "ORDER",
+      "issuedOn": "2026-10-29",
+      "references": [
+        {
+          "field": "ambulatory_treatment",
+          "page": 1
+        },
+        {
+          "field": "strict_medical_necessity",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_ag",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_bl",
+          "page": 1
+        },
+        {
+          "field": "disability_marker_h",
+          "page": 1
+        },
+        {
+          "field": "care_grade",
+          "page": 1
+        },
+        {
+          "field": "care_grade_3_permanent_mobility_transport_need",
+          "page": 1
+        }
+      ],
       "pages": [
         "verordnung.page-1.png"
       ]
     },
     {
-      "id": "schwerbehindertenausweis",
-      "title": "Schwerbehindertenausweis (Scan)",
-      "file": "schwerbehindertenausweis.png",
-      "mediaType": "image/png",
+      "id": "antrag",
+      "title": "Antrag auf Fahrkostenübernahme (Foto)",
+      "file": "antrag.jpg",
+      "mediaType": "image/jpeg",
+      "category": "ORDER",
+      "issuedOn": "2026-10-31",
+      "references": [],
       "pages": []
+    },
+    {
+      "id": "arztbrief",
+      "title": "Arztbrief der verordnenden Praxis (Fax)",
+      "file": "arztbrief.tiff",
+      "mediaType": "image/tiff",
+      "category": "MEDICAL",
+      "issuedOn": "2026-11-02",
+      "references": [],
+      "pages": []
+    },
+    {
+      "id": "termine",
+      "title": "Terminübersicht der Praxis (Textexport)",
+      "file": "termine.txt",
+      "mediaType": "text/plain",
+      "category": "OTHER",
+      "issuedOn": "2026-11-03",
+      "references": [],
+      "pages": []
+    },
+    {
+      "id": "auftrag",
+      "title": "Prüfauftrag der Krankenkasse",
+      "file": "auftrag.pdf",
+      "mediaType": "application/pdf",
+      "category": "ORDER",
+      "issuedOn": "2026-11-04",
+      "references": [],
+      "pages": [
+        "auftrag.page-1.png"
+      ]
     }
   ]
 }
