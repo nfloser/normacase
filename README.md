@@ -49,6 +49,10 @@ NormaCase ist ein Neuaufbau: Die erste Fassung (.NET/React) liegt eingefroren un
 |---|---|
 | ![Kontextmenü mit Markieren, Verschieben, Lesezeichen, Notiz, Bestätigen](docs/screenshots/10-ablage-kontextmenue.png) | ![Fallliste im Dunkelmodus](docs/screenshots/13-dunkel.png) |
 
+| Eigene Ordner, Lesezeichen, Notiz | Nachweise eines Vorgangs |
+|---|---|
+| ![Meine Ablage mit Unterordner, Lesezeichen, Farbmarkierung und Notiz](docs/screenshots/14-meine-ablage.png) | ![Entscheidungsnachweise ohne Fallinhalt](docs/screenshots/15-nachweise.png) |
+
 ## Extras
 
 | Prüfwerkstatt | Referenzfälle |
