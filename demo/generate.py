@@ -24,8 +24,10 @@ from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, 
 from reportlab import rl_config
 
 sys.path.insert(0, str(Path(__file__).parent))
-from cases import CASES, KT, MODULES, PFLEGE, pflege_facts  # noqa: E402
+from cases import CASES, KT, PFLEGE_KIND, PFLEGE_PACKS, PFLEGE_SAEUGLING, pflege_facts  # noqa: E402
 import scans  # noqa: E402
+
+ROOT = Path(__file__).resolve().parent.parent
 
 rl_config.invariant = 1  # reproduzierbare PDFs
 OUT = Path(__file__).parent / "cases"
@@ -114,6 +116,109 @@ class Folder:
 
 def scan_pdf(path, pages, seed):
     scans.to_image_pdf([scans.scanned(p, seed + i, angle=0.5 - i * 0.7) for i, p in enumerate(pages)], path)
+
+
+# ------------------------------------------------------------------ Erhebungsbogen nach dem Formulargutachten
+
+LEVEL = {0: "selbständig", 1: "überwiegend selbständig", 2: "überwiegend unselbständig", 3: "unselbständig"}
+COGNITION = {0: "vorhanden", 1: "größtenteils vorhanden", 2: "in geringem Maße vorhanden", 3: "nicht vorhanden"}
+FREQUENCY = {0: "nie oder sehr selten", 1: "selten", 3: "häufig", 5: "täglich"}
+TUBE = {0: "entfällt", 1: "täglich zusätzlich zu oraler Nahrung", 2: "ausschließlich oder nahezu ausschließlich"}
+
+
+def presentation(c):
+    return json.loads((ROOT / "knowledge" / c["pack"] / "presentation.de-DE.json").read_text(encoding="utf-8"))
+
+
+def pack_fields(c):
+    return json.loads((ROOT / "knowledge" / c["pack"] / "pack.json").read_text(encoding="utf-8"))["fields"]
+
+
+def value_of(c, fid):
+    return c["criteria"].get(fid, 0 if fid != "kf_1_b" else "NO")
+
+
+def describe_value(fid, v, c):
+    if v is None:
+        return "nicht erhoben"
+    if fid in ("kf_1_b", "kf_4_0"):
+        return "ja" if v in ("YES", 1) else "nein"
+    if c["pack"] == PFLEGE_KIND and fid[3] in "1246" and fid != "kf_4_13":
+        return f"{v} Einzelpunkte"
+    if fid.startswith("kf_2_"):
+        return COGNITION[v]
+    if fid.startswith("kf_3_"):
+        return FREQUENCY[v]
+    if fid == "kf_4_13":
+        return TUBE[v]
+    if fid in ("kf_4_11", "kf_4_12") and v == 0:
+        return "entfällt"
+    return LEVEL[v]
+
+
+def erhebung(c, folder):
+    """Formulargutachten F 4: alle Kriterien je Modul, Modul 5 mit Häufigkeiten. Liefert die Fundstellen je Feld."""
+    labels = presentation(c)["fields"]
+    ids = [f["id"] for f in pack_fields(c)]
+    infant = c["pack"] == PFLEGE_SAEUGLING
+    refs, flow = [], [Paragraph("Pflegebegutachtung · Erhebung nach dem Begutachtungsinstrument (F 4)", H1),
+                      Paragraph(f"Hausbesuch am {german_date(c['date'])} · Gutachterin: Pflegefachkraft Anja Meyer", SMALL),
+                      Spacer(1, 3 * mm), person_block(c)]
+    if c["pack"] == PFLEGE_KIND:
+        flow.append(Paragraph("Module 1, 2, 4 und 6: Einzelpunkte im Vergleich mit altersentsprechend entwickelten Kindern (BRi 6.5).", SMALL))
+
+    def table(title, fids, page):
+        rows = [["Kriterium", "Bewertung"]]
+        for fid in fids:
+            rows.append([Paragraph(labels[fid]["label"], SMALL), Paragraph(describe_value(fid, value_of(c, fid), c), SMALL)])
+            refs.append((fid, page))
+        return [Paragraph(title, H2), Table(rows, colWidths=[122 * mm, 48 * mm], style=GRID)]
+
+    def frequencies(page):
+        groups = sorted({fid.rsplit("_", 1)[0] for fid in ids if fid.endswith(("_tag", "_woche", "_monat"))},
+                        key=lambda g: [int(x) if x.isdigit() else 99 for x in g.split("_")[1:]])
+        rows = [["Maßnahme", "pro Tag", "pro Woche", "pro Monat"]]
+        for g in groups:
+            label = labels[f"{g}_woche"]["label"].rsplit(" – ", 1)[0]
+            cells = []
+            for unit in ("tag", "woche", "monat"):
+                fid = f"{g}_{unit}"
+                if fid in ids:
+                    refs.append((fid, page))
+                    v = value_of(c, fid)
+                    cells.append(("ja" if v else "–") if (unit == "tag" and g == "kf_5_12") else (str(v) if v else "–"))
+                else:
+                    cells.append("")
+            rows.append([Paragraph(label, SMALL), *cells])
+        refs.append(("kf_5_16", page))
+        return [Paragraph("Modul 5: Bewältigung von und selbständiger Umgang mit krankheits- oder therapiebedingten Anforderungen", H2),
+                Table(rows, colWidths=[110 * mm, 20 * mm, 20 * mm, 20 * mm], style=GRID),
+                Paragraph(f"{labels['kf_5_16']['label']}: {describe_value('kf_5_16', value_of(c, 'kf_5_16'), c)}", SMALL)]
+
+    pick = lambda prefix: [i for i in ids if i.startswith(prefix) and not i.endswith(("_tag", "_woche", "_monat"))]
+    if infant:
+        flow += table("F 4.1.B Besondere Bedarfskonstellation", ["kf_1_b"], 1)
+        flow += table("Modul 3: Verhaltensweisen und psychische Problemlagen", pick("kf_3_"), 1)
+        flow += table("KF 4.4.0 Ernährung", ["kf_4_0"], 1)
+        flow += [PageBreak(), *frequencies(2)]
+        pages = 2
+    else:
+        flow += table("Modul 1: Mobilität", pick("kf_1_"), 1)
+        flow += table("Modul 2: Kognitive und kommunikative Fähigkeiten", pick("kf_2_"), 1)
+        flow += [PageBreak(), *table("Modul 3: Verhaltensweisen und psychische Problemlagen", pick("kf_3_"), 2)]
+        flow += table("Modul 4: Selbstversorgung", pick("kf_4_"), 2)
+        flow += [PageBreak(), *frequencies(3)]
+        flow += table("Modul 6: Gestaltung des Alltagslebens und sozialer Kontakte", pick("kf_6_"), 3)
+        pages = 3
+    if c.get("clarified"):
+        flow.append(Paragraph("Hinweis: Duschen und Baden konnte beim Hausbesuch nicht beobachtet werden (Off-Phase). "
+                              "Nachbesuch vereinbart.", BODY))
+    flow.append(Paragraph("Die Umrechnung in Einzelpunkte, gewichtete Punkte und Pflegegrad erfolgt regelbasiert in NormaCase.", SMALL))
+    pdf(folder / "erhebung.pdf", "Erhebungsbogen", "Pflegebegutachtung", flow)
+    count = int(subprocess.run(["pdfinfo", str(folder / "erhebung.pdf")], capture_output=True, text=True, check=True)
+                .stdout.split("Pages:")[1].split()[0])
+    assert count == pages, f"{c['id']}: Erhebungsbogen hat {count} statt {pages} Seiten – Fundstellen stimmen sonst nicht"
+    return refs
 
 
 # ------------------------------------------------------------------ Pflege
@@ -212,32 +317,20 @@ def pflege_docs(c, folder):
             "-- \nFiktives Dokument · alle Personen und Angaben frei erfunden · NormaCase-Demonstration\n", encoding="utf-8")
         f.add("pflegedienst", f"Stellungnahme {service} (Textexport)", folder / "pflegedienst.txt", "CARE", issued)
 
-    p = folder / "erhebung.pdf"
-    rows = [["Modul", "Bereich", "Summe der Einzelpunkte"]]
-    for i, (label, value) in enumerate(zip(MODULES, c["modules"]), start=1):
-        rows.append([str(i), Paragraph(label, BODY), "nicht erhoben" if value is None else str(value)])
-    flow = [Paragraph("Pflegebegutachtung · Erhebung nach dem Begutachtungsinstrument", H1),
-            Paragraph(f"Hausbesuch am {german_date(c['date'])} · Gutachterin: Pflegefachkraft Anja Meyer", SMALL), Spacer(1, 4 * mm),
-            person_block(c), Paragraph("Ergebnis der Erhebung je Modul", H2),
-            Table(rows, colWidths=[18 * mm, 107 * mm, 45 * mm], style=GRID),
-            Paragraph("Die Umrechnung in gewichtete Punkte und die Zuordnung zu den Schwellenwerten erfolgt "
-                      "regelbasiert und nachvollziehbar in NormaCase.", SMALL)]
-    if None in c["modules"]:
-        flow.append(Paragraph("Hinweis: Modul 4 konnte beim Hausbesuch nicht vollständig erhoben werden "
-                              "(Off-Phase). Nachbesuch vereinbart.", BODY))
-    pdf(p, "Erhebungsbogen", "Pflegebegutachtung", flow)
-    f.add("erhebung", "Erhebungsbogen Module 1–6", p, "CARE", c["date"],
-          [(f"module_{i}_sum", 1) for i in range(1, 7)])
+    refs = erhebung(c, folder)
+    f.add("erhebung", "Erhebungsbogen (Formulargutachten F 4)", folder / "erhebung.pdf", "CARE", c["date"], refs)
 
-    if c.get("clarified_module_4") is not None:
+    if c.get("clarified"):
         p = folder / "nachtrag.pdf"
+        labels = presentation(c)["fields"]
+        rows = [["Kriterium", "Bewertung"]] + [[Paragraph(labels[k]["label"], SMALL), describe_value(k, v, c)] for k, v in c["clarified"].items()]
         pdf(p, "Nachtrag", "Pflegebegutachtung", [
             Paragraph("Nachtrag zum Erhebungsbogen", H1),
             Paragraph("Nachbesuch am 13.11.2026 in einer On-Phase · Gutachterin: Pflegefachkraft Anja Meyer", SMALL),
-            Spacer(1, 4 * mm), person_block(c), Paragraph("Modul 4: Selbstversorgung", H2),
-            Paragraph(f"Summe der Einzelpunkte: <b>{c['clarified_module_4']}</b>. Hilfe beim Waschen des Unterkörpers, beim "
-                      "An- und Auskleiden und beim Duschen; Essen und Trinken selbstständig mit Hilfsmitteln.", BODY)])
-        f.add("nachtrag", "Nachtrag Modul 4", p, "CARE", "2026-11-13", [("module_4_sum", 1)])
+            Spacer(1, 4 * mm), person_block(c), Paragraph("Nachträglich erhobene Kriterien", H2),
+            Table(rows, colWidths=[120 * mm, 50 * mm], style=GRID),
+            Paragraph("Duschen und Baden nur mit Hilfe beim Ein- und Aussteigen und beim Waschen des Rückens und der Beine.", BODY)])
+        f.add("nachtrag", "Nachtrag zum Erhebungsbogen", p, "CARE", "2026-11-13", [(k, 1) for k in c["clarified"]])
     return f.docs
 
 
@@ -378,8 +471,8 @@ def main():
         folder = OUT / c["id"]
         folder.mkdir(parents=True)
         release = json.loads((knowledge / c["pack"] / "pack.json").read_text(encoding="utf-8"))["manifest"]["releaseId"]
-        if c["pack"] == PFLEGE:
-            facts, evidence, docs = pflege_facts(c["modules"]), {}, pflege_docs(c, folder)
+        if c["pack"] in PFLEGE_PACKS:
+            facts, evidence, docs = pflege_facts(pack_fields(c), c["criteria"]), {}, pflege_docs(c, folder)
         else:
             facts, evidence, docs = c["facts"], c["evidence"], kt_docs(c, folder)
         case_input = {"formatVersion": 1, "assessmentDate": c["date"], "facts": facts, "evidence": evidence}
@@ -394,8 +487,8 @@ def main():
         name, first, _, _ = c["person"]
         meta = {"caseNumber": c["id"].upper(), "displayName": f"{name}, {first} · {c['title']}", "title": c["title"],
                 "knowledgeRelease": release, "expectedOutcome": c["expected"], "documents": documents}
-        if c.get("clarified_module_4") is not None:
-            clarified = dict(case_input, facts=pflege_facts([*c["modules"][:3], c["clarified_module_4"], *c["modules"][4:]]))
+        if c.get("clarified"):
+            clarified = dict(case_input, facts=pflege_facts(pack_fields(c), c["criteria"], c["clarified"]))
             (folder / "clarification.json").write_text(json.dumps(clarified, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             meta["expectedOutcomeAfterClarification"] = c["expected_after_clarification"]
         (folder / "input.json").write_text(json.dumps(case_input, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

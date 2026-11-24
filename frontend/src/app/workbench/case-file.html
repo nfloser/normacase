@@ -37,7 +37,7 @@
       @if (assessment(); as a) {
         @if (split) { <div class="split-left">
           <section class="block">
-            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()"
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" [numericLabels]="numericLabels()"
               [sources]="sources()" (openSource)="showSource($event)" />
           </section>
           <ng-container *ngTemplateOutlet="factsBlock" />
@@ -46,7 +46,7 @@
         } @else {
         <div class="overview-grid">
           <section class="block">
-            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()"
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" [numericLabels]="numericLabels()"
               [sources]="sources()" (openSource)="showSource($event)" />
           </section>
           <ng-container *ngTemplateOutlet="factsBlock" />
@@ -119,9 +119,9 @@
     <form class="dialog-card clarify-form" role="dialog" aria-modal="true" aria-labelledby="clarify-title" (submit)="$event.preventDefault(); submitClarify()">
       <h3 id="clarify-title">{{ t.clarifyTitle }}</h3>
       @if (hasNumberField()) { <p class="hint" id="clarify-hint">{{ t.numberHint }}</p> }
-      @for (f of form(); track f.id) {
+      <ng-template #fieldRow let-f>
         <div class="field-row">
-          <label [for]="'f-' + f.id">{{ f.label }}@if (f.required) { * }</label>
+          <label [for]="'f-' + f.id">{{ f.label }}@if (f.required) { * }@if (f.hint) { <small class="field-hint">{{ f.hint }}</small> }</label>
           @if (f.type === 'truth') {
             <select [id]="'f-' + f.id" [value]="f.value || 'UNKNOWN'" (change)="setField(f.id, $any($event.target).value)">
               @for (v of ['YES', 'NO', 'NOT_APPLICABLE', 'UNKNOWN']; track v) { <option [value]="v" [selected]="v === (f.value || 'UNKNOWN')">{{ t.truth[v] }}</option> }
@@ -132,6 +132,16 @@
           }
         </div>
         @if (f.error) { <p class="error-text" role="alert" [id]="'h-' + f.id">{{ f.error }}</p> }
+      </ng-template>
+      @if (otherFields().length > 12) {
+        @if (openFields().length) { <h4>{{ t.openFields }}</h4> }
+        @for (f of openFields(); track f.id) { <ng-container *ngTemplateOutlet="fieldRow; context: { $implicit: f }" /> }
+        <details class="clarify-more">
+          <summary>{{ t.moreFields(otherFields().length) }}</summary>
+          @for (f of otherFields(); track f.id) { <ng-container *ngTemplateOutlet="fieldRow; context: { $implicit: f }" /> }
+        </details>
+      } @else {
+        @for (f of form(); track f.id) { <ng-container *ngTemplateOutlet="fieldRow; context: { $implicit: f }" /> }
       }
       @for (e of formEvidence(); track e.id) {
         <div class="field-row">

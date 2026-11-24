@@ -1,5 +1,15 @@
 # Changelog
 
+## Unveröffentlicht
+
+### Fachlich
+- Regelwerk Pflege 2026 nach den BRi vom 26.08.2026: alle Einzelkriterien der Module 1–6, Modul 5 mit Häufigkeiten pro Tag, Woche und Monat, besondere Bedarfskonstellation (F 4.1.B), Kinder ab 19 Monaten und Kinder bis 18 Monate (Einstufung eine Stufe höher). Öffentliche Referenz, fachliche Prüfung offen; Details in `docs/knowledge/pflege-2026.md`
+- Demo-Vorgänge rechnen mit den Einzelkriterien; neu: Säugling mit Sondenernährung, Kind mit Autismus, Erwachsener mit ALS (Pflegegrad 5 über F 4.1.B)
+
+### Plattform
+- Regel-Engine: generische Umrechnung (`scale`, Faktor oder Division mit fester Rundung) und Zahlenausgaben; benannte Zwischenwerte erscheinen in der Begründung als aufklappbarer Rechenweg
+- „Angaben ergänzen“ zeigt bei großen Regelwerken zuerst die offenen Angaben, mit Erläuterung je Kriterium
+
 ## 1.0.0 – 2026-11-24
 
 Erste vollständige Fassung auf dem Pflicht-Stack (Angular, Spring Boot, PostgreSQL) mit dem Funktionsumfang des bisherigen NormaCase.

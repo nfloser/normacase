@@ -22,7 +22,11 @@ export interface ConditionView {
   numeric: NumericView | null;
   children: ConditionView[];
 }
-export interface NumericView { kind: string; field: string | null; value: ValueView | null; children: NumericView[] }
+export interface NumericView {
+  kind: string; field: string | null; value: ValueView | null; children: NumericView[];
+  /** Benannter Zwischenwert (z. B. ein Modul); Beschriftung aus den Präsentationsdaten des Regelwerks. */
+  id?: string | null; factor?: string | null; divisor?: string | null;
+}
 export interface RuleView { ruleId: string; ruleVersion: string; outcome: string; conditionResult: string; source: SourceView; condition: ConditionView }
 export interface OutputView { outputId: string; value: ValueView | null; conditionResult: string; source: SourceView; condition: ConditionView }
 export interface AssessmentView {
@@ -113,6 +117,9 @@ function numeric(value: Record<string, unknown>, depth: number): NumericView {
     field: textOr(value['field']),
     value: caseValue(value['value']),
     children: Array.isArray(children) ? children.filter(isObject).map(child => numeric(child, depth + 1)) : [],
+    id: textOr(value['id']),
+    factor: value['factor'] instanceof ExactNumber ? value['factor'].text : null,
+    divisor: value['divisor'] instanceof ExactNumber ? value['divisor'].text : null,
   };
 }
 

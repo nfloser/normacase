@@ -20,7 +20,7 @@ NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem E
 
 | | |
 |---|---|
-| 118 Paritätsfälle exakt wie die frühere .NET-Engine | 132 fiktive Demo-Vorgänge in allen Arbeitslisten |
+| 118 Paritätsfälle exakt wie die frühere .NET-Engine | 135 fiktive Demo-Vorgänge in allen Arbeitslisten |
 | Bewertung p95 rund 5 ms (k6 in der CI) | Barrierefreiheit mit axe geprüft |
 
 NormaCase ist ein Neuaufbau: Die erste Fassung (.NET/React) liegt eingefroren unter [`legacy/`](legacy/). Die neue Java-Regel-Engine muss in der CI für alle 118 Prüffälle exakt dieselben Ergebnisse liefern wie die alte.
@@ -30,7 +30,7 @@ NormaCase ist ein Neuaufbau: Die erste Fassung (.NET/React) liegt eingefroren un
 | Eindeutig | Unvollständig | Widersprüchlich |
 |---|---|---|
 | ![Befundbericht im Leser](docs/screenshots/02-befundbericht.png) | ![Fehlende Angabe Modul 4](docs/screenshots/03-rueckfrage.png) | ![Merkzeichen aG angegeben, Ausweis zeigt G](docs/screenshots/05-widerspruch.png) |
-| Gerda Lehmann: 62,5 Punkte, Pflegegrad 3. Regel, Fassung und Quelle stehen am Ergebnis. | Werner Kowalski: Modul 4 fehlt. NormaCase fragt genau diesen Wert nach und bewertet dann neu. | Ulrich Hartmann: Angabe und Ausweis passen nicht zusammen. Ein Mensch entscheidet. |
+| Gerda Lehmann: 62,5 Punkte, Pflegegrad 3. Regel, Fassung und Quelle stehen am Ergebnis. | Werner Kowalski: ein Kriterium in Modul 4 fehlt. NormaCase fragt genau diesen Wert nach und bewertet dann neu. | Ulrich Hartmann: Angabe und Ausweis passen nicht zusammen. Ein Mensch entscheidet. |
 
 | Angaben ergänzen | Vier-Augen-Freigabe | Nachweis ohne Fallinhalt |
 |---|---|---|
@@ -85,7 +85,7 @@ Voraussetzung ist Docker (unter Windows Docker Desktop). Dann reicht ein Befehl:
 | Windows | Doppelklick auf `demo.cmd` oder in PowerShell `.\demo.ps1` |
 | macOS, Linux | `pwsh ./demo.ps1` oder `docker compose up --build` |
 
-Das Skript startet Docker Desktop bei Bedarf, baut und startet PostgreSQL, Keycloak, Backend, Oberfläche und eine Fachsystem-Attrappe, wartet, bis die 132 Demo-Vorgänge eingeliefert sind, und öffnet die Prüfwerkstatt unter <http://localhost:4200>. Der erste Start dauert einige Minuten.
+Das Skript startet Docker Desktop bei Bedarf, baut und startet PostgreSQL, Keycloak, Backend, Oberfläche und eine Fachsystem-Attrappe, wartet, bis die 135 Demo-Vorgänge eingeliefert sind, und öffnet die Prüfwerkstatt unter <http://localhost:4200>. Der erste Start dauert einige Minuten.
 
 | Aufruf | Wirkung |
 |---|---|

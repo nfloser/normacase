@@ -46,4 +46,29 @@ describe('DecisionTrace', () => {
     fixture.detectChanges();
     expect(visible().length).toBe(3);
   });
+
+  it('zeigt benannte Zwischenwerte als aufklappbaren Rechenweg', () => {
+    const doc = `{"formatVersion":2,"platformVersion":"t","assessment":{"knowledgeRelease":"r","assessmentDate":"2026-11-04","outcome":"SUPPORTED","missingRequiredFields":[],
+      "ruleTrace":{"ruleId":"R","ruleVersion":1,"sourceId":"S","conditionResult":"MATCHED","outcome":"SUPPORTED",
+        "condition":{"kind":"number_gte","result":"MATCHED","field":null,"expected":{"kind":"NUMBER","number":12.5},"actual":{"kind":"NUMBER","number":30},
+          "minimum":null,"maximum":null,"children":[],"evidenceRequirementId":null,"evidenceStatus":null,
+          "numericExpression":{"kind":"sum","id":"gesamtpunkte","value":{"kind":"NUMBER","number":30},"field":null,"selectedMinimum":null,"selectedMaximum":null,"selectedValue":null,"children":[
+            {"kind":"range_lookup","id":"modul_4","value":{"kind":"NUMBER","number":30},"field":null,"selectedMinimum":19,"selectedMaximum":36,"selectedValue":30,"children":[
+              {"kind":"sum","id":"modul_4_einzelpunkte","value":{"kind":"NUMBER","number":27},"field":null,"selectedMinimum":null,"selectedMaximum":null,"selectedValue":null,"children":[
+                {"kind":"range_lookup","value":{"kind":"NUMBER","number":9},"field":null,"selectedMinimum":3,"selectedMaximum":3,"selectedValue":9,"children":[
+                  {"kind":"field","field":"kf_4_8","value":{"kind":"NUMBER","number":3},"selectedMinimum":null,"selectedMaximum":null,"selectedValue":null,"children":[]}]},
+                {"kind":"scale","factor":4.3,"value":{"kind":"NUMBER","number":8.6},"field":null,"selectedMinimum":null,"selectedMaximum":null,"selectedValue":null,"children":[
+                  {"kind":"field","field":"kf_5_13_woche","value":{"kind":"NUMBER","number":2},"selectedMinimum":null,"selectedMaximum":null,"selectedValue":null,"children":[]}]}]}]}]}},
+        "source":{"id":"S","title":"Quelle"}},"domainOutputs":[]}}`;
+    TestBed.configureTestingModule({ imports: [DecisionTrace] });
+    const fixture = TestBed.createComponent(DecisionTrace);
+    fixture.componentRef.setInput('assessment', readAssessment(doc)!);
+    fixture.componentRef.setInput('fieldLabels', { kf_4_8: '4.8 Essen', kf_5_13_woche: '5.13 Arztbesuche – pro Woche' });
+    fixture.componentRef.setInput('numericLabels', { gesamtpunkte: 'Gesamtpunkte', modul_4: 'Modul 4: Selbstversorgung' });
+    fixture.detectChanges();
+    const text = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.numeric-tree summary, .numeric-tree span'))
+      .map((e) => e.textContent!.trim());
+    expect(text).toEqual(['Gesamtpunkte: 30', 'Modul 4: Selbstversorgung: 27 → 30', '4.8 Essen: 3 → 9 Punkte',
+      '5.13 Arztbesuche – pro Woche: 2 × 4,3 = 8,6']);
+  });
 });

@@ -27,11 +27,23 @@ public record AssessmentResult(String knowledgeRelease, LocalDate assessmentDate
         }
     }
 
+    /** {@code id}, {@code factor} und {@code divisor} sind nur gesetzt, wenn der Ausdruck sie trägt. */
     public record NumericTrace(String kind, CaseValue value, String field, BigDecimal selectedMinimum,
-            BigDecimal selectedMaximum, BigDecimal selectedValue, List<NumericTrace> children) {
+            BigDecimal selectedMaximum, BigDecimal selectedValue, List<NumericTrace> children, String id,
+            BigDecimal factor, BigDecimal divisor) {
 
         public NumericTrace {
             children = List.copyOf(children);
+        }
+
+        public NumericTrace(String kind, CaseValue value, String field, BigDecimal selectedMinimum,
+                BigDecimal selectedMaximum, BigDecimal selectedValue, List<NumericTrace> children) {
+            this(kind, value, field, selectedMinimum, selectedMaximum, selectedValue, children, null, null, null);
+        }
+
+        NumericTrace withId(String expressionId) {
+            return expressionId == null ? this : new NumericTrace(kind, value, field, selectedMinimum, selectedMaximum,
+                    selectedValue, children, expressionId, factor, divisor);
         }
     }
 

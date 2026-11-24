@@ -4,7 +4,10 @@ Alle Personen, Einrichtungen, Befunde und Kennungen sind frei erfunden. Die fach
 nutzt ausschließlich die vorhandenen Knowledge Packs (öffentliche Referenzen, nicht fachlich freigegeben).
 """
 
-PFLEGE = "public-reference/pflege-adult-score"
+PFLEGE = "public-reference/pflege-2026-erwachsene"
+PFLEGE_KIND = "public-reference/pflege-2026-kinder"
+PFLEGE_SAEUGLING = "public-reference/pflege-2026-saeuglinge"
+PFLEGE_PACKS = (PFLEGE, PFLEGE_KIND, PFLEGE_SAEUGLING)
 KT = "public-reference/kt-rl-8-3"
 
 T, N, U = "TRUTH", "NUMBER", "UNKNOWN"
@@ -25,8 +28,14 @@ MODULES = ["Mobilität", "Kognitive und kommunikative Fähigkeiten", "Verhaltens
            "Gestaltung des Alltagslebens und sozialer Kontakte"]
 
 
-def pflege_facts(m):
-    return {f"module_{i + 1}_sum": (UNK if v is None else num(v)) for i, v in enumerate(m)}
+def pflege_facts(fields, criteria, override=None):
+    """Alle Felder des Regelwerks: nicht genannte Kriterien 0 bzw. nein, None = nicht erhoben."""
+    values = {**criteria, **(override or {})}
+    out = {}
+    for f in fields:
+        v = values.get(f["id"], 0 if f["type"] == "number" else "NO")
+        out[f["id"]] = UNK if v is None else (truth(v) if f["type"] == "truth" else num(v))
+    return out
 
 
 CASES = [
@@ -35,7 +44,12 @@ CASES = [
         "id": "pg-2026-104233", "pack": PFLEGE, "date": "2026-11-04",
         "person": ("Lehmann", "Gerda", "14.03.1946", "Lindenweg 12, 28215 Bremen"),
         "title": "Pflegegrad · Erstantrag",
-        "modules": [9, 4, 1, 22, 3, 8], "expected": "SUPPORTED", "grade": 3,
+        "criteria": {"kf_1_1": 1, "kf_1_2": 1, "kf_1_3": 2, "kf_1_4": 2, "kf_1_5": 3,
+                     "kf_2_4": 1, "kf_2_5": 1, "kf_2_6": 1, "kf_2_8": 1, "kf_3_10": 1,
+                     "kf_4_1": 1, "kf_4_2": 1, "kf_4_3": 2, "kf_4_4": 3, "kf_4_5": 2, "kf_4_6": 3, "kf_4_7": 2, "kf_4_8": 1, "kf_4_10": 1,
+                     "kf_5_1_tag": 2, "kf_5_6_tag": 2, "kf_5_7_tag": 2, "kf_5_13_monat": 2, "kf_5_16": 1,
+                     "kf_6_1": 2, "kf_6_2": 1, "kf_6_3": 1, "kf_6_4": 2, "kf_6_6": 2},
+        "expected": "SUPPORTED", "grade": 3,
         "clinic": ("Klinikum am Lindenpark", "Klinik für Neurologie", "Dr. med. Katrin Hartwig"),
         "diagnoses": [("I63.5", "Hirninfarkt durch Verschluss zerebraler Arterien, rechtshemisphärisch"),
                       ("G81.9", "Hemiparese links, armbetont"), ("I10.00", "Arterielle Hypertonie"),
@@ -53,7 +67,15 @@ CASES = [
         "id": "pg-2026-104271", "pack": PFLEGE, "date": "2026-11-05",
         "person": ("Brandt", "Helmut", "02.09.1941", "Am Steinbrink 4, 31785 Hameln"),
         "title": "Pflegegrad · Höherstufungsantrag",
-        "modules": [6, 24, 9, 30, 2, 13], "expected": "SUPPORTED", "grade": 4,
+        "criteria": {"kf_1_1": 1, "kf_1_3": 1, "kf_1_4": 1, "kf_1_5": 3,
+                     "kf_2_1": 1, "kf_2_2": 3, "kf_2_3": 3, "kf_2_4": 3, "kf_2_5": 3, "kf_2_6": 3, "kf_2_7": 2, "kf_2_8": 3,
+                     "kf_2_9": 1, "kf_2_10": 1, "kf_2_11": 1,
+                     "kf_3_1": 3, "kf_3_2": 3, "kf_3_8": 1, "kf_3_10": 1, "kf_3_13": 1,
+                     "kf_4_1": 2, "kf_4_2": 2, "kf_4_3": 2, "kf_4_4": 3, "kf_4_5": 2, "kf_4_6": 2, "kf_4_7": 3, "kf_4_8": 2, "kf_4_9": 1,
+                     "kf_4_10": 2, "kf_4_11": 2,
+                     "kf_5_1_tag": 4, "kf_5_13_monat": 1,
+                     "kf_6_1": 3, "kf_6_2": 3, "kf_6_3": 2, "kf_6_4": 3, "kf_6_5": 1, "kf_6_6": 2},
+        "expected": "SUPPORTED", "grade": 4,
         "clinic": ("Gedächtnisambulanz Weserbergland", "Gerontopsychiatrie", "Dr. med. Jonas Petersen"),
         "diagnoses": [("F00.1", "Demenz bei Alzheimer-Krankheit mit spätem Beginn"),
                       ("G30.1", "Alzheimer-Krankheit mit spätem Beginn"), ("I48.0", "Vorhofflimmern, paroxysmal")],
@@ -69,7 +91,8 @@ CASES = [
         "id": "pg-2026-104308", "pack": PFLEGE, "date": "2026-11-06",
         "person": ("Yilmaz", "Ayşe", "21.11.1954", "Hafenstraße 88, 26382 Wilhelmshaven"),
         "title": "Pflegegrad · Erstantrag",
-        "modules": [3, 0, 0, 2, 1, 0], "expected": "NOT_SUPPORTED", "grade": 0,
+        "criteria": {"kf_1_4": 1, "kf_1_5": 2, "kf_4_4": 1, "kf_5_13_monat": 1},
+        "expected": "NOT_SUPPORTED", "grade": 0,
         "clinic": ("Lungenfachpraxis am Rathaus", "Pneumologie", "Dr. med. Svenja Albers"),
         "diagnoses": [("J44.11", "COPD mit akuter Exazerbation, FEV1 ≥ 50 % und < 70 %"),
                       ("I11.90", "Hypertensive Herzkrankheit ohne Herzinsuffizienz")],
@@ -84,7 +107,11 @@ CASES = [
         "id": "pg-2026-104315", "pack": PFLEGE, "date": "2026-11-09",
         "person": ("Kowalski", "Werner", "30.06.1949", "Birkenallee 7, 27570 Bremerhaven"),
         "title": "Pflegegrad · Erstantrag",
-        "modules": [5, 3, 0, None, 2, 5], "clarified_module_4": 12, "expected": "INCOMPLETE",
+        "criteria": {"kf_1_3": 1, "kf_1_4": 2, "kf_1_5": 2, "kf_2_4": 1, "kf_2_5": 1, "kf_2_6": 1, "kf_3_10": 1, "kf_3_11": 1,
+                     "kf_4_1": 1, "kf_4_2": 1, "kf_4_3": 1, "kf_4_4": None, "kf_4_5": 1, "kf_4_6": 2, "kf_4_7": 2, "kf_4_10": 1,
+                     "kf_5_1_tag": 4, "kf_5_13_monat": 1,
+                     "kf_6_1": 1, "kf_6_3": 1, "kf_6_4": 1, "kf_6_6": 2},
+        "clarified": {"kf_4_4": 2}, "expected": "INCOMPLETE",
         "expected_after_clarification": "SUPPORTED", "grade": 2,
         "clinic": ("Hausarztpraxis Dr. Behrens", "Allgemeinmedizin", "Dr. med. Ulrike Behrens"),
         "diagnoses": [("G20.10", "Primäres Parkinson-Syndrom mit mäßiger Beeinträchtigung"),
@@ -101,7 +128,11 @@ CASES = [
         "id": "pg-2026-104342", "pack": PFLEGE, "date": "2026-11-10",
         "person": ("Schulte", "Marie", "08.01.1958", "Am Mühlenteich 3, 49074 Osnabrück"),
         "title": "Pflegegrad · Höherstufungsantrag",
-        "modules": [15, 4, 2, 48, 8, 14], "expected": "SUPPORTED", "grade": 4,
+        "criteria": {"kf_1_1": 2, "kf_1_2": 1, "kf_1_3": 3, "kf_1_4": 1, "kf_1_5": 3, "kf_3_10": 1,
+                     "kf_4_3": 3, "kf_4_4": 3, "kf_4_6": 3, "kf_4_10": 3, "kf_4_11": 3, "kf_4_12": 3,
+                     "kf_5_1_tag": 1, "kf_5_2_tag": 1, "kf_5_8_tag": 1, "kf_5_10_tag": 5, "kf_5_13_monat": 2,
+                     "kf_6_1": 1, "kf_6_2": 3, "kf_6_4": 1, "kf_6_6": 2},
+        "expected": "SUPPORTED", "grade": 4,
         "clinic": ("Querschnittzentrum Nordwest", "Rehabilitationsmedizin", "Prof. Dr. med. Henrik Vogt"),
         "diagnoses": [("G82.22", "Paraplegie, komplett, chronisch"), ("N31.9", "Neurogene Blasenentleerungsstörung"),
                       ("L89.24", "Dekubitus Grad 3, Sakralregion, in Abheilung")],
@@ -111,6 +142,65 @@ CASES = [
         "diary": [("Rund um die Uhr", "Lagerungswechsel alle drei Stunden, auch nachts"),
                   ("Morgens", "Ganzkörperpflege im Bett, Ankleiden, Transfer in den Rollstuhl mit Lifter"),
                   ("Mehrmals täglich", "Katheterisierung, Darmmanagement, Wundversorgung")],
+    },
+    {
+        "id": "pg-2026-104366", "pack": PFLEGE_SAEUGLING, "date": "2026-11-11",
+        "person": ("Petersen", "Mila", "14.02.2026", "Am Deich 3, 25813 Husum"),
+        "title": "Pflegegrad · Erstantrag (Kind bis 18 Monate)",
+        "criteria": {"kf_4_0": 1, "kf_5_1_tag": 3, "kf_5_4_tag": 6, "kf_5_13_woche": 1, "kf_5_k_woche": 1},
+        "expected": "SUPPORTED", "grade": 3,
+        "clinic": ("Kinderklinik Nordfriesland", "Neonatologie und Kinderneurologie", "Dr. med. Hauke Jensen"),
+        "diagnoses": [("P07.3", "Frühgeborenes, 31. Schwangerschaftswoche"), ("R13.9", "Schluckstörung"),
+                      ("Q87.8", "Angeborenes Fehlbildungssyndrom, genetische Abklärung laufend")],
+        "findings": "Seit der Geburt ausgeprägte Schluckstörung mit wiederholten Aspirationen. Ernährung überwiegend über "
+                    "nasogastrale Sonde, kleine Mengen oral unter logopädischer Anleitung. Häufiges Absaugen der oberen "
+                    "Atemwege nötig. Motorische Entwicklung verzögert.",
+        "diary": [("Nachts", "Zwei Sondenmahlzeiten, Absaugen bei Sekretstau"),
+                  ("Morgens", "Sondenmahlzeit, orale Trinkversuche mit Andicken, Medikamente über Sonde"),
+                  ("Tagsüber", "Absaugen etwa sechsmal, Frühförderung einmal wöchentlich"),
+                  ("Abends", "Sondenmahlzeit, Lagerung zur Aspirationsprophylaxe")],
+    },
+    {
+        "id": "pg-2026-104373", "pack": PFLEGE_KIND, "date": "2026-11-12",
+        "person": ("Aydin", "Elif", "03.05.2019", "Lindenstraße 41, 49074 Osnabrück"),
+        "title": "Pflegegrad · Erstantrag (Kind)",
+        "criteria": {"alter_monate": 90, "kf_2_2": 2, "kf_2_3": 2, "kf_2_4": 1, "kf_2_6": 2, "kf_2_7": 2, "kf_2_8": 3, "kf_2_9": 1, "kf_2_11": 2,
+                     "kf_3_1": 3, "kf_3_3": 3, "kf_3_5": 1, "kf_3_6": 1, "kf_3_8": 3, "kf_3_10": 1, "kf_3_12": 1,
+                     "kf_4_1": 1, "kf_4_3": 1, "kf_4_4": 3, "kf_4_5": 1, "kf_4_6": 1, "kf_4_7": 2, "kf_4_10": 1, "kf_4_11": 1,
+                     "kf_5_13_monat": 2, "kf_5_k_woche": 2, "kf_5_16": 1,
+                     "kf_6_1": 2, "kf_6_3": 2, "kf_6_5": 2, "kf_6_6": 2},
+        "expected": "SUPPORTED", "grade": 3,
+        "clinic": ("Sozialpädiatrisches Zentrum Osnabrück", "Entwicklungsneurologie", "Dr. med. Miriam Kastner"),
+        "diagnoses": [("F84.0", "Frühkindlicher Autismus"), ("F70.1", "Leichte Intelligenzminderung mit Verhaltensstörung"),
+                      ("G40.3", "Generalisierte Epilepsie, medikamentös eingestellt")],
+        "findings": "Siebenjähriges Mädchen mit frühkindlichem Autismus. Sprache in Zwei- bis Dreiwortsätzen, "
+                    "Aufforderungen werden in vertrauter Umgebung verstanden. Täglich selbstverletzendes Verhalten "
+                    "(Kopfschlagen) bei Überforderung, häufige Abwehr bei Körperpflege. Keine Gefahreneinschätzung im "
+                    "Straßenverkehr. Bewertung im Vergleich mit altersentsprechend entwickelten Kindern.",
+        "diary": [("Morgens", "Waschen und Anziehen mit Anleitung und Übernahme, Abwehr beim Haarewaschen"),
+                  ("Schule", "Förderschule mit Schulbegleitung, Abholung wegen Krisen etwa einmal pro Woche"),
+                  ("Nachmittags", "Ständige Aufsicht, zweimal wöchentlich Autismustherapie"),
+                  ("Abends", "Beruhigungsrituale, Einschlafbegleitung bis zu einer Stunde")],
+    },
+    {
+        "id": "pg-2026-104380", "pack": PFLEGE, "date": "2026-11-13",
+        "person": ("Krüger", "Bernd", "07.09.1961", "Schillerstraße 5, 30159 Hannover"),
+        "title": "Pflegegrad · Höherstufungsantrag",
+        "criteria": {"kf_1_b": "YES", "kf_1_1": 3, "kf_1_2": 3, "kf_1_3": 3, "kf_1_4": 3, "kf_1_5": 3,
+                     "kf_4_1": 3, "kf_4_2": 3, "kf_4_3": 3, "kf_4_4": 3, "kf_4_5": 3, "kf_4_6": 3, "kf_4_7": 3, "kf_4_8": 3,
+                     "kf_4_9": 3, "kf_4_10": 3, "kf_4_11": 3, "kf_4_12": 3,
+                     "kf_5_1_tag": 3, "kf_5_4_tag": 4, "kf_5_11_woche": 2, "kf_5_13_monat": 1,
+                     "kf_6_1": 1, "kf_6_3": 2, "kf_6_6": 1},
+        "expected": "SUPPORTED", "grade": 5,
+        "clinic": ("Medizinische Hochschule am Maschsee", "Neurologie, ALS-Ambulanz", "Prof. Dr. med. Ines Brehm"),
+        "diagnoses": [("G12.2", "Amyotrophe Lateralsklerose"), ("R13.9", "Dysphagie"), ("J96.1", "Chronische respiratorische Insuffizienz")],
+        "findings": "Fortgeschrittene ALS mit vollständiger Lähmung beider Arme und Beine. Greifen, Stehen und Gehen nicht "
+                    "möglich, auch nicht mit Hilfsmitteln. Kognition und Kommunikation über Augensteuerung erhalten. "
+                    "Nächtliche nicht-invasive Beatmung, häufiges Absaugen.",
+        "diary": [("Morgens", "Vollständige Übernahme der Körperpflege, Transfer mit Lifter"),
+                  ("Mittags", "Essen anreichen in angedickter Form, Absaugen"),
+                  ("Nachmittags", "Physiotherapie zweimal wöchentlich zu Hause, Kommunikation per Augensteuerung"),
+                  ("Nachts", "Maskenbeatmung anlegen, Lagerung alle drei Stunden")],
     },
     # ------------------------------------------------------------------ Krankenbeförderung
     {
@@ -258,6 +348,46 @@ FILE = {
                    "plastischer Deckung.", "Konsequente Druckentlastung, Lagerung alle drei Stunden.", "2026-09-29"),
         "previous": ("2025-11-20", 3),
         "medication": [("Baclofen", "10 mg", "1-1-1-0", ""), ("Enoxaparin", "40 mg", "0-0-1-0", "s.c."),
+                       ("Macrogol", "13,1 g", "1-0-0-0", "1 Beutel")],
+    },
+    "pg-2026-104366": {
+        "carer": "Eltern Jana und Sönke Petersen",
+        "service": ("Kinderkrankenpflege Westküste", "Dreimal wöchentlich Unterstützung bei Sondenernährung und Absaugen. "
+                    "Eltern sicher in Sondengabe und Absaugtechnik geschult. Gewichtsverlauf stabil an der 3. Perzentile."),
+        "function": "Altersentsprechende Selbständigkeit nicht beurteilbar; Nahrungsaufnahme mit außergewöhnlich "
+                    "pflegeintensivem Hilfebedarf (Sonde, Aspirationsgefahr, Absaugen).",
+        "aids": ["Ernährungspumpe", "Absauggerät", "Pulsoxymeter"],
+        "prognosis": "Schluckstörung voraussichtlich über mindestens sechs Monate; PEG-Anlage wird erwogen.",
+        "letter": ("Entlassungsbericht", "Stationäre Behandlung von der Geburt bis zum 02.05.2026, anschließend "
+                   "Wiederaufnahme wegen Aspirationspneumonie vom 10.08. bis 24.08.2026.",
+                   "Fortführung der Sondenernährung, Logopädie und Frühförderung.", "2026-08-24"),
+        "medication": [("Colecalciferol", "500 I.E.", "1-0-0-0", "über Sonde"), ("Omeprazol", "5 mg", "1-0-0-0", "über Sonde"),
+                       ("Levetiracetam", "50 mg", "1-0-1-0", "über Sonde")],
+    },
+    "pg-2026-104373": {
+        "carer": "Mutter Derya Aydin (Hauptpflegeperson), Vater berufstätig",
+        "function": "Im Vergleich mit gleichaltrigen Kindern deutlich mehr Anleitung und Beaufsichtigung bei Körperpflege, "
+                    "An- und Auskleiden und Toilettengang; nächtliches Einnässen. Keine Einschätzung von Gefahren.",
+        "aids": ["Autismusspezifische Visualisierungshilfen", "GPS-Tracker"],
+        "prognosis": "Dauerhafter Unterstützungsbedarf; Verbesserung einzelner Alltagsfähigkeiten unter Therapie möglich.",
+        "letter": ("Arztbrief Sozialpädiatrie", "Verlaufsuntersuchung. Zunahme selbstverletzenden Verhaltens bei "
+                   "Übergängen und in lauter Umgebung. EEG ohne neue Auffälligkeiten.",
+                   "Fortführung der Autismustherapie, Schulbegleitung, Antrag auf Pflegeleistungen unterstützt.", "2026-09-30"),
+        "medication": [("Valproinsäure", "300 mg", "1-0-1-0", "Epilepsie")],
+    },
+    "pg-2026-104380": {
+        "carer": "Ehefrau Martina Krüger und Intensivpflegedienst",
+        "service": ("Intensivpflege Leinebogen", "Zweimal täglich Einsatz zur Grundpflege, Absaugen bei Bedarf, Anlage der "
+                    "Maskenbeatmung nachts durch die Ehefrau. Keine Eigenbewegung der Extremitäten, Kommunikation über "
+                    "Augensteuerung zuverlässig."),
+        "function": "Gebrauchsunfähigkeit beider Arme und beider Beine mit vollständigem Verlust der Greif-, Steh- und "
+                    "Gehfunktionen, nicht durch Hilfsmittel kompensierbar. Kognition erhalten.",
+        "aids": ["Elektrorollstuhl mit Kopfsteuerung", "Deckenlifter", "Augensteuerung", "Heimbeatmungsgerät", "Absauggerät"],
+        "prognosis": "Fortschreitende Erkrankung; vollständige Pflegeabhängigkeit auf Dauer.",
+        "letter": ("Arztbrief ALS-Ambulanz", "Verlaufskontrolle. Vollständige Tetraparese, Schluckstörung mit Aspirationsgefahr, "
+                   "nächtliche Hypoventilation.", "Fortführung der nicht-invasiven Beatmung, PEG-Anlage besprochen.", "2026-10-21"),
+        "previous": ("2025-12-02", 3),
+        "medication": [("Riluzol", "50 mg", "1-0-1-0", ""), ("Glycopyrroniumbromid", "1 mg", "1-1-1-0", "gegen Speichelfluss"),
                        ("Macrogol", "13,1 g", "1-0-0-0", "1 Beutel")],
     },
     "kt-2026-208114": {
