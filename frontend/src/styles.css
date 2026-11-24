@@ -41,13 +41,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
   --nc-info-bg: light-dark(#e8ebfb, #232946);
   /* Arbeitslisten-Farbfamilie: ein Ton je Bearbeitungsstand für Punkt, Zeilenfarbe, Rand und Chip.
      Hell: zarte Tönung, kräftiger Rand (≥ 3:1 auf Weiß). Dunkel: gedämpfte Tönung über der Fläche, helle Akzente. */
-  --q-ready: light-dark(#3d8b52, #6cc58a);        --q-ready-bg: light-dark(#e3f3e4, #1f3327);
-  --q-missing: light-dark(#a17d00, #e3c45a);      --q-missing-bg: light-dark(#fdf4cf, #36301a);
-  --q-conflict: light-dark(#c76a22, #eb9a5c);     --q-conflict-bg: light-dark(#fde6d3, #3a2a1e);
-  --q-technical: light-dark(#c0453a, #ec8a82);    --q-technical-bg: light-dark(#fadcdc, #3b2326);
-  --q-documents: light-dark(#7a5aa8, #b79ae6);    --q-documents-bg: light-dark(#ece3f6, #2d2738);
-  --q-approval: light-dark(#217a8a, #6cc6d3);     --q-approval-bg: light-dark(#dcf0f2, #1b3236);
-  --q-done: light-dark(#7d8796, #9aa3b0);         --q-done-bg: light-dark(#eceff3, #282a2e);
+  --q-ready: light-dark(#3d8b52, #6cc58a);        --q-ready-bg: light-dark(#e3f3e4, #2e3d36);
+  --q-missing: light-dark(#a17d00, #e3c45a);      --q-missing-bg: light-dark(#fdf4cf, #413d2e);
+  --q-conflict: light-dark(#c76a22, #eb9a5c);     --q-conflict-bg: light-dark(#fde6d3, #42362f);
+  --q-technical: light-dark(#c0453a, #ec8a82);    --q-technical-bg: light-dark(#fadcdc, #423335);
+  --q-documents: light-dark(#7a5aa8, #b79ae6);    --q-documents-bg: light-dark(#ece3f6, #3a3645);
+  --q-approval: light-dark(#217a8a, #6cc6d3);     --q-approval-bg: light-dark(#dcf0f2, #2e3d42);
+  --q-done: light-dark(#7d8796, #9aa3b0);         --q-done-bg: light-dark(#eceff3, #35373c);
   --nc-radius: var(--radius-element, .625rem);
   --nc-radius-lg: var(--radius-container, .75rem);
   --nc-shadow: var(--shadow-low, 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 6%));
