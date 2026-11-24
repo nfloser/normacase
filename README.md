@@ -1,18 +1,28 @@
 # NormaCase
 
+[![CI](https://github.com/nfloser/normacase/actions/workflows/ci.yml/badge.svg)](https://github.com/nfloser/normacase/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/nfloser/normacase?label=Version)](https://github.com/nfloser/normacase/releases)
+[![Lizenz](https://img.shields.io/badge/Lizenz-alle%20Rechte%20vorbehalten-lightgrey)](#lizenz)
+
 **Nachvollziehbare Entscheidungsunterstützung für die sozialmedizinische Begutachtung.**
 NormaCase prüft Anträge nach festen, versionierten Regeln und zeigt zu jedem Ergebnis den vollständigen Entscheidungspfad. Fehlen Angaben, entsteht eine gezielte Rückfrage; widersprechen sich Belege, entscheidet ein Mensch.
+
+*In English:* NormaCase is a rule-based decision support platform for medical assessments. Every result shows its full decision trail; missing information leads to a targeted follow-up request, conflicting evidence goes to a human, and approval follows the four-eyes principle. Built with Java/Spring Boot, Angular and PostgreSQL.
+
+**Angular · TypeScript · RxJS · Java 25 · Spring Boot 4.1 · PostgreSQL 17 · Docker · Kubernetes**
+
+[Lokal starten](#lokal-starten) · [So arbeitet NormaCase](#so-arbeitet-normacase) · [API-Vertrag](backend/src/main/resources/static/api/v1/openapi.yaml) · [Dokumentation](#dokumentation)
 
 ![Prüfwerkstatt mit Fallakte: Arbeitslisten, Vorgänge und Begründung Modul für Modul](docs/screenshots/01-pruefung.png)
 
 > Alle Personen, Befunde und Vorgänge in diesem Repository sind frei erfunden. Die Regeln bilden öffentliche Vorgaben vereinfacht nach und sind kein geprüftes Regelwerk eines Medizinischen Dienstes.
 
-**Angular · TypeScript · RxJS · Java 25 · Spring Boot 4.1 · PostgreSQL 17 · Docker · Kubernetes**
-
 | | |
 |---|---|
 | 118 Paritätsfälle exakt wie die frühere .NET-Engine | 132 fiktive Demo-Vorgänge in allen Arbeitslisten |
 | Bewertung p95 rund 5 ms (k6 in der CI) | Barrierefreiheit mit axe geprüft |
+
+NormaCase ist ein Neuaufbau: Die erste Fassung (.NET/React) liegt eingefroren unter [`legacy/`](legacy/). Die neue Java-Regel-Engine muss in der CI für alle 118 Prüffälle exakt dieselben Ergebnisse liefern wie die alte.
 
 ## Drei Wege eines Antrags
 
@@ -101,3 +111,11 @@ Vertrag: [`openapi.yaml`](backend/src/main/resources/static/api/v1/openapi.yaml)
 - [TR-03161-Checkliste](docs/sicherheit/tr-03161-checkliste.md)
 - [Betrieb: Kubernetes](ops/k8s/), [Monitoring](ops/monitoring/), [Lasttest](ops/load/)
 - [Entwicklungsregeln](AGENTS.md)
+
+## Entwicklung
+
+Jede Änderung läuft über Issue, Branch, Tests, Pull Request, CI und Review, bevor sie nach `main` kommt. Die CI baut Backend und Oberfläche, prüft die Regel-Engine gegen die alte .NET-Engine, startet den kompletten Stack mit Docker Compose, spielt die Demo im Browser durch und validiert die Kubernetes-Manifeste. Regeln und Architekturvorgaben stehen in [AGENTS.md](AGENTS.md); Einstieg ohne Container über [backend/](backend/README.md) und [frontend/](frontend/README.md).
+
+## Lizenz
+
+© Nils Flöser. Alle Rechte vorbehalten. Der Quellcode ist zur Ansicht und Bewertung öffentlich; eine Nutzung, Weitergabe oder Veränderung bedarf der Zustimmung.
