@@ -28,6 +28,6 @@ i=0; until docker compose ps -a --format '{{.State}}' demo-host 2>/dev/null | gr
   i=$((i+1)); [ $i -gt 90 ] && fail "Demo-Vorgänge nicht eingeliefert. Details: docker compose logs demo-host"; sleep 2; done
 echo
 echo "NormaCase läuft: $url"
-echo "Anmelden: gutachterin.a / demo   (Freigabe: freigabe.c / demo)"
+echo "Anmelden: tobias.flöser / demo   (Freigabe: freigabe.c / demo)"
 echo "Beenden:  sh demo.sh --stop"
 [ "$(uname)" = Darwin ] && open "$url" || (command -v xdg-open >/dev/null && xdg-open "$url") || true

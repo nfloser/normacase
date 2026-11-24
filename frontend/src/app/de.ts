@@ -19,7 +19,7 @@ export const de = {
     login: 'Anmelden',
     logout: 'Abmelden',
     initializing: 'Anmeldung wird geprüft …',
-    demoHint: 'Vorführung: z. B. gutachterin.a / demo',
+    demoHint: 'Vorführung: z. B. tobias.flöser / demo',
     errors: {
       'idp-unreachable': 'Der Anmeldedienst ist nicht erreichbar.',
       'login-failed': 'Die Anmeldung konnte nicht abgeschlossen werden. Bitte erneut versuchen.',
