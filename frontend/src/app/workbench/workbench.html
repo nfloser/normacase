@@ -97,7 +97,6 @@
     }
     <button type="button" class="nav-item" [attr.aria-current]="queue() === 'unfiled' ? 'true' : null" (click)="openQueue('unfiled')">
       <span class="nav-folder-icon muted" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.25 4.25c0-.4.35-.75.75-.75h2.85l1.5 1.6h5.65c.4 0 .75.35.75.75v6.15c0 .4-.35.75-.75.75H3c-.4 0-.75-.35-.75-.75z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span><span class="nav-label">{{ t.wb.ablage.unfiled }}</span><span class="nav-count">{{ count('unfiled') }}</span></button>
-    <p class="nav-help">{{ queueHelp(queue()) }}</p>
     <h2 class="nav-heading">{{ t.wb.myQueries }}</h2>
     @for (q of view().queries; track q.name) {
       <div class="nav-query">
@@ -119,7 +118,7 @@
       <section class="tool-view" [attr.aria-labelledby]="'tool-title'">
         <header class="tool-view-head">
           <button type="button" class="button ghost" (click)="closeExtras()">← {{ t.extras.back }}</button>
-          <div><h2 id="tool-title" tabindex="-1">{{ t.extras.views[v] }}</h2><p class="muted">{{ t.extras.viewHelp[v] }}</p></div>
+          <h2 id="tool-title" tabindex="-1">{{ t.extras.views[v] }}</h2>
         </header>
         @if (!isAssessor() && v !== 'massenfaelle') { <p class="banner">{{ t.extras.needsAssessor }}</p> }
         @switch (v) {
@@ -237,7 +236,6 @@
     <div class="dialog-card column-options" tabindex="-1" (keydown.escape)="columnDialog.set(null)" role="dialog" aria-modal="true" aria-labelledby="columns-title">
     <form class="dialog-form" (submit)="$event.preventDefault(); applyColumns()">
       <h3 id="columns-title">{{ t.wb.columnOptions }}</h3>
-      <p class="hint">{{ t.wb.columnOptionsHelp }}</p>
       <ol class="column-list">
         @for (c of draft; track c; let i = $index, first = $first, last = $last) {
           <li>
@@ -272,7 +270,6 @@
     <div class="dialog-card" tabindex="-1" (keydown.escape)="queryDialog.set(false)" role="dialog" aria-modal="true" aria-labelledby="query-title">
     <form class="dialog-form" (submit)="$event.preventDefault(); saveQuery(name.value)">
       <h3 id="query-title">{{ t.wb.saveQuery }}</h3>
-      <p class="hint">{{ t.wb.saveQueryHelp }}</p>
       <label class="field"><span>{{ t.wb.queryName }}</span><input #name id="query-name" type="text" maxlength="60" required autocomplete="off"></label>
       <div class="dialog-actions">
         <span class="spacer"></span>
@@ -362,13 +359,11 @@
               @for (f of folders(); track f.id) { <option [value]="f.id" [selected]="d.folderId === f.id">{{ '— '.repeat(f.depth) }}{{ f.label }}</option> }
             </select>
           </label>
-          <p class="hint">{{ t.wb.ablage.folderHelp }}</p>
         }
         @case ('note') {
           <label class="field"><span>{{ t.wb.ablage.note }}</span>
             <textarea rows="5" maxlength="1000" [value]="d.note" (input)="patchDialog({ note: $any($event.target).value })"></textarea>
           </label>
-          <p class="hint">{{ t.wb.ablage.noteHelp }}</p>
         }
         @case ('delete') { <p>{{ t.wb.ablage.deleteHelp }}</p> }
         @case ('approve') { <p>{{ t.wb.ablage.approveHelp(d.ids.length) }}</p> }
@@ -377,7 +372,6 @@
         <label class="field"><span>{{ t.wb.ablage.folderName }}</span>
           <input type="text" required maxlength="80" autocomplete="off" [value]="d.label" (input)="patchDialog({ label: $any($event.target).value })">
         </label>
-        <p class="hint">{{ t.wb.ablage.folderNameHint }}</p>
       }
       @if (d.kind === 'folder' || d.kind === 'rename' || d.kind === 'color' || d.kind === 'queueColor') {
         <label class="field color-field"><span>{{ d.kind === 'folder' || d.kind === 'rename' ? t.wb.ablage.folderColor : t.wb.ablage.markColor }}</span>

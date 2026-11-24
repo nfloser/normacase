@@ -13,7 +13,6 @@
       <main class="login-page">
         <section class="login-card" aria-labelledby="login-title">
           <h1 id="login-title">{{ t.auth.title }}</h1>
-          <p>{{ t.auth.intro }}</p>
           @if (authError(); as error) { <p class="error" role="alert">{{ error }}</p> }
           <button type="button" class="button primary" (click)="auth.login()">{{ t.auth.login }}</button>
           <p class="muted small">{{ t.auth.demoHint }}</p>
