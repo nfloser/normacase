@@ -208,7 +208,7 @@ export const de = {
     showDetails: 'Details einblenden (F4)',
     detailsShort: 'Details (F4)',
     tones: {
-      ready: 'Entscheidungsreif (Ergebnis siehe Prüfergebnis)',
+      ready: 'Entscheidungsreif',
       missing: 'Angaben fehlen',
       conflict: 'Gegenprüfung erforderlich',
       technical: 'Technische Klärung',
