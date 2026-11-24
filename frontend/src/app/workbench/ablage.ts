@@ -16,7 +16,7 @@ export const COLOR_PRESETS: readonly { id: string; hex: string }[] = [
 
 /** Vorgabefarben der Arbeitslisten (wie die Punkte in der Navigation). */
 export const DEFAULT_QUEUE_COLORS: Readonly<Record<string, string>> = {
-  review: '#286f9a', clarification: '#826700', conflict: '#945013', technical: '#a12f3e', documents: '#88548d',
+  review: '#3f6fb0', clarification: '#a17d00', conflict: '#c76a22', technical: '#c0453a', documents: '#7a5aa8',
 };
 
 export interface AblageDialog {

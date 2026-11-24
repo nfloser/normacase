@@ -39,7 +39,7 @@ async function documentTab(page: Page, file: ReturnType<Page['getByRole']>, titl
 
 test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   test.setTimeout(180_000);
-  await login(page, 'tobias.flöser', true);
+  await login(page, 'gutachterin.a', true);
 
   await expect(page.locator('.case-table tbody tr').first()).toBeVisible();
   await shot(page, 'alle-vorgaenge');
@@ -121,9 +121,9 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'liste-zeilenfaerbung');
   await page.keyboard.press('F4');
   await expect(page.getByRole('region', { name: 'Fallakte' })).toBeVisible();
-  await page.getByLabel('Fallvorschau').selectOption('right');
+  await page.getByRole('button', { name: /Vorschau rechts/ }).click();
   await shot(page, 'vorschau-rechts');
-  await page.getByLabel('Fallvorschau').selectOption('bottom');
+  await page.getByRole('button', { name: /Vorschau unten/ }).click();
   await page.getByLabel('Darstellung').selectOption('dark');
   await shot(page, 'dunkel');
   await page.getByLabel('Darstellung').selectOption('system');

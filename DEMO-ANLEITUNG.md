@@ -29,7 +29,7 @@ Expand-Archive normacase.zip -DestinationPath . ; cd normacase-main
 
 ## Anmelden und zeigen
 
-- Gutachter: `tobias.flöser` / `demo` · Freigabe (zweite Person): `freigabe.c` / `demo`
+- Gutachterin: `gutachterin.a` / `demo` · Freigabe (zweite Person): `freigabe.c` / `demo`
 - Guter Ablauf: Arbeitsliste „Zur Freigabe vorbereitet“ → Gerda Lehmann doppelklicken → in der Begründung auf „Erhebungsbogen, S. 1“ klicken → Dokumente durchklicken (Fax, Foto, Scan) → Bestätigen → abmelden, als `freigabe.c` freigeben.
 - Widerspruch zeigen: „Gegenprüfung erforderlich“ → Ulrich Hartmann.
 
@@ -47,11 +47,3 @@ Expand-Archive normacase.zip -DestinationPath . ; cd normacase-main
 | Port belegt | Anderes Programm auf 4200, 8080 oder 8081 beenden |
 | Hängt beim ersten Start | Internet nötig für den Download; Details mit `docker compose logs` |
 | Anmeldung lädt nicht | 1 Minute warten (Anmeldedienst startet zuletzt), Seite neu laden |
-
-In der Prüfwerkstatt klappt **Menü** die Menü- und Aktionsleiste ein oder aus. Am rechten Rand der Spaltenköpfe lässt sich die Breite ziehen, mit den Pfeiltasten ändern oder per Doppelklick zurücksetzen. Breiten gehören zur aktuellen Ansicht und zu gespeicherten Abfragen. Ein Klick auf eine Vorgangsnummer kopiert sie.
-
-### Arbeitsplatz anordnen
-
-Explorer, Fallvorschau, Dokumentbereich und Unterlagenliste lassen sich jeweils links, rechts, oben oder unten anordnen. Ziehe den jeweiligen Trenner oder verändere die Größe mit den Pfeiltasten. Die Einstellungen bleiben pro Konto im Browser gespeichert. Über die Schaltflächen in der Aktionsleiste und der Fallakte kannst du die Bereiche ausblenden und zurückholen.
-
-Im Tab **Notizen** bearbeitest du dieselbe persönliche Notiz, die im Kontextmenü der Liste verfügbar ist. Unter **Hilfe → Bedienung** findest du Antworten auf häufige Fragen. **Hilfe → Tastenkürzel** zeigt die verfügbaren Kürzel.

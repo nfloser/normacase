@@ -3,7 +3,7 @@
   <div class="case-heading">
     <h2 tabindex="-1" class="case-title" id="case-title">{{ d.displayName ?? d.externalReference.caseId }}</h2>
     <div class="case-meta-line">
-      <button type="button" class="link mono" [attr.aria-label]="de.wb.copyNumber(d.externalReference.caseId)" (click)="copyId.emit(d.externalReference.caseId)">{{ d.externalReference.caseId }}</button>
+      <span class="mono">{{ d.externalReference.caseId }}</span>
       <span class="chip" [attr.data-queue]="de.stateQueue[d.state]">{{ stateLabel() }}</span>
       @if (presentation().name; as name) { <span class="chip subtle">{{ name }}</span> }
     </div>
@@ -30,29 +30,19 @@
   }
 </div>
 
-@let canSplit = wide() && tab() === 'review' && d.documents.length > 0 && !!assessment();
-@let split = canSplit && view().showDocuments;
-@if (canSplit) {
-  <div class="dock-controls">
-    <button type="button" class="button ghost" [attr.aria-pressed]="view().showDocuments" (click)="layout.emit({showDocuments: !view().showDocuments})">{{ de.layout.documents }}</button>
-    <label class="dock-select">{{ de.layout.position }} <select (change)="setDocumentPosition($any($event.target).value)">
-      @for (side of positions; track side) { <option [value]="side" [selected]="view().documentPosition === side">{{ de.wb.positions[side] }}</option> }
-    </select></label>
-  </div>
-}
-<div class="tab-panel" role="tabpanel" tabindex="0" [id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()" [class.flush]="tab() === 'documents'" [class.split]="split" [class.dock-layout]="split" [attr.data-pane]="split ? view().documentPosition : null" [style.--pane-size]="view().documentSize + '%'">
+@let split = wide() && tab() === 'review' && d.documents.length > 0 && !!assessment();
+<div class="tab-panel" role="tabpanel" tabindex="0" [id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()" [class.flush]="tab() === 'documents'" [class.split]="split">
   @switch (tab()) {
     @case ('review') {
       @if (assessment(); as a) {
-        @if (split) { <div class="split-left dock-main">
+        @if (split) { <div class="split-left">
           <section class="block">
             <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" [numericLabels]="numericLabels()"
               [sources]="sources()" (openSource)="showSource($event)" />
           </section>
           <ng-container *ngTemplateOutlet="factsBlock" />
         </div>
-        <div [ncPaneResize]="view().documentPosition" [paneSize]="view().documentSize" (resizePane)="layout.emit({documentSize: $event})" [attr.aria-label]="de.layout.resizeDocuments"></div>
-        <aside class="split-right dock-pane" [attr.aria-label]="t.tabs['documents']"><nc-pdf-reader [processId]="d.processId" [documents]="d.documents" [fieldLabels]="fieldLabels()" [missing]="missingProofs()" [target]="readerTarget()" [view]="view()" (layout)="layout.emit($event)" /></aside>
+        <aside class="split-right" [attr.aria-label]="t.tabs['documents']"><nc-pdf-reader [processId]="d.processId" [documents]="d.documents" [fieldLabels]="fieldLabels()" [missing]="missingProofs()" [target]="readerTarget()" /></aside>
         } @else {
         <div class="overview-grid">
           <section class="block">
@@ -84,17 +74,7 @@
       }
     }
     @case ('documents') {
-      <nc-pdf-reader [processId]="d.processId" [documents]="d.documents" [fieldLabels]="fieldLabels()" [missing]="missingProofs()" [target]="readerTarget()" [view]="view()" (layout)="layout.emit($event)" />
-    }
-    @case ('notes') {
-      @if (d.state === 'CLOSED') {
-        <p>{{ note() || de.layout.noNote }}</p>
-      } @else {
-        <form class="case-note-form" (submit)="$event.preventDefault(); noteChange.emit(personalNote.value.trim())">
-          <label class="field">{{ de.layout.note }}<textarea #personalNote rows="5" maxlength="1000" [value]="note()"></textarea></label>
-          <button class="button primary" type="submit" [disabled]="busy()">{{ de.layout.saveNote }}</button>
-        </form>
-      }
+      <nc-pdf-reader [processId]="d.processId" [documents]="d.documents" [fieldLabels]="fieldLabels()" [missing]="missingProofs()" [target]="readerTarget()" />
     }
     @case ('history') {
       <ol class="history">

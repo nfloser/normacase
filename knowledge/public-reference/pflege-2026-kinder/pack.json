@@ -14,11 +14,6 @@
    "required": true
   },
   {
-   "id": "alter_monate",
-   "type": "number",
-   "required": true
-  },
-  {
    "id": "kf_1_1",
    "type": "number",
    "required": true
@@ -529,69 +524,10 @@
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_1_1"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_1_1"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -612,75 +548,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_1_1_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_1_2"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_1_2"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -701,75 +577,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_1_2_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_1_3"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_1_3"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -790,75 +606,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_1_3_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_1_4"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_1_4"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -879,80 +635,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_1_4_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_1_5"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 29,
-               "value": -1
-              },
-              {
-               "minimum": 30,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_1_5"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -973,8 +664,7 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_1_5_vergleich"
+          ]
          }
         ],
         "id": "modul_1_einzelpunkte"
@@ -1020,69 +710,10 @@
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_1"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_1"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1103,80 +734,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_1_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_2"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 71,
-                 "value": -1
-                },
-                {
-                 "minimum": 72,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_2"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1197,90 +763,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_2_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_3"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 29,
-                 "value": -3
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 59,
-                 "value": -2
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 83,
-                 "value": -1
-                },
-                {
-                 "minimum": 84,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_3"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1301,85 +792,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_3_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_4"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 35,
-                 "value": -2
-                },
-                {
-                 "minimum": 36,
-                 "maximum": 65,
-                 "value": -1
-                },
-                {
-                 "minimum": 66,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_4"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1400,75 +821,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_4_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_5"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_5"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1489,85 +850,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_5_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_6"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 29,
-                 "value": -2
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 53,
-                 "value": -1
-                },
-                {
-                 "minimum": 54,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_6"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1588,90 +879,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_6_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_7"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 47,
-                 "value": -3
-                },
-                {
-                 "minimum": 48,
-                 "maximum": 59,
-                 "value": -2
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 71,
-                 "value": -1
-                },
-                {
-                 "minimum": 72,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_7"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1692,90 +908,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_7_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_8"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 29,
-                 "value": -3
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 77,
-                 "value": -2
-                },
-                {
-                 "minimum": 78,
-                 "maximum": 119,
-                 "value": -1
-                },
-                {
-                 "minimum": 120,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_8"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1796,80 +937,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_8_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_9"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 47,
-                 "value": -1
-                },
-                {
-                 "minimum": 48,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_9"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1890,80 +966,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_9_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_10"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 29,
-                 "value": -1
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_10"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -1984,85 +995,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_10_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_2_11"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 23,
-                 "value": -2
-                },
-                {
-                 "minimum": 24,
-                 "maximum": 47,
-                 "value": -1
-                },
-                {
-                 "minimum": 48,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_2_11"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -2083,8 +1024,7 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_2_11_vergleich"
+            ]
            }
           ],
           "id": "modul_2_einzelpunkte"
@@ -2542,84 +1482,10 @@
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_1"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 23,
-               "value": -3
-              },
-              {
-               "minimum": 24,
-               "maximum": 47,
-               "value": -2
-              },
-              {
-               "minimum": 48,
-               "maximum": 71,
-               "value": -1
-              },
-              {
-               "minimum": 72,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_1"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -2640,85 +1506,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_1_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_2"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 41,
-               "value": -2
-              },
-              {
-               "minimum": 42,
-               "maximum": 59,
-               "value": -1
-              },
-              {
-               "minimum": 60,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_2"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -2739,90 +1535,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_2_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_3"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 23,
-               "value": -3
-              },
-              {
-               "minimum": 24,
-               "maximum": 47,
-               "value": -2
-              },
-              {
-               "minimum": 48,
-               "maximum": 71,
-               "value": -1
-              },
-              {
-               "minimum": 72,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_3"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -2843,90 +1564,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_3_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_4"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 41,
-               "value": -3
-              },
-              {
-               "minimum": 42,
-               "maximum": 47,
-               "value": -2
-              },
-              {
-               "minimum": 48,
-               "maximum": 95,
-               "value": -1
-              },
-              {
-               "minimum": 96,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_4"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -2947,85 +1593,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_4_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_5"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 41,
-               "value": -2
-              },
-              {
-               "minimum": 42,
-               "maximum": 71,
-               "value": -1
-              },
-              {
-               "minimum": 72,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_5"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3046,85 +1622,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_5_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_6"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 41,
-               "value": -2
-              },
-              {
-               "minimum": 42,
-               "maximum": 71,
-               "value": -1
-              },
-              {
-               "minimum": 72,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_6"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3145,90 +1651,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_6_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_7"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 23,
-               "value": -3
-              },
-              {
-               "minimum": 24,
-               "maximum": 65,
-               "value": -2
-              },
-              {
-               "minimum": 66,
-               "maximum": 95,
-               "value": -1
-              },
-              {
-               "minimum": 96,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_7"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3249,85 +1680,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_7_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_8"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 19,
-               "value": -2
-              },
-              {
-               "minimum": 20,
-               "maximum": 29,
-               "value": -1
-              },
-              {
-               "minimum": 30,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_8"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3348,80 +1709,15 @@
             "maximum": 3,
             "value": 9
            }
-          ],
-          "id": "kf_4_8_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_9"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 23,
-               "value": -1
-              },
-              {
-               "minimum": 24,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_9"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3442,85 +1738,15 @@
             "maximum": 3,
             "value": 6
            }
-          ],
-          "id": "kf_4_9_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_10"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 41,
-               "value": -2
-              },
-              {
-               "minimum": 42,
-               "maximum": 71,
-               "value": -1
-              },
-              {
-               "minimum": 72,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_10"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3541,80 +1767,15 @@
             "maximum": 3,
             "value": 6
            }
-          ],
-          "id": "kf_4_10_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_11"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 59,
-               "value": -3
-              },
-              {
-               "minimum": 60,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_11"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3635,80 +1796,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_11_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_4_12"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 59,
-               "value": -3
-              },
-              {
-               "minimum": 60,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_4_12"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -3729,8 +1825,7 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_4_12_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
@@ -3802,12 +1897,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_1_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_1_tag"
               },
               {
                "kind": "scale",
@@ -3815,7 +1906,8 @@
                 "kind": "field",
                 "field": "kf_5_1_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -3823,7 +1915,8 @@
                 "kind": "field",
                 "field": "kf_5_1_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_1"
@@ -3832,12 +1925,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_2_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_2_tag"
               },
               {
                "kind": "scale",
@@ -3845,7 +1934,8 @@
                 "kind": "field",
                 "field": "kf_5_2_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -3853,7 +1943,8 @@
                 "kind": "field",
                 "field": "kf_5_2_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_2"
@@ -3862,12 +1953,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_3_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_3_tag"
               },
               {
                "kind": "scale",
@@ -3875,7 +1962,8 @@
                 "kind": "field",
                 "field": "kf_5_3_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -3883,7 +1971,8 @@
                 "kind": "field",
                 "field": "kf_5_3_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_3"
@@ -3892,12 +1981,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_4_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_4_tag"
               },
               {
                "kind": "scale",
@@ -3905,7 +1990,8 @@
                 "kind": "field",
                 "field": "kf_5_4_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -3913,7 +1999,8 @@
                 "kind": "field",
                 "field": "kf_5_4_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_4"
@@ -3922,12 +2009,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_5_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_5_tag"
               },
               {
                "kind": "scale",
@@ -3935,7 +2018,8 @@
                 "kind": "field",
                 "field": "kf_5_5_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -3943,7 +2027,8 @@
                 "kind": "field",
                 "field": "kf_5_5_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_5"
@@ -3952,12 +2037,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_6_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_6_tag"
               },
               {
                "kind": "scale",
@@ -3965,7 +2046,8 @@
                 "kind": "field",
                 "field": "kf_5_6_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -3973,7 +2055,8 @@
                 "kind": "field",
                 "field": "kf_5_6_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_6"
@@ -3982,12 +2065,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_7_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_7_tag"
               },
               {
                "kind": "scale",
@@ -3995,7 +2074,8 @@
                 "kind": "field",
                 "field": "kf_5_7_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -4003,7 +2083,8 @@
                 "kind": "field",
                 "field": "kf_5_7_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_7"
@@ -4014,21 +2095,21 @@
           "bands": [
            {
             "minimum": 0,
-            "maximum": 209,
+            "maximum": 0.9999,
             "value": 0
            },
            {
-            "minimum": 210,
-            "maximum": 630,
+            "minimum": 1,
+            "maximum": 3,
             "value": 1
            },
            {
-            "minimum": 631,
-            "maximum": 1680,
+            "minimum": 3.0001,
+            "maximum": 8,
             "value": 2
            },
            {
-            "minimum": 1681,
+            "minimum": 8.0001,
             "maximum": 1000000,
             "value": 3
            }
@@ -4044,12 +2125,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_8_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_8_tag"
               },
               {
                "kind": "scale",
@@ -4057,7 +2134,8 @@
                 "kind": "field",
                 "field": "kf_5_8_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -4065,7 +2143,8 @@
                 "kind": "field",
                 "field": "kf_5_8_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_8"
@@ -4074,12 +2153,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_9_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_9_tag"
               },
               {
                "kind": "scale",
@@ -4087,7 +2162,8 @@
                 "kind": "field",
                 "field": "kf_5_9_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -4095,7 +2171,8 @@
                 "kind": "field",
                 "field": "kf_5_9_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_9"
@@ -4104,12 +2181,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_10_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_10_tag"
               },
               {
                "kind": "scale",
@@ -4117,7 +2190,8 @@
                 "kind": "field",
                 "field": "kf_5_10_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -4125,7 +2199,8 @@
                 "kind": "field",
                 "field": "kf_5_10_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_10"
@@ -4134,12 +2209,8 @@
              "kind": "sum",
              "operands": [
               {
-               "kind": "scale",
-               "input": {
-                "kind": "field",
-                "field": "kf_5_11_tag"
-               },
-               "factor": 210
+               "kind": "field",
+               "field": "kf_5_11_tag"
               },
               {
                "kind": "scale",
@@ -4147,7 +2218,8 @@
                 "kind": "field",
                 "field": "kf_5_11_woche"
                },
-               "factor": 30
+               "divisor": 7,
+               "decimals": 4
               },
               {
                "kind": "scale",
@@ -4155,7 +2227,8 @@
                 "kind": "field",
                 "field": "kf_5_11_monat"
                },
-               "factor": 7
+               "divisor": 30,
+               "decimals": 4
               }
              ],
              "id": "kf_5_11"
@@ -4166,21 +2239,21 @@
           "bands": [
            {
             "minimum": 0,
-            "maximum": 29,
+            "maximum": 0.1428,
             "value": 0
            },
            {
-            "minimum": 30,
-            "maximum": 209,
+            "minimum": 0.1429,
+            "maximum": 0.9999,
             "value": 1
            },
            {
-            "minimum": 210,
-            "maximum": 629,
+            "minimum": 1,
+            "maximum": 2.9999,
             "value": 2
            },
            {
-            "minimum": 630,
+            "minimum": 3,
             "maximum": 1000000,
             "value": 3
            }
@@ -4422,84 +2495,10 @@
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_6_1"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 29,
-               "value": -3
-              },
-              {
-               "minimum": 30,
-               "maximum": 59,
-               "value": -2
-              },
-              {
-               "minimum": 60,
-               "maximum": 83,
-               "value": -1
-              },
-              {
-               "minimum": 84,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_6_1"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -4520,85 +2519,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_6_1_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_6_2"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 59,
-               "value": -2
-              },
-              {
-               "minimum": 60,
-               "maximum": 131,
-               "value": -1
-              },
-              {
-               "minimum": 132,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_6_2"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -4619,85 +2548,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_6_2_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_6_3"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 35,
-               "value": -2
-              },
-              {
-               "minimum": 36,
-               "maximum": 59,
-               "value": -1
-              },
-              {
-               "minimum": 60,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_6_3"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -4718,90 +2577,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_6_3_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_6_4"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 29,
-               "value": -3
-              },
-              {
-               "minimum": 30,
-               "maximum": 35,
-               "value": -2
-              },
-              {
-               "minimum": 36,
-               "maximum": 59,
-               "value": -1
-              },
-              {
-               "minimum": 60,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_6_4"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -4822,75 +2606,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_6_4_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_6_5"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_6_5"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -4911,85 +2635,15 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_6_5_vergleich"
+          ]
          },
          {
           "kind": "range_lookup",
           "input": {
-           "kind": "sum",
-           "operands": [
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "kf_6_6"
-             },
-             "bands": [
-              {
-               "minimum": 0,
-               "maximum": 0,
-               "value": 0
-              },
-              {
-               "minimum": 1,
-               "maximum": 1,
-               "value": 1
-              },
-              {
-               "minimum": 2,
-               "maximum": 2,
-               "value": 2
-              },
-              {
-               "minimum": 3,
-               "maximum": 3,
-               "value": 3
-              }
-             ]
-            },
-            {
-             "kind": "range_lookup",
-             "input": {
-              "kind": "field",
-              "field": "alter_monate"
-             },
-             "bands": [
-              {
-               "minimum": 18,
-               "maximum": 35,
-               "value": -2
-              },
-              {
-               "minimum": 36,
-               "maximum": 59,
-               "value": -1
-              },
-              {
-               "minimum": 60,
-               "maximum": 215,
-               "value": 0
-              }
-             ]
-            }
-           ]
+           "kind": "field",
+           "field": "kf_6_6"
           },
           "bands": [
-           {
-            "minimum": -3,
-            "maximum": -3,
-            "value": 0
-           },
-           {
-            "minimum": -2,
-            "maximum": -2,
-            "value": 0
-           },
-           {
-            "minimum": -1,
-            "maximum": -1,
-            "value": 0
-           },
            {
             "minimum": 0,
             "maximum": 0,
@@ -5010,8 +2664,7 @@
             "maximum": 3,
             "value": 3
            }
-          ],
-          "id": "kf_6_6_vergleich"
+          ]
          }
         ],
         "id": "modul_6_einzelpunkte"
@@ -5127,69 +2780,10 @@
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_1_1"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_1_1"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -5210,75 +2804,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_1_1_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_1_2"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_1_2"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -5299,75 +2833,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_1_2_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_1_3"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_1_3"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -5388,75 +2862,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_1_3_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_1_4"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_1_4"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -5477,80 +2891,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_1_4_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_1_5"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 29,
-                 "value": -1
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_1_5"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -5571,8 +2920,7 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_1_5_vergleich"
+            ]
            }
           ],
           "id": "modul_1_einzelpunkte"
@@ -5618,69 +2966,10 @@
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_1"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_1"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -5701,80 +2990,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_1_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_2"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 71,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 72,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_2"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -5795,90 +3019,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_2_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_3"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 29,
-                   "value": -3
-                  },
-                  {
-                   "minimum": 30,
-                   "maximum": 59,
-                   "value": -2
-                  },
-                  {
-                   "minimum": 60,
-                   "maximum": 83,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 84,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_3"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -5899,85 +3048,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_3_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_4"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 35,
-                   "value": -2
-                  },
-                  {
-                   "minimum": 36,
-                   "maximum": 65,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 66,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_4"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -5998,75 +3077,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_4_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_5"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_5"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -6087,85 +3106,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_5_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_6"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 29,
-                   "value": -2
-                  },
-                  {
-                   "minimum": 30,
-                   "maximum": 53,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 54,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_6"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -6186,90 +3135,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_6_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_7"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 47,
-                   "value": -3
-                  },
-                  {
-                   "minimum": 48,
-                   "maximum": 59,
-                   "value": -2
-                  },
-                  {
-                   "minimum": 60,
-                   "maximum": 71,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 72,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_7"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -6290,90 +3164,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_7_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_8"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 29,
-                   "value": -3
-                  },
-                  {
-                   "minimum": 30,
-                   "maximum": 77,
-                   "value": -2
-                  },
-                  {
-                   "minimum": 78,
-                   "maximum": 119,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 120,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_8"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -6394,80 +3193,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_8_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_9"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 47,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 48,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_9"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -6488,80 +3222,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_9_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_10"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 29,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 30,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_10"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -6582,85 +3251,15 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_10_vergleich"
+              ]
              },
              {
               "kind": "range_lookup",
               "input": {
-               "kind": "sum",
-               "operands": [
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_2_11"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 0,
-                   "maximum": 0,
-                   "value": 0
-                  },
-                  {
-                   "minimum": 1,
-                   "maximum": 1,
-                   "value": 1
-                  },
-                  {
-                   "minimum": 2,
-                   "maximum": 2,
-                   "value": 2
-                  },
-                  {
-                   "minimum": 3,
-                   "maximum": 3,
-                   "value": 3
-                  }
-                 ]
-                },
-                {
-                 "kind": "range_lookup",
-                 "input": {
-                  "kind": "field",
-                  "field": "alter_monate"
-                 },
-                 "bands": [
-                  {
-                   "minimum": 18,
-                   "maximum": 23,
-                   "value": -2
-                  },
-                  {
-                   "minimum": 24,
-                   "maximum": 47,
-                   "value": -1
-                  },
-                  {
-                   "minimum": 48,
-                   "maximum": 215,
-                   "value": 0
-                  }
-                 ]
-                }
-               ]
+               "kind": "field",
+               "field": "kf_2_11"
               },
               "bands": [
-               {
-                "minimum": -3,
-                "maximum": -3,
-                "value": 0
-               },
-               {
-                "minimum": -2,
-                "maximum": -2,
-                "value": 0
-               },
-               {
-                "minimum": -1,
-                "maximum": -1,
-                "value": 0
-               },
                {
                 "minimum": 0,
                 "maximum": 0,
@@ -6681,8 +3280,7 @@
                 "maximum": 3,
                 "value": 3
                }
-              ],
-              "id": "kf_2_11_vergleich"
+              ]
              }
             ],
             "id": "modul_2_einzelpunkte"
@@ -7140,84 +3738,10 @@
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_1"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 23,
-                 "value": -3
-                },
-                {
-                 "minimum": 24,
-                 "maximum": 47,
-                 "value": -2
-                },
-                {
-                 "minimum": 48,
-                 "maximum": 71,
-                 "value": -1
-                },
-                {
-                 "minimum": 72,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_1"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7238,85 +3762,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_1_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_2"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 41,
-                 "value": -2
-                },
-                {
-                 "minimum": 42,
-                 "maximum": 59,
-                 "value": -1
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_2"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7337,90 +3791,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_2_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_3"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 23,
-                 "value": -3
-                },
-                {
-                 "minimum": 24,
-                 "maximum": 47,
-                 "value": -2
-                },
-                {
-                 "minimum": 48,
-                 "maximum": 71,
-                 "value": -1
-                },
-                {
-                 "minimum": 72,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_3"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7441,90 +3820,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_3_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_4"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 41,
-                 "value": -3
-                },
-                {
-                 "minimum": 42,
-                 "maximum": 47,
-                 "value": -2
-                },
-                {
-                 "minimum": 48,
-                 "maximum": 95,
-                 "value": -1
-                },
-                {
-                 "minimum": 96,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_4"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7545,85 +3849,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_4_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_5"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 41,
-                 "value": -2
-                },
-                {
-                 "minimum": 42,
-                 "maximum": 71,
-                 "value": -1
-                },
-                {
-                 "minimum": 72,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_5"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7644,85 +3878,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_5_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_6"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 41,
-                 "value": -2
-                },
-                {
-                 "minimum": 42,
-                 "maximum": 71,
-                 "value": -1
-                },
-                {
-                 "minimum": 72,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_6"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7743,90 +3907,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_6_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_7"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 23,
-                 "value": -3
-                },
-                {
-                 "minimum": 24,
-                 "maximum": 65,
-                 "value": -2
-                },
-                {
-                 "minimum": 66,
-                 "maximum": 95,
-                 "value": -1
-                },
-                {
-                 "minimum": 96,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_7"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7847,85 +3936,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_7_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_8"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 19,
-                 "value": -2
-                },
-                {
-                 "minimum": 20,
-                 "maximum": 29,
-                 "value": -1
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_8"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -7946,80 +3965,15 @@
               "maximum": 3,
               "value": 9
              }
-            ],
-            "id": "kf_4_8_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_9"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 23,
-                 "value": -1
-                },
-                {
-                 "minimum": 24,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_9"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -8040,85 +3994,15 @@
               "maximum": 3,
               "value": 6
              }
-            ],
-            "id": "kf_4_9_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_10"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 41,
-                 "value": -2
-                },
-                {
-                 "minimum": 42,
-                 "maximum": 71,
-                 "value": -1
-                },
-                {
-                 "minimum": 72,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_10"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -8139,80 +4023,15 @@
               "maximum": 3,
               "value": 6
              }
-            ],
-            "id": "kf_4_10_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_11"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 59,
-                 "value": -3
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_11"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -8233,80 +4052,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_11_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_4_12"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 59,
-                 "value": -3
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_4_12"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -8327,8 +4081,7 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_4_12_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
@@ -8400,12 +4153,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_1_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_1_tag"
                 },
                 {
                  "kind": "scale",
@@ -8413,7 +4162,8 @@
                   "kind": "field",
                   "field": "kf_5_1_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8421,7 +4171,8 @@
                   "kind": "field",
                   "field": "kf_5_1_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_1"
@@ -8430,12 +4181,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_2_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_2_tag"
                 },
                 {
                  "kind": "scale",
@@ -8443,7 +4190,8 @@
                   "kind": "field",
                   "field": "kf_5_2_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8451,7 +4199,8 @@
                   "kind": "field",
                   "field": "kf_5_2_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_2"
@@ -8460,12 +4209,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_3_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_3_tag"
                 },
                 {
                  "kind": "scale",
@@ -8473,7 +4218,8 @@
                   "kind": "field",
                   "field": "kf_5_3_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8481,7 +4227,8 @@
                   "kind": "field",
                   "field": "kf_5_3_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_3"
@@ -8490,12 +4237,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_4_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_4_tag"
                 },
                 {
                  "kind": "scale",
@@ -8503,7 +4246,8 @@
                   "kind": "field",
                   "field": "kf_5_4_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8511,7 +4255,8 @@
                   "kind": "field",
                   "field": "kf_5_4_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_4"
@@ -8520,12 +4265,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_5_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_5_tag"
                 },
                 {
                  "kind": "scale",
@@ -8533,7 +4274,8 @@
                   "kind": "field",
                   "field": "kf_5_5_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8541,7 +4283,8 @@
                   "kind": "field",
                   "field": "kf_5_5_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_5"
@@ -8550,12 +4293,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_6_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_6_tag"
                 },
                 {
                  "kind": "scale",
@@ -8563,7 +4302,8 @@
                   "kind": "field",
                   "field": "kf_5_6_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8571,7 +4311,8 @@
                   "kind": "field",
                   "field": "kf_5_6_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_6"
@@ -8580,12 +4321,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_7_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_7_tag"
                 },
                 {
                  "kind": "scale",
@@ -8593,7 +4330,8 @@
                   "kind": "field",
                   "field": "kf_5_7_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8601,7 +4339,8 @@
                   "kind": "field",
                   "field": "kf_5_7_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_7"
@@ -8612,21 +4351,21 @@
             "bands": [
              {
               "minimum": 0,
-              "maximum": 209,
+              "maximum": 0.9999,
               "value": 0
              },
              {
-              "minimum": 210,
-              "maximum": 630,
+              "minimum": 1,
+              "maximum": 3,
               "value": 1
              },
              {
-              "minimum": 631,
-              "maximum": 1680,
+              "minimum": 3.0001,
+              "maximum": 8,
               "value": 2
              },
              {
-              "minimum": 1681,
+              "minimum": 8.0001,
               "maximum": 1000000,
               "value": 3
              }
@@ -8642,12 +4381,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_8_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_8_tag"
                 },
                 {
                  "kind": "scale",
@@ -8655,7 +4390,8 @@
                   "kind": "field",
                   "field": "kf_5_8_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8663,7 +4399,8 @@
                   "kind": "field",
                   "field": "kf_5_8_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_8"
@@ -8672,12 +4409,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_9_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_9_tag"
                 },
                 {
                  "kind": "scale",
@@ -8685,7 +4418,8 @@
                   "kind": "field",
                   "field": "kf_5_9_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8693,7 +4427,8 @@
                   "kind": "field",
                   "field": "kf_5_9_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_9"
@@ -8702,12 +4437,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_10_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_10_tag"
                 },
                 {
                  "kind": "scale",
@@ -8715,7 +4446,8 @@
                   "kind": "field",
                   "field": "kf_5_10_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8723,7 +4455,8 @@
                   "kind": "field",
                   "field": "kf_5_10_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_10"
@@ -8732,12 +4465,8 @@
                "kind": "sum",
                "operands": [
                 {
-                 "kind": "scale",
-                 "input": {
-                  "kind": "field",
-                  "field": "kf_5_11_tag"
-                 },
-                 "factor": 210
+                 "kind": "field",
+                 "field": "kf_5_11_tag"
                 },
                 {
                  "kind": "scale",
@@ -8745,7 +4474,8 @@
                   "kind": "field",
                   "field": "kf_5_11_woche"
                  },
-                 "factor": 30
+                 "divisor": 7,
+                 "decimals": 4
                 },
                 {
                  "kind": "scale",
@@ -8753,7 +4483,8 @@
                   "kind": "field",
                   "field": "kf_5_11_monat"
                  },
-                 "factor": 7
+                 "divisor": 30,
+                 "decimals": 4
                 }
                ],
                "id": "kf_5_11"
@@ -8764,21 +4495,21 @@
             "bands": [
              {
               "minimum": 0,
-              "maximum": 29,
+              "maximum": 0.1428,
               "value": 0
              },
              {
-              "minimum": 30,
-              "maximum": 209,
+              "minimum": 0.1429,
+              "maximum": 0.9999,
               "value": 1
              },
              {
-              "minimum": 210,
-              "maximum": 629,
+              "minimum": 1,
+              "maximum": 2.9999,
               "value": 2
              },
              {
-              "minimum": 630,
+              "minimum": 3,
               "maximum": 1000000,
               "value": 3
              }
@@ -9020,84 +4751,10 @@
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_6_1"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 29,
-                 "value": -3
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 59,
-                 "value": -2
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 83,
-                 "value": -1
-                },
-                {
-                 "minimum": 84,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_6_1"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -9118,85 +4775,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_6_1_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_6_2"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 59,
-                 "value": -2
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 131,
-                 "value": -1
-                },
-                {
-                 "minimum": 132,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_6_2"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -9217,85 +4804,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_6_2_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_6_3"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 35,
-                 "value": -2
-                },
-                {
-                 "minimum": 36,
-                 "maximum": 59,
-                 "value": -1
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_6_3"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -9316,90 +4833,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_6_3_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_6_4"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 29,
-                 "value": -3
-                },
-                {
-                 "minimum": 30,
-                 "maximum": 35,
-                 "value": -2
-                },
-                {
-                 "minimum": 36,
-                 "maximum": 59,
-                 "value": -1
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_6_4"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -9420,75 +4862,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_6_4_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_6_5"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_6_5"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -9509,85 +4891,15 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_6_5_vergleich"
+            ]
            },
            {
             "kind": "range_lookup",
             "input": {
-             "kind": "sum",
-             "operands": [
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "kf_6_6"
-               },
-               "bands": [
-                {
-                 "minimum": 0,
-                 "maximum": 0,
-                 "value": 0
-                },
-                {
-                 "minimum": 1,
-                 "maximum": 1,
-                 "value": 1
-                },
-                {
-                 "minimum": 2,
-                 "maximum": 2,
-                 "value": 2
-                },
-                {
-                 "minimum": 3,
-                 "maximum": 3,
-                 "value": 3
-                }
-               ]
-              },
-              {
-               "kind": "range_lookup",
-               "input": {
-                "kind": "field",
-                "field": "alter_monate"
-               },
-               "bands": [
-                {
-                 "minimum": 18,
-                 "maximum": 35,
-                 "value": -2
-                },
-                {
-                 "minimum": 36,
-                 "maximum": 59,
-                 "value": -1
-                },
-                {
-                 "minimum": 60,
-                 "maximum": 215,
-                 "value": 0
-                }
-               ]
-              }
-             ]
+             "kind": "field",
+             "field": "kf_6_6"
             },
             "bands": [
-             {
-              "minimum": -3,
-              "maximum": -3,
-              "value": 0
-             },
-             {
-              "minimum": -2,
-              "maximum": -2,
-              "value": 0
-             },
-             {
-              "minimum": -1,
-              "maximum": -1,
-              "value": 0
-             },
              {
               "minimum": 0,
               "maximum": 0,
@@ -9608,8 +4920,7 @@
               "maximum": 3,
               "value": 3
              }
-            ],
-            "id": "kf_6_6_vergleich"
+            ]
            }
           ],
           "id": "modul_6_einzelpunkte"

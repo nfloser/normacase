@@ -63,73 +63,6 @@ describe('Workbench', () => {
     }
   }
 
-  it('klappt Menü und Aktionsleiste ein und wieder aus', async () => {
-    const fixture = await render();
-    const el = fixture.nativeElement as HTMLElement;
-    const toggle = el.querySelector<HTMLButtonElement>('.menu-toggle')!;
-    const menu = el.querySelector<HTMLElement>('#workbench-menus')!;
-    const commands = el.querySelector<HTMLElement>('#workbench-commands')!;
-    const initial = toggle.getAttribute('aria-expanded');
-    toggle.click();
-    fixture.detectChanges();
-    expect(menu.hidden).toBe(initial === 'true');
-    expect(commands.hidden).toBe(menu.hidden);
-    toggle.click();
-    fixture.detectChanges();
-    expect(toggle.getAttribute('aria-expanded')).toBe(initial);
-  });
-
-  it('ändert die Spaltenbreite per Tastatur und merkt sie sich', async () => {
-    const fixture = await render();
-    const el = fixture.nativeElement as HTMLElement;
-    const handle = el.querySelector('.col-number .column-resizer')!;
-    handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
-    fixture.detectChanges();
-    expect(handle.getAttribute('aria-valuenow')).toBe('140');
-    const stored = JSON.parse(localStorage.getItem('normacase.workbench.view.v2.gutachterin.a')!);
-    expect(stored.columnSizes).toEqual({ number: 140 });
-    handle.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
-    fixture.detectChanges();
-    expect(handle.getAttribute('aria-valuenow')).toBe('130');
-  });
-
-  it('platziert die Fallvorschau oben und vergrößert sie mit der Tastatur', async () => {
-    const fixture = await render();
-    const el = fixture.nativeElement as HTMLElement;
-    const label = [...el.querySelectorAll<HTMLLabelElement>('.dock-select')].find((item) => item.textContent?.includes('Fallvorschau'))!;
-    const position = label.querySelector('select')!;
-    position.value = 'top';
-    position.dispatchEvent(new Event('change'));
-    fixture.detectChanges();
-    const layout = el.querySelector('.list-and-pane')!;
-    expect(layout.getAttribute('data-pane')).toBe('top');
-    const separator = layout.querySelector(':scope > [role=separator]')!;
-    separator.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
-    fixture.detectChanges();
-    expect(separator.getAttribute('aria-orientation')).toBe('horizontal');
-    expect(separator.getAttribute('aria-valuenow')).toBe('50');
-  });
-
-  it('kopiert die Vorgangsnummer der angeklickten Zeile', async () => {
-    const fixture = await render();
-    const el = fixture.nativeElement as HTMLElement;
-    const writeText = vi.fn().mockResolvedValue(undefined);
-    const original = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
-    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
-    try {
-      const copy = el.querySelector<HTMLButtonElement>('tr[data-id="b"] .copy-number')!;
-      copy.click();
-      await fixture.whenStable();
-      fixture.detectChanges();
-      expect(writeText).toHaveBeenCalledWith(copy.textContent);
-      expect(el.querySelector('.toast')?.textContent).toContain('Vorgangsnummer kopiert.');
-      expect(el.querySelector('tr.active')?.getAttribute('data-id')).toBe('a');
-    } finally {
-      if (original) Object.defineProperty(navigator, 'clipboard', original);
-      else Reflect.deleteProperty(navigator, 'clipboard');
-    }
-  });
-
   it('zeigt Arbeitslisten und Ablage wie im bisherigen Fallexplorer, Vorgänge und die Fallakte', async () => {
     const fixture = await render();
     const el = fixture.nativeElement as HTMLElement;
@@ -316,10 +249,10 @@ describe('Workbench', () => {
     item('Explorer ein/aus').click();
     fixture.detectChanges();
     expect(el.querySelector('.case-table')!.getAttribute('data-density')).toBe('compact');
-    expect(el.querySelector<HTMLElement>('.explorer')!.hidden).toBe(true);
+    expect(el.classList).toContain('nav-collapsed');
     item('Ansicht zurücksetzen').click();
     fixture.detectChanges();
-    expect(el.querySelector<HTMLElement>('.explorer')!.hidden).toBe(false);
+    expect(el.classList).not.toContain('nav-collapsed');
     await settle(fixture);
   });
 
