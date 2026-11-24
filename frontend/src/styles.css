@@ -185,7 +185,7 @@ th[aria-sort='descending'] .sort::after { content: ' ↓'; }
 .list-scroll { container-type: inline-size; container-name: caselist; }
 .col-select { width: 38px; }
 .col-number { white-space: nowrap; }
-.copy-number { max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+.copy-number { color: var(--nc-text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 .copy-number:focus-visible { outline-offset: -2px; }
 .case-table tbody td { padding: .5rem; border-bottom: 1px solid var(--nc-border); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .85rem; }
 .case-table .col-select { padding-left: .6rem; padding-right: .2rem; text-overflow: clip; }
