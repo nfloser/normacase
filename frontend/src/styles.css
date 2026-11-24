@@ -400,7 +400,7 @@ nc-case-file .verdict { display: none; }
 .plain { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; }
 
 /* ---------- PDF reader ---------- */
-nc-pdf-reader { flex: 1; min-height: 0; display: grid; grid-template-columns: 230px minmax(0, 1fr); }
+nc-pdf-reader { flex: 1; min-height: 0; display: grid; grid-template-columns: clamp(220px, 28%, 300px) minmax(0, 1fr); }
 .reader-files { position: relative; overflow: auto; padding: .75rem .5rem; border-right: 1px solid var(--nc-border); background: var(--nc-body); }
 .app-shell .reader-files h3 { display: flex; gap: .4rem; align-items: center; font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; color: var(--nc-text-2); margin: 0 .4rem .5rem; }
 .reader-files ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
@@ -411,7 +411,7 @@ nc-pdf-reader { flex: 1; min-height: 0; display: grid; grid-template-columns: 23
 .file-icon[data-kind='image/png'] { background: var(--nc-info-bg); color: var(--nc-info); }
 .file-icon[data-kind='text/plain'] { background: var(--nc-muted-bg); color: var(--nc-text-2); }
 .file-text { display: grid; min-width: 0; gap: .1rem; }
-.file-text strong { font-size: .82rem; font-weight: 600; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; }
+.file-text strong { font-size: .82rem; font-weight: 600; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; }
 .file-text small { font-size: .72rem; color: var(--nc-text-2); }
 .reader-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 .reader-toolbar { display: flex; align-items: center; gap: .25rem; padding: .35rem .6rem; border-bottom: 1px solid var(--nc-border); background: var(--nc-surface); flex-wrap: wrap; }
