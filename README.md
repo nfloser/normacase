@@ -36,12 +36,22 @@ NormaCase ist ein Neuaufbau: Die erste Fassung (.NET/React) liegt eingefroren un
 |---|---|---|
 | ![Rückfrageformular](docs/screenshots/04-angaben-ergaenzen.png) | ![Freigabe durch zweite Person](docs/screenshots/06-freigabe.png) | ![Entscheidungsnachweis](docs/screenshots/07-nachweis.png) |
 
+## Fallakte und Dokumente
+
+![Begründung mit Verweis auf die Fundstelle, Erhebungsbogen daneben hervorgehoben](docs/screenshots/16-fundstelle.png)
+
+Jede Angabe in der Begründung verweist auf Dokument und Seite, aus der sie stammt; ein Klick öffnet die Seite und hebt sie hervor. Erfüllte Zweige sind zugeklappt, alles Offene oder Nicht-Erfüllte ist sichtbar. Die Akte ist nach Dokumentart gegliedert (Auftrag und Antrag, ärztliche Unterlagen, Pflege und Erhebung, Bescheide und Nachweise) und zeigt, was in die Bewertung eingeht und welche Nachweise fehlen. Der Leser kommt mit dem zurecht, was tatsächlich eingeht: PDF, gescannte Bild-PDFs, Handyfotos, mehrseitige Faxe (TIFF, Seiten erzeugt der Server) und Textexporte. Großansicht per F, eigenes Fenster für den zweiten Bildschirm.
+
+| Fax (TIFF, 2 Seiten) | Eigenes Fenster | Spalten per Ziehen |
+|---|---|---|
+| ![Pflegetagebuch als Fax](docs/screenshots/18-fax.png) | ![Dokument im eigenen Fenster](docs/screenshots/17-eigenes-fenster.png) | ![Spaltenoptionen mit Griff zum Ziehen](docs/screenshots/19-spaltenoptionen.png) |
+
 ## Arbeiten wie im Fallexplorer
 
 ![Fallliste mit Zeilenfärbung nach Bearbeitungsstand, Fallakte ausgeblendet](docs/screenshots/09-fallliste.png)
 
 - **Arbeitslisten** nach Bearbeitungsstand: Zur Freigabe vorbereitet, Informationen nachfordern, Gegenprüfung erforderlich, Technische Klärung, Unterlagensichtung; dazu Bestätigt und Versendet.
-- **Fallliste wie eine Abfrage in Azure DevOps**: Zeilenfärbung (abschaltbar), Spaltenoptionen, Filter je Spalte, Sortierung, gespeicherte Abfragen. Vorschau unten oder rechts, Größe per Trenner, Fallakte per F4 aus- und einblenden, Doppelklick öffnet die Vollansicht.
+- **Fallliste wie eine Abfrage in Azure DevOps**: Zeilenfärbung (abschaltbar), Spaltenoptionen mit Reihenfolge per Ziehen, Filter je Spalte, Sortierung, gespeicherte Abfragen. Vorschau unten oder rechts, Größe per Trenner, Fallakte per F4 aus- und einblenden, Doppelklick öffnet die Vollansicht.
 - **Meine Ablage** je Konto: eigene Ordner mit Unterordnern und Farben, Lesezeichen, Farbmarkierung, Notizen, eigene Arbeitslistenfarben. Alles auch per Rechtsklick (oder Umschalt+F10).
 - **Hell, dunkel oder wie das System**, mit einer gemeinsamen Farbfamilie für Arbeitslisten und Markierungen.
 

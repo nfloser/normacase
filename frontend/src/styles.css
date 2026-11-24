@@ -444,7 +444,7 @@ nc-pdf-reader { flex: 1; min-height: 0; display: grid; grid-template-columns: 23
 /* Großansicht: der Leser legt sich über die ganze Arbeitsfläche, Esc kehrt zurück. */
 nc-pdf-reader.reader-max { position: fixed; inset: 0; z-index: 60; background: var(--nc-body); box-shadow: var(--nc-shadow-high); }
 /* Eigenes Fenster */
-body.reader-window { margin: 0; height: 100vh; font-family: var(--nc-font); font-size: 14px; display: flex; flex-direction: column; background: var(--nc-body); color: var(--nc-text); }
+body.reader-window { margin: 0; height: 100vh; font-family: var(--nc-font, system-ui, sans-serif); font-size: 14px; display: flex; flex-direction: column; background: var(--nc-body); color: var(--nc-text); }
 body.reader-window .reader-toolbar { position: sticky; top: 0; z-index: 1; gap: .5rem; }
 .reader-window-title { font-size: .9rem; }
 
