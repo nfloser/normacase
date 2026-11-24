@@ -39,16 +39,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
   --nc-bad-bg: light-dark(#fbe7e5, #3a201f);
   --nc-info: light-dark(#33449a, #c3ccff);
   --nc-info-bg: light-dark(#e8ebfb, #232946);
-  /* Arbeitslisten-Farbfamilie: ein Ton je Bearbeitungsstand (Blau = entscheidungsreif, unabhängig vom Ergebnis;
-     Grün/Rot bleiben dem Prüfergebnis vorbehalten) für Punkt, Zeilenfarbe, Rand und Chip.
-     Hell: zarte Tönung, kräftiger Rand (≥ 3:1 auf Weiß). Dunkel: gedämpfte Tönung über der Fläche, helle Akzente. */
-  --q-ready: light-dark(#3f6fb0, #7fa8e3);        --q-ready-bg: light-dark(#e4ecf7, #313844);
-  --q-missing: light-dark(#a17d00, #e3c45a);      --q-missing-bg: light-dark(#fdf4cf, #413d2e);
-  --q-conflict: light-dark(#c76a22, #eb9a5c);     --q-conflict-bg: light-dark(#fde6d3, #42362f);
-  --q-technical: light-dark(#c0453a, #ec8a82);    --q-technical-bg: light-dark(#fadcdc, #423335);
-  --q-documents: light-dark(#7a5aa8, #b79ae6);    --q-documents-bg: light-dark(#ece3f6, #3a3645);
-  --q-approval: light-dark(#217a8a, #6cc6d3);     --q-approval-bg: light-dark(#dcf0f2, #2e3d42);
-  --q-done: light-dark(#7d8796, #9aa3b0);         --q-done-bg: light-dark(#eceff3, #35373c);
+  /* Getönte Flächen und kräftige Ränder für den Bearbeitungsstand. */
+  --q-ready: light-dark(#286f9a, #90cde9);       --q-ready-bg: light-dark(#ddf2fc, #203747);
+  --q-missing: light-dark(#826700, #e3c45a);      --q-missing-bg: light-dark(#fbf3ce, #403923);
+  --q-conflict: light-dark(#945013, #f1aa66);     --q-conflict-bg: light-dark(#f9e4ce, #483121);
+  --q-technical: light-dark(#a12f3e, #ff8d9d);    --q-technical-bg: light-dark(#fbd8dd, #4c232c);
+  --q-documents: light-dark(#88548d, #e8afea);    --q-documents-bg: light-dark(#f5e3f5, #3f2a47);
+  --q-approval: light-dark(#535f9d, #b6bff1);     --q-approval-bg: light-dark(#e7ebfb, #2c344e);
+  --q-done: light-dark(#246e59, #8bd7bd);         --q-done-bg: light-dark(#dbf3e9, #223f35);
   --nc-radius: var(--radius-element, .625rem);
   --nc-radius-lg: var(--radius-container, .75rem);
   --nc-shadow: var(--shadow-low, 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 6%));
@@ -176,12 +174,19 @@ nc-workbench.nav-collapsed .explorer { visibility: hidden; }
 .case-table thead th { background: var(--nc-surface); text-align: left; font-size: .75rem; font-weight: 600; color: var(--nc-text-2); padding: .45rem .5rem; box-shadow: inset 0 -1px 0 var(--nc-border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .case-table thead tr.filter-row th { padding-top: .25rem; padding-bottom: .4rem; }
 .app-shell .case-table thead .filter-row input, .app-shell .case-table thead .filter-row select { width: 100%; min-height: 28px; font-size: .8rem; }
+.case-table thead th.resizable-column { position: relative; padding-right: 13px; }
+.column-resizer { position: absolute; inset: 0 0 0 auto; width: 12px; cursor: col-resize; touch-action: none; }
+.column-resizer::after { content: ''; position: absolute; inset: 20% 3px 20% auto; width: 1px; background: var(--nc-border-strong); }
+.column-resizer:hover::after, .column-resizer:focus-visible::after { width: 2px; background: var(--nc-focus); }
+.column-resizer:focus-visible { outline-offset: -2px; }
 .sort { border: none; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
 th[aria-sort='ascending'] .sort::after { content: ' ↑'; }
 th[aria-sort='descending'] .sort::after { content: ' ↓'; }
 .list-scroll { container-type: inline-size; container-name: caselist; }
 .col-select { width: 38px; }
 .col-number { white-space: nowrap; }
+.copy-number { max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+.copy-number:focus-visible { outline-offset: -2px; }
 .case-table tbody td { padding: .5rem; border-bottom: 1px solid var(--nc-border); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .85rem; }
 .case-table .col-select { padding-left: .6rem; padding-right: .2rem; text-overflow: clip; }
 .case-table .col-select input { margin: 0; vertical-align: middle; }
@@ -196,6 +201,7 @@ th[aria-sort='descending'] .sort::after { content: ' ↓'; }
 .case-table.row-colors tbody tr[data-tone='conflict'] { --row-bg: var(--q-conflict-bg); --case-color: var(--q-conflict); }
 .case-table.row-colors tbody tr[data-tone='technical'] { --row-bg: var(--q-technical-bg); --case-color: var(--q-technical); }
 .case-table.row-colors tbody tr[data-tone='documents'] { --row-bg: var(--q-documents-bg); --case-color: var(--q-documents); }
+.case-table.row-colors tbody tr[data-tone='approval'] { --row-bg: var(--q-approval-bg); --case-color: var(--q-approval); }
 .case-table.row-colors tbody tr[data-tone='done'] { --row-bg: var(--q-done-bg); --case-color: var(--q-done); }
 .case-table.row-colors tbody tr[data-tone] { background: var(--row-bg); }
 .case-table.row-colors tbody tr[data-tone]:hover { background: color-mix(in srgb, var(--row-bg) 82%, var(--nc-text) 6%); }
@@ -220,6 +226,7 @@ th[aria-sort='descending'] .sort::after { content: ' ↓'; }
 .tone-swatch[data-tone='conflict'] { background: var(--q-conflict-bg); box-shadow: inset 3px 0 0 var(--q-conflict); }
 .tone-swatch[data-tone='technical'] { background: var(--q-technical-bg); box-shadow: inset 3px 0 0 var(--q-technical); }
 .tone-swatch[data-tone='documents'] { background: var(--q-documents-bg); box-shadow: inset 3px 0 0 var(--q-documents); }
+.tone-swatch[data-tone='approval'] { background: var(--q-approval-bg); box-shadow: inset 3px 0 0 var(--q-approval); }
 .tone-swatch[data-tone='done'] { background: var(--q-done-bg); box-shadow: inset 3px 0 0 var(--q-done); }
 .nav-query { display: flex; align-items: center; gap: .1rem; }
 .nav-query .icon-button { visibility: hidden; min-width: 26px; height: 26px; color: var(--nc-text-2); }
@@ -510,7 +517,11 @@ body.reader-window .reader-toolbar { position: sticky; top: 0; z-index: 1; gap: 
   .search { order: 3; flex-basis: 100%; max-width: none; }
   .appbar-actions { margin-left: auto; }
   .list-and-pane[data-pane='right'] { flex-direction: column; }
-  .appbar-actions .button { display: none; }
+  .appbar-actions .user, .appbar-actions .status { display: none; }
+  .appbar .menubar { order: 4; flex: 1 0 100%; flex-wrap: wrap; }
+  .appbar .menubar details { position: static; }
+  .appbar .menu-list { top: 100%; left: .5rem; right: .5rem; width: auto; min-width: 0; }
+  .appbar { position: relative; }
   nc-pdf-reader { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
   .reader-files { border-right: none; border-bottom: 1px solid var(--nc-border); max-height: 140px; }
 }
@@ -584,6 +595,8 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .reader-toolbar .page-of { white-space: nowrap; }
 
 /* ---------- Menüleiste wie im bisherigen Fallexplorer ---------- */
+.menu-toggle { flex: none; }
+.menubar[hidden], .commandbar[hidden] { display: none; }
 .menubar { display: flex; align-items: center; gap: .1rem; flex: none; }
 .menubar details { position: relative; }
 .menubar summary { list-style: none; cursor: pointer; padding: .3rem .6rem; border-radius: var(--nc-radius); font-size: .88rem; color: var(--nc-text); user-select: none; }
@@ -605,11 +618,11 @@ nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
 .nav-dot[data-queue='technical'] { background: var(--q-technical); }
 .nav-dot[data-queue='documents'] { background: var(--q-documents); }
 .chip[data-queue='conflict'] { background: var(--q-conflict-bg); color: var(--nc-text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--q-conflict) 45%, transparent); }
-.next-step[data-step='technical'] { background: light-dark(#fbe7e7, #2e1a1c); }
-.next-step[data-step='documents'] { background: light-dark(#f1ebfa, #262236); }
+.next-step[data-step='technical'] { background: var(--q-technical-bg); }
+.next-step[data-step='documents'] { background: var(--q-documents-bg); }
 .notice-box { margin: 0; padding: .8rem 1rem; border-radius: var(--nc-radius); background: var(--nc-muted-bg); color: var(--nc-text); }
-.notice-box[data-state='TECHNICAL_CLARIFICATION'] { background: light-dark(#fbe7e7, #2e1a1c); }
-.notice-box[data-state='DOCUMENT_REVIEW'] { background: light-dark(#f1ebfa, #262236); }
+.notice-box[data-state='TECHNICAL_CLARIFICATION'] { background: var(--q-technical-bg); }
+.notice-box[data-state='DOCUMENT_REVIEW'] { background: var(--q-documents-bg); }
 .commandbar .button { padding: 0 .55rem; }
 .case-table.row-colors .case-note { color: var(--nc-text); font-style: italic; }
 

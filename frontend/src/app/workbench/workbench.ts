@@ -17,6 +17,7 @@ import { EvidenceSearch } from '../extras/evidence-search';
 import {
   COLUMN_IDS, COLUMN_WIDTHS, ColumnId, DEFAULT_COLUMNS, Filters, PREVIEW_MAX, PREVIEW_MIN, SELECT_COLUMNS, SavedQuery, ViewSettings,
   ViewStore, DEFAULT_VIEW, DENSITIES, PLATFORM_SYSTEM, clampPreview, rowTone, storableFilters,
+  MAX_COLUMN_WIDTH, minColumnWidth, clampColumnWidth,
 } from './case-view';
 
 type Load<T> = { state: 'loading' } | { state: 'ready'; value: T } | { state: 'error' };
@@ -55,6 +56,7 @@ export class Workbench {
   protected readonly queueIds = WORK_LISTS;
   protected readonly personalIds = PERSONAL;
 
+  protected readonly menuExpanded = signal(!globalThis.matchMedia?.('(max-width: 860px)').matches);
   protected readonly queue = signal(ALL);
   /** Vorgang in voller Größe (Doppelklick, Eingabe, „Vorgang öffnen“); sonst Liste mit Vorschau. */
   protected readonly opened = signal<string | null>(null);
@@ -71,12 +73,19 @@ export class Workbench {
   protected readonly sort = computed(() => this.view().sort);
   protected readonly selectColumns = SELECT_COLUMNS;
   /** Mindestbreite der Tabelle aus den gewählten Spalten; reicht der Platz nicht, scrollt die Liste waagerecht. */
-  protected readonly tableMinWidth = computed(() => 38 + this.columns().reduce((sum, c) => sum + COLUMN_WIDTHS[c], 0));
+  protected readonly tableMinWidth = computed(() => 38 + this.columns().reduce((sum, c) => sum + this.columnSize(c), 0));
+  private readonly flexibleColumn = computed(() => this.columns().find((c) => this.view().columnSizes[c] === undefined));
+  protected readonly fixedWidths = computed(() => this.flexibleColumn() === undefined);
+  protected readonly columnMin = minColumnWidth;
+  protected readonly columnMax = MAX_COLUMN_WIDTH;
+  protected columnSize(c: ColumnId): number {
+    return this.view().columnSizes[c] ?? COLUMN_WIDTHS[c];
+  }
   protected width(c: ColumnId): number | null {
-    return c === 'subject' ? null : COLUMN_WIDTHS[c];
+    return c === this.flexibleColumn() ? null : this.columnSize(c);
   }
   protected readonly rowTone = rowTone;
-  protected readonly tones = ['ready', 'missing', 'conflict', 'technical', 'documents', 'done'];
+  protected readonly tones = ['ready', 'missing', 'conflict', 'technical', 'documents', 'approval', 'done'];
   protected readonly selection = signal<ReadonlySet<string>>(new Set());
   protected readonly active = signal<string | null>(null);
   protected readonly busy = signal(false);
@@ -449,6 +458,11 @@ export class Workbench {
     document.querySelectorAll<HTMLDetailsElement>('.menubar details[open]').forEach((d) => (d.open = false));
   }
 
+  protected copyNumber(id: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.copy(id, de.wb.caseNumberCopied);
+  }
+
   private copyId(): void {
     const p = this.list().state === 'ready' ? (this.list() as { value: ProcessSummary[] }).value.find((r) => r.processId === this.active()) : undefined;
     if (p) this.copy(p.externalReference.caseId, de.wb.caseNumberCopied);
@@ -473,6 +487,46 @@ export class Workbench {
     clipboard.writeText(text).then(() => this.flash(de.wb.copied(what)), () => this.flash(de.wb.copyFailed));
   }
 
+  private columnDrag: { pointerId: number; start: number; width: number } | null = null;
+
+  protected columnDown(event: PointerEvent): void {
+    if (event.button !== 0 || this.columnDrag) return;
+    const handle = event.currentTarget as HTMLElement;
+    handle.setPointerCapture(event.pointerId);
+    this.columnDrag = { pointerId: event.pointerId, start: event.clientX, width: handle.parentElement!.getBoundingClientRect().width };
+  }
+
+  protected columnMove(event: PointerEvent, column: ColumnId): void {
+    const drag = this.columnDrag;
+    if (drag?.pointerId !== event.pointerId || event.clientX === drag.start && this.view().columnSizes[column] === undefined) return;
+    this.setColumnSize(column, drag.width + event.clientX - drag.start, false);
+  }
+
+  protected columnUp(event: PointerEvent): void {
+    if (this.columnDrag?.pointerId !== event.pointerId) return;
+    this.columnDrag = null;
+    this.store.save(this.user().username, this.view());
+  }
+
+  protected columnKeys(event: KeyboardEvent, column: ColumnId): void {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const width = (event.currentTarget as HTMLElement).parentElement!.getBoundingClientRect().width || this.columnSize(column);
+    this.setColumnSize(column, width + (event.key === 'ArrowRight' ? 10 : -10));
+  }
+
+  protected resetColumnSize(column: ColumnId): void {
+    const columnSizes = { ...this.view().columnSizes };
+    delete columnSizes[column];
+    this.updateView({ columnSizes });
+  }
+
+  private setColumnSize(column: ColumnId, width: number, persist = true): void {
+    const columnSizes = { ...this.view().columnSizes, [column]: clampColumnWidth(column, width) };
+    if (persist) this.updateView({ columnSizes });
+    else this.view.update((v) => ({ ...v, columnSizes }));
+  }
+
   protected sortBy(key: ColumnId): void {
     const s = this.sort();
     this.updateView({ sort: { key, asc: s.key === key ? !s.asc : true } });
@@ -484,6 +538,7 @@ export class Workbench {
   }
 
   protected rowKeys(event: KeyboardEvent, p: ProcessSummary): void {
+    if (event.target !== event.currentTarget) return;
     const rows = this.visible();
     const index = rows.findIndex((r) => r.processId === p.processId);
     const move = (to: number) => {
@@ -720,7 +775,7 @@ export class Workbench {
   protected saveQuery(name: string): void {
     const trimmed = name.trim().slice(0, 60);
     if (!trimmed) return;
-    const query: SavedQuery = { name: trimmed, queue: this.queue(), columns: this.columns(), filters: storableFilters(this.filters()), sort: this.sort() };
+    const query: SavedQuery = { name: trimmed, queue: this.queue(), columns: this.columns(), columnSizes: this.view().columnSizes, filters: storableFilters(this.filters()), sort: this.sort() };
     this.updateView({ queries: [...this.view().queries.filter((q) => q.name !== trimmed), query].slice(-20) });
     this.queryDialog.set(false);
     this.flash(de.wb.querySaved(trimmed));
@@ -728,7 +783,7 @@ export class Workbench {
 
   protected openQuery(q: SavedQuery): void {
     this.openQueue(q.queue === ALL || QUEUES.includes(q.queue) || isPersonalView(q.queue, this.workspace().folders) ? q.queue : ALL);
-    this.updateView({ columns: q.columns, sort: q.sort, showFilters: this.view().showFilters || Object.keys(q.filters).length > 0 });
+    this.updateView({ columns: q.columns, columnSizes: q.columnSizes, sort: q.sort, showFilters: this.view().showFilters || Object.keys(q.filters).length > 0 });
     this.filters.set({ ...q.filters });
   }
 
