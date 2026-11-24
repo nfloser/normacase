@@ -448,6 +448,7 @@ export class Workbench {
   }
 
   protected switchHelpTab(page: 'usage' | 'shortcuts', event: KeyboardEvent): void {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
     this.helpPage.set(page);
     document.getElementById('help-' + page)?.focus();

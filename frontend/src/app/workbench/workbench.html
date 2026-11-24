@@ -261,10 +261,10 @@
     <div class="tabs" role="tablist" [attr.aria-label]="t.wb.help.label">
       <button type="button" class="tab" id="help-usage" role="tab" aria-controls="help-panel"
         [attr.aria-selected]="page === 'usage'" [attr.tabindex]="page === 'usage' ? 0 : -1"
-        (click)="helpPage.set('usage')" (keydown.arrowleft)="switchHelpTab('shortcuts', $event)" (keydown.arrowright)="switchHelpTab('shortcuts', $event)">{{ t.wb.help.usage }}</button>
+        (click)="helpPage.set('usage')" (keydown)="switchHelpTab('shortcuts', $event)">{{ t.wb.help.usage }}</button>
       <button type="button" class="tab" id="help-shortcuts" role="tab" aria-controls="help-panel"
         [attr.aria-selected]="page === 'shortcuts'" [attr.tabindex]="page === 'shortcuts' ? 0 : -1"
-        (click)="helpPage.set('shortcuts')" (keydown.arrowleft)="switchHelpTab('usage', $event)" (keydown.arrowright)="switchHelpTab('usage', $event)">{{ t.wb.menu.shortcutsTitle }}</button>
+        (click)="helpPage.set('shortcuts')" (keydown)="switchHelpTab('usage', $event)">{{ t.wb.menu.shortcutsTitle }}</button>
     </div>
     <div id="help-panel" role="tabpanel" tabindex="0" [attr.aria-labelledby]="'help-' + page">
       @if (page === 'usage') {
