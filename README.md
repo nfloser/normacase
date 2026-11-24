@@ -93,11 +93,11 @@ Das Skript startet Docker Desktop bei Bedarf, baut und startet PostgreSQL, Keycl
 | `.\demo.ps1 -Stop` | beenden, Stand bleibt erhalten |
 | `.\demo.ps1 -Monitoring` | zusätzlich Prometheus und Grafana |
 
-Konten: `tobias.flöser` (prüfen, bestätigen) und `freigabe.c` (freigeben), Passwort jeweils `demo`. Alle Konten stehen in [ops/keycloak](ops/keycloak/README.md).
+Konten: `gutachterin.a` (prüfen, bestätigen) und `freigabe.c` (freigeben), Passwort jeweils `demo`. Alle Konten stehen in [ops/keycloak](ops/keycloak/README.md).
 
 Vier-Augen-Ablauf ausprobieren:
 
-1. Als `tobias.flöser` anmelden, in „Zur Freigabe vorbereitet“ einen Vorgang per Doppelklick öffnen, Begründung und Dokumente ansehen, **Bestätigen**.
+1. Als `gutachterin.a` anmelden, in „Zur Freigabe vorbereitet“ einen Vorgang per Doppelklick öffnen, Begründung und Dokumente ansehen, **Bestätigen**.
 2. Abmelden, als `freigabe.c` anmelden, unter „Bestätigt“ **Freigeben**. Wer bestätigt hat, kann nicht selbst freigeben.
 3. Fälle in „Informationen nachfordern“ lassen sich über **Angaben ergänzen** vervollständigen; NormaCase bewertet dann neu. Widersprüche landen in „Gegenprüfung erforderlich“, Vorgänge ohne Regelwerk in „Unterlagensichtung“.
 

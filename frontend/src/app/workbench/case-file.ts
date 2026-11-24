@@ -7,10 +7,7 @@ import { ExactNumber, germanDecimal, isObject } from '../shared/json';
 import { Presentation, ProcessDetail, ReleaseSummary } from './api';
 import { DocumentReader, MissingProof, ReaderTarget } from './document-reader';
 
-import { DEFAULT_VIEW, ViewSettings } from './case-view';
-import { PANE_POSITIONS, PanePosition, PaneResize } from './pane-resize';
-
-type Tab = 'review' | 'documents' | 'history' | 'evidence' | 'notes';
+type Tab = 'review' | 'documents' | 'history' | 'evidence';
 export type CaseAction =
   | { kind: 'confirm' }
   | { kind: 'approve' }
@@ -24,7 +21,7 @@ interface FormEvidence { id: string; label: string; value: string }
 /** Fallakte: Ergebnis, Begründung, Angaben, Dokumente, Verlauf und Nachweis eines Vorgangs. */
 @Component({
   selector: 'nc-case-file',
-  imports: [DecisionTrace, DocumentReader, NgTemplateOutlet, PaneResize],
+  imports: [DecisionTrace, DocumentReader, NgTemplateOutlet],
   templateUrl: './case-file.html',
   host: { class: 'case-detail-host', '(document:keydown.escape)': 'closeDialogs()' },
 })
@@ -37,16 +34,10 @@ export class CaseFile {
   /** Vollansicht: Begründung und Dokumente nebeneinander. */
   readonly wide = input(false);
   readonly act = output<CaseAction>();
-  readonly view = input<ViewSettings>(DEFAULT_VIEW);
-  readonly note = input('');
-  readonly noteChange = output<string>();
-  readonly copyId = output<string>();
-  readonly layout = output<Partial<ViewSettings>>();
-  protected readonly positions = PANE_POSITIONS;
 
   protected readonly t = de.caseFile;
   protected readonly de = de;
-  protected readonly tabs: Tab[] = ['review', 'documents', 'notes', 'history', 'evidence'];
+  protected readonly tabs: Tab[] = ['review', 'documents', 'history', 'evidence'];
   protected readonly tab = signal<Tab>('review');
   protected readonly rejecting = signal(false);
   protected readonly rejectReason = signal('CRITERIA_UNCLEAR');
@@ -146,14 +137,8 @@ export class CaseFile {
   /** Verweis aus der Begründung: Dokument an der Fundstelle öffnen, nebenan oder im Reiter Dokumente. */
   protected showSource(ref: SourceRef): void {
     const split = this.wide() && this.tab() === 'review';
-    if (split && !this.view().showDocuments) this.layout.emit({ showDocuments: true });
     if (!split) this.tab.set('documents');
     this.readerTarget.set({ documentId: ref.documentId, page: ref.page, seq: (this.readerTarget()?.seq ?? 0) + 1 });
-  }
-
-  protected setDocumentPosition(value: string): void {
-    const position = PANE_POSITIONS.find((p): p is PanePosition => p === value);
-    if (position) this.layout.emit({ documentPosition: position });
   }
 
   protected select(tab: Tab): void {

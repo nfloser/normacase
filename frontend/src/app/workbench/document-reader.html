@@ -1,12 +1,4 @@
-<div class="dock-controls">
-  <button type="button" class="button ghost" [attr.aria-pressed]="view().showFiles" (click)="toggleFiles()">{{ panels.files }}</button>
-  <button type="button" class="button ghost" [attr.aria-pressed]="view().showDocumentPreview" (click)="toggleDocumentPreview()">{{ panels.preview }}</button>
-  <label class="dock-select">{{ panels.position }} <select (change)="setFilesPosition($any($event.target).value)">
-    @for (side of positions; track side) { <option [value]="side" [selected]="view().filesPosition === side">{{ sideLabels[side] }}</option> }
-  </select></label>
-</div>
-<div class="reader-layout dock-layout" [attr.data-pane]="view().filesPosition" [style.--pane-size]="view().filesSize + '%'">
-<nav class="reader-files dock-pane" [class.solo]="!view().showDocumentPreview" [hidden]="!view().showFiles" [attr.aria-label]="t.files">
+<nav class="reader-files" [attr.aria-label]="t.files">
   <h3>{{ t.files }} <span class="count">{{ documents().length }}</span></h3>
   @for (g of groups(); track g.category) {
     <section class="file-group" [attr.aria-label]="g.label">
@@ -40,10 +32,7 @@
   }
 </nav>
 
-@if (view().showFiles && view().showDocumentPreview) {
-  <div [ncPaneResize]="view().filesPosition" [paneSize]="view().filesSize" (resizePane)="layout.emit({filesSize: $event})" [attr.aria-label]="panels.resizeFiles"></div>
-}
-<section class="reader-main dock-main" [hidden]="!view().showDocumentPreview" [attr.aria-label]="t.title">
+<section class="reader-main" [attr.aria-label]="t.title">
   @if (selected(); as doc) {
     <div class="reader-toolbar" role="toolbar" [attr.aria-label]="t.title">
       @if (pageNumbers().length > 1) {
@@ -93,4 +82,3 @@
     </div>
   }
 </section>
-</div>

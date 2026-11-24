@@ -2,11 +2,7 @@
 <div class="appbar">
   <h1 class="sr-only">{{ t.product }} {{ t.workbench }}</h1>
   <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-text"><strong>{{ t.product }}</strong><small>{{ t.workbench }}</small></span></div>
-  <button type="button" class="button ghost menu-toggle" [attr.aria-expanded]="menuExpanded()" aria-controls="workbench-menus workbench-commands" (click)="menuExpanded.set(!menuExpanded())">{{ t.wb.menuToggle }}</button>
-  @if (opened() && !menuExpanded()) {
-    <button type="button" class="button ghost" (click)="back()">← {{ t.wb.back }}</button>
-  }
-  <nav id="workbench-menus" class="menubar" [hidden]="!menuExpanded()" [attr.aria-label]="t.wb.menu.label">
+  <nav class="menubar" [attr.aria-label]="t.wb.menu.label">
     @for (m of menus; track m.id) {
       <details (toggle)="menuToggled($event)">
         <summary>{{ menuLabel(m.id) }}</summary>
@@ -19,10 +15,7 @@
     }
     <details (toggle)="menuToggled($event)">
       <summary>{{ t.wb.menu.help }}</summary>
-      <div class="menu-list" role="menu">
-        <button type="button" role="menuitem" (click)="openHelp('usage', $any($event.currentTarget), helpDialog)">{{ t.wb.help.usage }}</button>
-        <button type="button" role="menuitem" (click)="openHelp('shortcuts', $any($event.currentTarget), helpDialog)">{{ t.wb.menu.shortcutsTitle }}</button>
-      </div>
+      <div class="menu-list menu-help"><strong>{{ t.wb.menu.shortcutsTitle }}</strong><p>{{ t.wb.menu.shortcuts }}</p><p class="muted">{{ t.wb.menu.notice }}</p></div>
     </details>
   </nav>
   <label class="search"><span class="sr-only">{{ t.wb.search }}</span><span class="search-icon" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.75"/><path d="M10.5 10.5L14 14"/></svg></span>
@@ -40,7 +33,7 @@
   </div>
 </div>
 
-<div id="workbench-commands" class="commandbar" [hidden]="!menuExpanded()" role="toolbar" [attr.aria-label]="t.wb.caseActions">
+<div class="commandbar" role="toolbar" [attr.aria-label]="t.wb.caseActions">
   @if (opened()) {
     <button type="button" class="button ghost" (click)="back()">← {{ t.wb.back }}</button>
     <span class="divider" aria-hidden="true"></span>
@@ -64,22 +57,16 @@
     <button type="button" class="button ghost" (click)="openColumnOptions()">☰ {{ t.wb.columnOptions }}</button>
     <button type="button" class="icon-button" (click)="openQueryDialog()" [attr.aria-label]="t.wb.saveQuery" [title]="t.wb.saveQuery"><span aria-hidden="true">☆</span></button>
     <span class="divider" aria-hidden="true"></span>
-    <label class="dock-select">{{ t.wb.previewPosition }} <select (change)="setDock('previewPosition', $any($event.target).value)">
-      @for (side of panePositions; track side) { <option [value]="side" [selected]="view().previewPosition === side">{{ t.wb.positions[side] }}</option> }
-    </select></label>
+    <button type="button" class="icon-button" [disabled]="!view().showDetails" (click)="togglePreviewPosition()" [attr.aria-label]="view().previewPosition === 'bottom' ? t.wb.previewRight : t.wb.previewBottom" [title]="view().previewPosition === 'bottom' ? t.wb.previewRight : t.wb.previewBottom"><span aria-hidden="true">{{ view().previewPosition === 'bottom' ? '◨' : '⬓' }}</span></button>
     <button type="button" class="button ghost" [attr.aria-pressed]="view().showDetails" (click)="toggleDetails()" [title]="view().showDetails ? t.wb.hideDetails : t.wb.showDetails">▭ {{ t.wb.detailsShort }}</button>
   }
-  <button type="button" class="button ghost" [attr.aria-pressed]="view().showNav" (click)="menu('navigation')">{{ t.navLabel }}</button>
-  <label class="dock-select">{{ t.wb.explorerPosition }} <select (change)="setDock('navPosition', $any($event.target).value)">
-    @for (side of panePositions; track side) { <option [value]="side" [selected]="view().navPosition === side">{{ t.wb.positions[side] }}</option> }
-  </select></label>
   <span class="spacer"></span>
   <label class="toggle"><input type="checkbox" [checked]="view().rowColors" (change)="setRowColors($any($event.target).checked)"> {{ t.wb.rowColors }}</label>
 </div>
 </header>
 
-<div class="workbench-grid dock-layout" [attr.data-pane]="view().navPosition" [style.--pane-size]="view().navSize + '%'">
-  <nav class="explorer dock-pane" [hidden]="!view().showNav" [attr.aria-label]="t.navLabel">
+<div class="workbench-grid">
+  <nav class="explorer" [attr.aria-label]="t.navLabel">
     <button type="button" class="nav-item all" [attr.aria-current]="queue() === 'all' ? 'true' : null" (click)="openQueue('all')">
       <span class="nav-icon" aria-hidden="true">☰</span><span class="nav-label">{{ t.wb.allCases }}</span><span class="nav-count">{{ count('all') }}</span></button>
     <h2 class="nav-heading">{{ t.queuesHeading }}</h2>
@@ -125,10 +112,7 @@
     }
   </nav>
 
-  @if (view().showNav) {
-    <div [ncPaneResize]="view().navPosition" [paneSize]="view().navSize" (resizePane)="setPaneSize('navSize', $event)" [attr.aria-label]="t.wb.resizeExplorer"></div>
-  }
-  <main class="workbench-main dock-main">
+  <main class="workbench-main">
     @if (error()) { <p class="banner error" role="alert">{{ error() }} <button type="button" class="link" (click)="error.set('')" aria-label="Schließen">×</button></p> }
     @if (extras(); as v) {
       <section class="tool-view" [attr.aria-labelledby]="'tool-title'">
@@ -151,9 +135,7 @@
           @switch (d.state) {
             @case ('ready') {
               @if (d.state === 'ready') {
-                <nc-case-file [detail]="d.value" [presentation]="presentation()" [release]="activeRelease()" [username]="user().username" [busy]="busy()" [wide]="true" [view]="view()" [note]="mark(d.value.processId)?.note ?? ''"
-                  (layout)="updateView($event)" (noteChange)="command([d.value.processId], { command: 'NOTE', note: $event || null })"
-                  (copyId)="copyNumber($event)" (act)="act(d.value.processId, $event)" />
+                <nc-case-file [detail]="d.value" [presentation]="presentation()" [release]="activeRelease()" [username]="user().username" [busy]="busy()" [wide]="true" (act)="act(d.value.processId, $event)" />
               }
             }
             @case ('loading') { <p class="empty-state" role="status">{{ t.wb.loading }}</p> }
@@ -163,22 +145,14 @@
       </section>
       </div>
     } @else {
-    <div class="list-and-pane dock-layout" [attr.data-pane]="view().previewPosition" [style.--pane-size]="view().previewSize + '%'">
-      <div class="list-scroll dock-main">
-        <table class="case-table" [attr.data-density]="view().density" [class.row-colors]="view().rowColors" [style.min-width.px]="tableMinWidth()" [style.width.px]="fixedWidths() ? tableMinWidth() : null" [attr.aria-label]="queueLabel(queue())">
+    <div #area class="list-and-pane" [attr.data-pane]="view().previewPosition" [style.--pane-size]="view().previewSize + '%'">
+      <div class="list-scroll">
+        <table class="case-table" [attr.data-density]="view().density" [class.row-colors]="view().rowColors" [style.min-width.px]="tableMinWidth()" [attr.aria-label]="queueLabel(queue())">
           <thead>
             <tr>
               <th class="col-select"><input type="checkbox" [attr.aria-label]="t.wb.selectVisible" [checked]="allVisibleSelected()" [disabled]="!visible().length" (change)="toggleVisible($any($event.target).checked)"></th>
               @for (c of columns(); track c) {
-                <th class="resizable-column" [class]="'col-' + c" [style.width.px]="width(c)" [attr.aria-sort]="ariaSort(c)">
-                  <button type="button" class="sort" (click)="sortBy(c)">{{ columnLabel(c) }}</button>
-                  <span class="column-resizer" role="separator" tabindex="0" aria-orientation="vertical"
-                    [attr.aria-label]="t.wb.resizeColumn(columnLabel(c))" [attr.aria-valuemin]="columnMin(c)"
-                    [attr.aria-valuemax]="columnMax" [attr.aria-valuenow]="columnSize(c)"
-                    (pointerdown)="columnDown($event)" (pointermove)="columnMove($event, c)"
-                    (pointerup)="columnUp($event)" (pointercancel)="columnUp($event)" (lostpointercapture)="columnUp($event)"
-                    (keydown)="columnKeys($event, c)" (dblclick)="resetColumnSize(c)"></span>
-                </th>
+                <th [class]="'col-' + c" [style.width.px]="width(c)" [attr.aria-sort]="ariaSort(c)"><button type="button" class="sort" (click)="sortBy(c)">{{ columnLabel(c) }}</button></th>
               }
             </tr>
             @if (view().showFilters) {
@@ -209,7 +183,7 @@
                 @for (c of columns(); track c) {
                   @switch (c) {
                     @case ('subject') { <td class="col-subject" [title]="cellText(p, c) + (mark(p.processId)?.note ? ' – ' + mark(p.processId)?.note : '')"><span class="bookmark-slot">@if (mark(p.processId)?.bookmark) {<span class="bookmark" role="img" [attr.aria-label]="t.wb.ablage.bookmarked">★</span>}</span><strong>{{ p.displayName ?? p.externalReference.caseId }}</strong>@if (mark(p.processId)?.note; as n) {<small class="case-note">{{ n }}</small>}</td> }
-                    @case ('number') { <td class="col-number mono"><button type="button" class="link copy-number" [attr.aria-label]="t.wb.copyNumber(p.externalReference.caseId)" [title]="t.wb.copyNumber(p.externalReference.caseId)" (click)="copyNumber(p.externalReference.caseId, $event)" (dblclick)="$event.stopPropagation()">{{ p.externalReference.caseId }}</button></td> }
+                    @case ('number') { <td class="col-number mono">{{ p.externalReference.caseId }}</td> }
                     @case ('status') { <td class="col-status"><span class="chip" [attr.data-queue]="t.stateQueue[p.state]">{{ stateLabel(p.state) }}</span></td> }
                     @case ('result') { <td class="col-result"><span class="result-pill ampel" [attr.data-outcome]="p.outcome" [title]="outcome(p.outcome)">{{ outcome(p.outcome) }}</span></td> }
                     @case ('release') { <td class="col-release mono" [title]="cellText(p, c)">{{ cellText(p, c) }}</td> }
@@ -227,15 +201,17 @@
         }
       </div>
       @if (view().showDetails) {
-      <div [ncPaneResize]="view().previewPosition" [paneSize]="view().previewSize" (resizePane)="setPaneSize('previewSize', $event)" [attr.aria-label]="t.wb.resizePreview"></div>
-      <section class="reading-pane dock-pane" [attr.aria-label]="t.wb.readingPane">
+      <div class="splitter" role="separator" tabindex="0" [attr.aria-label]="t.wb.resizePreview"
+        [attr.aria-orientation]="view().previewPosition === 'bottom' ? 'horizontal' : 'vertical'"
+        [attr.aria-valuemin]="previewMin" [attr.aria-valuemax]="previewMax" [attr.aria-valuenow]="view().previewSize"
+        (pointerdown)="splitterDown($event)" (pointermove)="splitterMove($event, area)" (pointerup)="splitterUp()" (pointercancel)="splitterUp()"
+        (keydown)="splitterKeys($event)"><span aria-hidden="true">⋮⋮</span></div>
+      <section class="reading-pane" [attr.aria-label]="t.wb.readingPane">
         @if (detail(); as d) {
           @switch (d.state) {
             @case ('ready') {
               @if (d.state === 'ready') {
-                <nc-case-file [detail]="d.value" [presentation]="presentation()" [release]="activeRelease()" [username]="user().username" [busy]="busy()" [view]="view()" [note]="mark(d.value.processId)?.note ?? ''"
-                  (layout)="updateView($event)" (noteChange)="command([d.value.processId], { command: 'NOTE', note: $event || null })"
-                  (copyId)="copyNumber($event)" (act)="act(d.value.processId, $event)" />
+                <nc-case-file [detail]="d.value" [presentation]="presentation()" [release]="activeRelease()" [username]="user().username" [busy]="busy()" (act)="act(d.value.processId, $event)" />
               }
             }
             @case ('loading') { <p class="empty-state" role="status">{{ t.wb.loading }}</p> }
@@ -255,34 +231,6 @@
 </footer>
 @if (notice()) { <p class="toast" role="status">{{ notice() }}</p> }
 
-<dialog #helpDialog class="dialog-card workbench-help" aria-labelledby="help-title">
-  @if (helpPage(); as page) {
-      <h3 id="help-title">{{ page === 'usage' ? t.wb.help.usage : t.wb.menu.shortcutsTitle }}</h3>
-    <div class="tabs" role="tablist" [attr.aria-label]="t.wb.help.label">
-      <button type="button" class="tab" id="help-usage" role="tab" aria-controls="help-panel"
-        [attr.aria-selected]="page === 'usage'" [attr.tabindex]="page === 'usage' ? 0 : -1"
-        (click)="helpPage.set('usage')" (keydown)="switchHelpTab('shortcuts', $event)">{{ t.wb.help.usage }}</button>
-      <button type="button" class="tab" id="help-shortcuts" role="tab" aria-controls="help-panel"
-        [attr.aria-selected]="page === 'shortcuts'" [attr.tabindex]="page === 'shortcuts' ? 0 : -1"
-        (click)="helpPage.set('shortcuts')" (keydown)="switchHelpTab('usage', $event)">{{ t.wb.menu.shortcutsTitle }}</button>
-    </div>
-    <div id="help-panel" role="tabpanel" tabindex="0" [attr.aria-labelledby]="'help-' + page">
-      @if (page === 'usage') {
-        <dl>
-          @for (item of t.wb.help.questions; track item.question) { <dt>{{ item.question }}</dt><dd>{{ item.answer }}</dd> }
-        </dl>
-        <p class="muted">{{ t.wb.menu.notice }}</p>
-      } @else {
-        <dl>
-          @for (shortcut of t.wb.menu.shortcuts.split(' · '); track shortcut) {
-            <dt><kbd>{{ shortcut.split(': ')[0] }}</kbd></dt><dd>{{ shortcut.split(': ')[1] }}</dd>
-          }
-        </dl>
-      }
-    </div>
-    <div class="dialog-actions"><button type="button" class="button" autofocus (click)="helpDialog.close()">{{ t.wb.help.close }}</button></div>
-  }
-</dialog>
 @if (columnDialog(); as draft) {
   <div class="dialog-backdrop">
     <div class="dialog-card column-options" tabindex="-1" (keydown.escape)="columnDialog.set(null)" role="dialog" aria-modal="true" aria-labelledby="columns-title">

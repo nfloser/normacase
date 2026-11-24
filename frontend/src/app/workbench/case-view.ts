@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ProcessSummary } from './api';
-import { PANE_POSITIONS, PanePosition, clampPane } from './pane-resize';
 
 /** Spalten der Fallliste. Die Fachwerte kommen aus der API; hier wird nur angezeigt, sortiert und gefiltert. */
 export const COLUMN_IDS = ['subject', 'number', 'status', 'request', 'next', 'result', 'received', 'expires', 'missing', 'documents', 'confirmedBy', 'release', 'system', 'folder'] as const;
@@ -28,53 +27,35 @@ export const SESSION_ONLY_FILTERS: ReadonlySet<ColumnId> = new Set<ColumnId>(['s
 
 export interface SortState { readonly key: ColumnId; readonly asc: boolean }
 export type Filters = Partial<Record<ColumnId, string>>;
-export type ColumnSizes = Partial<Record<ColumnId, number>>;
-export const MAX_COLUMN_WIDTH = 900;
-
-export function minColumnWidth(c: ColumnId): number {
-  return Math.min(COLUMN_WIDTHS[c], 80);
-}
-
-export function clampColumnWidth(c: ColumnId, width: number): number {
-  return Math.min(MAX_COLUMN_WIDTH, Math.max(minColumnWidth(c), Math.round(width)));
-}
 
 export interface SavedQuery {
   readonly name: string;
   readonly queue: string;
   readonly columns: readonly ColumnId[];
-  readonly columnSizes: ColumnSizes;
   readonly filters: Filters;
   readonly sort: SortState;
 }
 
+export type PreviewPosition = 'bottom' | 'right';
 export type Density = 'normal' | 'compact' | 'comfortable';
 export const DENSITIES: readonly Density[] = ['normal', 'compact', 'comfortable'];
+export const PREVIEW_MIN = 25;
+export const PREVIEW_MAX = 75;
 
 export interface ViewSettings {
   readonly columns: readonly ColumnId[];
-  readonly columnSizes: ColumnSizes;
   readonly rowColors: boolean;
   readonly showFilters: boolean;
   /** Vorschau der Fallakte neben der Liste; ausgeblendet hat die Liste den ganzen Platz (F4). */
   readonly showDetails: boolean;
   /** Lage der Vorschau wie im bisherigen Fallexplorer: unten (Standard) oder rechts. */
-  readonly previewPosition: PanePosition;
+  readonly previewPosition: PreviewPosition;
   /** Anteil der Vorschau am Arbeitsbereich in Prozent. */
   readonly previewSize: number;
   /** Zeilendichte der Liste wie im bisherigen Fallexplorer. */
   readonly density: Density;
   /** Explorer (Körbe und Ablage) links ein- oder ausgeblendet. */
   readonly showNav: boolean;
-  readonly navPosition: PanePosition;
-  readonly navSize: number;
-  readonly documentPosition: PanePosition;
-  readonly documentSize: number;
-  readonly filesPosition: PanePosition;
-  readonly filesSize: number;
-  readonly showDocuments: boolean;
-  readonly showFiles: boolean;
-  readonly showDocumentPreview: boolean;
   /** Plattformfälle (Massen- und Technikfälle der Demo) einbeziehen. */
   readonly includePlatform: boolean;
   readonly sort: SortState;
@@ -83,7 +64,6 @@ export interface ViewSettings {
 
 export const DEFAULT_VIEW: ViewSettings = {
   columns: DEFAULT_COLUMNS,
-  columnSizes: {},
   rowColors: true,
   showFilters: true,
   showDetails: true,
@@ -91,9 +71,6 @@ export const DEFAULT_VIEW: ViewSettings = {
   previewSize: 45,
   density: 'normal',
   showNav: true,
-  navPosition: 'left', navSize: 20,
-  documentPosition: 'right', documentSize: 55, showDocuments: true,
-  filesPosition: 'left', filesSize: 32, showFiles: true, showDocumentPreview: true,
   includePlatform: false,
   sort: { key: 'number', asc: true },
   queries: [],
@@ -101,15 +78,14 @@ export const DEFAULT_VIEW: ViewSettings = {
 
 /**
  * Farbton einer Zeile nach Bearbeitungsstand, wie im bisherigen Fallexplorer:
- * Cyan entscheidungsreif, Gelb fehlende Angaben, Kupfer Gegenprüfung, Rot technische Klärung, Petal Unterlagensichtung, Mint versendet.
+ * grün bereit, gelb Angaben fehlen, orange Gegenprüfung, rot technische Klärung, lila Unterlagensichtung, grau erledigt.
  */
-export function rowTone(p: Pick<ProcessSummary, 'state' | 'outcome'>): 'ready' | 'missing' | 'conflict' | 'technical' | 'documents' | 'approval' | 'done' {
+export function rowTone(p: Pick<ProcessSummary, 'state' | 'outcome'>): 'ready' | 'missing' | 'conflict' | 'technical' | 'documents' | 'done' {
   switch (p.state) {
     case 'IN_CLARIFICATION': return p.outcome === 'HUMAN_REVIEW' ? 'conflict' : 'missing';
     case 'IN_CONFLICT_REVIEW': return 'conflict';
     case 'TECHNICAL_CLARIFICATION': return 'technical';
     case 'DOCUMENT_REVIEW': return 'documents';
-    case 'AWAITING_APPROVAL': return 'approval';
     case 'DISPATCHED': case 'CLOSED': return 'done';
     default: return 'ready';
   }
@@ -140,12 +116,9 @@ export class ViewStore {
   }
 }
 
-function paneSize(v: unknown, fallback: number): number {
-  return typeof v === 'number' && Number.isFinite(v) ? clampPane(v) : fallback;
-}
-
-function panePosition(v: unknown, fallback: PanePosition): PanePosition {
-  return PANE_POSITIONS.find((p) => p === v) ?? fallback;
+export function clampPreview(v: unknown): number {
+  const n = typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : DEFAULT_VIEW.previewSize;
+  return Math.min(PREVIEW_MAX, Math.max(PREVIEW_MIN, n));
 }
 
 const isColumn = (v: unknown): v is ColumnId => typeof v === 'string' && (COLUMN_IDS as readonly string[]).includes(v);
@@ -170,37 +143,18 @@ export function storableFilters(v: unknown): Filters {
   return out;
 }
 
-function columnSizes(v: unknown): ColumnSizes {
-  const sizes: ColumnSizes = {};
-  if (!v || typeof v !== 'object') return sizes;
-  for (const [key, value] of Object.entries(v)) {
-    if (isColumn(key) && typeof value === 'number' && Number.isFinite(value)) sizes[key] = clampColumnWidth(key, value);
-  }
-  return sizes;
-}
-
 export function sanitize(v: unknown): ViewSettings {
   const o = (v && typeof v === 'object' ? v : {}) as Record<string, unknown>;
   const queries = Array.isArray(o['queries']) ? o['queries'] : [];
   return {
     columns: columns(o['columns']),
-    columnSizes: columnSizes(o['columnSizes']),
     rowColors: o['rowColors'] !== false,
     showFilters: o['showFilters'] !== false,
     showDetails: o['showDetails'] !== false,
-    previewPosition: panePosition(o['previewPosition'], DEFAULT_VIEW.previewPosition),
-    previewSize: paneSize(o['previewSize'], DEFAULT_VIEW.previewSize),
+    previewPosition: o['previewPosition'] === 'right' ? 'right' : 'bottom',
+    previewSize: clampPreview(o['previewSize']),
     density: DENSITIES.includes(o['density'] as Density) ? (o['density'] as Density) : 'normal',
     showNav: o['showNav'] !== false,
-    navPosition: panePosition(o['navPosition'], DEFAULT_VIEW.navPosition),
-    navSize: paneSize(o['navSize'], DEFAULT_VIEW.navSize),
-    documentPosition: panePosition(o['documentPosition'], DEFAULT_VIEW.documentPosition),
-    documentSize: paneSize(o['documentSize'], DEFAULT_VIEW.documentSize),
-    filesPosition: panePosition(o['filesPosition'], DEFAULT_VIEW.filesPosition),
-    filesSize: paneSize(o['filesSize'], DEFAULT_VIEW.filesSize),
-    showDocuments: o['showDocuments'] !== false,
-    showFiles: o['showFiles'] !== false,
-    showDocumentPreview: o['showDocumentPreview'] !== false,
     includePlatform: o['includePlatform'] === true,
     sort: sort(o['sort']),
     queries: queries
@@ -210,7 +164,6 @@ export function sanitize(v: unknown): ViewSettings {
         name: String(q['name']).slice(0, 60),
         queue: String(q['queue']),
         columns: columns(q['columns']),
-        columnSizes: columnSizes(q['columnSizes']),
         filters: storableFilters(q['filters']),
         sort: sort(q['sort']),
       })),

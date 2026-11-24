@@ -29,20 +29,6 @@ describe('CaseFile', () => {
     return { fixture, el: fixture.nativeElement as HTMLElement, actions };
   }
 
-  it('bearbeitet die persönliche Notiz im eigenen Tab', () => {
-    const { fixture, el } = render(detail());
-    fixture.componentRef.setInput('note', 'Beim Fachteam nachfragen');
-    const changes: string[] = [];
-    fixture.componentInstance.noteChange.subscribe((note) => changes.push(note));
-    [...el.querySelectorAll<HTMLButtonElement>('[role=tab]')].find((tab) => tab.textContent?.includes('Notizen'))!.click();
-    fixture.detectChanges();
-    const field = el.querySelector<HTMLTextAreaElement>('.case-note-form textarea')!;
-    expect(field.value).toBe('Beim Fachteam nachfragen');
-    field.value = ' Rückruf am Donnerstag ';
-    el.querySelector('form.case-note-form')!.dispatchEvent(new Event('submit', { cancelable: true }));
-    expect(changes).toEqual(['Rückruf am Donnerstag']);
-  });
-
   it('sagt beim eigenen bestätigten Fall, dass eine andere Person freigeben muss', () => {
     const { el } = render(detail({ state: 'AWAITING_APPROVAL', confirmedBy: 'gutachterin.a', actions: ['reject'] }));
     expect(el.querySelector('.next-step')!.textContent).toContain('andere Person');

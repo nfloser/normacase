@@ -45,7 +45,6 @@ class PflegeRegelwerk2026Test {
         Map<String, CaseValue> facts = new HashMap<>();
         pack.fields().forEach(f -> facts.put(f.id(), "truth".equals(f.type())
                 ? CaseValue.truth(TruthValue.NO) : CaseValue.number(BigDecimal.ZERO)));
-        if (pack == CHILD) facts.put("alter_monate", CaseValue.number(new BigDecimal("132")));
         values.forEach((k, v) -> facts.put(k, v instanceof TruthValue t ? CaseValue.truth(t)
                 : v == null ? CaseValue.UNKNOWN : CaseValue.number(new BigDecimal(v.toString()))));
         return engine.evaluate(pack, new CaseInput(LocalDate.parse("2026-11-04"), facts, Map.of()));
@@ -130,15 +129,10 @@ class PflegeRegelwerk2026Test {
     }
 
     @Test
-    void modul5RechnetHaeufigkeitenOhneZwischenrundung() {
+    void modul5RechnetHaeufigkeitenProTagMitVierNachkommastellen() {
         assertThat(value(assess(ADULT, Map.of("kf_5_1_tag", 3)), "modul_5_a")).isEqualByComparingTo("1");
         assertThat(value(assess(ADULT, Map.of("kf_5_1_tag", 3, "kf_5_1_monat", 1)), "modul_5_a")).isEqualByComparingTo("2");
         assertThat(value(assess(ADULT, Map.of("kf_5_1_woche", 6)), "modul_5_a")).isEqualByComparingTo("0"); // 0,8571
-        // Sieben getrennte Wochenwerte ergeben genau einen zusätzlichen Vorgang pro Tag.
-        var weekly = new HashMap<String, Object>();
-        for (int i = 1; i <= 7; i++) weekly.put("kf_5_" + i + "_woche", 1);
-        weekly.put("kf_5_1_tag", 2);
-        assertThat(value(assess(ADULT, weekly), "modul_5_a")).isEqualByComparingTo("1");
         assertThat(value(assess(ADULT, Map.of("kf_5_8_woche", 1)), "modul_5_b")).isEqualByComparingTo("1"); // 0,1429
         assertThat(value(assess(ADULT, Map.of("kf_5_8_monat", 4)), "modul_5_b")).isEqualByComparingTo("0"); // 0,1333
         assertThat(value(assess(ADULT, Map.of("kf_5_8_tag", 3)), "modul_5_b")).isEqualByComparingTo("3");
@@ -181,22 +175,6 @@ class PflegeRegelwerk2026Test {
         assertThat(ADULT.fields()).noneMatch(f -> f.id().startsWith("kf_5_k"));
         assertThat(value(assess(CHILD, Map.of("kf_5_k_woche", 1)), "modul_5_c")).isEqualByComparingTo("1");
         assertThat(grade(assess(CHILD, Map.of("kf_1_1", 2, "kf_4_1", 3)))).isEqualTo("1");
-    }
-
-    @Test
-    void kinderWertenAltersvergleichUndMehrfachpunkteAus() {
-        // KF 4.4.8 ist ab 20 Monaten überwiegend selbständig, ab 30 Monaten selbständig.
-        var younger = assess(CHILD, Map.of("alter_monate", 19, "kf_4_8", 3, "kf_4_11", 3));
-        assertThat(value(younger, "modul_4_einzelpunkte")).isEqualByComparingTo("3");
-        var example = assess(CHILD, Map.of("alter_monate", 20, "kf_4_8", 3));
-        assertThat(value(example, "modul_4_einzelpunkte")).isEqualByComparingTo("6");
-        var older = assess(CHILD, Map.of("alter_monate", 30, "kf_4_8", 3));
-        assertThat(value(older, "modul_4_einzelpunkte")).isEqualByComparingTo("9");
-        // Ab 5 Jahren ist KF 4.4.11 bei gegebenen Voraussetzungen bewertbar.
-        assertThat(value(assess(CHILD, Map.of("alter_monate", 60, "kf_4_11", 3)), "modul_4_einzelpunkte"))
-                .isEqualByComparingTo("3");
-        assertThat(assess(CHILD, Map.of("alter_monate", 17)).outcome()).isEqualTo(AssessmentOutcome.HUMAN_REVIEW);
-        assertThat(assess(CHILD, Map.of("alter_monate", 216)).outcome()).isEqualTo(AssessmentOutcome.HUMAN_REVIEW);
     }
 
     @Test

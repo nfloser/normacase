@@ -127,7 +127,7 @@ if ($seeded) { Write-Host "    $seeded" }
 Write-Host ''
 Write-Host 'NormaCase läuft.' -ForegroundColor Green
 Write-Host "  Prüfwerkstatt:  $url"
-Write-Host ('  Anmeldung:      tobias.fl' + [char]0x00F6 + 'ser  (prüfen, Rückfragen, bestätigen)')
+Write-Host '  Anmeldung:      gutachterin.a  (prüfen, Rückfragen, bestätigen)'
 Write-Host '                  freigabe.c     (freigeben oder zurückweisen)'
 Write-Host '  Passwort:       demo'
 if ($Monitoring) { Write-Host '  Grafana:        http://localhost:3000' }
