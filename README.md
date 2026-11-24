@@ -91,6 +91,16 @@ Wer den Stack schon vor dem 21.11.2026 gestartet hatte, setzt die Datenbank einm
 
 Mit `docker compose --profile monitoring up --build` kommen Prometheus (<http://localhost:9090>) und Grafana (<http://localhost:3000>, Dashboard „NormaCase – Betrieb“) dazu. Entwicklung ohne Container: [backend/](backend/README.md) und [frontend/](frontend/README.md).
 
+## Fertige Images
+
+Jedes Release veröffentlicht Backend, Frontend und Knowledge als Images für amd64 und arm64 in der GitHub Container Registry, jeweils mit SBOM und signiertem Herkunftsnachweis:
+
+```bash
+docker pull ghcr.io/nfloser/normacase-backend:1.0.0
+gh attestation verify oci://ghcr.io/nfloser/normacase-backend:1.0.0 --owner nfloser
+kubectl apply -f normacase-1.0.0-kubernetes.yaml   # liegt am Release, Images mit festem Digest
+```
+
 ## So arbeitet NormaCase
 
 1. Ein Fachsystem liefert einen Vorgang über `POST /api/v1/intake` ein (oder bewertet nur, ohne Vorgang, über `POST /api/v1/assessments`).
