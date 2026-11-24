@@ -7,6 +7,8 @@ import de.normacase.common.Problems;
 import de.normacase.common.StrictJson;
 import de.normacase.common.StrictJson.Obj;
 import de.normacase.documents.DocumentStore.IncomingDocument;
+import de.normacase.documents.DocumentStore.Reference;
+import java.time.LocalDate;
 import de.normacase.identity.Actor;
 import de.normacase.workflow.WorkflowService;
 import de.normacase.workflow.WorkflowService.OpenProcess;
@@ -139,10 +141,23 @@ class IntakeController {
             throw new InvalidDocumentException(subject.path() + ".displayName", "Anzeigename fehlt oder ist zu lang");
         }
         List<IncomingDocument> documents = root.list("documents", (node, path) -> {
-            Obj d = Obj.of(node, path).allow(Set.of("id", "title", "mediaType", "contentBase64", "pagesBase64"));
+            Obj d = Obj.of(node, path).allow(Set.of("id", "title", "mediaType", "contentBase64", "pagesBase64",
+                    "category", "issuedOn", "references"));
+            String issued = d.optString("issuedOn");
+            LocalDate issuedOn;
+            try {
+                issuedOn = issued == null ? null : LocalDate.parse(issued);
+            } catch (java.time.format.DateTimeParseException e) {
+                throw new InvalidDocumentException(path + ".issuedOn", "Datum als JJJJ-MM-TT erwartet");
+            }
+            List<Reference> references = d.has("references") ? d.list("references", (r, rp) -> {
+                Obj ref = Obj.of(r, rp).allow(Set.of("field", "page"));
+                return new Reference(ref.string("field"), ref.integer("page"));
+            }) : List.of();
             return new IncomingDocument(d.string("id"), d.string("title"), d.string("mediaType"),
                     base64(d.string("contentBase64"), path + ".contentBase64"),
-                    d.list("pagesBase64", (p, pp) -> base64(p.isString() ? p.stringValue() : null, pp)));
+                    d.has("pagesBase64") ? d.list("pagesBase64", (p, pp) -> base64(p.isString() ? p.stringValue() : null, pp)) : List.of(),
+                    d.has("category") ? d.string("category") : "OTHER", issuedOn, references);
         });
         String release = root.optString("knowledgeRelease");
         if (release == null && root.has("case")) {

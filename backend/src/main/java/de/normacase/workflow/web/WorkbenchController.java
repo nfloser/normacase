@@ -127,9 +127,14 @@ class WorkbenchController {
             o.set("caseInput", StrictJson.parseObject(input).node());
         }
         ArrayNode docs = o.putArray("documents");
-        documents.list(id).forEach(d -> docs.addObject().put("id", d.id()).put("title", d.title())
-                .put("mediaType", d.mediaType()).put("sha256", d.sha256()).put("sizeBytes", d.sizeBytes())
-                .put("pageCount", d.pageCount()));
+        documents.list(id).forEach(d -> {
+            ObjectNode doc = docs.addObject().put("id", d.id()).put("title", d.title())
+                    .put("mediaType", d.mediaType()).put("sha256", d.sha256()).put("sizeBytes", d.sizeBytes())
+                    .put("pageCount", d.pageCount()).put("category", d.category())
+                    .put("issuedOn", d.issuedOn() == null ? null : d.issuedOn().toString());
+            ArrayNode refs = doc.putArray("references");
+            d.references().forEach(r -> refs.addObject().put("field", r.field()).put("page", r.page()));
+        });
         ArrayNode history = o.putArray("history");
         jdbc.sql("select at, actor, action, reason from workflow.review_event where process_id = :id order by event_id")
                 .param("id", id).query((rs, n) -> history.addObject().put("at", rs.getTimestamp(1).toInstant().toString())
