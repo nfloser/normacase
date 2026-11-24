@@ -15,6 +15,8 @@
   ],
   "defaultLocale": "de",
   "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": false,
   "roles": {
     "realm": [
@@ -132,11 +134,11 @@
   ],
   "users": [
     {
-      "username": "gutachterin.a",
+      "username": "tobias.flöser",
       "enabled": true,
-      "firstName": "Anna",
-      "lastName": "Seidel",
-      "email": "gutachterin.a@synthetisch.invalid",
+      "firstName": "Tobias",
+      "lastName": "Flöser",
+      "email": "${NORMACASE_DEMO_REVIEWER_EMAIL}",
       "emailVerified": true,
       "credentials": [
         {

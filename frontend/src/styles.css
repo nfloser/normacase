@@ -132,7 +132,6 @@ nc-workbench { display: grid; grid-template-rows: auto auto auto minmax(0, 1fr) 
 .commandbar { display: flex; align-items: center; flex-wrap: nowrap; gap: .2rem; padding: .35rem .75rem; background: var(--nc-surface); border-bottom: 1px solid var(--nc-border); overflow-x: auto; }
 .commandbar .count { margin-left: .15rem; }
 .workbench-grid { min-height: 0; }
-nc-workbench.nav-collapsed .explorer { visibility: hidden; }
 .explorer { overflow: auto; padding: .6rem .5rem 1rem; border-right: 1px solid var(--nc-border); background: var(--nc-body); }
 .app-shell .nav-heading { display: flex; align-items: center; justify-content: space-between; margin: 1rem .5rem .3rem; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--nc-text-2); font-weight: 700; }
 .nav-item { display: flex; align-items: center; gap: .55rem; width: 100%; min-height: 32px; padding: 0 .55rem; border: none; border-radius: var(--nc-radius); background: transparent; text-align: left; cursor: pointer; color: var(--nc-text); }
@@ -169,6 +168,7 @@ nc-workbench.nav-collapsed .explorer { visibility: hidden; }
 .case-note-form .field { width: min(100%, 35rem); }
 .case-note-form textarea { padding: .55rem; resize: vertical; }
 .workbench-help { max-height: 85vh; overflow: auto; color: var(--nc-text); }
+.workbench-help:not([open]) { display: none; }
 .workbench-help::backdrop { background: rgb(0 0 0 / 35%); }
 .workbench-help dt { font-weight: 600; margin-top: .75rem; }
 .workbench-help dd { margin: .25rem 0; }
@@ -580,6 +580,10 @@ body.reader-window .reader-toolbar { position: sticky; top: 0; z-index: 1; gap: 
   .pane { border-right: none; border-bottom: 1px solid var(--nc-border); }
 }
 nc-workbench { grid-template-rows: auto auto minmax(0, 1fr) auto; }
+nc-workbench .appbar { grid-row: 1; }
+nc-workbench .commandbar { grid-row: 2; }
+nc-workbench > .workbench-grid { grid-row: 3; }
+nc-workbench > .statusbar { grid-row: 4; }
 .app-shell input, .app-shell select, .app-shell textarea { min-height: 32px; padding: 0 .55rem; border-radius: var(--nc-radius); border: 1px solid var(--nc-border); background: var(--nc-surface); }
 .clarify-form { display: grid; gap: .6rem; }
 .clarify-form .field-row { display: grid; grid-template-columns: minmax(0, 1fr) 12rem; gap: .75rem; align-items: center; }

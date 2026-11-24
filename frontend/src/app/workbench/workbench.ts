@@ -440,7 +440,7 @@ export class Workbench {
     this.helpPage.set(page);
     const details = origin.closest('details');
     details?.removeAttribute('open');
-    dialog.showModal();
+    requestAnimationFrame(() => { if (dialog.isConnected && !dialog.open) dialog.showModal(); });
     dialog.addEventListener('close', () => {
       this.helpPage.set(null);
       details?.querySelector('summary')?.focus();

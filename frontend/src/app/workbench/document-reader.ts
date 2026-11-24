@@ -105,7 +105,7 @@ export class DocumentReader implements OnDestroy {
     effect(() => {
       const docs = this.documents();
       untracked(() => {
-        if (!docs.some((d) => d.id === this.selectedId())) this.select(this.groups()[0]?.docs[0]?.id ?? null);
+        if (!docs.some((d) => d.id === this.selectedId())) this.select(this.groups()[0]?.docs[0]?.id ?? null, 1, false);
       });
     });
     effect(() => {
@@ -125,8 +125,8 @@ export class DocumentReader implements OnDestroy {
     this.closeWindows();
   }
 
-  protected select(id: string | null, page = 1): void {
-    if (!this.view().showDocumentPreview) this.layout.emit({ showDocumentPreview: true });
+  protected select(id: string | null, page = 1, reveal = true): void {
+    if (reveal && !this.view().showDocumentPreview) this.layout.emit({ showDocumentPreview: true });
     this.release();
     this.selectedId.set(id);
     this.page.set(page);

@@ -29,7 +29,7 @@ Expand-Archive normacase.zip -DestinationPath . ; cd normacase-main
 
 ## Anmelden und zeigen
 
-- Gutachterin: `gutachterin.a` / `demo` · Freigabe (zweite Person): `freigabe.c` / `demo`
+- Gutachter: `tobias.flöser` / `demo` · Freigabe (zweite Person): `freigabe.c` / `demo`
 - Guter Ablauf: Arbeitsliste „Zur Freigabe vorbereitet“ → Gerda Lehmann doppelklicken → in der Begründung auf „Erhebungsbogen, S. 1“ klicken → Dokumente durchklicken (Fax, Foto, Scan) → Bestätigen → abmelden, als `freigabe.c` freigeben.
 - Widerspruch zeigen: „Gegenprüfung erforderlich“ → Ulrich Hartmann.
 
