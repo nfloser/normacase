@@ -1078,6 +1078,6 @@ function focusRow(el: HTMLElement | null): void {
   const scroller = el.closest<HTMLElement>('.list-scroll');
   const left = scroller?.scrollLeft ?? 0;
   el.focus({ preventScroll: true });
-  el.scrollIntoView({ block: 'nearest' });
+  el.scrollIntoView?.({ block: 'nearest' });
   if (scroller) scroller.scrollLeft = left;
 }
