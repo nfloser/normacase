@@ -49,3 +49,9 @@ Expand-Archive normacase.zip -DestinationPath . ; cd normacase-main
 | Anmeldung lädt nicht | 1 Minute warten (Anmeldedienst startet zuletzt), Seite neu laden |
 
 In der Prüfwerkstatt klappt **Menü** die Menü- und Aktionsleiste ein oder aus. Am rechten Rand der Spaltenköpfe lässt sich die Breite ziehen, mit den Pfeiltasten ändern oder per Doppelklick zurücksetzen. Breiten gehören zur aktuellen Ansicht und zu gespeicherten Abfragen. Ein Klick auf eine Vorgangsnummer kopiert sie.
+
+### Arbeitsplatz anordnen
+
+Explorer, Fallvorschau, Dokumentbereich und Unterlagenliste lassen sich jeweils links, rechts, oben oder unten anordnen. Ziehe den jeweiligen Trenner oder verändere die Größe mit den Pfeiltasten. Die Einstellungen bleiben pro Konto im Browser gespeichert. Über die Schaltflächen in der Aktionsleiste und der Fallakte kannst du die Bereiche ausblenden und zurückholen.
+
+Im Tab **Notizen** bearbeitest du dieselbe persönliche Notiz, die im Kontextmenü der Liste verfügbar ist. Unter **Hilfe → Bedienung** findest du Antworten auf häufige Fragen. **Hilfe → Tastenkürzel** zeigt die verfügbaren Kürzel.

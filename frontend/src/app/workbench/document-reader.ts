@@ -1,7 +1,10 @@
-import { Component, DestroyRef, ElementRef, OnDestroy, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnDestroy, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { Subscription, from, mergeMap } from 'rxjs';
 import { de, germanDate, label } from '../de';
 import { DocumentMeta, WorkbenchApi } from './api';
+
+import { DEFAULT_VIEW, ViewSettings } from './case-view';
+import { PANE_POSITIONS, PanePosition, PaneResize } from './pane-resize';
 
 interface PageState { url?: string; failed?: boolean }
 const ZOOM_STEPS = [50, 67, 80, 100, 125, 150, 200, 300];
@@ -30,6 +33,7 @@ function paged(doc: DocumentMeta): boolean {
  */
 @Component({
   selector: 'nc-pdf-reader',
+  imports: [PaneResize],
   templateUrl: './document-reader.html',
   host: { '[class.reader-max]': 'maximized()', '(keydown.escape)': 'restore($event)' },
 })
@@ -39,6 +43,26 @@ export class DocumentReader implements OnDestroy {
   readonly fieldLabels = input<Record<string, string>>({});
   readonly missing = input<readonly MissingProof[]>([]);
   readonly target = input<ReaderTarget | null>(null);
+  readonly view = input<ViewSettings>(DEFAULT_VIEW);
+  readonly layout = output<Partial<ViewSettings>>();
+  protected readonly positions = PANE_POSITIONS;
+  protected readonly sideLabels = de.wb.positions;
+  protected readonly panels = de.layout;
+
+  protected toggleFiles(): void {
+    const showFiles = !this.view().showFiles;
+    this.layout.emit({ showFiles, showDocumentPreview: showFiles ? this.view().showDocumentPreview : true });
+  }
+
+  protected toggleDocumentPreview(): void {
+    const showDocumentPreview = !this.view().showDocumentPreview;
+    this.layout.emit({ showDocumentPreview, showFiles: showDocumentPreview ? this.view().showFiles : true });
+  }
+
+  protected setFilesPosition(value: string): void {
+    const position = PANE_POSITIONS.find((p): p is PanePosition => p === value);
+    if (position) this.layout.emit({ filesPosition: position });
+  }
   protected readonly t = de.reader;
   private readonly api = inject(WorkbenchApi);
   private loading?: Subscription;
@@ -102,6 +126,7 @@ export class DocumentReader implements OnDestroy {
   }
 
   protected select(id: string | null, page = 1): void {
+    if (!this.view().showDocumentPreview) this.layout.emit({ showDocumentPreview: true });
     this.release();
     this.selectedId.set(id);
     this.page.set(page);
