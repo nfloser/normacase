@@ -205,10 +205,6 @@ jobs:
           path: |
             frontend/playwright-report
             frontend/test-results
-      - name: Fehlerkontext der E2E-Tests
-        if: failure()
-        run: |
-          for f in frontend/test-results/*/error-context.md; do [ -f "$f" ] && { echo "== $f"; head -c 20000 "$f"; echo; }; done
       - name: Logs
         if: failure()
         run: docker compose logs --no-color

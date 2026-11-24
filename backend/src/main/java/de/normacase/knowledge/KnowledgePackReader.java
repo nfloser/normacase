@@ -67,14 +67,10 @@ public final class KnowledgePackReader {
     }
 
     private static Output output(Obj o) {
-        o.allow(Set.of("id", "version", "validFrom", "validUntil", "sourceId", "type", "choices", "condition", "onMatch", "onNoMatch",
-                "numericExpression"));
-        Obj condition = o.optObject("condition");
-        Obj expression = o.optObject("numericExpression");
+        o.allow(Set.of("id", "version", "validFrom", "validUntil", "sourceId", "type", "choices", "condition", "onMatch", "onNoMatch"));
         return new Output(o.string("id"), o.integer("version"), o.date("validFrom"), o.optDate("validUntil"),
                 o.string("sourceId"), o.string("type"), o.list("choices", KnowledgePackReader::text),
-                condition == null ? null : condition(condition), o.optString("onMatch"), o.optString("onNoMatch"),
-                expression == null ? null : numeric(expression));
+                condition(o.object("condition")), o.optString("onMatch"), o.optString("onNoMatch"));
     }
 
     private static Condition condition(Obj o) {
@@ -88,16 +84,14 @@ public final class KnowledgePackReader {
     }
 
     private static NumericExpression numeric(Obj o) {
-        o.allow(Set.of("kind", "field", "input", "operands", "bands", "id", "factor", "divisor", "decimals"));
+        o.allow(Set.of("kind", "field", "input", "operands", "bands"));
         Obj input = o.optObject("input");
-        java.math.BigDecimal decimals = o.optDecimal("decimals");
         return new NumericExpression(o.string("kind"), o.optString("field"), input == null ? null : numeric(input),
                 o.list("operands", (n, p) -> numeric(Obj.of(n, p))),
                 o.list("bands", (n, p) -> {
                     Obj band = Obj.of(n, p).allow(Set.of("minimum", "maximum", "value"));
                     return new RangeBand(band.optDecimal("minimum"), band.optDecimal("maximum"), band.optDecimal("value"));
-                }), o.optString("id"), o.optDecimal("factor"), o.optDecimal("divisor"),
-                decimals == null ? null : decimals.intValueExact());
+                }));
     }
 
     private static Workflow workflow(Obj o) {

@@ -84,7 +84,7 @@ const MAX_SNAPSHOT = 1024 * 1024;
         <h3>{{ x.resultHeading }}</h3>
         @if (result(); as r) {
           @if (view(); as a) {
-            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" [numericLabels]="numericLabels()" />
+            <nc-decision-trace [assessment]="a" [fieldLabels]="fieldLabels()" [evidenceLabels]="evidenceLabels()" [outputLabels]="outputLabels()" />
             <dl class="facts compact">
               <dt>{{ x.platform }}</dt><dd>{{ a.platformVersion }}</dd>
               <dt>{{ x.evidenceId }}</dt><dd><code>{{ r.response.evidenceId }}</code></dd>
@@ -152,7 +152,6 @@ export class PackWorkbench {
   protected readonly fieldLabels = computed(() => labels(this.presentation().fields));
   protected readonly evidenceLabels = computed(() => labels(this.presentation().evidenceRequirements));
   protected readonly outputLabels = computed(() => (this.presentation().outputs ?? {}) as Record<string, OutputLabel>);
-  protected readonly numericLabels = computed(() => this.presentation().numerics ?? {});
 
   constructor() {
     effect(() => {

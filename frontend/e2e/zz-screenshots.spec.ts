@@ -93,7 +93,7 @@ test('Screenshots der Prüfwerkstatt', async ({ page }) => {
   await shot(page, 'rueckfrage-nachtrag');
   await file.getByRole('tab', { name: 'Prüfung' }).click();
   await file.getByRole('button', { name: 'Angaben ergänzen' }).click();
-  await page.locator('#f-kf_4_4').fill('2');
+  await page.locator('#f-module_4_sum').fill('12');
   await shot(page, 'rueckfrage-formular');
   await page.getByRole('button', { name: 'Neu bewerten' }).click();
   await expect(page.locator('.toast')).toBeVisible();

@@ -2,7 +2,7 @@
   "caseNumber": "PG-2026-104271",
   "displayName": "Brandt, Helmut · Pflegegrad · Höherstufungsantrag",
   "title": "Pflegegrad · Höherstufungsantrag",
-  "knowledgeRelease": "pflege-2026-erwachsene-2026-10-01-public-reference.1",
+  "knowledgeRelease": "pflege-adult-score-2026-10-01-public-reference.1",
   "expectedOutcome": "SUPPORTED",
   "documents": [
     {
@@ -96,385 +96,39 @@
     },
     {
       "id": "erhebung",
-      "title": "Erhebungsbogen (Formulargutachten F 4)",
+      "title": "Erhebungsbogen Module 1–6",
       "file": "erhebung.pdf",
       "mediaType": "application/pdf",
       "category": "CARE",
       "issuedOn": "2026-11-05",
       "references": [
         {
-          "field": "kf_1_b",
+          "field": "module_1_sum",
           "page": 1
         },
         {
-          "field": "kf_1_1",
+          "field": "module_2_sum",
           "page": 1
         },
         {
-          "field": "kf_1_2",
+          "field": "module_3_sum",
           "page": 1
         },
         {
-          "field": "kf_1_3",
+          "field": "module_4_sum",
           "page": 1
         },
         {
-          "field": "kf_1_4",
+          "field": "module_5_sum",
           "page": 1
         },
         {
-          "field": "kf_1_5",
+          "field": "module_6_sum",
           "page": 1
-        },
-        {
-          "field": "kf_2_1",
-          "page": 1
-        },
-        {
-          "field": "kf_2_2",
-          "page": 1
-        },
-        {
-          "field": "kf_2_3",
-          "page": 1
-        },
-        {
-          "field": "kf_2_4",
-          "page": 1
-        },
-        {
-          "field": "kf_2_5",
-          "page": 1
-        },
-        {
-          "field": "kf_2_6",
-          "page": 1
-        },
-        {
-          "field": "kf_2_7",
-          "page": 1
-        },
-        {
-          "field": "kf_2_8",
-          "page": 1
-        },
-        {
-          "field": "kf_2_9",
-          "page": 1
-        },
-        {
-          "field": "kf_2_10",
-          "page": 1
-        },
-        {
-          "field": "kf_2_11",
-          "page": 1
-        },
-        {
-          "field": "kf_3_1",
-          "page": 2
-        },
-        {
-          "field": "kf_3_2",
-          "page": 2
-        },
-        {
-          "field": "kf_3_3",
-          "page": 2
-        },
-        {
-          "field": "kf_3_4",
-          "page": 2
-        },
-        {
-          "field": "kf_3_5",
-          "page": 2
-        },
-        {
-          "field": "kf_3_6",
-          "page": 2
-        },
-        {
-          "field": "kf_3_7",
-          "page": 2
-        },
-        {
-          "field": "kf_3_8",
-          "page": 2
-        },
-        {
-          "field": "kf_3_9",
-          "page": 2
-        },
-        {
-          "field": "kf_3_10",
-          "page": 2
-        },
-        {
-          "field": "kf_3_11",
-          "page": 2
-        },
-        {
-          "field": "kf_3_12",
-          "page": 2
-        },
-        {
-          "field": "kf_3_13",
-          "page": 2
-        },
-        {
-          "field": "kf_4_1",
-          "page": 2
-        },
-        {
-          "field": "kf_4_2",
-          "page": 2
-        },
-        {
-          "field": "kf_4_3",
-          "page": 2
-        },
-        {
-          "field": "kf_4_4",
-          "page": 2
-        },
-        {
-          "field": "kf_4_5",
-          "page": 2
-        },
-        {
-          "field": "kf_4_6",
-          "page": 2
-        },
-        {
-          "field": "kf_4_7",
-          "page": 2
-        },
-        {
-          "field": "kf_4_8",
-          "page": 2
-        },
-        {
-          "field": "kf_4_9",
-          "page": 2
-        },
-        {
-          "field": "kf_4_10",
-          "page": 2
-        },
-        {
-          "field": "kf_4_11",
-          "page": 2
-        },
-        {
-          "field": "kf_4_12",
-          "page": 2
-        },
-        {
-          "field": "kf_4_13",
-          "page": 2
-        },
-        {
-          "field": "kf_5_1_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_1_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_1_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_2_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_2_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_2_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_3_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_3_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_3_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_4_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_4_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_4_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_5_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_5_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_5_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_6_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_6_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_6_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_7_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_7_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_7_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_8_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_8_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_8_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_9_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_9_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_9_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_10_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_10_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_10_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_11_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_11_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_11_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_12_tag",
-          "page": 3
-        },
-        {
-          "field": "kf_5_12_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_12_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_13_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_13_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_14_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_14_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_15_woche",
-          "page": 3
-        },
-        {
-          "field": "kf_5_15_monat",
-          "page": 3
-        },
-        {
-          "field": "kf_5_16",
-          "page": 3
-        },
-        {
-          "field": "kf_6_1",
-          "page": 3
-        },
-        {
-          "field": "kf_6_2",
-          "page": 3
-        },
-        {
-          "field": "kf_6_3",
-          "page": 3
-        },
-        {
-          "field": "kf_6_4",
-          "page": 3
-        },
-        {
-          "field": "kf_6_5",
-          "page": 3
-        },
-        {
-          "field": "kf_6_6",
-          "page": 3
         }
       ],
       "pages": [
-        "erhebung.page-1.png",
-        "erhebung.page-2.png",
-        "erhebung.page-3.png"
+        "erhebung.page-1.png"
       ]
     }
   ]

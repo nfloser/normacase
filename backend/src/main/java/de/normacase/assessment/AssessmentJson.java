@@ -203,10 +203,6 @@ public final class AssessmentJson {
         decimal(n, "selectedMinimum", t.selectedMinimum());
         decimal(n, "selectedMaximum", t.selectedMaximum());
         decimal(n, "selectedValue", t.selectedValue());
-        // Nur bei Ausdrücken, die sie tragen: ältere Nachweise bleiben byte-gleich.
-        if (t.id() != null) n.put("id", t.id());
-        if (t.factor() != null) n.put("factor", t.factor());
-        if (t.divisor() != null) n.put("divisor", t.divisor());
         ArrayNode children = n.putArray("children");
         t.children().forEach(child -> children.add(numeric(child)));
         return n;

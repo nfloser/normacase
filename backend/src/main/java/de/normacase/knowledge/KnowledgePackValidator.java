@@ -29,12 +29,12 @@ public final class KnowledgePackValidator {
 
     static final int FORMAT_VERSION = 1;
     static final Set<String> FIELD_TYPES = Set.of("truth", "number");
-    static final Set<String> OUTPUT_TYPES = Set.of("choice", "number");
+    static final Set<String> OUTPUT_TYPES = Set.of("choice");
     static final Set<String> VALIDATION_LEVELS = Set.of("SYNTHETIC", "PUBLIC_REFERENCE", "DOMAIN_REVIEWED", "PRODUCTION_APPROVED");
     static final Set<String> LIFECYCLE = Set.of("DRAFT", "IN_REVIEW", "APPROVED", "ACTIVE", "DEPRECATED", "RETIRED");
     static final Set<String> LEAF_CONDITIONS = Set.of("field_equals", "number_gte", "number_in_range");
     static final Set<String> GROUP_CONDITIONS = Set.of("all", "any", "not", "requires_evidence");
-    static final Set<String> NUMERIC_KINDS = Set.of("field", "range_lookup", "sum", "max", "scale");
+    static final Set<String> NUMERIC_KINDS = Set.of("field", "range_lookup", "sum", "max");
     private static final Pattern SHA256 = Pattern.compile("sha256:[0-9a-fA-F]{64}");
 
     public void validateOrThrow(KnowledgePack pack) {
@@ -168,29 +168,6 @@ public final class KnowledgePackValidator {
                 else if (choice.equalsIgnoreCase("UNKNOWN")) c.add("reserved_output_choice", "UNKNOWN is reserved.", path + ".choices[" + j + "]");
                 else if (!seen.add(choice)) c.add("duplicate_output_choice", "Duplicate choice.", path + ".choices[" + j + "]");
             }
-            if ("number".equals(o.type())) {
-                if (o.condition() != null || o.onMatch() != null || o.onNoMatch() != null) {
-                    c.add("invalid_number_output", "Number outputs have no condition or branches.", path);
-                }
-                if (o.numericExpression() == null) {
-                    c.add("missing_numeric_expression", "Number outputs need a numericExpression.", path + ".numericExpression");
-                } else {
-                    numeric(c, o.numericExpression(), path + ".numericExpression");
-                }
-                for (int j = 0; j < o.choices().size(); j++) {
-                    try {
-                        new java.math.BigDecimal(o.choices().get(j));
-                    } catch (NumberFormatException e) {
-                        c.add("invalid_number_output_choice", "Choices of number outputs are numbers.", path + ".choices[" + j + "]");
-                    }
-                }
-                continue;
-            }
-            if (o.numericExpression() != null) c.add("invalid_choice_output", "Choice outputs use a condition.", path + ".numericExpression");
-            if (o.condition() == null) {
-                c.add("missing_output_condition", "Choice outputs need a condition.", path + ".condition");
-                continue;
-            }
             branch(c, o, o.onMatch(), path + ".onMatch");
             branch(c, o, o.onNoMatch(), path + ".onNoMatch");
             condition(c, o.condition(), path + ".condition");
@@ -292,27 +269,7 @@ public final class KnowledgePackValidator {
             c.add("unknown_numeric_expression_kind", "Unknown numeric expression kind.", path + ".kind");
             return;
         }
-        if (e.id() != null && !e.id().matches("^[a-z][a-z0-9_]{0,63}$")) {
-            c.add("invalid_numeric_expression_id", "id must be a lower-case technical identifier.", path + ".id");
-        }
-        boolean scaling = e.factor() != null || e.divisor() != null || e.decimals() != null;
-        if (scaling && !"scale".equals(e.kind())) shape(c, path);
         switch (e.kind()) {
-            case "scale" -> {
-                if (e.field() != null || !e.operands().isEmpty() || !e.bands().isEmpty()) shape(c, path);
-                if (e.input() == null) c.add("missing_numeric_expression_input", "input is required.", path + ".input");
-                else numeric(c, e.input(), path + ".input");
-                if ((e.factor() == null) == (e.divisor() == null)) {
-                    c.add("invalid_scale", "scale needs exactly one of factor or divisor.", path);
-                } else if (e.divisor() != null && e.divisor().signum() <= 0) {
-                    c.add("invalid_scale", "divisor must be positive.", path + ".divisor");
-                } else if (e.divisor() != null && e.decimals() == null) {
-                    c.add("invalid_scale", "division needs decimals for deterministic rounding.", path + ".decimals");
-                }
-                if (e.decimals() != null && (e.decimals() < 0 || e.decimals() > 10)) {
-                    c.add("invalid_scale", "decimals must be between 0 and 10.", path + ".decimals");
-                }
-            }
             case "field" -> {
                 if (e.input() != null || !e.operands().isEmpty() || !e.bands().isEmpty()) shape(c, path);
                 if (e.field() == null) c.add("missing_numeric_expression_field", "field is required.", path + ".field");
