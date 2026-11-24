@@ -9,8 +9,8 @@ import { EvidenceRecord, ExtrasApi } from './extras-api';
   template: `
     <section class="tool-card wide">
       <form class="tool-toolbar" (submit)="$event.preventDefault(); search()">
-        <label class="field"><span>{{ x.system }}</span><input type="text" required [value]="system()" (input)="system.set($any($event.target).value)"></label>
-        <label class="field"><span>{{ x.caseNumber }}</span><input type="text" required [value]="caseId()" (input)="caseId.set($any($event.target).value)"></label>
+        <label class="field"><span>{{ x.system }}</span><input type="text" required [attr.aria-label]="x.system" [value]="system()" (input)="system.set($any($event.target).value)"></label>
+        <label class="field"><span>{{ x.caseNumber }}</span><input type="text" required [attr.aria-label]="x.caseNumber" [value]="caseId()" (input)="caseId.set($any($event.target).value)"></label>
         <button type="submit" class="button primary" [disabled]="busy() || !system().trim() || !caseId().trim()">{{ x.search }}</button>
       </form>
       <p class="muted">{{ x.retentionNote }}</p>

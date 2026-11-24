@@ -26,20 +26,20 @@ const MAX_SNAPSHOT = 1024 * 1024;
         <header class="tool-head"><span class="step">01</span><div><h2>{{ x.release }}</h2><p class="muted">{{ presentation().description ?? '' }}</p></div></header>
         <form class="tool-form" (submit)="$event.preventDefault(); check()">
           <label class="field"><span>{{ x.release }}</span>
-            <select [value]="releaseId()" (change)="selectRelease($any($event.target).value)">
+            <select [attr.aria-label]="x.release" [value]="releaseId()" (change)="selectRelease($any($event.target).value)">
               @for (r of releases(); track r.releaseId) { <option [value]="r.releaseId" [selected]="r.releaseId === releaseId()">{{ releaseName(r.releaseId) }}</option> }
             </select>
           </label>
           <div class="field-inline">
             <label class="field grow"><span>{{ x.example }}</span>
-              <select [value]="exampleId()" (change)="exampleId.set($any($event.target).value)">
+              <select [attr.aria-label]="x.example" [value]="exampleId()" (change)="exampleId.set($any($event.target).value)">
                 <option value="" [selected]="!exampleId()">{{ x.noExample }}</option>
                 @for (e of presentation().examples ?? []; track e.id) { <option [value]="e.id" [selected]="e.id === exampleId()">{{ e.label }}</option> }
               </select>
             </label>
             <button type="button" class="button" [disabled]="!exampleId() || busy()" (click)="loadExample()">{{ x.loadExample }}</button>
           </div>
-          <label class="field"><span>{{ x.date }}</span><input type="date" required [value]="form().date" (input)="patch({ date: $any($event.target).value })"></label>
+          <label class="field"><span>{{ x.date }}</span><input type="date" required [attr.aria-label]="x.date" [value]="form().date" (input)="patch({ date: $any($event.target).value })"></label>
           <h3 class="tool-subhead">{{ x.facts }}</h3>
           @for (f of form().fields; track f.id) {
             <div class="field">
@@ -66,7 +66,7 @@ const MAX_SNAPSHOT = 1024 * 1024;
             <h3 class="tool-subhead">{{ x.evidence }}</h3>
             @for (e of form().evidence; track e.id) {
               <label class="field"><span>{{ evidenceLabel(e.id) }}</span>
-                <select [value]="e.value" (change)="setEvidence(e.id, $any($event.target).value)">
+                <select [attr.aria-label]="evidenceLabel(e.id)" [value]="e.value" (change)="setEvidence(e.id, $any($event.target).value)">
                   @for (s of evidenceValues; track s) { <option [value]="s" [selected]="s === e.value">{{ evidenceStatus[s] }}</option> }
                 </select>
               </label>
