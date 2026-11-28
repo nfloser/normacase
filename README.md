@@ -78,6 +78,28 @@ Die Screenshots entstehen bei jedem Build automatisch aus dem laufenden Stack (`
 
 ## Lokal starten
 
+### macOS – Erststart auf einem neuen Rechner
+
+Voraussetzungen: Docker Desktop ist installiert und läuft, Git ist verfügbar (`git --version`) und eine Internetverbindung besteht. Auf dienstlichen Rechnern ist eine Freigabe für die Installation und Ausführung erforderlich. Git fehlt? `xcode-select --install` installiert die Apple Command Line Tools nach Bestätigung im Systemdialog.
+
+Den gesamten folgenden Block einmal in das macOS-Terminal kopieren (kein vorheriger ZIP-Download, kein PowerShell nötig):
+
+```bash
+git clone --depth 1 https://github.com/nfloser/normacase.git "$HOME/Downloads/normacase" && \
+cd "$HOME/Downloads/normacase" && \
+docker compose up --build -d && \
+docker compose wait demo-host && \
+test "$(docker inspect --format '{{.State.ExitCode}}' "$(docker compose ps -aq demo-host)")" = 0 && \
+curl --retry 30 --retry-connrefused --retry-delay 2 --max-time 5 -fsS http://localhost:4200/api/v1/system -o /dev/null && \
+open http://localhost:4200
+```
+
+Der Befehl lädt den aktuellen Stand herunter, startet die Dienste, wartet auf die erfolgreiche Einlieferung der fiktiven Fälle und öffnet die Prüfwerkstatt. Der erste Build dauert einige Minuten. Anmeldung: `gutachterin.a` oder `freigabe.c`, Passwort jeweils `demo`. Nur synthetische Daten verwenden.
+
+Der Download überschreibt keinen vorhandenen Ordner. Falls `~/Downloads/normacase` bereits existiert und die eigene NormaCase-Kopie enthält, dort erneut starten (ohne erneuten Download): `cd ~/Downloads/normacase && docker compose up --build -d && docker compose wait demo-host && open http://localhost:4200`. Beenden: `cd ~/Downloads/normacase && docker compose down`. Der Datenbankstand bleibt erhalten.
+
+### Aus einem bereits heruntergeladenen Repository starten
+
 Voraussetzung ist Docker (unter Windows Docker Desktop). Dann reicht ein Befehl:
 
 | System | Befehl |
